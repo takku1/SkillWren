@@ -16,7 +16,7 @@ structure describes control.
   `code-reviewer-logic` in the benchmarks).
 - `benchmarks/` — two blinded benchmark rounds with raw reports, frozen skill
   inputs, targets, and scoring.
-- `tests/` — validator suite: fixtures plus `test_validator.py` (60 tests).
+- `tests/` — validator suite: fixtures plus `test_validator.py` (60 tests) and `test_mutations.py` (15 one-break mutants).
 
 ## Quickstart
 

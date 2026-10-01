@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Mutation spike: `tests/test_mutations.py` breaks the valid skeleton 15
+  ways (one break each) and asserts every mutant errors with the expected
+  rule.
+
 ## 0.4.1 (2026-10-01)
 
 Follow-up seams, no format change:
