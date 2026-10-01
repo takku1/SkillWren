@@ -151,7 +151,9 @@ budget. Missing any of these fails validation.
 ## Skeleton template
 
 Copy, rename, fill. Outer fence is four backticks so the inner fences stay
-literal.
+literal. The same skeleton ships as a checkable file at
+`docs/skill-template.md` — copy it to start a new skill; it passes
+`skillwren check` clean.
 
 ````markdown
 ---

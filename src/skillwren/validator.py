@@ -1,4 +1,4 @@
-"""SkillWren v0.4 validator: static checks for logic-first skills.
+"""SkillWren v0.4.1 validator (format 0.4): static checks for logic-first skills.
 
 Single-file, stdlib-only. Usage: skillwren check <file>...
 (or: python -m skillwren check <file>...)
@@ -7,7 +7,7 @@ Rule IDs (spec Section 13):
   Errors: F1 frontmatter/schema, F2 fences/contract/body-order,
     F3 flow/fence set, V1 vocabulary, R1 requires match, R2 returns,
     R3 run target, R4 required-input gates, T1 for-each type,
-    U1 unbound reference,
+    T2 run-argument type, U1 unbound reference,
     E1 effect target, E2 effect coverage, E3 immutable write,
     E4 impure apply, A1 allow/never, A2 ask/confirm structure,
     L1 label/loop, L2 recursion, L3 retry ownership,
@@ -20,10 +20,11 @@ Rule IDs (spec Section 13):
 Token counts use ceil(chars/4), labeled approximate (spec Section 10
 fallback; used always in v0.4 since tiktoken is optional).
 
-Known limitations: same-skill run argument VALUES are checked for
-boundness, not full type conformance (no dataflow type inference);
-interpolated/wildcard paths are exempt from the create/mutate overlap
-rule; cross-skill runs are an unverified effect boundary (W8).
+Known limitations: run-argument types are checked only when the passed
+binding has a known declared type; bindings from as/generate/run stay
+exempt until dataflow type inference lands; interpolated/wildcard paths
+are exempt from the create/mutate overlap rule; cross-skill runs are an
+unverified effect boundary (W8).
 """
 import math
 import re
@@ -33,7 +34,7 @@ from pathlib import Path
 
 Diag = namedtuple("Diag", ["line", "rule", "msg", "fix"])
 
-FORMAT_VERSION = (0, 4)
+FORMAT_VERSION = (0, 4)  # format version; patch releases (0.4.1) share it
 
 STOPWORDS = {"a", "an", "the", "to", "of", "and", "or", "for", "with",
              "on", "in", "please"}
@@ -228,7 +229,10 @@ def is_kebab(s):
 
 
 def parse_version(s):
-    """Returns (major, minor) for `X.Y[.Z]`, else None."""
+    """Returns (major, minor) for `X.Y[.Z]`, else None.
+
+    The patch is ignored: patch versions carry no format change, so
+    0.4.1 is format-equivalent to 0.4 and validates normally."""
     if not isinstance(s, str):
         return None
     m = VERSION_RE.match(s.strip())
@@ -652,7 +656,7 @@ def analyze_flow(flow, root, header_line, ctx):
     ask_nodes, decision_asks = [], []
     confirm_user, confirm_bare = [], []
     apply_nodes, run_calls, direct_mutations = [], [], []
-    pending_from, foreach_nodes = [], []
+    pending_from, foreach_nodes, pending_run_args = [], [], []
 
     for node in nodes:
         text = node.text
@@ -709,9 +713,12 @@ def analyze_flow(flow, root, header_line, ctx):
                 if VAR_ONLY.fullmatch(val):
                     use(node, val, "return value")
             elif is_run(node.parent):
-                val = ASSIGN_RE.match(text).group(2).strip()
+                m = ASSIGN_RE.match(text)
+                val = m.group(2).strip()
                 if VAR_ONLY.fullmatch(val):
                     use(node, val, "run argument value")
+                    pending_run_args.append((node, node.parent,
+                                             m.group(1), val))
             # elsewhere: V1 stray already emitted at build
             continue
         if kind == "bareword":
@@ -971,6 +978,44 @@ def analyze_flow(flow, root, header_line, ctx):
             errors.append(Diag(node.line, "T1",
                                f"for each source {src!r} has type {typ}, not a List type",
                                "Iterate a List-typed binding."))
+    for node, run_node, name, val in pending_run_args:
+        m = re.fullmatch(r"run\s+(\S+)\s+with:", run_node.text)
+        if not m:
+            continue  # V1 owns malformed runs
+        target = m.group(1)
+        if "." in target or target not in flows:
+            continue  # W8 owns cross-skill runs; R3 owns unknown targets
+        if node not in reach or val not in in_facts[node]:
+            continue  # unreachable, or U1 owns unbound values
+        want = accepts_map.get(name)
+        got = accepts_map.get(val)
+        if not isinstance(want, dict) or not isinstance(got, dict):
+            continue  # locals and untyped bindings have no declared type
+        if "type" not in want or "type" not in got:
+            continue
+        want_t, got_t = str(want["type"]), str(got["type"])
+        if not valid_type(want_t) or not valid_type(got_t):
+            continue  # F1 owns malformed types
+        if want_t == "Any" or got_t == "Any":
+            continue  # Any admits every type
+        if re.sub(r"\s+", "", want_t) == re.sub(r"\s+", "", got_t):
+            continue
+        seen, stack, erased = set(), [node], False
+        while stack and not erased:
+            cur = stack.pop()
+            for pred in preds.get(cur, ()):
+                if pred in seen or pred not in reach:
+                    continue
+                seen.add(pred)
+                if val in gen_as.get(pred, ()):
+                    erased = True
+                    break
+                stack.append(pred)
+        if not erased:
+            errors.append(Diag(node.line, "T2",
+                               f"run argument {name!r} wants {want_t}"
+                               f" but {val!r} has type {got_t}",
+                               "Pass a binding of the declared accepts type."))
 
     # ---- leading requires (labels transparent, as in routing) ----
     leading = []
@@ -1675,14 +1720,115 @@ def validate_files(paths):
     return result
 
 
+RULE_EXPLAIN = {
+    "F1": "The contract header is machine-readable metadata with a strict"
+          " schema, so every required field, type, and flag must be"
+          " well-formed (SPEC Section 5).",
+    "F2": "Fences and the contract block carry control meaning, so"
+          " mislabeled fences, misordered blocks, and malformed resources"
+          " are errors (SPEC Sections 8 and 10).",
+    "F3": "Every declared flow needs a body and vice versa, so the header"
+          " flow list and the logic fences must match exactly"
+          " (SPEC Section 6).",
+    "V1": "Flow bodies use a closed control vocabulary, so anything outside"
+          " it is an error rather than prose (SPEC Section 6).",
+    "R1": "Header requires duplicates each flow's leading require lines so"
+          " routing stays header-only; the two must match exactly"
+          " (SPEC Section 5).",
+    "R2": "Flows return declared produces entries and end every path in"
+          " return or abort, so the caller always gets what was promised"
+          " (SPEC Section 6).",
+    "R3": "A run names a flow in the same file, so an unknown target is"
+          " rejected before execution (SPEC Section 11).",
+    "R4": "Required inputs a flow consumes must be gated by a leading"
+          " require, so missing input fails fast at entry (SPEC Section 6).",
+    "T1": "For-each iterates List-typed bindings, so looping over a known"
+          " non-List type is an error (SPEC Section 6).",
+    "T2": "Run arguments bind by name into the callee, so a known-typed"
+          " value that mismatches the declared accepts type is rejected"
+          " (SPEC Section 11).",
+    "U1": "A binding must exist on every path to its use, so a"
+          " possibly-unbound reference is rejected (SPEC Section 6).",
+    "E1": "Every effect target must name a declared resource, path, or"
+          " input, so undeclared touches are visible before execution"
+          " (SPEC Section 8).",
+    "E2": "Touched resources must be covered by header effects, and"
+          " same-path read-plus-write means mutates, so audits stay honest"
+          " (SPEC Section 8).",
+    "E3": "Immutable resources must never be a write target"
+          " (SPEC Section 8).",
+    "E4": "Apply is a pure in-memory transform, so it cannot name a"
+          " resource target (SPEC Section 6).",
+    "A1": "An allow narrows exactly one never invariant, so an allow"
+          " matching none is an error (SPEC Section 8).",
+    "A2": "User decisions need a decision ask before the gate and a"
+          " confirmation after it, so authority is structural, not implied"
+          " (SPEC Section 7).",
+    "L1": "Labels must be unique and declared, and loop variables and"
+          " iterated collections must not be rebound inside the loop"
+          " (SPEC Section 6).",
+    "L2": "Flows cannot recurse through run cycles (SPEC Section 11).",
+    "L3": "Retry re-executes the failed gate, so it may only appear inside"
+          " an otherwise repair block (SPEC Section 12).",
+    "O1": "Otherwise repairs nest directly under a fallible gate, and only"
+          " branches, loops, repairs, returns, and run args take indented"
+          " bodies (SPEC Sections 6 and 12).",
+    "B1": "Headers and bodies have token ceilings so discovery stays cheap;"
+          " overruns fail validation (SPEC Section 10).",
+    "M1": "Dismissing an ask must mutate nothing, so no write may precede a"
+          " dismissible ask on any path (SPEC Section 12).",
+}
+
+USAGE = "usage: skillwren check [--all | --explain <file>... | <file>...]"
+
+
+def _plural(n, word):
+    return f"{n} {word}" + ("" if n == 1 else "s")
+
+
+def check_all():
+    """Check every *.md under the cwd except benchmarks/archive/.
+
+    Prints a one-line summary per file; exit 1 when any file fails."""
+    files = sorted(p for p in Path(".").rglob("*.md")
+                   if Path("benchmarks/archive") not in p.parents)
+    if not files:
+        print("no markdown files found")
+        return 0
+    results = validate_files([str(p) for p in files])
+    code = 0
+    for p in files:
+        errors, warnings = results[str(p)]
+        if not errors and not warnings:
+            print(f"{p}: clean")
+        else:
+            print(f"{p}: {_plural(len(errors), 'error')},"
+                  f" {_plural(len(warnings), 'warning')}")
+        if errors:
+            code = 1
+    return code
+
+
 def main(argv):
     if len(argv) < 3 or argv[1] != "check":
-        print("usage: skillwren check <file>...")
+        print(USAGE)
+        return 2
+    args = argv[2:]
+    if "--all" in args:
+        return check_all()
+    explain = False
+    if args and args[0] == "--explain":
+        explain = True
+        args = args[1:]
+    if not args:
+        print(USAGE)
         return 2
     code = 0
-    for path, (errors, warnings) in validate_files(argv[2:]).items():
+    for path, (errors, warnings) in validate_files(args).items():
         for d in sorted(errors, key=lambda x: x.line):
             print(f"{path}:{d.line}: error {d.rule}: {d.msg} -- {d.fix}")
+            if explain and d.rule in RULE_EXPLAIN:
+                print(f"  {RULE_EXPLAIN[d.rule]}")
         for d in sorted(warnings, key=lambda x: x.line):
             print(f"{path}:{d.line}: warning {d.rule}: {d.msg} -- {d.fix}")
         if errors:

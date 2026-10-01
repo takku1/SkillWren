@@ -152,8 +152,10 @@ Identifiers: `skill` is a kebab-case id
 header side, F2 on the fence side). `skill`, `description`, and `purpose`
 must be non-empty strings (F1). `version` is numeric `major.minor[.patch]`
 and doubles as the format version: a validator accepts skills at or below
-its own version and rejects newer ones (F1), since it cannot verify
-language it does not know.
+its own format version and rejects newer ones (F1), since it cannot verify
+language it does not know. Patch versions carry no format change, so they
+are format-equivalent to their `major.minor`: a format-0.4 validator
+accepts `version: 0.4.1` and still rejects `version: 0.5`.
 
 `accepts` entries carry `{ type: T }` with optional `required: true|false`
 (lowercase only, F1; missing means `false`). `mutates` defaults to empty
@@ -407,6 +409,9 @@ Errors:
   without a leading `require <name> exists`.
 - T1 for-each type: iterating a binding whose declared type is known and
   not a `List` type.
+- T2 run-argument type: a same-skill `run` argument passing a binding
+  whose known declared type mismatches the callee `accepts` entry type
+  (bindings with unknown types, from `as`/`generate`/`run`, stay exempt).
 - U1 unbound: reference to a name not bound on every path to its use
   (definite binding; failed reads bind nothing on repair paths).
 - E1 effect target: `open`/`read`/`write`/`save` target matching no
@@ -465,12 +470,15 @@ is the preferred way to find the next hole.
 
 ## 15. Authoring kit and migration
 
-Ship a one-file template, the validator as a CLI (`skillwren check
-<file>...`, exit 0 clean, 1 on errors; `check --all` and `--explain` are
-deferred to a later release), and the `authoring-guide.md` companion guide,
-which carries the full procedure, template, and checklists. New skills
-start from the template; prose-first drafting is allowed only as a scratch
-step before conversion.
+Ship a one-file template (`docs/skill-template.md`), the validator as a
+CLI (`skillwren check <file>...`, exit 0 clean, 1 on errors;
+`check --all` checks every `*.md` under the current directory except
+`benchmarks/archive/` with a one-line summary per file, exit 1 when any
+file fails; `check --explain <file>...` adds a plain-language paragraph
+per error naming the SPEC section), and the `authoring-guide.md` companion
+guide, which carries the full procedure, template, and checklists. New
+skills start from the template; prose-first drafting is allowed only as a
+scratch step before conversion.
 
 ## 16. Compatibility
 
@@ -506,6 +514,36 @@ strict YAML-compatible header grammar (Section 5). Definite binding: bound
 on every path to the use.
 
 ## 19. Amendment log
+
+### Unreleased
+
+Final hardening pass, no format change:
+
+- Patch versions are format-equivalent: the validator compares
+  `major.minor` only, so a format-0.4 validator accepts
+  `version: 0.4.1` and still rejects `version: 0.5` (F1; Section 5).
+  A skill honestly declaring the project version no longer fails.
+  Evidence: `valid-version-patch` validates clean,
+  `invalid-version-minor` fails F1.
+- Same-skill `run` arguments are type-checked (new error T2, Section 13):
+  a named argument matching a callee `accepts` entry must carry a
+  binding of that type when the binding's type is known. Bindings with
+  unknown types (from `as`/`generate`/`run`, or rebound after their
+  declaration) stay exempt pending dataflow type inference. This
+  enforces the Section 11 sentence the v0.3 amendment stated but no
+  validator checked. Evidence: `invalid-run-arg-type` fires T2 once;
+  `valid-run-args` (unknown-typed plus correct-typed arguments) stays
+  clean; both golden examples still validate clean.
+- CLI ships the deferred Section 15 surface: `check --all` checks every
+  `*.md` under the current directory except `benchmarks/archive/`,
+  prints a one-line summary per file, and exits 1 when any file fails;
+  `check --explain <file>...` adds a plain-language paragraph per
+  error naming the violated SPEC section.
+- One-file template ships at `docs/skill-template.md` (Section 15
+  promise): header with every required field, one contract block, one
+  logic flow exercising ask/confirm, one `otherwise` repair, `# TODO`
+  markers at each fill site. It passes `skillwren check` clean and is
+  referenced from the authoring guide.
 
 ### v0.4.1 (2026-10-01)
 

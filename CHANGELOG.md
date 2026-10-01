@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Patch versions are format-equivalent: `version: 0.4.1` validates
+  against the format-0.4 validator; `0.5` still fails F1.
+- New error T2: same-skill `run` arguments with known declared types
+  must match the callee `accepts` entry type; unknown-typed bindings
+  stay exempt.
+- CLI: `check --all` (one-line summary per `*.md`, skips
+  `benchmarks/archive/`) and `check --explain` (plain-language
+  paragraph per error).
+- New `docs/skill-template.md` one-file template (validates clean),
+  referenced from the authoring guide.
+- Benchmarks README notes the seeded synthetic secrets in
+  `archive/target.py` and `archive/target2.py` (scanner false-positive
+  record).
+
 - Mutation middle ground: shared catalog (`tests/mutation_catalog.py`,
   15 skeleton + 9 golden one-break mutants), committed tripwire
   (`tests/test_mutations.py`, asserts beta-recall plus alpha-precision),

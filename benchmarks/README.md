@@ -17,6 +17,12 @@ byte-identical for audit:
   stays byte-identical.
 - `target.py`, `target2.py` — seeded review targets for rounds 1 and 2.
 
+Note: `archive/target.py` and `archive/target2.py` contain intentionally
+seeded synthetic secrets/keys as test fixtures for the benchmark rounds
+(one of the planted review findings is a fake `sk-live-…` token). They
+are not real credentials — secret scanners should treat hits there as
+expected fixtures, not incidents.
+
 Note: file paths quoted inside these frozen reports (`test/bench/...`,
 `test/skill.md`, bare `report-*.md` / `target*.py` names) refer to the
 pre-0.3.0 layout. The v0.3 logic skill they evaluate lives at

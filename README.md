@@ -16,7 +16,7 @@ structure describes control.
   `code-reviewer-logic` in the benchmarks).
 - `benchmarks/` — two blinded benchmark rounds (summaries plus frozen
   `archive/` of round inputs and raw reports).
-- `tests/` — validator suite: fixtures plus `test_validator.py` (60 tests),
+- `tests/` — validator suite: fixtures plus `test_validator.py` (68 tests),
   the mutation tripwire `test_mutations.py` over `mutation_catalog.py`
   (24 one-break mutants), and the `mutation_sweep.py` kill-matrix runner.
 
@@ -40,7 +40,7 @@ Without installing:
 PYTHONPATH=src python3 -m skillwren check path/to/skill.md
 ```
 
-Run the suite (63 tests):
+Run the suite (71 tests):
 
 ```sh
 python3 -m unittest tests.test_validator tests.test_mutations
@@ -60,10 +60,10 @@ v0.4.1 (2026-10-01). The validator parses flows into an indentation AST and a
 control-flow graph and enforces repair ownership, ask/confirm structure,
 required-input gates, full schemas, per-path binding, and dismissal safety.
 v0.4.1 adds `for each` type and collection guarantees.
-Known limitations: same-skill `run` argument values are checked for
-boundness, not full type conformance; cross-skill runs are an unverified
-effect boundary. Next frontier: EBNF grammar and constrained-decoding
-profile (spec Section 17).
+Known limitations: same-skill `run` arguments with unknown types (from
+`as`/`generate`/`run`) skip type conformance until dataflow inference
+lands; cross-skill runs are an unverified effect boundary. Next frontier:
+EBNF grammar and constrained-decoding profile (spec Section 17).
 
 ## License
 

@@ -38,6 +38,12 @@ class TestValidFiles(unittest.TestCase):
         self.assertEqual(errors, [])
         self.assertEqual(warnings, [])
 
+    def test_skill_template_is_clean(self):
+        errors, warnings = skillwren.validate_file(
+            str(ROOT / "docs/skill-template.md"))
+        self.assertEqual(errors, [])
+        self.assertEqual(warnings, [])
+
 
 class TestErrors(unittest.TestCase):
     def test_requires_mismatch_is_error(self):
@@ -92,12 +98,12 @@ class TestWarnings(unittest.TestCase):
 
 
 class TestCli(unittest.TestCase):
-    def run_cli(self, *args):
+    def run_cli(self, *args, cwd=None):
         env = dict(os.environ)
         env["PYTHONPATH"] = str(ROOT / "src") + os.pathsep + env.get("PYTHONPATH", "")
         return subprocess.run(
             [sys.executable, "-m", "skillwren", *args],
-            capture_output=True, text=True, cwd=str(ROOT), env=env)
+            capture_output=True, text=True, cwd=str(cwd or ROOT), env=env)
 
     def test_cli_reports_error_and_exits_1(self):
         p = self.run_cli("check", str(FIX / "invalid-verb.md"))
@@ -107,6 +113,40 @@ class TestCli(unittest.TestCase):
     def test_cli_clean_file_exits_0(self):
         p = self.run_cli("check", str(FIX / "valid-skeleton.md"))
         self.assertEqual(p.returncode, 0)
+
+    def test_cli_all_summarizes_each_file(self):
+        import tempfile
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "good.md").write_text((FIX / "valid-skeleton.md").read_text())
+        (root / "bad.md").write_text((FIX / "invalid-verb.md").read_text())
+        p = self.run_cli("check", "--all", cwd=root)
+        self.assertEqual(p.returncode, 1)
+        self.assertIn("good.md", p.stdout)
+        self.assertIn("bad.md", p.stdout)
+        self.assertIn("error", p.stdout)
+
+    def test_cli_all_skips_benchmark_archive(self):
+        import tempfile
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "good.md").write_text((FIX / "valid-skeleton.md").read_text())
+        archived = root / "benchmarks" / "archive"
+        archived.mkdir(parents=True)
+        (archived / "bad.md").write_text((FIX / "invalid-verb.md").read_text())
+        p = self.run_cli("check", "--all", cwd=root)
+        self.assertEqual(p.returncode, 0)
+        self.assertIn("good.md", p.stdout)
+        self.assertNotIn("bad.md", p.stdout)
+        self.assertNotIn("archive", p.stdout)
+
+    def test_cli_explain_adds_rule_paragraph(self):
+        p = self.run_cli("check", "--explain", str(FIX / "invalid-verb.md"))
+        self.assertEqual(p.returncode, 1)
+        self.assertIn("V1", p.stdout)
+        self.assertIn("SPEC Section", p.stdout)
 
 
 BUILDER_FM = """---
@@ -333,6 +373,16 @@ class TestV04Rules(unittest.TestCase):
         self.assertIn("F1", rule_ids(errors))
         self.assertEqual(len(errors), 1)
 
+    def test_patch_version_is_format_equivalent(self):
+        errors, warnings = validate_fixture("valid-version-patch.md")
+        self.assertEqual(errors, [])
+        self.assertEqual(warnings, [])
+
+    def test_next_minor_version_is_error(self):
+        errors, _ = validate_fixture("invalid-version-minor.md")
+        self.assertIn("F1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
     def test_skill_name_must_be_kebab(self):
         errors, _ = validate_fixture("invalid-skill-name.md")
         self.assertIn("F1", rule_ids(errors))
@@ -427,6 +477,16 @@ class TestV04Rules(unittest.TestCase):
         l1 = [d for d in errors if d.rule == "L1"]
         self.assertEqual(len(l1), 2)
         self.assertEqual(len(errors), 2)
+
+    def test_run_arg_type_mismatch_is_error(self):
+        errors, _ = validate_fixture("invalid-run-arg-type.md")
+        self.assertIn("T2", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_run_arg_unknown_type_stays_silent(self):
+        errors, warnings = validate_fixture("valid-run-args.md")
+        self.assertEqual(errors, [])
+        self.assertEqual(warnings, [])
 
     def test_foreign_run_marks_unverified_boundary(self):
         import tempfile
