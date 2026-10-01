@@ -30,6 +30,7 @@ effects:
   mutates: []
 risk: low
 cost: cheap
+# Budgets are cl100k tokens (approx ceil(chars/4)), not bytes.
 budget: { header: 400, body: 2500 }
 ---
 

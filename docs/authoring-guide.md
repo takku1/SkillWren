@@ -93,6 +93,10 @@ scoped `allow` inside the flow, quoting it.
 Grade `risk`/`cost` honestly (a skill that creates files is at least medium
 risk). Keep the default ceilings (header 400, body 2500 cl100k tokens); raise
 them only with a comment justifying why, and expect review pushback.
+Ceilings are tokens, not bytes or words: the validator counts
+ceil(chars/4) per tier, so estimate usage in tokens — a 3700-byte body
+is roughly 930 tokens, well under budget. A passing check prints no
+usage; only overruns print the count.
 
 ### 12. Validate and review
 
@@ -226,6 +230,15 @@ main:
 Keep the result minimal and faithful to the input.
 ````
 
+## Piloting a conversion side-by-side
+
+Convert under a distinct skill id (the original id plus a `-logic`
+suffix, with `name` following `skill`) and keep the prose original
+installed. Run both against the same real work, compare prescribed
+next steps, and replace the original only when the logic version wins
+repeatedly. A pilot report recording hits, misses, and false-fires is
+the conversion's evidence; file it next to the draft.
+
 ## Common mistakes
 
 1. Prose in logic blocks outside conditions — move it to the appendix.
@@ -246,6 +259,11 @@ Keep the result minimal and faithful to the input.
 15. Required input used but never gated — add the leading `require`.
 16. `for each` over a non-`List` binding — iterate lists only.
 17. Writing the iterated collection inside the loop — use a new binding.
+18. `generate` source over-constrained to one input — draw hypotheses
+    from evidence plus comparisons, not the diff alone.
+19. Escalation on a bare attempt count — qualify with the failure
+    pattern (coupling? new symptoms?) or verified step-by-step
+    progress false-fires.
 
 ## Report-producing skills (round-2 learnings)
 

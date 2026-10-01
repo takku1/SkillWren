@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Docs: budget ceilings clarified as tokens not bytes (guide plus
+  template note), side-by-side `-logic` piloting documented, two
+  live-fire lessons added to Common mistakes. No validator change.
 - Patch versions are format-equivalent: `version: 0.4.1` validates
   against the format-0.4 validator; `0.5` still fails F1.
 - New error T2: same-skill `run` arguments with known declared types

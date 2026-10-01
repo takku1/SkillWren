@@ -545,6 +545,21 @@ Final hardening pass, no format change:
   markers at each fill site. It passes `skillwren check` clean and is
   referenced from the authoring guide.
 
+Side-by-side pilot feedback (docs only, no format change, no validator
+behavior change):
+
+- Authoring guide states budget ceilings are tokens, not bytes
+  (a 3700-byte body is roughly 930 tokens); the template carries the
+  same note. A passing check prints no usage — only overruns print
+  the count.
+- Authoring guide documents piloting conversions side-by-side under
+  a distinct `-logic` skill id with the prose original kept installed.
+- Two live-fire authoring lessons join Common mistakes: don't
+  over-constrain `generate` sources to one input, and qualify
+  escalation conditions with the failure pattern, not a bare count.
+  Evidence: systematic-debugging pilot report (hypothesis-from-diff
+  misfire and blunt 3-strikes false-fire on a verified stack-peel).
+
 ### v0.4.1 (2026-10-01)
 
 Follow-up seams from red-team review: `for each` over a binding with a
