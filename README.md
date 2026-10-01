@@ -16,7 +16,7 @@ structure describes control.
   `code-reviewer-logic` in the benchmarks).
 - `benchmarks/` — two blinded benchmark rounds (summaries plus frozen
   `archive/` of round inputs and raw reports).
-- `tests/` — validator suite: fixtures plus `test_validator.py` (68 tests),
+- `tests/` — validator suite: fixtures plus `test_validator.py` (69 tests),
   the mutation tripwire `test_mutations.py` over `mutation_catalog.py`
   (24 one-break mutants), and the `mutation_sweep.py` kill-matrix runner.
 
@@ -40,7 +40,7 @@ Without installing:
 PYTHONPATH=src python3 -m skillwren check path/to/skill.md
 ```
 
-Run the suite (71 tests):
+Run the suite (72 tests):
 
 ```sh
 python3 -m unittest tests.test_validator tests.test_mutations

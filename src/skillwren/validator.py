@@ -1007,7 +1007,9 @@ def analyze_flow(flow, root, header_line, ctx):
                 if pred in seen or pred not in reach:
                     continue
                 seen.add(pred)
-                if val in gen_as.get(pred, ()):
+                # gen_as covers as/generate rebinding; gen additionally
+                # covers run outputs, which rebind to unknown types too.
+                if val in gen_as.get(pred, ()) or val in gen.get(pred, ()):
                     erased = True
                     break
                 stack.append(pred)

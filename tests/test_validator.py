@@ -488,6 +488,11 @@ class TestV04Rules(unittest.TestCase):
         self.assertEqual(errors, [])
         self.assertEqual(warnings, [])
 
+    def test_run_output_rebinding_stays_silent(self):
+        errors, warnings = validate_fixture("valid-run-rebind.md")
+        self.assertEqual(errors, [])
+        self.assertEqual(warnings, [])
+
     def test_foreign_run_marks_unverified_boundary(self):
         import tempfile
         tmp = tempfile.TemporaryDirectory()
