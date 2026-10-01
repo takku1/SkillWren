@@ -2,7 +2,7 @@
 skill: code-reviewer
 name: code-reviewer
 description: Review code changes and report prioritized, actionable findings.
-version: 0.3
+version: 0.4
 purpose: Review code changes and report prioritized, actionable findings.
 accepts:
   target: { type: Text, required: true }

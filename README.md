@@ -1,9 +1,9 @@
-# SkillWren — logic-first skills (v0.3)
+# SkillWren — logic-first skills (v0.4)
 
 Skills written as logic instead of prose: a contract header for cheap,
-headers-only routing plus a 16-verb logic body with gates, authority, effects,
-and local recovery. Natural language describes meaning; formal structure
-describes control.
+headers-only routing plus a closed control vocabulary with gates, authority,
+effects, and local recovery. Natural language describes meaning; formal
+structure describes control.
 
 ## Layout
 
@@ -16,7 +16,7 @@ describes control.
   `code-reviewer-logic` in the benchmarks).
 - `benchmarks/` — two blinded benchmark rounds with raw reports, frozen skill
   inputs, targets, and scoring.
-- `tests/` — validator suite: fixtures plus `test_validator.py` (30 tests).
+- `tests/` — validator suite: fixtures plus `test_validator.py` (58 tests).
 
 ## Quickstart
 
@@ -54,9 +54,12 @@ positives; severity went 6/8 to 8/8 for logic after gating the rubric
 
 ## Status
 
-v0.3 (2026-10-01). Known validator limitation: same-skill `run`
-argument values are checked for boundness, not full type conformance (no
-dataflow inference yet). Next frontier: EBNF grammar and constrained-decoding
+v0.4 (2026-10-01). The validator parses flows into an indentation AST and a
+control-flow graph and enforces repair ownership, ask/confirm structure,
+required-input gates, full schemas, per-path binding, and dismissal safety.
+Known limitations: same-skill `run` argument values are checked for
+boundness, not full type conformance; cross-skill runs are an unverified
+effect boundary. Next frontier: EBNF grammar and constrained-decoding
 profile (spec Section 17).
 
 ## License

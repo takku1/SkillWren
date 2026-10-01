@@ -2,7 +2,7 @@
 skill: theme-factory
 name: theme-factory
 description: Style an artifact using a coherent visual theme.
-version: 0.3
+version: 0.4
 purpose: Style an artifact using a coherent visual theme.
 accepts:
   artifact: { type: Artifact, required: true }
@@ -22,7 +22,7 @@ requires:
   show-themes: []
 flows: [apply-theme, create-theme, show-themes]
 authority:
-  user-decides: [which theme to choose, whether a generated theme matches the intended direction, whether to accept a font substitution or color correction]
+  user-decides: [which theme to choose, whether the chosen theme is correct, whether a generated theme matches the intended direction, whether to accept a font substitution or color correction]
   system-decides: [whether resources exist, whether colors satisfy readability, whether fonts are available, whether the artifact is structurally valid]
   system-may: [suggest nearest readable colors, suggest available font substitutes, repair objective validity defects]
   system-must-not: [infer user approval, silently choose a theme]
@@ -43,7 +43,7 @@ resources:
     immutable: true
   themes:
     path: themes/*.md
-    access: read, create
+    access: read+create
   source:
     path: source artifact
     access: read
@@ -75,7 +75,8 @@ apply-theme:
     open showcase as preview
     show preview
     ask user to choose a theme as theme
-    require user confirms theme
+    ask user to confirm the chosen theme
+    require user confirms chosen theme
       otherwise:
         abort with "Dismissed; nothing changed."
 
@@ -94,17 +95,23 @@ apply-theme:
     otherwise:
       generate nearest available substitutes from spec as suggestion
       show suggestion
+      ask user to accept the font substitution
       require user accepts font substitution
         otherwise:
           abort with "Dismissed; nothing changed."
+      apply suggestion with spec as spec
+      retry
 
   require theme colors satisfy readability
     otherwise:
       generate nearest readable correction from spec as correction
       show correction
+      ask user to accept the color correction
       require user accepts color correction
         otherwise:
           abort with "Dismissed; nothing changed."
+      apply correction with spec as spec
+      retry
 
   apply spec with artifact as styled
 
@@ -116,7 +123,7 @@ apply-theme:
   verify theme is applied consistently
     otherwise:
       apply consistency correction with styled as styled
-      verify theme is applied consistently
+      retry
 
   verify artifact content is preserved
     otherwise:
@@ -138,6 +145,7 @@ create-theme:
       require confirmation
         otherwise:
           abort with "Dismissed; nothing changed."
+      retry
 
   label validation:
 
@@ -146,16 +154,17 @@ create-theme:
   require spec is structurally valid
     otherwise:
       apply validity repair with spec as spec
-      require spec is structurally valid
+      retry
 
   require spec colors satisfy readability
     otherwise:
       apply readable palette correction with spec as spec
-      require spec colors satisfy readability
+      retry
 
   require spec fonts are available
     otherwise:
       apply nearest available font pairing with spec as spec
+      retry
 
   generate preview from spec as preview
   show preview
@@ -192,6 +201,6 @@ Guidance only; no control semantics. When generating a theme from a
 description, prefer a cohesive palette with explicit color values, one heading
 font plus one body font, and a one-paragraph visual-identity note. When a
 generated theme is rejected, revise from the user's stated feedback rather than
-regenerating from scratch. Theme names are plain `Text` in v0.1; structured
-`Theme` objects are a v0.2 type refinement.
+regenerating from scratch. Theme names are plain `Text`; structured
+`Theme` objects are a future type refinement.
 

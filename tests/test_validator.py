@@ -270,5 +270,167 @@ class TestGeneratedCases(unittest.TestCase):
         self.assertIn("E1", rule_ids(errors))
 
 
+class TestV04Rules(unittest.TestCase):
+    def test_otherwise_without_gate_is_error(self):
+        errors, _ = validate_fixture("invalid-otherwise.md")
+        self.assertIn("O1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_retry_outside_repair_is_error(self):
+        errors, _ = validate_fixture("invalid-retry.md")
+        self.assertIn("L3", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_unasked_decisions_are_errors(self):
+        errors, _ = validate_fixture("invalid-authority.md")
+        a2 = [d for d in errors if d.rule == "A2"]
+        self.assertEqual(len(a2), 3)
+
+    def test_ungated_required_input_is_error(self):
+        errors, _ = validate_fixture("invalid-required-gate.md")
+        self.assertIn("R4", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_noncanonical_access_is_error(self):
+        errors, _ = validate_fixture("invalid-access.md")
+        self.assertIn("F2", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_resource_schema_is_closed(self):
+        errors, _ = validate_fixture("invalid-resource-schema.md")
+        f2 = [d for d in errors if d.rule == "F2"]
+        self.assertEqual(len(f2), 2)
+
+    def test_type_system_is_closed(self):
+        errors, _ = validate_fixture("invalid-types.md")
+        f1 = [d for d in errors if d.rule == "F1"]
+        self.assertEqual(len(f1), 3)
+
+    def test_type_grammar_unit(self):
+        import skillwren.validator as validator
+        for good in ("Text", "Number", "Boolean", "Path", "Artifact",
+                     "Theme", "ThemeSpec", "Any", "List<Text>",
+                     "List<List<Text>>", "List<Enum[a]>", "Enum[a, b]",
+                     "Enum[low]"):
+            self.assertTrue(validator.valid_type(good), good)
+        for bad in ("Potato", "List<>", "List<DragonSpaghetti>",
+                    "List<Text", "Enum[]", "Enum[x, x]", "Enum[a,]",
+                    "Enum[, a]", "Text ", " List<Text>"):
+            self.assertFalse(validator.valid_type(bad), bad)
+
+    def test_negative_budget_is_error(self):
+        errors, _ = validate_fixture("invalid-budget.md")
+        f1 = [d for d in errors if d.rule == "F1"]
+        self.assertEqual(len(f1), 2)
+
+    def test_garbage_version_is_error(self):
+        errors, _ = validate_fixture("invalid-version.md")
+        self.assertIn("F1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_future_version_is_error(self):
+        errors, _ = validate_fixture("invalid-version-new.md")
+        self.assertIn("F1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_skill_name_must_be_kebab(self):
+        errors, _ = validate_fixture("invalid-skill-name.md")
+        self.assertIn("F1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_flow_names_must_be_kebab(self):
+        errors, _ = validate_fixture("invalid-flowname.md")
+        f1 = [d for d in errors if d.rule == "F1"]
+        f2 = [d for d in errors if d.rule == "F2"]
+        self.assertEqual(len(f1), 2)
+        self.assertEqual(len(f2), 1)
+
+    def test_required_must_be_boolean(self):
+        errors, _ = validate_fixture("invalid-required-bool.md")
+        self.assertIn("F1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_tabs_rejected(self):
+        errors, _ = validate_fixture("invalid-tabs.md")
+        self.assertTrue(any(d.rule == "F1" and "tab" in d.msg
+                            for d in errors))
+        self.assertTrue(any(d.rule == "F2" and "tab" in d.msg
+                            for d in errors))
+
+    def test_fence_width_is_strict(self):
+        errors, _ = validate_fixture("invalid-fence-strict.md")
+        self.assertIn("F2", rule_ids(errors))
+
+    def test_contract_precedes_logic(self):
+        errors, _ = validate_fixture("invalid-body-order.md")
+        self.assertIn("F2", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_no_fence_after_appendix(self):
+        errors, _ = validate_fixture("invalid-appendix-fence.md")
+        f2 = [d for d in errors if d.rule == "F2"]
+        self.assertEqual(len(f2), 2)
+
+    def test_appendix_word_is_not_an_appendix(self):
+        errors, warnings = validate_fixture("warn-appendix-word.md")
+        self.assertEqual(errors, [])
+        self.assertIn("W4", rule_ids(warnings))
+
+    def test_mutation_before_ask_is_error(self):
+        errors, _ = validate_fixture("invalid-mutation-order.md")
+        self.assertIn("M1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_run_outputs_scoped_to_callee(self):
+        errors, _ = validate_fixture("invalid-run-outputs.md")
+        self.assertIn("U1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_apply_cannot_target_resource(self):
+        errors, _ = validate_fixture("invalid-apply-resource.md")
+        self.assertIn("E4", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_read_write_overlap_requires_mutates(self):
+        errors, _ = validate_fixture("invalid-create-mutate.md")
+        self.assertIn("E2", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_otherwise_fallthrough_warns(self):
+        errors, warnings = validate_fixture("warn-otherwise-fallthrough.md")
+        self.assertEqual(errors, [])
+        w9 = [d for d in warnings if d.rule == "W9"]
+        self.assertEqual(len(w9), 2)
+
+    def test_unreachable_code_warns(self):
+        errors, warnings = validate_fixture("warn-unreachable.md")
+        self.assertEqual(errors, [])
+        self.assertIn("W10", rule_ids(warnings))
+
+    def test_branch_binding_is_path_sensitive(self):
+        errors, _ = validate_fixture("invalid-branch-binding.md")
+        self.assertIn("U1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_failed_read_binds_nothing(self):
+        errors, _ = validate_fixture("invalid-fail-binding.md")
+        self.assertIn("U1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_foreign_run_marks_unverified_boundary(self):
+        import tempfile
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        flow = BASE_FLOW.replace(
+            "  return output as output",
+            "  run other.main with:\n    input = input\n\n  return output as output")
+        errors, warnings = skillwren.validate_file(
+            make_skill(tmp.name, "case.md", flow=flow))
+        self.assertEqual(errors, [])
+        w8 = [d for d in warnings if d.rule == "W8"]
+        self.assertEqual(len(w8), 1)
+        self.assertIn("unverified", w8[0].msg)
+
+
 if __name__ == "__main__":
     unittest.main()

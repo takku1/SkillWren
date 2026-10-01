@@ -1,4 +1,4 @@
-# SkillWren Authoring Guide for Logic-First Skills (v0.3)
+# SkillWren Authoring Guide for Logic-First Skills (v0.4)
 
 Companion to `SPEC.md` (the contract).
 This guide is the procedure: follow it top to bottom to produce a conforming
@@ -29,7 +29,8 @@ needs it. Every `produces` entry must be returned by at least one flow.
 Copy each entry flow's leading `require` conditions into header `requires`
 under the flow's name (exact wording; labels and blank lines don't break the
 leading run). This is what lets the router check preconditions without loading
-your body.
+your body. Every `required: true` input a flow uses must be gated by a
+leading `require <name> exists` (R4) — gate what you consume.
 
 ### 5. Write trigger conditions
 
@@ -42,11 +43,17 @@ after dropping stopwords.
 Fill the four lists. Rule of thumb: anything with taste or consequence the
 user decides; anything checkable the system decides; discretion goes in
 `system-may` with explicit bounds; approvals live in `system-must-not`.
-Decision-`ask` lines (no `as`, followed by a confirmation `require`) must share
-at least two content words with a `user-decides` entry, so phrase entries in
-the same vocabulary as your asks (e.g. entry "whether to approve the output"
-for `ask user to approve output`). Input-`ask` lines (with `as`) fill `accepts`
-or locals and need no mapping.
+Structure is enforced, not just suggested: every `require user ...` must be
+dominated by a decision `ask` (no `as`), every decision `ask` must be
+followed by a confirmation, and bare `require confirmation` needs a
+preceding `ask` (A2). Never write a user gate the flow never asks for.
+Decision-`ask` lines must also share at least two content words with a
+`user-decides` entry, so phrase entries in the same vocabulary as your asks
+(e.g. entry "whether to approve the output" for `ask user to approve
+output`). Input-`ask` lines (with `as`) fill `accepts` or locals and need
+no mapping. Never mutate before a dismissible ask: writes and mutating
+calls belong after the confirmation, or dismissal is not mutation-free
+(M1).
 
 ### 7. Declare resources and effects
 
@@ -65,9 +72,14 @@ conditions one line; push explanation to the appendix.
 ### 9. Attach local recovery
 
 Every `require`, `verify`, `read`, and `open` that can fail gets an
-`otherwise:` block ending in `retry`, `return to <label>`, or `abort`.
-Name the failure, repair or re-ask, never leave a half-mutated artifact:
-`discard` derived work on the abort path.
+`otherwise:` block nested directly beneath it (O1) and ending in `retry`,
+`return to <label>`, `abort`, or `return` (W9 when it falls through).
+`retry` lives only inside such repair blocks (L3) and re-executes the
+failed gate. Incorporate accepted repairs into the values they repair
+before retrying — a correction that is shown and approved but never
+applied is the classic silent bug. Name the failure, repair or re-ask,
+never leave a half-mutated artifact: `discard` derived work on the abort
+path.
 
 ### 10. State invariants
 
@@ -92,8 +104,9 @@ when converting.
 
 Actions: `open, read, write, save, show, ask, generate, apply, run, return,
 abort, discard`. Conditions: `if, unless, when, for each`. Gates: `require,
-verify, allow`. Invariants: `always, never`. References: `as, with, from,
-using`. `{name}` interpolates a bound value into paths.
+verify, allow`. Invariants: `always, never`. References: `as, with, from`.
+Structure: `label, return to, retry, otherwise, return:`.
+`{name}` interpolates a bound value into paths.
 
 - `open <resource> as <var>` — open a declared resource for viewing.
 - `read <path or description> [from <source>] as <var>` — load content or a
@@ -107,8 +120,9 @@ using`. `{name}` interpolates a bound value into paths.
   must be an `accepts` entry or a local.
 - `generate <description> from <input> as <var>` — creative/semantic step;
   give it appendix guidance when taste matters.
-- `apply <spec> with <target> as <result>` — apply a spec, correction, or
-  repair to a target, binding the outcome.
+- `apply <spec> with <target> as <result>` — pure in-memory transform of
+  a binding, binding the outcome. Never names a resource (read it into a
+  binding first); performs no effects.
 - `run <flow> with:` / `run <skill>.<flow> with:` — invoke by name with
   `name = value` lines; types must match callee `accepts`; callee `produces`
   land in same-named caller bindings.
@@ -139,7 +153,7 @@ literal.
 skill: my-skill
 name: my-skill
 description: One sentence.
-version: 0.3
+version: 0.4
 purpose: One sentence.
 accepts:
   input: { type: Text, required: true }
@@ -217,6 +231,12 @@ Keep the result minimal and faithful to the input.
 8. Appendix doing control work — if it branches, it belongs in a flow.
 9. `return to` without a `label` in the same flow — declare the target.
 10. Multi-value flow with a single-line return — use a `return:` block.
+11. `require user ...` with no preceding decision `ask` — ask, then gate.
+12. Decision `ask` with no following confirmation — the decision never lands.
+13. Write or mutating call before a dismissible `ask` — confirm first.
+14. Accepted correction never applied to the value it repairs — apply, then
+    `retry`.
+15. Required input used but never gated — add the leading `require`.
 
 ## Report-producing skills (round-2 learnings)
 
@@ -229,12 +249,23 @@ beyond the generic flow, or runners under-grade and under-report:
    taxonomy, enforced by a `verify report contains ...` gate.
 4. Praise and question generation as explicit steps, or runners skip them.
 
+## Golden discipline
+
+Golden means validator-clean plus manually semantic-reviewed plus
+scenario-tested — never validator-clean alone. The validator proves
+structure; it cannot prove that a repair reaches the value it repairs,
+that a rubric grades what it claims, or that a report says what happened.
+Before blessing an example as golden: read every path for provenance and
+authority, confirm each repair is incorporated before its `retry`, and
+walk at least one happy path and one failure path by hand.
+
 ## Pre-submit checklist
 
 - [ ] Validator clean (zero errors; warnings justified in comments)
 - [ ] Header within 400 tokens, body within 2500 (cl100k_base)
 - [ ] Every flow returns or aborts on every path
 - [ ] Dismissal of any `ask` mutates nothing
+- [ ] Every accepted repair is applied before its `retry`
 - [ ] Golden diff (conversions): same behavior as prose original
 - [ ] Reviewer can answer what it touches, requires, and who decides
 
