@@ -11,6 +11,8 @@
   overrides (omission is never an error); the sweep's one survivor was
   a bad mutant under this model, replaced by unbound-arg (U1) and
   bad-target (R3) mutants.
+- Prune: benchmark round inputs and raw outputs moved byte-identical to
+  `benchmarks/archive/`; summaries and READMEs stay up top.
 
 ## 0.4.1 (2026-10-01)
 
