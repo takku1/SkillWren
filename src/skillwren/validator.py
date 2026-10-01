@@ -6,7 +6,8 @@ Single-file, stdlib-only. Usage: skillwren check <file>...
 Rule IDs (spec Section 13):
   Errors: F1 frontmatter/schema, F2 fences/contract/body-order,
     F3 flow/fence set, V1 vocabulary, R1 requires match, R2 returns,
-    R3 run target, R4 required-input gates, U1 unbound reference,
+    R3 run target, R4 required-input gates, T1 for-each type,
+    U1 unbound reference,
     E1 effect target, E2 effect coverage, E3 immutable write,
     E4 impure apply, A1 allow/never, A2 ask/confirm structure,
     L1 label/loop, L2 recursion, L3 retry ownership,
@@ -433,6 +434,16 @@ def next_after(node):
     return next_after(parent)
 
 
+def enclosing_foreach_source(node, name):
+    """True when name is the iterated collection of an enclosing loop."""
+    parent = node.parent
+    while parent is not None and parent.kind != "root":
+        if parent.kind == "foreach" and parent.data["source"] == name:
+            return True
+        parent = parent.parent
+    return False
+
+
 def retry_owner(node):
     """Nearest enclosing repair gate, or None. Stops at the nearest
     otherwise: block even when that block is itself misplaced."""
@@ -630,6 +641,7 @@ def analyze_flow(flow, root, header_line, ctx):
     dom = dominators(root, succ, reach, preds)
 
     gen = {node: set() for node in nodes}
+    gen_as = {node: set() for node in nodes}
     kill = {node: set() for node in nodes}
     uses = {node: [] for node in nodes}
 
@@ -640,7 +652,7 @@ def analyze_flow(flow, root, header_line, ctx):
     ask_nodes, decision_asks = [], []
     confirm_user, confirm_bare = [], []
     apply_nodes, run_calls, direct_mutations = [], [], []
-    pending_from = []
+    pending_from, foreach_nodes = [], []
 
     for node in nodes:
         text = node.text
@@ -656,9 +668,11 @@ def analyze_flow(flow, root, header_line, ctx):
             continue  # targets resolved in build_cfg
         if kind == "foreach":
             gen[node].add(data["var"])
+            gen_as[node].add(data["var"])
             info["binds"].setdefault(data["var"], node.line)
             if VAR_ONLY.fullmatch(data["source"]):
                 use(node, data["source"], "for-each source")
+                foreach_nodes.append((node, data["source"]))
             continue
         if kind in ("branch", "otherwise", "retry"):
             continue
@@ -719,15 +733,25 @@ def analyze_flow(flow, root, header_line, ctx):
         if tgt and VAR_ONLY.fullmatch(tgt) \
                 and verb not in ("save", "write", "return"):
             gen[node].add(tgt)
+            gen_as[node].add(tgt)
             info["binds"].setdefault(tgt, node.line)
         if tgt and VAR_ONLY.fullmatch(tgt):
+            if verb in ("save", "write"):
+                gen_as[node].add(tgt)
             parent = node.parent
             while parent is not None and parent.kind != "root":
-                if parent.kind == "foreach" and parent.data["var"] == tgt:
-                    errors.append(Diag(node.line, "L1",
-                                       f"mutation of for-each variable {tgt!r}",
-                                       "Bind a new name instead."))
-                    break
+                if parent.kind == "foreach":
+                    if parent.data["var"] == tgt:
+                        errors.append(Diag(node.line, "L1",
+                                           f"mutation of for-each variable {tgt!r}",
+                                           "Bind a new name instead."))
+                        break
+                    if parent.data["source"] == tgt:
+                        errors.append(Diag(node.line, "L1",
+                                           f"mutation of for-each collection {tgt!r}",
+                                           "Do not write to the iterated collection"
+                                           " inside the loop."))
+                        break
                 parent = parent.parent
         if verb == "open":
             target = strip_as_clause(rest)
@@ -782,6 +806,12 @@ def analyze_flow(flow, root, header_line, ctx):
             if VAR_ONLY.fullmatch(val):
                 use(node, val, f"{verb} value")
             name = match_resource(target, resources) if target else None
+            if verb == "write" and VAR_ONLY.fullmatch(target) \
+                    and enclosing_foreach_source(node, target):
+                errors.append(Diag(node.line, "L1",
+                                   f"mutation of for-each collection {target!r}",
+                                   "Do not write to the iterated collection"
+                                   " inside the loop."))
             if not target or (not name and target not in accepts):
                 errors.append(Diag(node.line, "E1",
                                    f"{verb} target {target!r} matches no resource, path, or accepts entry",
@@ -916,6 +946,31 @@ def analyze_flow(flow, root, header_line, ctx):
             errors.append(Diag(node.line, "E4",
                                f"apply target {target!r} is a resource, but apply is pure",
                                "Read it into a binding first, then apply to the binding."))
+    accepts_map = header.get("accepts") if isinstance(header.get("accepts"), dict) else {}
+    for node, src in foreach_nodes:
+        if node not in reach or src not in in_facts[node]:
+            continue  # unreachable, or U1 owns unbound sources
+        entry = accepts_map.get(src)
+        if not isinstance(entry, dict) or "type" not in entry:
+            continue  # untyped binding: needs dataflow inference (future work)
+        typ = str(entry["type"])
+        if not valid_type(typ) or typ == "Any" or typ.startswith("List<"):
+            continue  # F1 owns malformed; Any admits List
+        seen, stack, erased = set(), [node], False
+        while stack and not erased:
+            cur = stack.pop()
+            for pred in preds.get(cur, ()):
+                if pred in seen or pred not in reach:
+                    continue
+                seen.add(pred)
+                if src in gen_as.get(pred, ()):
+                    erased = True
+                    break
+                stack.append(pred)
+        if not erased:
+            errors.append(Diag(node.line, "T1",
+                               f"for each source {src!r} has type {typ}, not a List type",
+                               "Iterate a List-typed binding."))
 
     # ---- leading requires (labels transparent, as in routing) ----
     leading = []

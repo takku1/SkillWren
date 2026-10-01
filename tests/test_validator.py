@@ -417,6 +417,17 @@ class TestV04Rules(unittest.TestCase):
         self.assertIn("U1", rule_ids(errors))
         self.assertEqual(len(errors), 1)
 
+    def test_foreach_requires_list_type(self):
+        errors, _ = validate_fixture("invalid-foreach-type.md")
+        self.assertIn("T1", rule_ids(errors))
+        self.assertEqual(len(errors), 1)
+
+    def test_foreach_collection_immutable(self):
+        errors, _ = validate_fixture("invalid-foreach-mutate.md")
+        l1 = [d for d in errors if d.rule == "L1"]
+        self.assertEqual(len(l1), 2)
+        self.assertEqual(len(errors), 2)
+
     def test_foreign_run_marks_unverified_boundary(self):
         import tempfile
         tmp = tempfile.TemporaryDirectory()

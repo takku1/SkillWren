@@ -1,4 +1,4 @@
-# SkillWren Authoring Guide for Logic-First Skills (v0.4)
+# SkillWren Authoring Guide for Logic-First Skills (v0.4.1)
 
 Companion to `SPEC.md` (the contract).
 This guide is the procedure: follow it top to bottom to produce a conforming
@@ -124,8 +124,10 @@ Structure: `label, return to, retry, otherwise, return:`.
   a binding, binding the outcome. Never names a resource (read it into a
   binding first); performs no effects.
 - `run <flow> with:` / `run <skill>.<flow> with:` — invoke by name with
-  `name = value` lines; types must match callee `accepts`; callee `produces`
-  land in same-named caller bindings.
+  `name = value` lines; same-skill calls bind the callee flow's returned
+  names into same-named caller bindings. Cross-skill calls are an
+  unverified boundary (W8): keep argument names aligned with the callee's
+  `accepts`, but know the single-file validator cannot check them.
 - `require <condition>` — block until true; aborts quoting the condition
   unless `otherwise:` says otherwise.
 - `verify <condition>` — check now and establish evidence; on failure discards
@@ -133,6 +135,9 @@ Structure: `label, return to, retry, otherwise, return:`.
 - `return <binding> as <name>` — single-value return. Multi-value flows use a
   `return:` block with one `name` or `name = binding` line per value. Every
   returned name must be a skill `produces` entry.
+- `for each <source> as <var>:` — iterates a `List`-typed binding; the
+  variable is read-only and the source collection must not be rebound or
+  written inside the loop.
 - `retry` — re-executes the failed `require`/`verify` after the repair steps.
 - `label <name>:` — declares a jump target; `return to <name>` names one in
   the same flow. Labels don't break the leading-`require` run.
@@ -237,6 +242,8 @@ Keep the result minimal and faithful to the input.
 14. Accepted correction never applied to the value it repairs — apply, then
     `retry`.
 15. Required input used but never gated — add the leading `require`.
+16. `for each` over a non-`List` binding — iterate lists only.
+17. Writing the iterated collection inside the loop — use a new binding.
 
 ## Report-producing skills (round-2 learnings)
 

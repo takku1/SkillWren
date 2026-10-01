@@ -1,7 +1,7 @@
 # SkillWren — Skill Logic Architecture (Contract-Header + Logic-Body)
 
 - Date: 2026-10-01
-- Status: v0.4 (2026-10-01)
+- Status: v0.4.1 (2026-10-01)
 - Source idea: `brainstorm - to be deleted.md` (theme-factory agent-DSL sketch)
 - Direction: contract-header + logic-body (direction 1 of 3 proposed; user-approved)
 - Document set: this spec (contract), `authoring-guide.md` (authoring
@@ -195,9 +195,13 @@ not break the leading-`require` run.
 Jump targets are declared with `label <name>:` on its own line; `return to`
 names a label in the same flow. `allow <action> when <condition>:` grants an
 exception to exactly one `never` invariant within the enclosing flow only,
-and must quote the invariant it narrows. `for each <item> as <var>:` iterates
-a List-typed binding; the loop variable is read-only and mutating the iterated
-collection inside the loop fails validation. Conditions stay natural language
+and must quote the invariant it narrows. `for each <source> as <var>:` iterates a List-typed binding: when the
+source's declared `accepts` type is known and not a `List<...>` (and not
+`Any`, which admits lists), iterating it fails validation (T1). Bindings
+created by `as`/`generate`/`run` have unknown types until dataflow type
+inference lands, so they are exempt. The loop variable is read-only, and
+the iterated collection must not be rebound (`as`) or written
+(`write`/`save`) inside the loop body (L1). Conditions stay natural language
 until determinism demands more (`require text/background contrast meets
 readability` today, `require contrast(spec) >= WCAG.AA` later).
 
@@ -333,7 +337,7 @@ case-insensitive — merely mentioning the word in prose warns (W4).
 ## 11. Chaining and composition
 
 `run <flow> with:` invokes a flow in the same skill; `run <skill>.<flow>
-with:` crosses skills. Cross-skill arguments bind by name to the callee's `accepts`; arity and type mismatches fail validation where both files are present, and fail at load time otherwise. Same-skill arguments bind by name into callee scope: names matching an `accepts` entry must satisfy its type, other names create locals. (Flow-local parameter declarations are deferred to a later release.) A same-skill `run` binds exactly the callee flow's
+with:` crosses skills. Cross-skill arguments bind by name to the callee's `accepts` at load time; the single-file validator cannot see the callee file, so cross-file arity and type mismatches are not validation errors — every cross-skill `run` warns as an unverified effect boundary (W8) instead, and cross-file checking awaits the workspace validator. Same-skill arguments bind by name into callee scope: names matching an `accepts` entry must satisfy its type, other names create locals. (Flow-local parameter declarations are deferred to a later release.) A same-skill `run` binds exactly the callee flow's
 returned names into same-named caller bindings (overwriting on collision):
 running one flow never binds another flow's outputs. The callee's `produces`
 must satisfy the caller's expectation or the call is rejected before
@@ -401,6 +405,8 @@ Errors:
 - R3 run: `run` target naming no flow in the file.
 - R4 required inputs: a `required: true` accepts entry used by a flow
   without a leading `require <name> exists`.
+- T1 for-each type: iterating a binding whose declared type is known and
+  not a `List` type.
 - U1 unbound: reference to a name not bound on every path to its use
   (definite binding; failed reads bind nothing on repair paths).
 - E1 effect target: `open`/`read`/`write`/`save` target matching no
@@ -414,7 +420,8 @@ Errors:
   decision `ask`; decision `ask` without a following confirmation;
   `require confirmation` without a preceding `ask`.
 - L1 label/loop: duplicate label; `return to` an unknown label;
-  rebinding a `for each` variable.
+  rebinding a `for each` variable; rebinding or writing the iterated
+  collection inside the loop.
 - L2 recursion: `run` cycles between flows.
 - L3 retry: `retry` outside an `otherwise:` repair block.
 - O1 block structure: `otherwise:` not directly under a fallible gate;
@@ -479,7 +486,9 @@ layer; cross-skill imports; named failure handlers only after three skills
 demonstrably need them; invariant identifiers so `allow` can reference the
 exact `never` it narrows instead of word overlap; repair-provenance and
 dataflow-correctness analysis (accepted corrections must reach the values
-they repair); loop-scoped `for each` bindings; a workspace validator that
+they repair); dataflow type inference (binding types from `run` outputs
+and transforms, so `for each` checks more than declared inputs);
+loop-scoped `for each` bindings; a workspace validator that
 resolves cross-skill `run` effects, authority, and dismissal safety.
 
 ## 18. Glossary
@@ -497,6 +506,15 @@ strict YAML-compatible header grammar (Section 5). Definite binding: bound
 on every path to the use.
 
 ## 19. Amendment log
+
+### v0.4.1 (2026-10-01)
+
+Follow-up seams from red-team review: `for each` over a binding with a
+known non-`List` declared type is a type error (T1); rebinding or
+writing the iterated collection inside the loop body is an error (L1,
+which previously covered only the loop variable); Section 11 no longer
+claims cross-file validation the single-file validator cannot perform
+(W8 boundary is now stated up front). No format change.
 
 ### v0.4 (2026-10-01): make the bird mean what it says
 

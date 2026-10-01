@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.1 (2026-10-01)
+
+Follow-up seams, no format change:
+
+- `for each` over a binding with a known non-`List` declared type is a
+  type error (T1); `Any` and untyped bindings stay exempt pending
+  dataflow type inference.
+- Rebinding or writing the iterated collection inside the loop body is
+  an error (L1, previously loop-variable-only).
+- Spec §11 no longer claims cross-file arity/type validation; the W8
+  unverified boundary is stated up front.
+- Suite: 60 tests.
+
 ## 0.4.0 (2026-10-01)
 
 Hardening release ("make the bird mean what it says"): no new expressive
