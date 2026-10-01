@@ -2,9 +2,15 @@
 
 ## Unreleased
 
-- Mutation spike: `tests/test_mutations.py` breaks the valid skeleton 15
-  ways (one break each) and asserts every mutant errors with the expected
-  rule.
+- Mutation middle ground: shared catalog (`tests/mutation_catalog.py`,
+  15 skeleton + 9 golden one-break mutants), committed tripwire
+  (`tests/test_mutations.py`, asserts beta-recall plus alpha-precision),
+  and kill-matrix sweep (`tests/mutation_sweep.py`, beta gates,
+  alpha advisory).
+- Spec §11: same-skill `run` arguments are documented as optional
+  overrides (omission is never an error); the sweep's one survivor was
+  a bad mutant under this model, replaced by unbound-arg (U1) and
+  bad-target (R3) mutants.
 
 ## 0.4.1 (2026-10-01)
 
