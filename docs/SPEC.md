@@ -19,8 +19,9 @@ skill format that is frictionless to trigger and tight on context.
 Goals:
 
 1. Cut context: relevance decisions use ~400-token headers, never full bodies.
-2. Raise precision: control flow, gates, authority, and effects are formal;
-   prose describes only meaning (creative/semantic steps).
+2. Raise precision: sequencing, gates, authority, and effects are mechanically
+   checked; transform specifications (`apply`/`generate` prose) are structured
+   but advisory — prose describes meaning, including what a transform should do.
 3. Stay frictionless: plain `.md` files that work with today's agents and gain
    checking/enforcement as tooling adopts the spec.
 4. Be verifiable: a static validator answers "what can this touch, what does it
@@ -295,7 +296,11 @@ natural-language `always`/`never` lines, which the runner enforces and
 the validator cannot prove. `allow` matching is lexical overlap and
 warning-grade in spirit: it errors only when an `allow` matches no
 `never` at all (A1). Invariant identifiers that would make `allow`
-exact are deferred to a later release (Section 17).
+exact are deferred to a later release (Section 17). The effects model
+assumes a single actor: concurrent modification by other agents or
+sessions is out of scope for static checking, so skills that mutate
+shared repositories carry the gap as an `always` invariant (authoring
+guide step 10).
 
 ## 9. Discovery and routing (headers-only protocol)
 
@@ -497,7 +502,9 @@ dataflow-correctness analysis (accepted corrections must reach the values
 they repair); dataflow type inference (binding types from `run` outputs
 and transforms, so `for each` checks more than declared inputs);
 loop-scoped `for each` bindings; a workspace validator that
-resolves cross-skill `run` effects, authority, and dismissal safety.
+resolves cross-skill `run` effects, authority, and dismissal safety;
+optional resources (`required: false` on resources, with reads and writes
+dominated by a presence guard).
 
 ## 18. Glossary
 
@@ -559,6 +566,22 @@ behavior change):
   escalation conditions with the failure pattern, not a bare count.
   Evidence: systematic-debugging pilot report (hypothesis-from-diff
   misfire and blunt 3-strikes false-fire on a verified stack-peel).
+
+MochiOS live-fire feedback (docs only, no format change, no validator
+behavior change):
+
+- Goal 2 no longer claims transform specifications are formal:
+  sequencing, gates, authority, and effects are mechanically checked;
+  `apply`/`generate` prose is structured but advisory.
+- Authoring guide documents derive-before-ask for optional inputs, the
+  guard pattern for possibly-absent resources, an `always` recipe for
+  multi-agent repos, and an `apply`-to-appendix anchoring rule (new
+  Common mistakes 20-21, new pre-submit checklist item).
+- The effects model states its single-actor boundary (Section 8), and
+  optional resources join future work (Section 17). Evidence:
+  full-stack field report 2026-10-03 (needless criteria ask, undefined
+  registry, cross-flow registry inconsistency, advisory `apply`
+  confusion, concurrent-edit gap).
 
 ### v0.4.1 (2026-10-01)
 

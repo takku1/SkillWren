@@ -30,6 +30,12 @@
   bad-target (R3) mutants.
 - Prune: benchmark round inputs and raw outputs moved byte-identical to
   `benchmarks/archive/`; summaries and READMEs stay up top.
+- MochiOS live-fire docs (no validator change): derive-before-ask
+  recipe, optional-resource guard pattern, multi-agent `always`
+  recipe, `apply` appendix-anchoring rule (guide Common mistakes
+  20-21, new checklist item); SPEC Goal 2 qualified (transform prose
+  is advisory); single-actor effects boundary stated (§8); optional
+  resources listed as future work (§17).
 
 ## 0.4.1 (2026-10-01)
 

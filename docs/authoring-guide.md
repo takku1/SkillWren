@@ -53,7 +53,11 @@ Decision-`ask` lines must also share at least two content words with a
 output`). Input-`ask` lines (with `as`) fill `accepts` or locals and need
 no mapping. Never mutate before a dismissible ask: writes and mutating
 calls belong after the confirmation, or dismissal is not mutation-free
-(M1).
+(M1). Derive before asking: for optional inputs, `generate` a candidate
+from the supplied inputs and prior conversation first, and `ask` only
+`if` the candidate cannot be derived. State derived values in the
+flow's outputs so the user can correct them after the fact instead of
+before it.
 
 ### 7. Declare resources and effects
 
@@ -67,7 +71,10 @@ validation errors, and `mutates` must never be left implicit.
 One fenced `logic` block per flow (info string exactly `logic`). Allowed words
 only (see reference below). Order each flow: `label` declarations, leading
 `require` gates, happy-path actions, `verify` gates before `return`. Keep
-conditions one line; push explanation to the appendix.
+conditions one line; push explanation to the appendix. Anchor every
+`apply` spec to an appendix subsection that says what the transform
+must do; an `apply` whose spec names no appendix guidance leaves the
+runner guessing whether the step is mandatory or advisory.
 
 ### 9. Attach local recovery
 
@@ -86,7 +93,10 @@ path.
 Write the file's `contract` block (`resources:`, `always:`, `never:` in that
 order) after you have seen every path. Each invariant must hold on happy
 paths, error paths, and dismissals alike. If one needs an exception, add a
-scoped `allow` inside the flow, quoting it.
+scoped `allow` inside the flow, quoting it. Skills that mutate shared
+repositories add one more invariant: `confirm target files have no
+concurrent uncommitted edits` — the effects model assumes a single
+actor (SPEC Section 8).
 
 ### 11. Set risk, cost, and budgets
 
@@ -264,6 +274,12 @@ the conversion's evidence; file it next to the draft.
 19. Escalation on a bare attempt count — qualify with the failure
     pattern (coupling? new symptoms?) or verified step-by-step
     progress false-fires.
+20. Asking for derivable input — generate a candidate from supplied
+    inputs and conversation first; ask only if derivation fails, and
+    state derived values in outputs for after-the-fact correction.
+21. `apply` spec with no appendix anchor — the runner cannot tell
+    mandatory from advisory; name the appendix subsection the
+    transform must follow.
 
 ## Report-producing skills (round-2 learnings)
 
@@ -275,6 +291,33 @@ beyond the generic flow, or runners under-grade and under-report:
 3. Report-shape requirements: fixed section order plus an exact verdict
    taxonomy, enforced by a `verify report contains ...` gate.
 4. Praise and question generation as explicit steps, or runners skip them.
+
+## Optional resources (live-fire pattern)
+
+Some resources may legitimately be absent — a subject repo with no work
+tracker, no notes file, no issue log. The format has no optional-resource
+marker (see SPEC Section 17); until it does, resolve the resource to the
+nearest existing candidate and guard every read and write to it with a
+natural-language presence condition:
+
+````markdown
+```contract
+resources:
+  registry:
+    path: subject work tracker nearest the changed component, if any
+```
+
+```logic
+  if subject has a work tracker:
+    apply registry update with design as entry
+    write entry with registry
+```
+````
+
+Pair the guard with `never: create a new registry file without
+authorization`: silently creating the missing tracker collides with
+project rules that forbid unrequested files, and an `effects.creates`
+entry is a claim of intent, not a grant of permission.
 
 ## Golden discipline
 
@@ -295,4 +338,6 @@ walk at least one happy path and one failure path by hand.
 - [ ] Every accepted repair is applied before its `retry`
 - [ ] Golden diff (conversions): same behavior as prose original
 - [ ] Reviewer can answer what it touches, requires, and who decides
+- [ ] Same task class behaves the same across flows (early-return
+  branches agree on side effects such as registry writes)
 
