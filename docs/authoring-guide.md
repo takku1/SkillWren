@@ -117,9 +117,9 @@ when converting.
 ## Verb quick reference
 
 Actions: `open, read, write, save, show, ask, generate, apply, run, return,
-abort, discard`. Conditions: `if, unless, when, for each`. Gates: `require,
+abort, discard, exec`. Conditions: `if, unless, when, for each`. Gates: `require,
 verify, allow`. Invariants: `always, never`. References: `as, with, from`.
-Structure: `label, return to, retry, otherwise, return:`.
+Structure: `label, return to, retry, otherwise, else, return:`.
 `{name}` interpolates a bound value into paths.
 
 - `open <resource> as <var>` — open a declared resource for viewing.
@@ -153,6 +153,13 @@ Structure: `label, return to, retry, otherwise, return:`.
   variable is read-only and the source collection must not be rebound or
   written inside the loop.
 - `retry` — re-executes the failed `require`/`verify` after the repair steps.
+- `else:` (0.5) — the other arm of an `if`/`unless`/`when` at the same
+  indentation; bind a name in both arms to use it afterwards.
+- `exec <command> from <resource> as <var>` (0.5) — run a command; declare
+  the resource under `effects.executes`. Counts as a mutation for
+  dismissal safety.
+- `verify <condition> from <var>` (0.5) — name the binding (usually an
+  `exec` result) that holds the gate's evidence.
 - `label <name>:` — declares a jump target; `return to <name>` names one in
   the same flow. Labels don't break the leading-`require` run.
 
@@ -278,8 +285,13 @@ the conversion's evidence; file it next to the draft.
     inputs and conversation first; ask only if derivation fails, and
     state derived values in outputs for after-the-fact correction.
 21. `apply` spec with no appendix anchor — the runner cannot tell
-    mandatory from advisory; name the appendix subsection the
-    transform must follow.
+    mandatory from advisory; define each spec in the appendix (W12
+    checks this; a step-meanings list is the cheapest anchor).
+22. Treating a decline like a dismissal — the `otherwise:` under a
+    confirmation runs when the user says no, not when they walk away
+    (SPEC §12). If independent work should survive a no, repair by
+    marking the dependent work and continuing; abort only when nothing
+    useful remains.
 
 ## Report-producing skills (round-2 learnings)
 
@@ -319,6 +331,42 @@ authorization`: silently creating the missing tracker collides with
 project rules that forbid unrequested files, and an `effects.creates`
 entry is a claim of intent, not a grant of permission.
 
+## Live-use patterns (full-stack)
+
+Patterns from the first skill maintained in this format under real use.
+
+**Step-meanings glossary.** Give every `apply` spec one line in an
+appendix list (`- **grounding**: separate current state, target state,
+and migration`). The runner reads `apply grounding` as a pointer to that
+line; without it, the transform is a guess (mistake 21). The glossary
+costs body tokens, so declare a body ceiling that fits it (W11 explains
+the overage).
+
+**Subject precedence.** A skill that writes into someone else's
+repository should yield to that repository's rules:
+
+```contract
+always:
+  follow subject instructions over this package's defaults
+```
+
+Pair it with a resource path that names a fallback chain, as an interim
+practice until optional resources land: `path: the subject's existing
+design note, else its documented design location, else docs/design/<slug>.md`.
+
+**Parallel workers.** The effects model assumes one actor. When several
+workers edit one repository, give each work package a disjoint write set
+and give each shared file (manifest, lockfile, registry, generated code)
+one owning package that integrates last. Wait for a process that holds a
+build or run resource; never kill it. Static validation cannot check
+any of this; a runtime guard can (full-stack's `scripts/run_guard.py`
+refuses overlapping claims and flags edits outside the write set).
+
+**Headers hosts can read.** Hosts read `name` and `description` and drop
+a header they cannot parse. Quote inline values containing `[ ] { }`, and
+write `description` as the routing text, including what the skill is not
+for.
+
 ## Golden discipline
 
 Golden means validator-clean plus manually semantic-reviewed plus
@@ -332,7 +380,8 @@ walk at least one happy path and one failure path by hand.
 ## Pre-submit checklist
 
 - [ ] Validator clean (zero errors; warnings justified in comments)
-- [ ] Header within 400 tokens, body within 2500 (cl100k_base)
+- [ ] Header within 400 tokens; body within its declared ceiling (2500 by
+  default; above that warns W11, so say why)
 - [ ] Every flow returns or aborts on every path
 - [ ] Dismissal of any `ask` mutates nothing
 - [ ] Every accepted repair is applied before its `retry`

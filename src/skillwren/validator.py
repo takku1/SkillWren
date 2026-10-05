@@ -1,4 +1,4 @@
-"""SkillWren v0.4.1 validator (format 0.4): static checks for logic-first skills.
+"""SkillWren v0.5 validator (format 0.5): static checks for logic-first skills.
 
 Single-file, stdlib-only. Usage: skillwren check <file>...
 (or: python -m skillwren check <file>...)
@@ -13,6 +13,7 @@ Rule IDs (spec Section 13):
     L1 label/loop, L2 recursion, L3 retry ownership,
     O1 otherwise/block structure, B1 budget, M1 mutation before ask.
   Warnings: W1 trigger overlap, W2 system-may, W3 ask mapping, W4 appendix,
+  W11 body ceiling above default, W12 apply without appendix anchor,
     W5 write-never-read, W6 effects unmatched, W7 unknown field,
     W8 foreign run (unverified effect boundary),
     W9 otherwise fall-through, W10 unreachable code.
@@ -34,22 +35,22 @@ from pathlib import Path
 
 Diag = namedtuple("Diag", ["line", "rule", "msg", "fix"])
 
-FORMAT_VERSION = (0, 4)  # format version; patch releases (0.4.1) share it
+FORMAT_VERSION = (0, 5)  # format version; patch releases (0.5.1) share it
 
 STOPWORDS = {"a", "an", "the", "to", "of", "and", "or", "for", "with",
              "on", "in", "please"}
 ACTIONS = {"open", "read", "write", "save", "show", "ask", "generate",
-           "apply", "run", "return", "abort", "discard"}
+           "apply", "run", "return", "abort", "discard", "exec"}
 BRANCH = {"if", "unless", "when"}
 GATES = {"require", "verify", "allow"}
-REQUIRED_KEYS = {"skill", "description", "version", "purpose", "accepts",
+REQUIRED_KEYS = {"skill", "description", "version", "accepts",
                  "produces", "owns-when", "requires", "flows", "authority",
                  "effects", "risk", "cost", "budget"}
-KNOWN_KEYS = REQUIRED_KEYS | {"name"}
+KNOWN_KEYS = REQUIRED_KEYS | {"name", "purpose", "release"}  # purpose defaults to description
 BASE_TYPES = {"Text", "Number", "Boolean", "Path", "Artifact", "Theme",
               "ThemeSpec", "Any"}
-ACCESS_VALUES = {"read", "create", "read+create"}
-RESOURCE_KEYS = {"path", "access", "immutable"}
+ACCESS_VALUES = {"read", "create", "read+create", "read+write"}
+RESOURCE_KEYS = {"path", "access", "immutable", "glob"}  # glob: 0.5, for conform
 VAR_ONLY = re.compile(r"[A-Za-z_][\w-]*\Z")
 INTERP_RE = re.compile(r"\{([^{}]+)\}")
 AS_RE = re.compile(r"\bas\s+(\S+)\s*$")
@@ -57,6 +58,8 @@ FROM_RE = re.compile(r"\bfrom\s+(.+?)(?:\s+as\s+\S+)?\s*$")
 WITH_RE = re.compile(r"\bwith\s+(.+?)(?:\s+as\s+\S+)?\s*$")
 ASSIGN_RE = re.compile(r"^([A-Za-z_][\w-]*)\s*=\s*(\S.*)$")
 STRICT_OPEN_RE = re.compile(r"^```(logic|contract)\s*$")
+HEADER_MAX = 400     # routing reads headers only; Section 10
+BODY_DEFAULT = 2500  # declared per skill; above this warns (W11)
 KEBAB_RE = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*\Z")
 VERSION_RE = re.compile(r"(\d+)\.(\d+)(?:\.(\d+))?\Z")
 APPENDIX_HEADING_RE = re.compile(r"^#{1,6}\s+.*appendix",
@@ -181,6 +184,24 @@ def parse_block(lines, i, indent):
     return obj if obj is not None else {}, i
 
 
+def yaml_unsafe_values(raw):
+    """Unquoted inline-collection members holding [ ] { }: valid in the profile's
+    old reading but rejected by YAML parsers, so hosts drop the whole header."""
+    if ":" not in raw:
+        return []
+    value = raw.split(":", 1)[1].strip()
+    if value[:1] in "\"'" or value[:1] not in "[{":
+        return []
+    inner = value[1:-1] if value[-1:] in "]}" else value[1:]
+    bad = []
+    for part in split_top_commas(inner):
+        member = part.split(":", 1)[1] if value[0] == "{" and ":" in part else part
+        member = member.strip()
+        if member and member[0] not in "\"'" and any(c in member for c in "[]{}"):
+            bad.append(member)
+    return bad
+
+
 def split_frontmatter(text):
     """Returns (fm_lines, body_lines, body_first_lineno) or (None, lines, 1)."""
     lines = text.splitlines()
@@ -246,6 +267,8 @@ def classify_flow_line(text):
     action/assign/bareword/retry/misplaced-invariant/unknown."""
     if text == "otherwise:":
         return ("otherwise", None)
+    if text == "else:":
+        return ("else", None)
     if text == "return:":
         return ("returnblock", None)
     if text == "retry":
@@ -375,7 +398,14 @@ def check_nesting(parent, node, diags):
                                   f"stray name {node.text!r}",
                                   "Bare names live in return: blocks only."))
         return
-    if parent.kind in ("root", "branch", "foreach", "otherwise"):
+    if kind == "else":
+        siblings = parent.children
+        idx = siblings.index(node)
+        if idx == 0 or siblings[idx - 1].kind != "branch":
+            diags.append(Diag(node.line, "O1", "else: without a preceding if, unless, or when",
+                              "Place else: right after a branch block, at the same indentation."))
+            return
+    if parent.kind in ("root", "branch", "foreach", "otherwise", "else"):
         return
     if parent.kind == "returnblock":
         diags.append(Diag(node.line, "O1",
@@ -417,7 +447,7 @@ def build_tree(stmts, diags):
         stack.append(node)
         if kind == "unknown":
             diags.append(Diag(ln, "V1", f"unknown statement {text!r}",
-                              "Use only the v0.4 verb set."))
+                              "Use only the v0.5 verb set."))
         elif kind == "misplaced-invariant":
             diags.append(Diag(ln, "V1", f"{data} outside the contract block",
                               "Move invariants to the contract block."))
@@ -428,11 +458,25 @@ def build_tree(stmts, diags):
 END = object()  # sentinel: virtual flow exit
 
 
+def following_else(node):
+    """The else: block attached to a branch node, if any."""
+    if node.kind != "branch":
+        return None
+    sibs = node.parent.children
+    idx = sibs.index(node)
+    if idx + 1 < len(sibs) and sibs[idx + 1].kind == "else":
+        return sibs[idx + 1]
+    return None
+
+
 def next_after(node):
     parent = node.parent
     idx = parent.children.index(node)
     if idx + 1 < len(parent.children):
-        return parent.children[idx + 1]
+        nxt = parent.children[idx + 1]
+        if nxt.kind == "else" and node.kind == "branch":
+            return next_after(nxt)  # leaving the if-arm skips its else-arm
+        return nxt
     if parent.kind == "root":
         return END
     return next_after(parent)
@@ -495,8 +539,11 @@ def successors(node, labels, diags):
         if not repairs:
             return [nxt]
         return [nxt, repairs[0]]
+    if kind == "else":
+        return [node.children[0]] if node.children else [next_after(node)]
     if kind in ("branch", "foreach"):
-        nxt = next_after(node)
+        otherwise_arm = following_else(node)
+        nxt = otherwise_arm if otherwise_arm is not None else next_after(node)
         if node.children:
             return [node.children[0], nxt]
         return [nxt]
@@ -678,10 +725,14 @@ def analyze_flow(flow, root, header_line, ctx):
                 use(node, data["source"], "for-each source")
                 foreach_nodes.append((node, data["source"]))
             continue
-        if kind in ("branch", "otherwise", "retry"):
+        if kind in ("branch", "otherwise", "retry", "else"):
             continue
         if kind == "gate":
             rest = text[len(data):].strip()
+            if data == "verify":
+                m = re.search(r"\sfrom\s+([A-Za-z_][\w-]*)\s*$", rest)
+                if m:
+                    use(node, m.group(1), "verify evidence")
             if data == "require" and rest.startswith("user "):
                 info["req_users"].append(text)
                 confirm_user.append(node)
@@ -801,6 +852,23 @@ def analyze_flow(flow, root, header_line, ctx):
                     elif name:
                         info["covered_reads"].add(name)
                         track_literal(info, "literal_reads", name, target)
+        elif verb == "exec":
+            direct_mutations.append(node)  # a command may change anything it can reach
+            if not (tgt and VAR_ONLY.fullmatch(tgt)):
+                errors.append(Diag(node.line, "V1",
+                                   "exec without `as` discards its result",
+                                   "Bind the outcome with `as <name>` so a gate can cite it."))
+            src = from_source(text)
+            name = match_resource(src, resources) if src else None
+            if not src:
+                errors.append(Diag(node.line, "E1", "exec names no resource",
+                                   "Use `exec <command> from <resource> as <name>`."))
+            elif not name and src not in accepts:
+                errors.append(Diag(node.line, "E1",
+                                   f"exec source {src!r} matches no resource, path, or accepts entry",
+                                   "Declare the resource the command runs in or from."))
+            elif name:
+                info.setdefault("covered_execs", set()).add(name)
         elif verb in ("write", "save"):
             direct_mutations.append(node)
             if verb == "write":
@@ -894,7 +962,7 @@ def analyze_flow(flow, root, header_line, ctx):
             pass
         if verb != "read":
             src = from_source(text)
-            if src and VAR_ONLY.fullmatch(src):
+            if src and VAR_ONLY.fullmatch(src)                     and not (verb == "exec" and match_resource(src, resources)):
                 use(node, src, "from source")
 
     # ---- definite-binding dataflow (must-analysis to a fixpoint) ----
@@ -1117,7 +1185,7 @@ def check_schema(header, fm_lines, errors, warnings):
             and header["name"] != header["skill"]:
         warnings.append(Diag(find_key_line(fm_lines, "name"), "W7",
                              "name should equal skill", "Align the two."))
-    for key in ("skill", "description", "purpose"):
+    for key in ("skill", "description", "purpose", "release"):
         if key in header and (not isinstance(header[key], str)
                               or not header[key].strip()):
             errors.append(Diag(find_key_line(fm_lines, key), "F1",
@@ -1166,6 +1234,9 @@ def check_schema(header, fm_lines, errors, warnings):
                 errors.append(Diag(find_key_line(fm_lines, "effects"), "F1",
                                    f"effects.{sub} must be a list",
                                    "Use [a, b] form."))
+        if "executes" in eff and not isinstance(eff["executes"], list):
+            errors.append(Diag(find_key_line(fm_lines, "effects"), "F1",
+                               "effects.executes must be a list", "Use [a, b] form."))
     elif "effects" in header:
         errors.append(Diag(find_key_line(fm_lines, "effects"), "F1",
                            "effects must be a map", "Use indented sub-lists."))
@@ -1237,6 +1308,14 @@ def check_schema(header, fm_lines, errors, warnings):
                     errors.append(Diag(find_key_line(fm_lines, "budget"), "F1",
                                        f"budget.{sub} must be a positive integer",
                                        "Use a token count above zero."))
+                elif sub == "header" and cap > HEADER_MAX:
+                    errors.append(Diag(find_key_line(fm_lines, "budget"), "B1",
+                                       f"budget.header {cap} exceeds the {HEADER_MAX}-token routing maximum",
+                                       f"Declare at most {HEADER_MAX}; trim header prose instead."))
+                elif sub == "body" and cap > BODY_DEFAULT:
+                    warnings.append(Diag(find_key_line(fm_lines, "budget"), "W11",
+                                         f"budget.body {cap} is above the {BODY_DEFAULT}-token default",
+                                         "Keep it if the body needs it (for example a step glossary); say why in a comment."))
     elif "budget" in header:
         errors.append(Diag(find_key_line(fm_lines, "budget"), "F1",
                            "budget must be a map", "Use { header: N, body: M }."))
@@ -1440,7 +1519,7 @@ def parse_contract(contract, diags):
             if "access" in res and res["access"] not in ACCESS_VALUES:
                 diags.append(Diag(res["line"], "F2",
                                   f"resource {name!r} access must be one of"
-                                  f" read, create, read+create, got {res['access']!r}",
+                                  f" read, create, read+create, read+write, got {res['access']!r}",
                                   "Use the canonical access value."))
             if "immutable" in res and res["immutable"] not in ("true", "false"):
                 diags.append(Diag(res["line"], "F2",
@@ -1472,6 +1551,11 @@ def validate_file(path):
                 errors.append(Diag(idx + 2, "F1",
                                    "tab indentation is not allowed",
                                    "Indent frontmatter with spaces."))
+        for idx, raw in enumerate(fm_lines):
+            for member in yaml_unsafe_values(raw):
+                errors.append(Diag(idx + 2, "F1",
+                                   f"unquoted {member!r} inside an inline collection is not valid YAML; hosts drop the header",
+                                   f"Quote it: \"{member}\"."))
         parsed, _ = parse_block(list(fm_lines), 0, 0)
         if not isinstance(parsed, dict):
             errors.append(Diag(1, "F1", "frontmatter malformed",
@@ -1512,7 +1596,7 @@ def validate_file(path):
         succ0, _ = build_cfg(root, None, None)
         reach0 = reachable_nodes(root, succ0)
         direct_mut[flow] = any(node in reach0 and node.kind == "action"
-                               and node.data in ("write", "save")
+                               and node.data in ("write", "save", "exec")
                                for node in walk(root))
     flow_mutates = dict(direct_mut)
     for _ in range(len(trees) + 1):
@@ -1571,6 +1655,13 @@ def validate_file(path):
                 errors.append(Diag(find_key_line(fm_lines, "effects"), "E2",
                                    f"resource {r!r} written but uncovered by effects.creates/mutates",
                                    "Add a creates or mutates entry."))
+        executes = effects.get("executes", []) if isinstance(effects.get("executes"), list) else []
+        cov_x = set().union(*[i.get("covered_execs", set()) for i in infos.values()]) if infos else set()
+        for r in sorted(cov_x):
+            if not any(e == r or path_match(e, resources[r].get("path", "")) for e in executes):
+                errors.append(Diag(find_key_line(fm_lines, "effects"), "E2",
+                                   f"resource {r!r} executed but uncovered by effects.executes",
+                                   "Add an executes entry."))
         reported_overlap = set()
         for info in infos.values():
             read_lits = set(info.get("literal_reads", []))
@@ -1585,7 +1676,7 @@ def validate_file(path):
                                        f"resource {r!r} is read and written at {target!r};"
                                        " declare it under mutates",
                                        "Move the entry from creates to mutates."))
-        for section in ("reads", "creates", "mutates"):
+        for section in ("reads", "creates", "mutates", "executes"):
             entries = effects.get(section, [])
             if not isinstance(entries, list):
                 continue
@@ -1626,6 +1717,19 @@ def validate_file(path):
         warnings.append(Diag(gen_line if gen_line < 10 ** 9 else 1, "W4",
                              "creative step without appendix guidance",
                              "Add a ## Appendix section for generate steps."))
+    # W12: every apply spec should be defined somewhere in the appendix
+    # (one list item or paragraph containing all of its content words).
+    units = [content_words(u) for u in
+             re.split(r"\n\s*\n|\n(?=\s*[-*] )", appendix_text or "")]
+    for flow in order:
+        for ln, _ind, text in logics[flow]["stmts"]:
+            if not text.startswith("apply "):
+                continue
+            spec = re.split(r"\s+(?:with|as)\s+", text[6:], maxsplit=1)[0]
+            words = content_words(spec)
+            if words and not any(words <= u for u in units):
+                warnings.append(Diag(ln, "W12", f"apply spec {spec!r} has no appendix anchor",
+                                     "Define it in the appendix, e.g. a step-meanings list item."))
     for flow, info in infos.items():
         for var, ln in info["binds"].items():
             if var not in info["reads"]:

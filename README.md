@@ -40,6 +40,16 @@ Without installing:
 PYTHONPATH=src python3 -m skillwren check path/to/skill.md
 ```
 
+`check` is static and free. To see what a skill actually changes when it
+runs, `skillwren conform` runs it once headless in a throwaway git
+workspace and reports any file outside its resources' `glob:` patterns
+(SPEC Section 14). It needs the Claude Code CLI and spends model usage:
+
+```bash
+skillwren conform path/to/SKILL.md --prompt "..." --model claude-sonnet-5-5 \
+  --budget-usd 0.3 --workspace path/to/sample --auth-from-profile
+```
+
 Run the suite (72 tests):
 
 ```sh

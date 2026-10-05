@@ -2,14 +2,14 @@
 skill: tiny
 name: tiny
 description: Minimal fixture skill.
-version: 0.6
+version: 0.3
 purpose: Do the thing.
 accepts:
   input: { type: Text, required: true }
 produces:
   output: { type: Text }
 owns-when:
-  - user wants to do the thing
+  - user wants anchored apply steps
 requires:
   main: [input exists]
 flows: [main]
@@ -48,6 +48,7 @@ main:
       abort with "An input is required."
 
   generate result from input as output
+  apply tone polish with output as output
 
   verify output is valid
     otherwise:
@@ -66,3 +67,5 @@ main:
 ## Appendix
 
 Keep the result minimal and faithful to the input.
+
+- **tone polish**: even out wording without changing meaning.

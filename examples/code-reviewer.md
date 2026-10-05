@@ -89,7 +89,7 @@ review-diff:
   ask user which findings to dispute
   require confirmation
     otherwise:
-      abort with "Dismissed; nothing changed."
+      abort with "Declined; nothing changed."
 
   apply dispute filter with findings as kept
   generate review report from kept as report
@@ -134,7 +134,7 @@ review-file:
   ask user which findings to dispute
   require confirmation
     otherwise:
-      abort with "Dismissed; nothing changed."
+      abort with "Declined; nothing changed."
 
   apply dispute filter with findings as kept
   generate review report from kept as report
@@ -176,3 +176,10 @@ Tests note (coverage summary, or "no tests in scope" with specific tests
 requested), Verdict. The verdict is exactly one of: Approve (no critical or
 major findings), Request Changes (any critical finding, or unaddressed major
 findings), Comment (minor findings or questions only).
+
+### Step meanings
+
+- **rubric correction**: re-grade each finding against the severity rubric
+  above; change grades, never drop findings here.
+- **dispute filter**: drop the findings the user disputed; keep the rest
+  unchanged.

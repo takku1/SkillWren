@@ -45,6 +45,115 @@ class TestValidFiles(unittest.TestCase):
         self.assertEqual(warnings, [])
 
 
+class TestHostYaml(unittest.TestCase):
+    """BF-1: every header the validator accepts must also parse as YAML."""
+
+    def test_unquoted_enum_in_inline_map_is_error(self):
+        errors, _ = validate_fixture("invalid-yaml-unquoted.md")
+        self.assertIn("F1", rule_ids(errors))
+
+    def test_quoted_enum_is_clean(self):
+        errors, warnings = validate_fixture("valid-yaml-quoted.md")
+        self.assertEqual(errors, [])
+        self.assertEqual(warnings, [])
+
+    def test_clean_headers_parse_as_yaml(self):
+        try:
+            import yaml
+        except ImportError:
+            self.skipTest("PyYAML not installed")
+        paths = sorted(FIX.glob("valid-*.md")) + [ROOT / "examples/theme-factory.golden.md",
+                                                  ROOT / "examples/code-reviewer.md",
+                                                  ROOT / "docs/skill-template.md"]
+        for path in paths:
+            with self.subTest(path=path.name):
+                header = path.read_text(encoding="utf-8").split("---\n", 2)[1]
+                self.assertIsInstance(yaml.safe_load(header), dict)
+
+
+class TestBudgetCeilings(unittest.TestCase):
+    """BF-2: header ceiling has a hard maximum; body ceilings are declared."""
+
+    def test_header_ceiling_above_max_is_error(self):
+        errors, _ = validate_fixture("invalid-budget-header-max.md")
+        self.assertIn("B1", rule_ids(errors))
+
+    def test_body_ceiling_above_default_warns_only(self):
+        errors, warnings = validate_fixture("warn-budget-body.md")
+        self.assertEqual(errors, [])
+        self.assertIn("W11", rule_ids(warnings))
+
+
+class TestApplyAnchor(unittest.TestCase):
+    """BF-5: an apply spec needs an appendix definition (W12)."""
+
+    def test_unanchored_apply_warns(self):
+        errors, warnings = validate_fixture("warn-apply-anchor.md")
+        self.assertEqual(errors, [])
+        self.assertIn("W12", rule_ids(warnings))
+
+    def test_anchored_apply_is_clean(self):
+        errors, warnings = validate_fixture("valid-apply-anchor.md")
+        self.assertEqual(errors, [])
+        self.assertEqual(warnings, [])
+
+
+class TestFormat05(unittest.TestCase):
+    """BF-6 and BF-7: format 0.5 additions."""
+
+    def clean(self, name):
+        errors, warnings = validate_fixture(name)
+        self.assertEqual(errors, [], name)
+        self.assertEqual(warnings, [], name)
+
+    def test_else_binding_in_both_arms_is_definite(self):
+        self.clean("valid-else.md")
+
+    def test_else_binding_in_one_arm_is_unbound(self):
+        errors, _ = validate_fixture("invalid-else-one-arm.md")
+        self.assertIn("U1", rule_ids(errors))
+
+    def test_else_without_branch_is_error(self):
+        errors, _ = validate_fixture("invalid-else-orphan.md")
+        self.assertIn("O1", rule_ids(errors))
+
+    def test_read_write_access_release_and_optional_purpose(self):
+        self.clean("valid-v05-header.md")
+
+    def test_exec_with_declared_effect_and_verify_from(self):
+        self.clean("valid-exec.md")
+
+    def test_exec_needs_executes_effect(self):
+        errors, _ = validate_fixture("invalid-exec-undeclared.md")
+        self.assertEqual(rule_ids(errors), {"E2"})
+
+    def test_exec_needs_binding(self):
+        errors, _ = validate_fixture("invalid-exec-no-as.md")
+        self.assertEqual(rule_ids(errors), {"V1"})
+
+    def test_verify_from_unbound_evidence(self):
+        errors, _ = validate_fixture("invalid-verify-from-unbound.md")
+        self.assertIn("U1", rule_ids(errors))
+
+    def test_exec_counts_as_mutation_before_ask(self):
+        errors, _ = validate_fixture("invalid-exec-before-ask.md")
+        self.assertIn("M1", rule_ids(errors))
+
+
+class TestConformOffline(unittest.TestCase):
+    """BF-8: the parts of `skillwren conform` that need no model session."""
+
+    def test_declared_globs_come_from_created_or_mutated_resources(self):
+        from skillwren.conform import declared_globs
+        skill, globs, missing = declared_globs(str(FIX / "conform" / "notes-skill" / "SKILL.md"))
+        self.assertEqual((skill, globs, missing), ("notes-skill", ["notes.txt"], []))
+
+    def test_changes_outside_globs_are_undeclared(self):
+        from skillwren.conform import undeclared
+        self.assertEqual(undeclared(["notes.txt", "scratch.txt", "docs/a.md"], ["notes.txt", "docs/*"]),
+                         ["scratch.txt"])
+
+
 class TestErrors(unittest.TestCase):
     def test_requires_mismatch_is_error(self):
         errors, _ = validate_fixture("invalid-requires.md")

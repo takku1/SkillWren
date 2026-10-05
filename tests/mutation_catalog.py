@@ -11,6 +11,8 @@ mutant); a mutant killed without an expected rule is an alpha-deviation
 BASES = {
     "skeleton": "tests/fixtures/valid-skeleton.md",
     "golden": "examples/theme-factory.golden.md",
+    "else": "tests/fixtures/valid-else.md",
+    "exec": "tests/fixtures/valid-exec.md",
 }
 
 
@@ -143,4 +145,22 @@ MUTANTS = [
          "  require theme fonts are available\n    otherwise:\n",
          "  require theme fonts are available\n")},
      "rules": {"O1"}},
+    # --- format 0.5 bases (full-stack backfill BF-6, BF-7) ---
+    {"name": "else-arm-unbinds",
+     "edits": {"else": sub(
+         "    generate copy from input as output\n", "    show input\n")},
+     "rules": {"U1"}},
+    {"name": "else-after-non-branch",
+     "edits": {"else": sub(
+         "  if input is long:\n    generate summary from input as output\n",
+         "  generate summary from input as output\n")},
+     "rules": {"O1", "U1"}},
+    {"name": "drop-executes-entry",
+     "edits": {"exec": sub("  executes: [checks]\n", "")},
+     "rules": {"E2"}},
+    {"name": "verify-cites-unbound-evidence",
+     "edits": {"exec": sub(
+         "  exec acceptance checks from checks as results\n",
+         "  exec acceptance checks from checks as outcome\n")},
+     "rules": {"U1", "W5"}},
 ]

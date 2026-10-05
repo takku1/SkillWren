@@ -2,6 +2,34 @@
 
 ## Unreleased
 
+- BF-8: `skillwren conform` runs a skill headless and reports undeclared
+  mutations against new optional resource `glob:` patterns, plus asks that
+  were followed by changes. Opt-in; spends model usage.
+
+- Format 0.5 (BF-6, BF-7): `else:` arms, `access: read+write`, optional
+  `purpose`, optional `release`, `exec ... from ... as ...` with
+  `effects.executes`, and `verify ... from <name>`. 0.4.x files keep
+  validating. Mutation catalog gains `else` and `exec` bases (28 mutants,
+  0 misses).
+
+- BF-5: new warning W12 for `apply` specs with no appendix anchor; golden
+  examples gain step-meanings lists.
+
+- BF-4: SPEC says what hosts actually read (§1, §9, §16) and where runtime
+  guarantees come from (§8); four live-use patterns in the authoring guide.
+
+- BF-3: SPEC §12 distinguishes confirmed, declined (repair runs), and
+  dismissed (zero mutation, including headless hosts); template wording
+  fixed; guide mistake 22.
+
+- BF-2: a declared `budget.header` above 400 is B1; a declared
+  `budget.body` above 2500 warns (new W11). Matches SPEC §10.
+
+- BF-1 (full-stack backfill): unquoted `[ ] { }` members inside inline
+  header collections are F1 errors because YAML parsers reject them and
+  hosts then drop the header. The SPEC example and the theme-factory
+  golden are quoted; a PyYAML conformance test covers every clean header.
+
 - Docs: budget ceilings clarified as tokens not bytes (guide plus
   template note), side-by-side `-logic` piloting documented, two
   live-fire lessons added to Common mistakes. No validator change.

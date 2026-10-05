@@ -19,6 +19,9 @@ skill format that is frictionless to trigger and tight on context.
 Goals:
 
 1. Cut context: relevance decisions use ~400-token headers, never full bodies.
+   This is the SkillWren routing convention for tooling that adopts it;
+   current hosts (Claude Code, Codex) select skills from `name` and
+   `description` only (Section 16).
 2. Raise precision: sequencing, gates, authority, and effects are mechanically
    checked; transform specifications (`apply`/`generate` prose) are structured
    but advisory — prose describes meaning, including what a transform should do.
@@ -145,7 +148,11 @@ T := Text | Number | Boolean | Path | Artifact | Theme | ThemeSpec | Any
 (`List<List<Text>>` is fine; `List<>` and `List<Dragon>` are not). `Enum`
 needs at least one element; elements must be non-empty, duplicate-free,
 and free of structural characters (`[]<>{},`). Enums are written
-`Enum[a, b, c]`, for example `{ type: Enum[low, medium, high] }`.
+`Enum[a, b, c]`, for example `{ type: "Enum[low, medium, high]" }`. Inside
+an inline map or list, quote any value containing `[`, `]`, `{` or `}`
+(an `Enum`, a `{var}` path): YAML parsers reject them unquoted, and hosts
+that fail to parse a header silently drop its description (F1). Quoted
+type strings are parsed by the type grammar as usual.
 
 Identifiers: `skill` is a kebab-case id
 (`[a-z0-9]+(-[a-z0-9]+)*`, F1); flow names use the same grammar in header
@@ -159,7 +166,10 @@ are format-equivalent to their `major.minor`: a format-0.4 validator
 accepts `version: 0.4.1` and still rejects `version: 0.5`.
 
 `accepts` entries carry `{ type: T }` with optional `required: true|false`
-(lowercase only, F1; missing means `false`). `mutates` defaults to empty
+(lowercase only, F1; missing means `false`). From 0.5, `purpose` is
+optional and defaults to `description`, and an optional `release` names
+the package version (any non-empty string; never compared as a format
+version). `mutates` defaults to empty
 and must be explicit; `description` is required and `name` SHOULD equal
 `skill` (the installer rejects files without `description`; verified
 empirically); unknown frontmatter fields warn, never error; `risk`/`cost`
@@ -177,15 +187,16 @@ has exactly one fenced block with info string `contract` carrying `resources:`,
 `always:`, and `never:` sections in that order. Mislabelled, misplaced, or
 duplicated fences fail validation. The vocabulary is closed, in five groups:
 
-- Actions change or retrieve (12): `open, read, write, save, show, ask,
-  generate, apply, run, return, abort, discard`.
+- Actions change or retrieve (13): `open, read, write, save, show, ask,
+  generate, apply, run, return, abort, discard, exec`.
 - Conditions branch (4): `if, unless, when, for each`.
 - Gates prohibit advancement (3): `require` (must hold to continue), `verify`
   (check and establish evidence), `allow` (explicit permission grant).
 - Invariants hold globally (2): `always`, `never`.
 - References bind values (3): `as` (bind), `with` (arguments), `from`
   (sources); `{name}` interpolates a bound value into paths.
-- Structure words (5): `label`, `return to`, `retry`, `otherwise`, `return:`.
+- Structure words (6): `label`, `return to`, `retry`, `otherwise`, `else`,
+  `return:`.
 
 Indentation is structure: the validator nests statements into an
 indentation AST and anything nested where no block is allowed fails (O1).
@@ -228,6 +239,17 @@ must not name a resource (E4) — read the resource into a binding first,
 then apply to the binding. To change a resource, `apply` then
 `write`/`save`. `apply` always binds its outcome with `as` (V1 otherwise).
 
+From 0.5, `else:` may follow an `if`, `unless`, or `when` block at the same
+indentation; exactly one arm runs, so a name bound in both arms is
+definitely bound after them (U1). An `else:` with no branch right before it
+is O1. `exec <command> from <resource> as <name>` runs a command in or from
+a declared resource and binds its outcome (exit status, output). It must
+bind with `as` (V1), its source must be covered by `effects.executes`
+(E2), and it counts as a mutation for dismissal safety (M1): a command can
+change anything it reaches. `verify <condition> from <name>` names the
+binding that holds the gate's evidence, usually an `exec` result, which
+must be bound (U1).
+
 Binding is path-sensitive: a name must be bound on every control-flow path
 to its use (definite binding, U1). Bindings created inside a branch are
 unavailable after the join; a failed `read`/`open` binds nothing on its
@@ -269,11 +291,17 @@ system one.
 
 Resources are declared once per file, inside the `contract` block, under a
 closed schema: each resource has `path:` and `access:` (both required) and
-optional `immutable: true|false` (lowercase). Unknown resource properties,
+optional `immutable: true|false` (lowercase), plus optional `glob:` (0.5): a
+machine-readable repo-relative pattern for the files the resource covers,
+used by runtime conformance (Section 14). Unknown resource properties,
 non-canonical access, and non-boolean `immutable` are errors (F2). Access
-is one of `read`, `create`, or `read+create` (canonical scalar form; no
+is one of `read`, `create`, `read+create`, or `read+write` (0.5; same
+checks as `read+create`, but says the resource is updated in place, which
+is what `effects.mutates` means) (canonical scalar form; no
 list syntax). Flows reference resources by name. Header `effects`
-summarize the union across flows as `reads`/`creates`/`mutates`.
+summarize the union across flows as `reads`/`creates`/`mutates`, plus
+`executes` (0.5, optional list): resources an `exec` runs commands in or
+from. Every `exec` source must be covered by `executes` (E2).
 
 Mechanical effects rule: every `open`/`read`/`write`/`save` names a target
 (the `from`-source for `read X from Y`); the target must match a declared
@@ -297,7 +325,10 @@ the validator cannot prove. `allow` matching is lexical overlap and
 warning-grade in spirit: it errors only when an `allow` matches no
 `never` at all (A1). Invariant identifiers that would make `allow`
 exact are deferred to a later release (Section 17). The effects model
-assumes a single actor: concurrent modification by other agents or
+assumes a single actor (a runtime guard can cover the multi-actor case:
+full-stack's `run_guard.py` checks a run's git changes against a declared
+write set and refuses overlapping claims across workers; see the authoring
+guide): concurrent modification by other agents or
 sessions is out of scope for static checking, so skills that mutate
 shared repositories carry the gap as an `always` invariant (authoring
 guide step 10).
@@ -316,7 +347,9 @@ then alphabetical id. Overlapping `owns-when` triggers across skills emit a
 validator warning naming the pair. Embedding or LLM-judged matching is
 explicitly deferred. Decision: routing reads structured fields first
 and uses trigger prose only as a ranked signal, so selection stays cheap and
-explainable.
+explainable. This protocol describes a SkillWren-aware router. Hosts that
+do not implement it route on `description` alone, so write `description`
+as the routing text: what the skill is for and what it is not for.
 
 ## 10. Loading and progressive disclosure
 
@@ -325,8 +358,10 @@ referenced resource (on demand), prose appendix (only when a `generate` or
 creative step needs it). Bodies of unselected skills stay out of context
 entirely. Token counting uses tiktoken `cl100k_base`; where tiktoken is
 unavailable the validator may use ceil(characters/4) and must label the result
-approximate. Budgets: header at most 400 tokens, body at most 2500 tokens;
-violations fail validation with the overage count. Past roughly 20 skills,
+approximate. Budgets: the header ceiling is at most 400 tokens (declaring more
+is B1, because routing reads headers); the body ceiling is declared per skill,
+defaults to 2500, and a declaration above 2500 warns (W11). Exceeding the
+declared ceiling fails validation with the overage count. Past roughly 20 skills,
 headers move to a sharded index (one index file per group) so discovery scans
 the index instead of every file; the index format is headers concatenated, no
 new syntax.
@@ -368,7 +403,17 @@ re-executes the failed gate after the repair steps. Defaults when no
 `otherwise` is given: failed `require` aborts with the condition quoted;
 failed `verify` discards derived artifacts (also available explicitly as
 `discard <binding>`), reports the failure, leaves sources unchanged, and
-aborts. Global rules: user dismissal of any `ask` stops the flow with zero
+aborts.
+
+A decision `ask` has three outcomes. **Confirmed**: the user agrees and the
+confirmation `require` holds. **Declined**: the user answers no; the
+confirmation fails and its `otherwise:` repair runs, which may mark
+dependent work and continue rather than abort. **Dismissed**: the user
+cancels or never answers, or the host cannot reach a user at all (a
+non-interactive run such as `claude -p`); the flow stops with zero
+mutation and no repair runs.
+
+Global rules: user dismissal of any `ask` stops the flow with zero
 mutation; `never` violations abort the entire chain immediately; `abort`
 always reports what was and was not changed. Per-flow failure catalogs
 (missing input, missing resource, gate failure, verification failure, user
@@ -393,7 +438,7 @@ Errors:
   valid closed-grammar type; non-boolean `required`; non-kebab flow names
   in `flows`/`requires`; malformed `requires`/`flows`/`owns-when`;
   bad `risk`/`cost`; non-integer or non-positive budget ceilings;
-  tab indentation.
+  tab indentation; unquoted `[ ] { }` inside an inline collection.
 - F2 fences/contract/body-order: mislabeled, misplaced, or duplicated
   fences; fences not exactly three backticks; logic before the contract;
   content between semantic blocks; semantic blocks after appendix began;
@@ -436,7 +481,7 @@ Errors:
 - L3 retry: `retry` outside an `otherwise:` repair block.
 - O1 block structure: `otherwise:` not directly under a fallible gate;
   statements nested where no block is allowed.
-- B1 budget: header/body token overruns.
+- B1 budget: header/body token overruns; a declared header ceiling above 400.
 - M1 dismissal: a resource write (or call to a mutating same-skill flow)
   on a path to a dismissible `ask`.
 
@@ -452,6 +497,9 @@ Warnings:
 - W8 cross-skill `run`: unverified effect boundary.
 - W9 `otherwise:` block falling through without a terminal step.
 - W10 unreachable statement.
+- W11 declared body ceiling above the 2500-token default.
+- W12 `apply` spec with no appendix anchor: no appendix list item or
+  paragraph contains all of the spec's content words.
 
 Output is a file/line list with one-line fixes.
 
@@ -473,6 +521,15 @@ stays silent on the behavior it replaces. Mutation testing (systematically
 deleting, replacing, or moving one structural element of a known-valid skill)
 is the preferred way to find the next hole.
 
+Runtime conformance (0.5): `skillwren conform <skill.md> --prompt ...`
+runs the skill in one headless Claude Code session inside a throwaway git
+workspace with an empty user profile, then reports every changed file that
+no `glob:` of a created or mutated resource covers (an undeclared
+mutation), and any run that asked a question yet changed files (an `ask`
+cannot reach a user headless, so it is a dismissal). It spends model usage,
+so it is opt-in and never part of `check` or CI. It samples behavior; a
+conforming run is evidence for that prompt, not proof for all inputs.
+
 ## 15. Authoring kit and migration
 
 Ship a one-file template (`docs/skill-template.md`), the validator as a
@@ -480,7 +537,8 @@ CLI (`skillwren check <file>...`, exit 0 clean, 1 on errors;
 `check --all` checks every `*.md` under the current directory except
 `benchmarks/archive/` with a one-line summary per file, exit 1 when any
 file fails; `check --explain <file>...` adds a plain-language paragraph
-per error naming the SPEC section), and the `authoring-guide.md` companion
+per error naming the SPEC section; `conform` as described in Section 14),
+and the `authoring-guide.md` companion
 guide, which carries the full procedure, template, and checklists. New
 skills start from the template; prose-first drafting is allowed only as a
 scratch step before conversion.
@@ -491,6 +549,21 @@ The format is valid Markdown with YAML frontmatter, so agents without tooling
 degrade gracefully to reading it as structured prose. A conforming file can
 serve directly as a `SKILL.md`. No new extension, no sidecar files, no required
 runtime; validator and router conventions are additive.
+
+What current hosts read (observed with Claude Code and Codex, 2026-10):
+
+| Field or block | Host behavior |
+|---|---|
+| `name`, `description` | Read for discovery and selection; `description` is the only routing text |
+| Other header fields (`accepts`, `authority`, `effects`, `budget`, ...) | Parsed as YAML and ignored; declarations, not host-enforced controls |
+| `contract` and `logic` blocks, appendix | Loaded as instructions when the skill runs; nothing executes them |
+
+A header that fails to parse as YAML can make a host drop it entirely
+(observed: Claude Code fell back to the H1 as description), which is why
+F1 rejects YAML-invalid members. `version` is the format version; state a
+package release elsewhere until `release` lands. Runtime guarantees need
+runtime tooling: the host's permission mode, hooks, or a skill's own guard
+script (Section 8).
 
 ## 17. Future work
 
@@ -505,6 +578,12 @@ loop-scoped `for each` bindings; a workspace validator that
 resolves cross-skill `run` effects, authority, and dismissal safety;
 optional resources (`required: false` on resources, with reads and writes
 dominated by a presence guard).
+Planned from full-stack evidence (BF-1 to BF-6 in
+`docs/design/full-stack-backfill.md`): YAML-safe header values,
+budget-cap alignment, decline versus dismissal, host-compatibility
+notes, an `apply` anchor warning, and format 0.5 (`else:`,
+`access: read+write`, optional `purpose`, `release`), an `exec` action
+with `executes` effects (BF-7), and runtime conformance runs (BF-8).
 
 ## 18. Glossary
 
@@ -523,6 +602,89 @@ on every path to the use.
 ## 19. Amendment log
 
 ### Unreleased
+
+### v0.5 (format change): full-stack backfill BF-6, BF-7, BF-8
+
+Additive; every 0.4.x file that validated clean still does, apart from the
+BF-1 YAML fix. Evidence: first real skill maintained in the format
+(full-stack 0.3.0) plus fixtures and mutants per rule.
+
+- `else:` arm for `if`/`unless`/`when` (§6). Full-stack had to read the
+  same reference twice because definite binding could not see that two
+  arms were complementary. Fixtures `valid-else`, `invalid-else-one-arm`
+  (U1), `invalid-else-orphan` (O1); mutants `else-arm-unbinds`,
+  `else-after-non-branch`.
+- `access: read+write` (§8) for resources updated in place.
+- `purpose` optional, defaulting to `description`; optional `release`
+  (§5). Full-stack's header hit the 400-token ceiling and dropped safety
+  wording twice; `description` and `purpose` were near-duplicates.
+  Fixture `valid-v05-header`.
+- `exec <command> from <resource> as <name>`, `effects.executes`, and
+  `verify ... from <name>` (§6, §8). Full-stack 0.3.0 had to describe
+  running its guard script and acceptance checks as writes to a log.
+  Fixtures `valid-exec`, `invalid-exec-undeclared` (E2),
+  `invalid-exec-no-as` (V1), `invalid-verify-from-unbound` (U1),
+  `invalid-exec-before-ask` (M1); mutants `drop-executes-entry`,
+  `verify-cites-unbound-evidence`.
+- Optional resource `glob:` and `skillwren conform` (§8, §14, BF-8): the
+  release criteria "zero undeclared mutations" and "dismissals never
+  mutate" are runtime properties no tool measured. Offline tests cover
+  glob extraction and classification. Live runs on 2026-10-05 (fixture
+  `tests/fixtures/conform/notes-skill`): a normal run conformed; a prompt
+  asking for an extra backup file conformed because the model obeyed the
+  skill's `never`; a copy with a deliberately wrong glob was reported as an
+  undeclared mutation (exit 1).
+- The validator's format version is 0.5; `version: 0.6` fails F1.
+
+Full-stack backfill BF-5 (new warning, no format change):
+
+- Common mistake 21 is now checkable: W12 warns when no appendix list
+  item or paragraph contains all of an `apply` spec's content words.
+  Both golden examples had unanchored specs; each gains a short
+  step-meanings list, and their decline paths now say "Declined" (BF-3).
+  Full-stack 0.3.0, whose glossary defines every step, raises no W12.
+  Evidence: `warn-apply-anchor` warns W12, `valid-apply-anchor` is clean.
+
+Full-stack backfill BF-4 (docs only, no format change):
+
+- Goal 1 and §9 now say headers-only routing is a SkillWren convention;
+  current hosts route on `description` alone. §16 gains a table of what
+  hosts read versus ignore. §8 notes that a runtime guard covers the
+  multi-actor case. The authoring guide adds four live-use patterns:
+  a step-meanings glossary, subject-precedence `always`, parallel write
+  sets, and fallback-chain resource paths. Evidence: fresh-user review
+  findings 3 and 11, field report 2 items G1, G2 and G4, full-stack D-016.
+
+Full-stack backfill BF-3 (semantics clarified, no validator change):
+
+- §12 defines confirmed, declined, and dismissed. A decline runs the
+  confirmation's repair; a dismissal (including an `ask` in a
+  non-interactive host) stops with zero mutation and runs no repair. The
+  template's repair message said "Dismissed" on what is the decline path;
+  it now says "Declined". New authoring-guide mistake 22. Evidence:
+  full-stack pilot D1 and the fresh-user review's finding 1.
+
+Full-stack backfill BF-2 (validator alignment, no format change):
+
+- §10 said "header at most 400, body at most 2500", but the validator
+  accepted any declared ceiling (a `{ header: 900, body: 9000 }` probe
+  validated clean). The header ceiling now has a hard maximum of 400
+  (B1). The body ceiling stays declared per skill, and a declaration
+  above 2500 warns (new W11): full-stack's plain-language step glossary
+  needs about 3000. Evidence: `invalid-budget-header-max` fails B1,
+  `warn-budget-body` warns W11 only.
+
+Full-stack backfill BF-1 (validator fix, no format change):
+
+- The Frontmatter Profile promised YAML compatibility but accepted
+  unquoted `Enum[...]` and `{var}` members inside inline collections,
+  which YAML parsers reject. Claude Code then dropped the header and
+  showed the skill's H1 as its description (observed 2026-10-05 with
+  full-stack). Such members are now F1 errors; quoting fixes them. The
+  §5 example and `examples/theme-factory.golden.md` (`"themes/{name}.md"`)
+  were themselves affected and are quoted. Evidence:
+  `invalid-yaml-unquoted` fails F1, `valid-yaml-quoted` is clean, and a
+  test parses every clean fixture's header with PyYAML.
 
 Final hardening pass, no format change:
 

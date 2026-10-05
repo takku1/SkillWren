@@ -6,8 +6,8 @@ version: 0.4
 purpose: Do the thing.
 accepts:
   a: { type: List<DragonSpaghetti>, required: false }
-  b: { type: Enum[], required: false }
-  c: { type: Enum[x, x], required: false }
+  b: { type: "Enum[]", required: false }
+  c: { type: "Enum[x, x]", required: false }
 produces:
   output: { type: Text }
 owns-when:

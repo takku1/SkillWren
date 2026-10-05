@@ -2,7 +2,7 @@
 skill: tiny
 name: tiny
 description: Minimal fixture skill.
-version: 0.6
+version: 0.3
 purpose: Do the thing.
 accepts:
   input: { type: Text, required: true }
@@ -24,7 +24,7 @@ effects:
   mutates: []
 risk: low
 cost: cheap
-budget: { header: 400, body: 2500 }
+budget: { header: 401, body: 2500 }
 ---
 
 ```contract

@@ -3,7 +3,7 @@
 skill: my-skill
 name: my-skill
 description: One sentence saying what this skill does.
-version: 0.4.1
+version: 0.5
 purpose: One sentence saying what this skill does.
 # TODO: declare inputs (closed types) and outputs.
 accepts:
@@ -70,7 +70,7 @@ main:
   ask user to approve output
   require confirmation
     otherwise:
-      abort with "Dismissed; nothing changed."
+      abort with "Declined; nothing changed."
 
   return output as output
 ```

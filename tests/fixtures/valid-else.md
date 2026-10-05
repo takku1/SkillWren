@@ -1,20 +1,19 @@
 ---
-skill: tiny
-name: tiny
-description: Minimal fixture skill.
-version: 0.6
-purpose: Do the thing.
+skill: else-both
+name: else-both
+description: Fixture for format 0.5 rules.
+version: 0.5
 accepts:
   input: { type: Text, required: true }
 produces:
   output: { type: Text }
 owns-when:
-  - user wants to do the thing
+  - user wants an else fixture
 requires:
   main: [input exists]
 flows: [main]
 authority:
-  user-decides: [whether to approve the output]
+  user-decides: []
   system-decides: [whether the input is valid]
   system-may: []
   system-must-not: [infer user approval]
@@ -38,7 +37,7 @@ resources:
 always:
   leave the source unchanged
 never:
-  return an unapproved result
+  return an unchecked result
 ```
 
 ```logic
@@ -47,18 +46,10 @@ main:
     otherwise:
       abort with "An input is required."
 
-  generate result from input as output
-
-  verify output is valid
-    otherwise:
-      discard output
-      abort with "Could not produce a valid result."
-
-  show output
-  ask user to approve output
-  require confirmation
-    otherwise:
-      abort with "Dismissed; nothing changed."
+  if input is long:
+    generate summary from input as output
+  else:
+    generate copy from input as output
 
   return output as output
 ```

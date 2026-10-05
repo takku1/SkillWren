@@ -28,7 +28,7 @@ authority:
   system-must-not: [infer user approval, silently choose a theme]
 effects:
   reads: [theme-showcase.pdf, themes/*.md, source artifact]
-  creates: [styled artifact, themes/{name}.md]
+  creates: [styled artifact, "themes/{name}.md"]
   mutates: []
 risk: medium
 cost: moderate
@@ -78,7 +78,7 @@ apply-theme:
     ask user to confirm the chosen theme
     require user confirms chosen theme
       otherwise:
-        abort with "Dismissed; nothing changed."
+        abort with "Declined; nothing changed."
 
   read themes/{theme}.md as spec
     otherwise:
@@ -98,7 +98,7 @@ apply-theme:
       ask user to accept the font substitution
       require user accepts font substitution
         otherwise:
-          abort with "Dismissed; nothing changed."
+          abort with "Declined; nothing changed."
       apply suggestion with spec as spec
       retry
 
@@ -109,7 +109,7 @@ apply-theme:
       ask user to accept the color correction
       require user accepts color correction
         otherwise:
-          abort with "Dismissed; nothing changed."
+          abort with "Declined; nothing changed."
       apply correction with spec as spec
       retry
 
@@ -144,7 +144,7 @@ create-theme:
       ask user to describe the desired visual direction as description
       require confirmation
         otherwise:
-          abort with "Dismissed; nothing changed."
+          abort with "Declined; nothing changed."
       retry
 
   label validation:
@@ -204,3 +204,16 @@ generated theme is rejected, revise from the user's stated feedback rather than
 regenerating from scratch. Theme names are plain `Text`; structured
 `Theme` objects are a future type refinement.
 
+
+### Step meanings
+
+- **suggestion**: put the font substitution the user accepted into the spec.
+- **correction**: put the color correction the user accepted into the spec.
+- **spec** (applied to the artifact): restyle colors and fonts only; leave
+  content and layout unchanged.
+- **consistency correction**: restyle elements the first pass missed.
+- **validity repair**: fill missing colors or fonts from the theme file.
+- **readable palette correction**: nudge colors to the nearest pair that
+  meets the readability check.
+- **nearest available font pairing**: swap an unavailable font for the
+  closest installed one in the same class.

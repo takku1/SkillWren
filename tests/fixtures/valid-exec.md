@@ -1,20 +1,19 @@
 ---
-skill: tiny
-name: tiny
-description: Minimal fixture skill.
-version: 0.6
-purpose: Do the thing.
+skill: exec-ok
+name: exec-ok
+description: Fixture for format 0.5 rules.
+version: 0.5
 accepts:
   input: { type: Text, required: true }
 produces:
   output: { type: Text }
 owns-when:
-  - user wants to do the thing
+  - user wants an exec fixture
 requires:
   main: [input exists]
 flows: [main]
 authority:
-  user-decides: [whether to approve the output]
+  user-decides: []
   system-decides: [whether the input is valid]
   system-may: []
   system-must-not: [infer user approval]
@@ -22,6 +21,7 @@ effects:
   reads: [input]
   creates: [output]
   mutates: []
+  executes: [checks]
 risk: low
 cost: cheap
 budget: { header: 400, body: 2500 }
@@ -35,10 +35,13 @@ resources:
   output:
     path: output
     access: create
+  checks:
+    path: scripts/check.py
+    access: read
 always:
   leave the source unchanged
 never:
-  return an unapproved result
+  return an unchecked result
 ```
 
 ```logic
@@ -47,18 +50,11 @@ main:
     otherwise:
       abort with "An input is required."
 
-  generate result from input as output
-
-  verify output is valid
+  generate copy from input as output
+  exec acceptance checks from checks as results
+  verify output passes the acceptance checks from results
     otherwise:
-      discard output
-      abort with "Could not produce a valid result."
-
-  show output
-  ask user to approve output
-  require confirmation
-    otherwise:
-      abort with "Dismissed; nothing changed."
+      abort with "Checks failed; nothing returned."
 
   return output as output
 ```

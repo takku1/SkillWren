@@ -5,7 +5,7 @@ headers-only routing plus a closed control vocabulary with gates,
 authority, effects, and local recovery.
 """
 
-__version__ = "0.4.1"
+__version__ = "0.5.0"
 
 from .validator import validate_file, validate_files
 

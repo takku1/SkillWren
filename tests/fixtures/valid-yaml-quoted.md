@@ -1,44 +1,44 @@
 ---
-skill: tiny
-name: tiny
-description: Minimal fixture skill.
-version: 0.6
-purpose: Do the thing.
+skill: yaml-quoted
+name: yaml-quoted
+description: Probe that inline map values stay valid YAML.
+version: 0.4.1
+purpose: Probe that inline map values stay valid YAML.
 accepts:
   input: { type: Text, required: true }
+  mode: { type: "Enum[fast, full]", required: false }
 produces:
   output: { type: Text }
 owns-when:
-  - user wants to do the thing
+  - user wants to probe quoted yaml values
 requires:
   main: [input exists]
 flows: [main]
 authority:
-  user-decides: [whether to approve the output]
+  user-decides: []
   system-decides: [whether the input is valid]
   system-may: []
   system-must-not: [infer user approval]
 effects:
   reads: [input]
-  creates: [output]
+  creates: []
   mutates: []
 risk: low
 cost: cheap
 budget: { header: 400, body: 2500 }
 ---
 
+# YAML probe
+
 ```contract
 resources:
   source:
     path: input
     access: read
-  output:
-    path: output
-    access: create
 always:
   leave the source unchanged
 never:
-  return an unapproved result
+  change the input
 ```
 
 ```logic
@@ -49,20 +49,9 @@ main:
 
   generate result from input as output
 
-  verify output is valid
-    otherwise:
-      discard output
-      abort with "Could not produce a valid result."
-
-  show output
-  ask user to approve output
-  require confirmation
-    otherwise:
-      abort with "Dismissed; nothing changed."
-
   return output as output
 ```
 
 ## Appendix
 
-Keep the result minimal and faithful to the input.
+Guidance for the generate step.
