@@ -5,8 +5,8 @@
 
 The skill's folder is installed into a throwaway git workspace (a copy of
 --workspace, or empty) at .claude/skills/<skill>. One headless Claude Code
-session runs with an empty CLAUDE_CONFIG_DIR, so no user skills, CLAUDE.md,
-plugins, or memory leak in. Afterwards every changed file must match the
+session runs with a fresh CLAUDE_CONFIG_DIR. This does not isolate project
+configuration or provide an OS sandbox. Afterwards every changed file must match the
 `glob:` of a resource the header lists under effects.creates or mutates;
 anything else is an undeclared mutation. An `ask` cannot reach a user in a
 headless run, so it counts as a dismissal (SPEC section 12): if the session
@@ -17,15 +17,18 @@ Exit codes: 0 conforms, 1 violations, 2 usage or environment error.
 """
 import argparse
 import fnmatch
+import hashlib
 import json
+import math
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
 from .validator import (match_resource, parse_block, parse_contract, parse_fences,
-                        split_frontmatter)
+                        split_frontmatter, validate_file)
 
 LOGIN = Path.home() / ".claude" / ".credentials.json"
 TOOLS = ["Read", "Edit", "Write", "Glob", "Grep", "Skill", "Bash(python:*)", "Bash(git status:*)",
@@ -34,7 +37,7 @@ TOOLS = ["Read", "Edit", "Write", "Glob", "Grep", "Skill", "Bash(python:*)", "Ba
 
 def declared_globs(skill_path):
     """Globs of resources the header says the skill may create or mutate."""
-    text = Path(skill_path).read_text(encoding="utf-8")
+    text = Path(skill_path).read_text(encoding="utf-8-sig")
     fm_lines, body_lines, body_first = split_frontmatter(text)
     header, _ = parse_block(list(fm_lines or []), 0, 0)
     header = header if isinstance(header, dict) else {}
@@ -60,17 +63,51 @@ def git(cwd, *args):
     return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, check=True).stdout
 
 
+def snapshot(work):
+    """Observe final file contents independently of Git's mutable index/ignores.
+
+    Do not follow symlinks. This is a before/after observer, not a sandbox
+    or an audit of transient writes, network effects, or paths outside work.
+    """
+    files = {}
+    def fail(error):
+        raise error
+
+    for directory, dirs, names in os.walk(work, followlinks=False,
+                                          onerror=fail):
+        dirs[:] = [name for name in dirs if name != ".git"]
+        for name in list(dirs) + names:
+            path = Path(directory) / name
+            if name == ".git":
+                continue
+            relative = path.relative_to(work).as_posix()
+            if path.is_symlink():
+                files[relative] = ("link", os.readlink(path))
+            elif path.is_file():
+                digest = hashlib.sha256()
+                with path.open("rb") as stream:
+                    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                        digest.update(chunk)
+                files[relative] = ("file", path.stat().st_mode, digest.hexdigest())
+    return files
+
+
 def run_session(skill_path, args):
+    errors, _ = validate_file(skill_path)
+    if errors:
+        raise ValueError("invalid skill: " + "; ".join(d.msg for d in errors))
     skill_id, globs, missing = declared_globs(skill_path)
     base = Path(tempfile.mkdtemp(prefix="skillwren-conform-"))
     work, config = base / "work", base / "config"
     try:
         if args.workspace:
-            shutil.copytree(args.workspace, work)
+            # Never import Git metadata (including worktree pointers/hooks).
+            shutil.copytree(args.workspace, work, symlinks=True,
+                            ignore=shutil.ignore_patterns(".git"))
         else:
             work.mkdir()
-        shutil.copytree(Path(skill_path).parent, work / ".claude" / "skills" / skill_id)
-        (work / ".gitignore").write_text("__pycache__/\n*.pyc\n", encoding="utf-8")
+        shutil.copytree(Path(skill_path).parent, work / ".claude" / "skills" / skill_id,
+                        symlinks=True, ignore=shutil.ignore_patterns(".git"))
         for step in (["init", "-q"], ["config", "user.email", "conform@example.invalid"],
                      ["config", "user.name", "conform"], ["config", "core.autocrlf", "false"],
                      ["add", "-A"], ["commit", "-qm", "workspace", "--allow-empty"]):
@@ -82,8 +119,9 @@ def run_session(skill_path, args):
         elif os.environ.get("ANTHROPIC_API_KEY"):
             env["ANTHROPIC_API_KEY"] = os.environ["ANTHROPIC_API_KEY"]
         else:
-            raise SystemExit("Pass --auth-from-profile or set ANTHROPIC_API_KEY.")
+            raise ValueError("Pass --auth-from-profile or set ANTHROPIC_API_KEY.")
         env["CLAUDE_CONFIG_DIR"] = str(config)
+        before = snapshot(work)
         proc = subprocess.run(
             ["claude", "-p", f"/{skill_id} {args.prompt}", "--output-format", "stream-json", "--verbose",
              "--model", args.model, "--max-budget-usd", str(args.budget_usd),
@@ -93,15 +131,30 @@ def run_session(skill_path, args):
         events = []
         for line in proc.stdout.splitlines():
             try:
-                events.append(json.loads(line))
+                event = json.loads(line)
+                if isinstance(event, dict):
+                    events.append(event)
             except json.JSONDecodeError:
                 pass
-        asks = sum(1 for e in events if e.get("type") == "assistant"
-                   for c in e.get("message", {}).get("content", [])
-                   if c.get("type") == "tool_use" and c.get("name") == "AskUserQuestion")
         result = next((e for e in reversed(events) if e.get("type") == "result"), {})
-        changed = [line[3:] for line in git(work, "status", "--porcelain=v1", "--untracked-files=all").splitlines()]
-        changed = [p for p in changed if not p.startswith(f".claude/skills/{skill_id}/")]
+        if proc.returncode:
+            raise ValueError(f"Claude session failed (exit {proc.returncode}).")
+        if not result:
+            raise ValueError("Claude session returned no result event.")
+        if result.get("subtype") != "success" or result.get("is_error"):
+            raise ValueError(f"Claude session failed ({result.get('subtype', 'unknown')}).")
+        asks = 0
+        for event in events:
+            message = event.get("message")
+            if event.get("type") != "assistant" or not isinstance(message, dict):
+                continue
+            content = message.get("content")
+            if not isinstance(content, list):
+                continue
+            asks += sum(isinstance(c, dict) and c.get("type") == "tool_use"
+                        and c.get("name") == "AskUserQuestion" for c in content)
+        after = snapshot(work)
+        changed = sorted(p for p in before.keys() | after.keys() if before.get(p) != after.get(p))
     finally:
         shutil.rmtree(base, ignore_errors=True)
     return {
@@ -124,10 +177,20 @@ def main(argv):
     parser.add_argument("--timeout", type=int, default=1800)
     parser.add_argument("--json", action="store_true", help="print the full report as JSON")
     args = parser.parse_args(argv)
+    if not math.isfinite(args.budget_usd) or args.budget_usd <= 0:
+        parser.error("--budget-usd must be finite and positive")
+    if args.timeout <= 0:
+        parser.error("--timeout must be positive")
     if shutil.which("claude") is None:
-        print("skillwren conform: claude CLI not found on PATH.")
+        print("skillwren conform: claude CLI not found on PATH.", file=sys.stderr)
         return 2
-    report = run_session(args.skill, args)
+    try:
+        report = run_session(args.skill, args)
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        print(f"skillwren conform: {error}", file=sys.stderr)
+        return 2
+    ok = not report["undeclared"] and not report["dismissal_violation"]
+    report["conforms"] = ok
     if args.json:
         print(json.dumps(report, indent=2))
     else:
@@ -138,6 +201,5 @@ def main(argv):
             print(f"  undeclared mutation: {p}")
         if report["dismissal_violation"]:
             print(f"  dismissal violation: the session asked {report['asks']} question(s) and still changed files")
-    ok = not report["undeclared"] and not report["dismissal_violation"]
-    print("conforms" if ok else "does not conform")
+        print("conforms" if ok else "does not conform")
     return 0 if ok else 1

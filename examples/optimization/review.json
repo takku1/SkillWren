@@ -1,0 +1,13 @@
+{
+  "original_sha256": "6e0c014451a26b1cf15cbecc55bfcf92bd5b09532edc741d12f7d1740591d415",
+  "logic_sha256": "0fd636dfcbf00cb13d0f0ddddb1414d7717396ef3c6abfedfe00c38a254ce011",
+  "review": "Illustrative manual conversion review, not a benchmark or equivalence proof.",
+  "requirements": [
+    {"id": "purpose", "original_lines": [1, 7], "logic_contains": ["Review a code change for consequential defects", "without editing or executing it"]},
+    {"id": "scope", "original_lines": [8, 16], "logic_contains": ["project instructions, diff, {target}, and necessary callers/dependencies", "follow project conventions", "limit findings to the supplied change", "edit, refactor, execute, commit, or publish"]},
+    {"id": "defect-selection", "original_lines": [17, 25], "logic_contains": ["correctness/security/behavior findings with credible reachable failure cases", "exclude style preferences unless requested"]},
+    {"id": "finding-evidence", "original_lines": [26, 35], "logic_contains": ["file/lines, trigger, consequence", "supporting {code}", "labeling unsupported concerns unverified and naming missing evidence", "invent requirements, environment, traces, or test outputs"]},
+    {"id": "independent-verification", "original_lines": [36, 44], "logic_contains": ["independent-oracle regression suggestions", "Expected test results need a specification/caller contract/independent", "current output is not an oracle", "Suggested tests are unexecuted, not", "reproduction evidence"]},
+    {"id": "report", "original_lines": [45, 56], "logic_contains": ["summary, confirmed findings, limitations, unrun checks", "impact-ranked findings", "minimal correction directions", "High = reachable security breach/data loss/core failure", "medium = limited", "low = minor consequential defect", "Justify impact, not", "Say when no findings are confirmed; correctness remains", "Add detail only if requested"]}
+  ]
+}

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Optimization workflow (no format change): `measure` and `build --original/--review`
+  add hash-bound manual requirement review, exact cl100k_base token or
+  character comparison, archived originals/review in the manifest, and a
+  strictly-smaller expanded-prompt gate. Plain `build` and context imports
+  remain packaging only. `conform` now validates the skill first, snapshots
+  final file state independently of Git, and treats failed sessions as
+  errors. New examples/optimization and skills/skillwren conversion skill.
 - Docs and explain refresh (no format change): `check --explain` now
   prints a plain-language paragraph for warnings (W1–W12) as well as
   errors, pinned by a coverage test over every code the validator can

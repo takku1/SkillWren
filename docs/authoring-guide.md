@@ -8,10 +8,11 @@ skills. Prerequisite: read spec Sections 4-8 before your first skill; keep
 
 ## The 12 steps
 
-### 1. Name and purpose
+### 1. Name and description
 
-Pick a kebab-case id and one purpose sentence. If the purpose needs "and", you
-probably have two skills; split them.
+Pick the skill id and `name`, then write a `description` using job verbs and
+phrases requesters actually use. Hosts route on the description alone. Add an
+optional `purpose` only when it clarifies the goal; keep it to one sentence.
 
 ### 2. List flows
 
@@ -165,96 +166,44 @@ Structure: `label, return to, retry, otherwise, else, return:`.
 
 ## Header checklist
 
-skill, version, purpose, accepts, produces, owns-when, requires, flows,
+skill, name, description, version, accepts, produces, owns-when, requires, flows,
 authority (all four lists), effects (reads/creates/mutates), risk, cost,
-budget. Missing any of these fails validation.
+budget. `purpose` and `release` are optional in 0.5; `purpose` defaults to description.
+Hosts route on description, so include job verbs and realistic trigger phrases there.
 
-## Skeleton template
+## Checked template and conversion procedure
 
-Copy, rename, fill. Outer fence is four backticks so the inner fences stay
-literal. The same skeleton ships as a checkable file at
-`docs/skill-template.md` — copy it to start a new skill; it passes
-`skillwren check` clean.
+Use [skill-template.md](skill-template.md) for a checkable skeleton; do not
+duplicate the header and body as guidance in the delivered skill.
 
-````markdown
----
-skill: my-skill
-name: my-skill
-description: One sentence.
-version: 0.4
-purpose: One sentence.
-accepts:
-  input: { type: Text, required: true }
-produces:
-  output: { type: Text }
-owns-when:
-  - user wants to do the thing
-requires:
-  main: [input exists]
-flows: [main]
-authority:
-  user-decides: [whether to approve the output]
-  system-decides: [whether the input is valid]
-  system-may: []
-  system-must-not: [infer user approval]
-effects:
-  reads: [input]
-  creates: [output]
-  mutates: []
-risk: low
-cost: cheap
-budget: { header: 400, body: 2500 }
----
+Before converting, inventory every obligation, prohibition, gate, branch,
+exception, severity grade, recovery, and appendix/reference requirement. Bind
+the inventory to exact source bytes. Keep control in logic and global rules in
+the contract; use the appendix for compact action specifications. Preserve
+qualifiers even when they appear redundant. Do not hide necessary context in
+an archive that the reader will not load.
 
-```contract
-resources:
-  source:
-    path: input
-    access: read
-  output:
-    path: output
-    access: create
-always:
-  leave the source unchanged
-never:
-  return an unapproved result
-```
+After rewriting, compare inventories, review every changed rule, and check all
+paths. Use native `check`, then `measure original.md SKILL.md`, then `build`
+with `--original` and `--review`. See [compiler.md](compiler.md) for the review
+schema and explicit reference inputs. Measure expanded output, not only source.
+Exact token counts require the optional tokenizer; character counts are separate.
+Reduce the declared body budget to its honest validator count when possible.
+That budget is a static approximation, distinct from exact token measurement.
 
-```logic
-main:
-  require input exists
-    otherwise:
-      abort with "An input is required."
-
-  generate result from input as output
-
-  verify output is valid
-    otherwise:
-      discard output
-      abort with "Could not produce a valid result."
-
-  show output
-  ask user to approve output
-  require confirmation
-    otherwise:
-      abort with "Dismissed; nothing changed."
-
-  return output as output
-```
-
-## Appendix
-
-Keep the result minimal and faithful to the input.
-````
+Hash-bound maps reject stale or incomplete bookkeeping, but cannot prove
+semantic equivalence. Behavioral trials must record wrong turns, repair loops,
+coverage, and verified outcomes, with costs unavailable when not exposed.
 
 ## Piloting a conversion side-by-side
 
-Convert under a distinct skill id (the original id plus a `-logic`
-suffix, with `name` following `skill`) and keep the prose original
-installed. Run both against the same real work, compare prescribed
-next steps, and replace the original only when the logic version wins
-repeatedly. A pilot report recording hits, misses, and false-fires is
-the conversion's evidence; file it next to the draft.
+For a side-by-side pilot, use a distinct skill id (the original id plus a
+`-logic` suffix, with `name` following `skill`) so both can be selected
+independently. Run them against the same real tasks and starting states; record
+correct outcomes, misses, false-fires, repairs, coverage, and available costs.
+Keep the prose source for provenance outside the loaded prompt. Promote the
+logic version when repeated results support it; attach the report to the
+conversion.
 
 ## Common mistakes
 

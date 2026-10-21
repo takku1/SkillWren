@@ -30,9 +30,13 @@ Goals:
 4. Be verifiable: a static validator answers "what can this touch, what does it
    require, who decides" without executing anything.
 
-Release criteria: headers fit the token ceiling; converted skills use at
-most half the tokens of their prose equivalents; zero undeclared mutations in
-eval scenarios; every required gate fires; user dismissals never mutate.
+Evaluation goals: headers fit the token ceiling; selected benchmark
+conversions target at most half the original tokens while preserving behavior;
+and scenario runs aim for zero undeclared mutations, every required gate firing,
+and mutation-free user dismissal. The half-token target is a research goal, not
+an acceptance threshold enforced by `build`; optimized builds require a strict
+reduction under their declared metric. Static checks do not establish runtime
+behavior.
 
 ## 2. Non-goals (YAGNI cuts)
 
@@ -511,9 +515,10 @@ against ceilings, plus a headers-only discovery test proving bodies never load
 during selection. Precision: scenario scripts asserting each required gate
 fires, each `never` holds under adversarial branches, and dismissals mutate
 nothing (gate-recall 100 percent, zero undeclared mutations). Compression:
-theme-factory plus two further prose skills rewritten in this format must use
-at most half the tokens while preserving behavior, with a reviewer checklist
-per conversion.
+compare theme-factory plus two further prose skills rewritten in this format
+using matched inputs and a reviewer checklist. The research target is at most
+half the original tokens with behavior preserved; report actual ratios and
+failures without treating the target as a per-conversion gate.
 
 Adversarial fixtures accompany every validator rule: each rule has at least
 one invalid fixture proving it fires and, where the rule is new, evidence it
@@ -529,6 +534,26 @@ mutation), and any run that asked a question yet changed files (an `ask`
 cannot reach a user headless, so it is a dismissal). It spends model usage,
 so it is opt-in and never part of `check` or CI. It samples behavior; a
 conforming run is evidence for that prompt, not proof for all inputs.
+
+The observer compares before/after file contents independently of Git status,
+including ignored files and the installed skill. A failed process, missing
+terminal result, or unsuccessful terminal result is an environment/session
+error (exit 2), not evidence of conformance. `--json` returns one JSON document
+with a `conforms` field for completed runs; errors go to stderr.
+This is final-state observation, not containment or a complete action trace:
+reverted writes, effects outside the workspace, and Git metadata are unobserved.
+A fresh user configuration directory does not isolate project or host-managed
+configuration. Use a separately isolated environment when containment matters.
+
+The initial `build` compiler supports appendix declarations of the form
+`@context <id> from "relative-file" as instruction|example|data` and expands
+every declared context in full. Generated opaque context fences use at least
+four backticks and the info string `context <id> <role>`; their closing fence
+has the same width. They must follow all semantic blocks, count toward the
+body budget, and are not parsed as executable logic. Exact source bytes,
+hashes, and emitted byte spans are retained in a separate manifest. See
+[compiler.md](compiler.md) for the grammar and retention boundary. This extends
+the semantic-only fence rule for these explicitly marked context blocks.
 
 ## 15. Authoring kit and migration
 

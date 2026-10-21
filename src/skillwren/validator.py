@@ -162,6 +162,8 @@ def parse_block(lines, i, indent):
             if not isinstance(obj, dict):
                 return None, i
             k, v = text.split(":", 1)
+            if k.strip() in obj:
+                return None, i  # Ambiguous declarations must not silently win.
             v = v.strip()
             if v:
                 obj[k.strip()] = parse_scalar(v)
@@ -1173,6 +1175,18 @@ def analyze_flow(flow, root, header_line, ctx):
 
 
 def check_schema(header, fm_lines, errors, warnings):
+    def check_list_members(value, path):
+        if isinstance(value, dict):
+            for key, child in value.items():
+                check_list_members(child, path + [key])
+        elif isinstance(value, list) and any(not isinstance(item, str) for item in value):
+            errors.append(Diag(find_key_line(fm_lines, path[0]), "F1",
+                               f"{'.'.join(path)} entries must be strings",
+                               "Use text entries, not nested maps or lists."))
+
+    for section in ("authority", "effects", "requires", "flows", "owns-when"):
+        if section in header:
+            check_list_members(header[section], [section])
     missing = sorted(REQUIRED_KEYS - set(header.keys()))
     if missing:
         errors.append(Diag(1, "F1", f"frontmatter missing keys: {', '.join(missing)}",
@@ -1332,10 +1346,23 @@ def parse_fences(body_lines, first_lineno):
     logics, order, contract = {}, [], None
     blocks = []  # (kind, open_lineno, open_idx, content, close_idx)
     diags = []
+    context_starts = []
     i, n = 0, len(body_lines)
     while i < n:
         raw = body_lines[i]
         lineno = first_lineno + i
+        opaque = re.fullmatch(r"(`{4,})context ([a-z][a-z0-9]*(?:-[a-z0-9]+)*) (instruction|example|data)", raw)
+        if opaque:
+            context_starts.append(i)
+            delimiter = opaque.group(1)
+            i += 1
+            while i < n and body_lines[i] != delimiter:
+                i += 1
+            if i == n:
+                diags.append(Diag(lineno, "F2", "unclosed context block",
+                                  "Close the context with its exact opening fence width."))
+            i += 1
+            continue
         m = STRICT_OPEN_RE.match(raw)
         if m:
             info = m.group(1)
@@ -1421,6 +1448,11 @@ def parse_fences(body_lines, first_lineno):
                 covered.add(open_idx + 1 + k)
         first_open = min(b[2] for b in blocks)
         last_close = max(b[4] for b in blocks)
+        for start in context_starts:
+            if start < last_close:
+                diags.append(Diag(first_lineno + start, "F2",
+                                  "context blocks must follow all semantic blocks",
+                                  "Move context into the appendix after the final logic block."))
         appendix_idx = None
         for j in range(n):
             if j in covered or not body_lines[j].strip():
@@ -1535,10 +1567,10 @@ def parse_contract(contract, diags):
 def validate_file(path):
     errors, warnings = [], []
     try:
-        text = Path(path).read_text()
-    except OSError:
+        text = Path(path).read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeError):
         return [Diag(0, "F1", f"cannot read file {path}",
-                     "Check the path.")], []
+                     "Check the path and save the file as UTF-8.")], []
     fm_lines, body_lines, body_first = split_frontmatter(text)
     header = {}
     if fm_lines is None:
@@ -1568,6 +1600,10 @@ def validate_file(path):
         body_lines, body_first)
     errors.extend(fdiags)
     resources, always, nevers = parse_contract(contract, errors)
+    # Preserve independent fence diagnostics, but do not run semantic passes
+    # against a header whose container/type invariants failed validation.
+    if any(diag.rule == "F1" for diag in errors):
+        return errors, warnings
     flows_hdr = header.get("flows") if isinstance(header.get("flows"), list) else []
     if header:
         for f in flows_hdr:
@@ -1792,8 +1828,8 @@ def validate_file(path):
 
 def _triggers(path):
     try:
-        text = Path(path).read_text()
-    except OSError:
+        text = Path(path).read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeError):
         return [], 1
     fm_lines, _, _ = split_frontmatter(text)
     if fm_lines is None:
@@ -1802,7 +1838,7 @@ def _triggers(path):
     if not isinstance(parsed, dict):
         return [], 1
     owns = parsed.get("owns-when", [])
-    return (owns if isinstance(owns, list) else [],
+    return ([item for item in owns if isinstance(item, str)] if isinstance(owns, list) else [],
             find_key_line(fm_lines, "owns-when"))
 
 
