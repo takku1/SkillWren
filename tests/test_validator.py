@@ -257,6 +257,12 @@ class TestCli(unittest.TestCase):
         self.assertIn("V1", p.stdout)
         self.assertIn("SPEC Section", p.stdout)
 
+    def test_cli_explain_covers_warnings(self):
+        p = self.run_cli("check", "--explain", str(FIX / "warn-budget-body.md"))
+        self.assertEqual(p.returncode, 0)
+        self.assertIn("W11", p.stdout)
+        self.assertIn("SPEC Section 10", p.stdout)
+
 
 BUILDER_FM = """---
 skill: tiny
@@ -615,6 +621,19 @@ class TestV04Rules(unittest.TestCase):
         w8 = [d for d in warnings if d.rule == "W8"]
         self.assertEqual(len(w8), 1)
         self.assertIn("unverified", w8[0].msg)
+
+
+class TestExplainCoverage(unittest.TestCase):
+    """Every diagnostic code the validator can emit has a --explain entry."""
+
+    def test_all_emitted_codes_explained(self):
+        import inspect
+        import re
+        import skillwren.validator as v
+        src = inspect.getsource(v)
+        emitted = set(re.findall(r'["\']([A-Z]\d{1,2})["\']', src))
+        missing = sorted(c for c in emitted if c not in v.RULE_EXPLAIN)
+        self.assertEqual(missing, [])
 
 
 if __name__ == "__main__":

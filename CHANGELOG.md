@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Docs and explain refresh (no format change): `check --explain` now
+  prints a plain-language paragraph for warnings (W1–W12) as well as
+  errors, pinned by a coverage test over every code the validator can
+  emit; README and authoring guide aligned to 0.5.0 (version, test and
+  mutant counts, Status); SPEC Section 17 pruned of shipped BF items;
+  the 0.5.0 release is cut below.
+
+## 0.5.0 (2026-10-05)
+
 - BF-8: `skillwren conform` runs a skill headless and reports undeclared
   mutations against new optional resource `glob:` patterns, plus asks that
   were followed by changes. Opt-in; spends model usage.

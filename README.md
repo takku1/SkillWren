@@ -1,4 +1,4 @@
-# SkillWren — logic-first skills (v0.4.1)
+# SkillWren — logic-first skills (v0.5.0)
 
 Skills written as logic instead of prose: a contract header for cheap,
 headers-only routing plus a closed control vocabulary with gates, authority,
@@ -8,7 +8,7 @@ structure describes control.
 ## Layout
 
 - `src/skillwren/` — shippable package: stdlib-only static validator plus
-  `skillwren` CLI (`check`).
+  `skillwren` CLI (`check`, `conform`).
 - `docs/` — `SPEC.md` (contract), `authoring-guide.md` (procedure, template,
   checklists).
 - `examples/` — `theme-factory.golden.md` (worked golden example all tooling
@@ -16,9 +16,9 @@ structure describes control.
   `code-reviewer-logic` in the benchmarks).
 - `benchmarks/` — two blinded benchmark rounds (summaries plus frozen
   `archive/` of round inputs and raw reports).
-- `tests/` — validator suite: fixtures plus `test_validator.py` (69 tests),
+- `tests/` — validator suite: fixtures plus `test_validator.py` (89 tests),
   the mutation tripwire `test_mutations.py` over `mutation_catalog.py`
-  (24 one-break mutants), and the `mutation_sweep.py` kill-matrix runner.
+  (28 one-break mutants), and the `mutation_sweep.py` kill-matrix runner.
 
 ## Quickstart
 
@@ -50,7 +50,7 @@ skillwren conform path/to/SKILL.md --prompt "..." --model claude-sonnet-5-5 \
   --budget-usd 0.3 --workspace path/to/sample --auth-from-profile
 ```
 
-Run the suite (72 tests):
+Run the suite (92 tests):
 
 ```sh
 python3 -m unittest tests.test_validator tests.test_mutations
@@ -66,10 +66,12 @@ positives; severity went 6/8 to 8/8 for logic after gating the rubric
 
 ## Status
 
-v0.4.1 (2026-10-01). The validator parses flows into an indentation AST and a
+v0.5.0 (2026-10-05). The validator parses flows into an indentation AST and a
 control-flow graph and enforces repair ownership, ask/confirm structure,
 required-input gates, full schemas, per-path binding, and dismissal safety.
-v0.4.1 adds `for each` type and collection guarantees.
+Format 0.5 adds `else:` arms, `access: read+write`, optional `purpose` and
+`release`, an `exec` action with `effects.executes`, `verify ... from`
+evidence gates, and the `conform` runtime checker (SPEC Section 14).
 Known limitations: same-skill `run` arguments with unknown types (from
 `as`/`generate`/`run`) skip type conformance until dataflow inference
 lands; cross-skill runs are an unverified effect boundary. Next frontier:

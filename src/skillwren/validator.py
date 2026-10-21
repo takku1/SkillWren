@@ -1883,6 +1883,40 @@ RULE_EXPLAIN = {
           " overruns fail validation (SPEC Section 10).",
     "M1": "Dismissing an ask must mutate nothing, so no write may precede a"
           " dismissible ask on any path (SPEC Section 12).",
+    "W1": "Owns-when triggers are the routing surface, so two skills whose"
+          " triggers overlap will compete for the same requests"
+          " (SPEC Section 5).",
+    "W2": "Authority the header grants should be authority the flows use,"
+          " so a system-may entry no flow exercises is flagged as stale"
+          " (SPEC Section 7).",
+    "W3": "Decision asks and user-decides entries must name each other, so"
+          " an ask with no matching entry (or an entry no ask exercises)"
+          " leaves authority ambiguous (SPEC Section 7).",
+    "W4": "Generate steps are creative, so the appendix is where their"
+          " guidance lives; a generate with no appendix section is"
+          " unguided (SPEC Section 6).",
+    "W5": "A binding nothing reads is dead weight in the flow, so it is"
+          " flagged for removal (SPEC Section 6).",
+    "W6": "Effects entries audit against declared resources, so an entry"
+          " matching no resource cannot be checked (SPEC Section 8).",
+    "W7": "The header profile is closed, so unknown fields are ignored by"
+          " tooling and a name that differs from the skill id confuses"
+          " routing (SPEC Section 5).",
+    "W8": "A cross-skill run's effects live in another file, so the"
+          " single-file validator marks it as an unverified boundary"
+          " rather than a checked call (SPEC Section 11).",
+    "W9": "An otherwise repair must end in retry, return to, abort, or"
+          " return, so a repair that falls through continues in a state"
+          " the gate rejected (SPEC Section 12).",
+    "W10": "A statement no path reaches is dead control flow, usually a"
+           " sign the branch structure is not what the author meant"
+           " (SPEC Section 6).",
+    "W11": "Body ceilings default to 2500 tokens so skills stay cheap to"
+           " load; a higher declared ceiling is allowed but should be"
+           " justified in a comment (SPEC Section 10).",
+    "W12": "Apply specs are defined by appendix anchors, so a spec no"
+           " appendix item defines is prose the reader cannot resolve"
+           " (SPEC Section 13).",
 }
 
 USAGE = "usage: skillwren check [--all | --explain <file>... | <file>...]"
@@ -1937,6 +1971,8 @@ def main(argv):
                 print(f"  {RULE_EXPLAIN[d.rule]}")
         for d in sorted(warnings, key=lambda x: x.line):
             print(f"{path}:{d.line}: warning {d.rule}: {d.msg} -- {d.fix}")
+            if explain and d.rule in RULE_EXPLAIN:
+                print(f"  {RULE_EXPLAIN[d.rule]}")
         if errors:
             code = 1
     if code == 0:

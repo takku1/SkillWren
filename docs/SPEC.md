@@ -578,12 +578,16 @@ loop-scoped `for each` bindings; a workspace validator that
 resolves cross-skill `run` effects, authority, and dismissal safety;
 optional resources (`required: false` on resources, with reads and writes
 dominated by a presence guard).
-Planned from full-stack evidence (BF-1 to BF-6 in
-`docs/design/full-stack-backfill.md`): YAML-safe header values,
-budget-cap alignment, decline versus dismissal, host-compatibility
-notes, an `apply` anchor warning, and format 0.5 (`else:`,
-`access: read+write`, optional `purpose`, `release`), an `exec` action
-with `executes` effects (BF-7), and runtime conformance runs (BF-8).
+Shipped in 0.5 from full-stack evidence (BF-1 to BF-8 in
+`docs/design/full-stack-backfill.md`; see Section 19): YAML-safe header
+values, budget-cap alignment, decline versus dismissal,
+host-compatibility notes, an `apply` anchor warning, `else:`,
+`access: read+write`, optional `purpose` and `release`, an `exec`
+action with `executes` effects, and runtime conformance runs. Still
+deferred from that evidence: nesting SkillWren fields under an Agent
+Skills `metadata:` map (blocked on host-loader evidence) and real
+tokenizer-based budget counting (counts are `ceil(chars/4)` estimates,
+Section 10).
 
 ## 18. Glossary
 
@@ -602,6 +606,20 @@ on every path to the use.
 ## 19. Amendment log
 
 ### Unreleased
+
+Docs and explain refresh (no format change; the only validator change
+is `--explain` output):
+
+- `check --explain` prints its plain-language paragraph for warnings
+  too: RULE_EXPLAIN gains W1 to W12, so every code the validator can
+  emit is covered. A test scans the validator's emitted codes and
+  fails if any lacks an explanation. Previously warnings printed no
+  paragraph, so `--explain` added nothing on a warnings-only file.
+- README and the authoring guide are aligned to 0.5.0 (title version,
+  test and mutant counts, Status section); the CHANGELOG cuts the
+  0.5.0 release from its Unreleased pile; Section 17 no longer lists
+  the shipped BF-1 to BF-8 items as planned and records the two
+  still-deferred ones (a `metadata:` nesting, real token counting).
 
 ### v0.5 (format change): full-stack backfill BF-6, BF-7, BF-8
 

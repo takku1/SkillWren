@@ -211,8 +211,8 @@ not a format change: §5 already promises "YAML-compatible".
 - Order: BF-1 first, because BF-6 touches the same header parser.
 - Status: ready.
 
-**BF-7: running commands is a first-class effect (conditional: not yet
-authorized).**
+**BF-7: running commands is a first-class effect (authorized and
+built 2026-10-05, with the deviation recorded in Status).**
 
 - Problem: the vocabulary has no way to run a command, and `effects` has
   no `executes`. Yet running tests and scripts is the most common real
@@ -239,8 +239,8 @@ authorized).**
   - Mutants: drop an `executes` entry; drop the `from` binding.
   - Full-stack's implement flow rewritten with `exec` validates clean.
 
-**BF-8: runtime conformance for the release criteria (conditional: not
-yet authorized).**
+**BF-8: runtime conformance for the release criteria (authorized and
+built 2026-10-05).**
 
 - Problem: §1's release criteria ("zero undeclared mutations in eval
   scenarios; every required gate fires; user dismissals never mutate")
@@ -272,5 +272,7 @@ documented before it is enforced. BF-6 comes last.
 
 ## Blockers
 
-None for BF-1 to BF-6. BF-7 and BF-8 wait on the owner's decision. The deferred `metadata:` nesting is blocked on
+None for BF-1 to BF-6. BF-7 and BF-8 waited on the owner's decision
+(resolved: both authorized and built 2026-10-05 as SkillWren 0.5.0;
+see Status). The deferred `metadata:` nesting is blocked on
 evidence about host loaders, as listed under dispositions.

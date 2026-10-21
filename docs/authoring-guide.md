@@ -1,4 +1,4 @@
-# SkillWren Authoring Guide for Logic-First Skills (v0.4.1)
+# SkillWren Authoring Guide for Logic-First Skills (v0.5)
 
 Companion to `SPEC.md` (the contract).
 This guide is the procedure: follow it top to bottom to produce a conforming
