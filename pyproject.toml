@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "skillwren"
-version = "0.6.0"
-description = "Check agent-skill procedures: SkillWren skills and logic blocks inside ordinary SKILL.md flow files, with ordering invariants, reviewed conversions, and runtime conformance runs."
+version = "0.7.0"
+description = "Check agent-skill procedures and enforce them at runtime: static validation of logic blocks and order rules, a trusted-host guard controller, an isolated sandbox observer, and an evidence ledger."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }

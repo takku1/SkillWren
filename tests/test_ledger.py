@@ -60,7 +60,24 @@ class LedgerTests(unittest.TestCase):
     def test_unscoped_run_never_claims_complete(self):
         report = ledger.check(self.path)
         self.assertIsNone(report['execution_complete'])
-        self.assertEqual(report['outcome'], 'incomplete')
+        self.assertEqual(report['completeness'], 'unassessed')
+        self.assertEqual(report['outcome'], 'unassessed')
+
+    def test_valid_checks_pass_while_completeness_unassessed(self):
+        ledger.exec_step(self.path, self.first, [sys.executable, '-c', 'pass'])
+        report = ledger.check(self.path)
+        self.assertTrue(report['valid'])
+        self.assertTrue(report['ok'])
+        self.assertEqual(report['completeness'], 'unassessed')
+
+    def test_completeness_states(self):
+        _, path, _ = ledger.start(self.flow, self.directory, required=['security'])
+        ledger.exec_step(path, 'security', [sys.executable, '-c', 'pass'])
+        report = ledger.check(path)
+        self.assertTrue(report['valid'])
+        self.assertTrue(report['execution_complete'])
+        self.assertEqual(report['completeness'], 'complete')
+        self.assertEqual(report['outcome'], 'complete')
 
     def test_required_milestone_is_exact_and_must_succeed(self):
         _, path, _ = ledger.start(self.flow, self.directory, required=['security'])

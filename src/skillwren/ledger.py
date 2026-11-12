@@ -3,7 +3,7 @@
     skillwren ledger start <flow-file> [--label TEXT] [--dir DIR]
     skillwren ledger exec  <run> --step TEXT [--dir DIR] -- <command> [args...]
     skillwren ledger note  <run> --step TEXT [--artifact PATH]... [--dir DIR]
-    skillwren ledger check <run> [--require-evidence] [--json] [--dir DIR]
+    skillwren ledger check <run> [--require-evidence] [--require-completeness] [--json] [--dir DIR]
     skillwren ledger show  <run> [--dir DIR]
 
 `<run>` is the id `start` printed, or `latest`. Records live in
@@ -207,7 +207,8 @@ def check(path, require_evidence=False):
                                 "line": rule.get("line"), "exercised": exercised,
                                 "satisfied_by": sorted(set(satisfied)),
                                 "violations": violations})
-    report["ok"] = not report["integrity"] and not any(r["violations"] for r in report["rules"])
+    report["valid"] = not report["integrity"] and not any(r["violations"] for r in report["rules"])
+    report["ok"] = report["valid"]
     report["ordering_valid"] = not any(
         v["reason"] == "earlier step not completed"
         for r in report["rules"] for v in r["violations"])
@@ -222,8 +223,16 @@ def check(path, require_evidence=False):
         not report["missing_milestones"] and not report["integrity"]
         if required else None)
     report["ok"] = report["ok"] and not report["missing_milestones"]
-    report["outcome"] = ("violations" if report["integrity"] or any(r["violations"] for r in report["rules"])
-                         else "incomplete" if not report["execution_complete"] else "complete")
+    if report["integrity"] or any(r["violations"] for r in report["rules"]):
+        report["completeness"] = "violations"
+    elif not required:
+        report["completeness"] = "unassessed"
+    elif report["missing_milestones"]:
+        report["completeness"] = "incomplete"
+    else:
+        report["completeness"] = "complete"
+    report["outcome"] = ("complete" if report["completeness"] == "complete"
+                         else report["completeness"])
     return report
 
 
@@ -241,7 +250,8 @@ def _print_check(report):
             print("    warning: the earlier step was only self-reported")
         for v in rule["violations"]:
             print(f"    violation at step {v['seq']} {v['step']!r}: {v['reason']}")
-    print(f"ordering_valid={report['ordering_valid']}; execution_complete={report['execution_complete']}")
+    print(f"ordering_valid={report['ordering_valid']}; execution_complete={report['execution_complete']};"
+          f" completeness={report['completeness']} (valid={report['valid']})")
     for name in report["missing_milestones"]:
         print(f"  missing milestone: {name}")
     print(report["outcome"])
@@ -276,6 +286,8 @@ def main(argv):
     p_check = sub.add_parser("check", help="check the order rules against the recorded steps")
     p_check.add_argument("run")
     p_check.add_argument("--require-evidence", action="store_true")
+    p_check.add_argument("--require-completeness", action="store_true",
+                         help="fail when no required milestones were configured (unassessed)")
     p_check.add_argument("--json", action="store_true")
     p_show = sub.add_parser("show", help="list the recorded steps")
     p_show.add_argument("run")
@@ -312,6 +324,10 @@ def main(argv):
                 print(json.dumps(report, indent=2))
             else:
                 _print_check(report)
+            if args.require_completeness and report["completeness"] == "unassessed":
+                if not args.json:
+                    print("completeness unassessed: rerun with explicit --require milestones")
+                return 1
             return 0 if report["ok"] else 1
         show(path)
         return 0

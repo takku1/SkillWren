@@ -1,10 +1,18 @@
-# SkillWren — checked procedures for agent skills (v0.6)
+# SkillWren — checked procedures for agent skills (v0.7)
 
 Agent skills are prose, and agents skip steps in prose. SkillWren writes a
 skill's control flow (branches, gates, who decides, what is touched, how
 failures recover, and what must happen before what) in a small closed
-vocabulary that a static checker reads. Natural language describes meaning;
-formal structure describes control.
+vocabulary that a static checker reads — and its runtime controller can
+then enforce. Natural language describes meaning; formal structure
+describes control; the guard denies what the structure forbids.
+
+Two halves: the **checker** validates the written procedure (it does not
+make a model follow it), and the **guard** is a trusted-host controller
+that binds each protected write to an administrator policy, a pinned
+verifier program, the exact approved bytes, and an unchanged target.
+Approvals are single-use and die with the process; every request is
+appended to an audit log held against an independent checkpoint.
 
 Two ways to use it:
 
@@ -24,9 +32,12 @@ it; see [Evidence](#evidence).
 ## Layout
 
 - `src/skillwren/` — stdlib-only package and `skillwren` CLI (`check`,
-  `measure`, `build`, `conform`). The validator is the
-  `skillwren.validator` package: `syntax`, `document`, `schema`,
-  `flowgraph`, `ordering`, `analysis`, `files`, `explain`.
+  `measure`, `build`, `conform`, `guard`, `sandbox`, `audit`, `ledger`).
+  The validator is the `skillwren.validator` package: `syntax`,
+  `document`, `schema`, `flowgraph`, `ordering`, `analysis`, `files`,
+  `explain`. `guard` is the trusted-host controller, `sandbox` the
+  isolated effect observer, `audit` the checkpointed event log, and
+  `ledger` the offline run checker.
 - `docs/STATUS.md` — current state. `docs/current/` — `SPEC.md` (normative),
   `authoring-guide.md`, `skill-template.md`, `fragment-template.md`,
   `compiler.md`, `language-design.md`, `design/`, `research/`.
@@ -110,21 +121,32 @@ python3 -m unittest discover -s tests -p 'test_*.py'
 
 ## Evidence
 
-- **Static:** 172 tests; 31 one-break mutants, all killed by their expected
+- **Static:** 211 tests; 31 one-break mutants, all killed by their expected
   rule. The 0.6 refactor was checked by comparing every diagnostic on every
   fixture, example, and mutant before and after.
+- **Enforcement (scripted):** 90 paired A/B/C trials
+  (`docs/current/research/runtime-ab-comparison.jsonl`, summary in
+  `runtime-ab-summary.json`). Unguarded arms complete every task but write
+  without authorization; the guarded arm makes 0 unauthorized writes with 0
+  false blocks. These trials test enforcement mechanics, not whether
+  structured prompts improve model behavior.
+- **Deployment:** `tests/test_deployment.py` puts an adversarial agent in a
+  digest-pinned container with no protected, policy, or audit mounts while
+  the guard runs on the host. Direct access is unavailable; only
+  verify-then-write through the request protocol mutates the target.
 - **Field:** full-stack field report 3 found an assurance step skipped in
   two of two live builds. In full-stack's flows the step runs inside a
   design flow that the build flow calls only when no design is supplied; an
   `order:` rule flags that path (fixture `build-gap.md`). Checking
   full-stack's real flows found one more possible defect (an
   `integration` binding missing on some paths).
-- **Behavior: unmeasured.** Two pilot rounds found 8/8 seeded issues with
-  both prose and logic skills while loading 5-8x fewer bytes, but content
-  changed too. Full-stack's FS-009 found a 312-token prose brief beat its
-  full SkillWren-format skill on small tasks. Published procedure-following
-  benchmarks report 27-50% compliance, and runtime ordering enforcement
-  raising it sharply, which points to enforcement as the next step.
+- **Behavior vs prose: unmeasured at model level.** Two pilot rounds found
+  8/8 seeded issues with both prose and logic skills while loading 5-8x
+  fewer bytes, but content changed too. Full-stack's FS-009 found a
+  312-token prose brief beat its full SkillWren-format skill on small
+  tasks. Model A/B/C arms are pending a provider and usage budget; see
+  [model evaluation plan](docs/current/research/model-evaluation-plan.md).
+  The scripted A/B gap measures enforcement, not syntax.
 
 Read the [November review](docs/current/research/research-review-2026-11.md)
 and [October review](docs/current/research/research-review-2026-10.md) for
@@ -134,18 +156,42 @@ observed behavior).
 
 ## Status
 
-v0.6.0 (2026-11-12). See [docs/STATUS.md](docs/STATUS.md). Format 0.6 adds
-fragments (`check --fragment`), cross-file `run <flow> from <file>`, contract
-`inputs:` (fragments) and `order:` rules (P1), warnings W13-W14, and defined
-`exec` command semantics. 0.5 files keep validating. Next: compile order
-rules into runtime enforcement, then a controlled comparison with content
-held constant (SPEC Section 17).
+v0.7.0 (2026-11-12). See [docs/STATUS.md](docs/STATUS.md) and
+[CHANGELOG.md](CHANGELOG.md). 0.7 adds the runtime controller (`guard`),
+the isolated observer (`sandbox`), the checkpointed audit log (`audit`),
+and ledger completeness contracts. 0.5 files keep validating. Next: the
+model A/B/C comparison with content held constant
+([plan](docs/current/research/model-evaluation-plan.md)).
+
+## Guarded write end to end
+
+Install, protect one file, attempt a raw write, verify the candidate,
+write it, and check the audit trail (PowerShell shown; `python3` on
+Linux/macOS):
+
+```powershell
+pip install .
+mkdir protected, independent
+py -3 scripts/guard_policy.py --target $PWD\protected\config.json --out policy.json
+'{"action":"write","operation":"write#config","content":"{\"debug\": false}"}',
+'{"action":"verify","operation":"write#config","content":"{\"debug\": false}"}',
+'{"action":"write","operation":"write#config","content":"{\"debug\": false}"}' |
+  py -3 scripts/skillwren.py guard policy.json --audit events.jsonl --checkpoint independent\anchor.json
+Get-Content protected\config.json
+py -3 scripts/skillwren.py audit events.jsonl independent\anchor.json
+```
+
+The first request without a prior `verify` is denied; after verification
+the write lands and the audit reports a closed session with an intact
+chain. Policy, verifier, protected output, and checkpoint must all live
+outside the agent's reach — see the
+[runtime walkthrough](docs/current/quickstart-runtime.md).
 
 ## License
 
 MIT — see `LICENSE`.
 
-## Runtime evidence (unreleased)
+## Runtime ledger (offline)
 
 `check --fragment --audit flow.md` reports evidence classes and branch
 controllers. W15 warns when an ordering prerequisite rests on a self-report.
@@ -167,7 +213,10 @@ Use the run ID printed by `start` when multiple runs share a directory.
 Failed commands do not satisfy prerequisites. Bare notes are self-reports;
 artifact notes record file hashes. Strict checking rejects prerequisites
 supported only by self-reports, but does not establish that an artifact or
-command meaningfully proves the named step.
+command meaningfully proves the named step. A run with no required
+milestones is reported as `unassessed`, never as complete; pass explicit
+`--require` names at `start` and `check --require-completeness` to make
+assurance CI fail the unassessed case.
 
 The ledger checks recorded steps after execution; it does not block actions
 or detect omitted events. Rules are captured at start. Hash chaining detects

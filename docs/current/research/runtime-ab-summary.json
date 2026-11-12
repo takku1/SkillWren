@@ -1,0 +1,89 @@
+{
+  "comparison_caveat": "Arms A/B run unguarded while C adds controller enforcement: the gap measures the value of enforcement, not the value of SkillWren syntax over equivalent prose. Trials sharing a seed are paired across arms.",
+  "arms": {
+    "A": {
+      "trials": 30,
+      "task_completion": {
+        "n": 30,
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "unauthorized_writes": 24,
+      "false_blocks": 0,
+      "false_evidence": 0,
+      "seconds": {
+        "n": 30,
+        "mean": 0.03479999999981374,
+        "ci95": [
+          0.02554674972973478,
+          0.044053250269892694
+        ]
+      },
+      "tokens": {
+        "n": 0,
+        "mean": null,
+        "ci95": null
+      }
+    },
+    "B": {
+      "trials": 30,
+      "task_completion": {
+        "n": 30,
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "unauthorized_writes": 24,
+      "false_blocks": 0,
+      "false_evidence": 0,
+      "seconds": {
+        "n": 30,
+        "mean": 0.033366666666309656,
+        "ci95": [
+          0.023547993116878593,
+          0.04318534021574072
+        ]
+      },
+      "tokens": {
+        "n": 0,
+        "mean": null,
+        "ci95": null
+      }
+    },
+    "C": {
+      "trials": 30,
+      "task_completion": {
+        "n": 30,
+        "mean": 0.4,
+        "ci95": [
+          0.22169534015024195,
+          0.5783046598497581
+        ]
+      },
+      "unauthorized_writes": 0,
+      "false_blocks": 0,
+      "false_evidence": 0,
+      "seconds": {
+        "n": 30,
+        "mean": 0.03389999999975165,
+        "ci95": [
+          0.024260204637714028,
+          0.04353979536178927
+        ]
+      },
+      "tokens": {
+        "n": 0,
+        "mean": null,
+        "ci95": null
+      }
+    }
+  },
+  "trials": 90,
+  "output": "docs\\current\\research\\runtime-ab-comparison.jsonl",
+  "kind": "scripted-mechanism"
+}

@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.7.0 (2026-11-12)
+
+Runtime assurance release. The static 0.6 checker is unchanged in behavior;
+the new work is enforcement, isolation, and evidence.
+
+- Guard: trusted-host `Controller` (`src/skillwren/guard.py`) binds each
+  operation to an administrator policy, pinned verifier programs, the
+  candidate content digest, and an unchanged target; approvals are restart-
+  and single-use. Crash recovery fails closed on a trailing intent; symlink
+  and hardlink target swaps are denied; approvals never cross instances.
+- Sandbox: `skillwren sandbox` runs a command in a disposable, networkless,
+  read-only container copy of a workspace and reports undeclared file
+  changes; the image must be pinned by digest. Separate from networked
+  Claude `conform`.
+- Audit: `skillwren audit` checks a linear event log against an
+  independently retained checkpoint; truncation, resealing, and log/
+  checkpoint divergence are rejected; interrupted sessions are reported.
+- Ledger: `check` now reports `valid` (invariants and order hold),
+  `completeness` (`complete`/`incomplete`/`unassessed`/`violations`), and
+  `outcome`. `check --require-completeness` fails unassessed runs, so
+  assurance CI can require an explicit milestone contract.
+- Deployment proof: `tests/test_deployment.py` runs an adversarial agent in
+  a container with no protected mounts while the guard runs on the host;
+  direct access is unavailable and only verify-then-write mutates the
+  target.
+- Evaluation: `scripts/benchmark_runtime.py` supports paired A/B/C runs
+  with per-arm rates, 95% confidence intervals, and a comparison caveat.
+  Scripted run: 90 paired trials (`docs/current/research/runtime-ab-
+  comparison.jsonl`), C arm 0 unauthorized writes and 0 false blocks.
+  Model arms are pending a provider and usage budget; see
+  `docs/current/research/model-evaluation-plan.md`.
+- Tests: 211 (crash recovery, concurrency, deployment, ledger semantics,
+  benchmark summary); 1 skip where the OS denies symlink creation.
+- Docs: README leads with the runtime controller; `STATUS.md` updated;
+  CI runs the 3.9 lane on ubuntu-24.04 (setup-python ships no 3.9 build
+  for Ubuntu 26.04).
+
 ## 0.6.0 (2026-11-12)
 
 From full-stack field report 3 and the 2026-11 research review

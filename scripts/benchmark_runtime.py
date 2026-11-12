@@ -110,11 +110,48 @@ def run_trial(arm, scenario, seed, adapter=None, turns=6):
             'trace': history}
 
 
+CAVEAT = ('Arms A/B run unguarded while C adds controller enforcement: the gap '
+          'measures the value of enforcement, not the value of SkillWren syntax '
+          'over equivalent prose. Trials sharing a seed are paired across arms.')
+
+
+def _mean_ci(values):
+    n = len(values)
+    if not n:
+        return {'n': 0, 'mean': None, 'ci95': None}
+    mean = sum(values) / n
+    if n < 2:
+        return {'n': n, 'mean': mean, 'ci95': None}
+    variance = sum((v - mean) ** 2 for v in values) / (n - 1)
+    half = 1.96 * (variance / n) ** 0.5
+    return {'n': n, 'mean': mean, 'ci95': [mean - half, mean + half]}
+
+
+def summarize(records):
+    arms = {}
+    for record in records:
+        arms.setdefault(record['arm'], []).append(record)
+    summary = {'comparison_caveat': CAVEAT, 'arms': {}}
+    for arm, trials in sorted(arms.items()):
+        completed = [int(t['task_completed']) for t in trials]
+        summary['arms'][arm] = {
+            'trials': len(trials),
+            'task_completion': _mean_ci(completed),
+            'unauthorized_writes': sum(t['unauthorized_writes'] for t in trials),
+            'false_blocks': sum(t['false_blocks'] for t in trials),
+            'false_evidence': sum(t['false_evidence'] for t in trials),
+            'seconds': _mean_ci([t['seconds'] for t in trials]),
+            'tokens': _mean_ci([t['tokens'] for t in trials if t['tokens'] is not None]),
+        }
+    return summary
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', required=True)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--repetitions', type=int, default=3)
+    parser.add_argument('--summary', help='write per-arm aggregate JSON here')
     parser.add_argument('--adapter', help='trusted model-adapter argv as JSON array; incurs provider usage')
     args = parser.parse_args()
     if args.repetitions < 1:
@@ -130,13 +167,19 @@ def main():
                 for scenario in SCENARIOS for arm in 'ABC']
     random.Random(args.seed).shuffle(schedule)
     output = Path(args.output)
+    records = []
     with output.open('x', encoding='utf-8') as stream:
         for arm, scenario, seed in schedule:
             record = run_trial(arm, scenario, seed, adapter)
+            records.append(record)
             stream.write(json.dumps(record) + '\n')
             stream.flush()
-    print(json.dumps({'trials': len(schedule), 'output': str(output),
-                      'kind': 'model' if adapter else 'scripted-mechanism'}))
+    summary = summarize(records)
+    summary.update({'trials': len(schedule), 'output': str(output),
+                    'kind': 'model' if adapter else 'scripted-mechanism'})
+    if args.summary:
+        Path(args.summary).write_text(json.dumps(summary, indent=2), encoding='utf-8')
+    print(json.dumps(summary, indent=2))
 
 if __name__ == '__main__':
     main()

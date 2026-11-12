@@ -163,6 +163,132 @@ class GuardProcessTests(unittest.TestCase):
             self.assertEqual(store.records[-1]['type'], 'stop')
             self.assertNotIn('debug', (root / 'log').read_text())
 
+class CrashRecoveryTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        script = str(ROOT / 'examples/guard/verify_config.py')
+        self.policy = {'version': 1, 'operations': {'write#config': {
+            'target': str(self.root / 'target'), 'argv': [PYTHON, '-I', script],
+            'pins': {PYTHON: file_digest(PYTHON), script: file_digest(script)},
+            'timeout': 5}}}
+        self.policy_path = self.root / 'policy.json'
+        self.policy_path.write_text(json.dumps(self.policy))
+        self.log, self.checkpoint = self.root / 'log', self.root / 'anchor'
+
+    def run_guard(self, stdin_text):
+        import subprocess
+        return subprocess.run(
+            [PYTHON, str(ROOT / 'scripts/skillwren.py'), 'guard', str(self.policy_path),
+             '--audit', str(self.log), '--checkpoint', str(self.checkpoint)],
+            input=stdin_text, text=True, capture_output=True)
+
+    def test_trailing_intent_refuses_restart(self):
+        # Crash between recording intent and recording the result: the next
+        # start must fail closed until the host reconciles the real output.
+        store = AuditStore(self.log, self.checkpoint)
+        store.append({'type': 'start'})
+        store.append({'type': 'intent', 'request_sha256': 'crashed'})
+        proc = self.run_guard('')
+        self.assertEqual(proc.returncode, 2, proc.stdout)
+        self.assertIn('unfinished', proc.stderr)
+
+    def test_clean_stop_allows_restart(self):
+        self.assertEqual(self.run_guard('').returncode, 0)
+        self.assertEqual(self.run_guard('').returncode, 0)
+        self.assertEqual(AuditStore(self.log, self.checkpoint).records[-1]['type'], 'stop')
+
+    def test_crash_between_log_and_checkpoint_fails_closed(self):
+        from skillwren.ledger import _seal
+        store = AuditStore(self.log, self.checkpoint)
+        store.append({'type': 'start'})
+        record = _seal({'seq': 1, 'type': 'injected'}, store.records[-1]['hash'])
+        with self.log.open('a', encoding='utf-8') as stream:
+            stream.write(json.dumps(record, sort_keys=True) + '\n')
+        with self.assertRaises(AuditError):
+            AuditStore(self.log, self.checkpoint)
+
+    def test_audit_reports_interrupted_session(self):
+        import subprocess
+        store = AuditStore(self.log, self.checkpoint)
+        store.append({'type': 'start'})
+        store.append({'type': 'intent', 'request_sha256': 'crashed'})
+        proc = subprocess.run(
+            [PYTHON, str(ROOT / 'scripts/skillwren.py'), 'audit',
+             str(self.log), str(self.checkpoint)],
+            text=True, capture_output=True)
+        self.assertEqual(proc.returncode, 1, proc.stdout)
+        self.assertIn('"interrupted_sessions": 1', proc.stdout)
+
+class ConcurrencyTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        self.target = self.root / 'sensitive.json'
+        script = str(ROOT / 'examples/guard/verify_config.py')
+        self.policy = {'version': 1, 'operations': {'write#config': {
+            'target': str(self.target), 'argv': [PYTHON, '-I', script],
+            'pins': {PYTHON: file_digest(PYTHON), script: file_digest(script)},
+            'timeout': 5}}}
+        self.guard = Controller(self.policy)
+        self.content = '{"debug": false}'
+
+    def request(self, action, content=None):
+        return {'action': action, 'operation': 'write#config',
+                'content': self.content if content is None else content}
+
+    def test_approvals_do_not_cross_instances(self):
+        # A second process (or instance) cannot spend another's verification.
+        self.guard.handle(self.request('verify'))
+        with self.assertRaises(Denied):
+            Controller(self.policy).handle(self.request('write'))
+
+    def test_concurrent_writes_share_one_approval(self):
+        import threading
+        barrier = threading.Barrier(2)
+        outcomes = []
+
+        def worker():
+            try:
+                self.guard.handle(self.request('verify'))
+                barrier.wait(timeout=30)
+                outcomes.append(self.guard.handle(self.request('write')))
+            except (Denied, Exception) as error:
+                outcomes.append(error)
+
+        threads = [threading.Thread(target=worker) for _ in range(2)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join(timeout=60)
+        self.assertEqual(len([o for o in outcomes if isinstance(o, dict)]), 1)
+        self.assertEqual(len([o for o in outcomes if isinstance(o, Denied)]), 1)
+
+    def test_symlink_swapped_target_denied(self):
+        self.guard.handle(self.request('verify'))
+        decoy = self.root / 'decoy.json'
+        decoy.write_text('{}')
+        self.target.unlink(missing_ok=True)
+        try:
+            self.target.symlink_to(decoy)
+        except OSError:
+            self.skipTest('symlinks need extra privilege here')
+        with self.assertRaises(Denied):
+            self.guard.handle(self.request('write'))
+
+    def test_hardlinked_target_denied(self):
+        self.target.write_text(self.content)
+        self.guard.handle(self.request('verify'))
+        try:
+            import os
+            os.link(self.target, self.root / 'alias.json')
+        except OSError:
+            self.skipTest('hardlinks unsupported here')
+        with self.assertRaises(Denied):
+            self.guard.handle(self.request('write'))
+
 class SandboxTests(unittest.TestCase):
     def test_unpinned_image_refused_before_docker(self):
         from skillwren.sandbox import run
@@ -183,4 +309,19 @@ class BenchmarkTests(unittest.TestCase):
             self.assertEqual(guarded['unauthorized_writes'], 0, scenario)
             self.assertEqual(guarded['false_blocks'], 0, scenario)
             self.assertEqual(guarded['kind'], 'scripted-mechanism')
+
+    def test_summary_reports_rates_cis_and_caveat(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('runtime_benchmark', ROOT / 'scripts/benchmark_runtime.py')
+        benchmark = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(benchmark)
+        records = [benchmark.run_trial('A', 'skip', seed) for seed in (7, 8, 9)]
+        records += [benchmark.run_trial('C', 'legitimate', seed) for seed in (7, 8, 9)]
+        summary = benchmark.summarize(records)
+        self.assertIn('enforcement, not the value of SkillWren syntax', summary['comparison_caveat'])
+        self.assertEqual(summary['arms']['C']['unauthorized_writes'], 0)
+        self.assertEqual(summary['arms']['C']['task_completion']['mean'], 1.0)
+        arm_a = summary['arms']['A']
+        self.assertGreater(arm_a['unauthorized_writes'], 0)
+        self.assertIsNotNone(arm_a['seconds']['ci95'])
 
