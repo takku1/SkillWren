@@ -109,7 +109,7 @@ def _append(path, record):
     return sealed
 
 
-def start(flow_file, directory=DEFAULT_DIR, label=None):
+def start(flow_file, directory=DEFAULT_DIR, label=None, required=()):
     flow_file = Path(flow_file)
     if not flow_file.is_file():
         raise LedgerError(f"no flow file {flow_file}")
@@ -122,7 +122,7 @@ def start(flow_file, directory=DEFAULT_DIR, label=None):
     record = _seal({"type": "start", "seq": 0, "time": _now(), "run": run,
                     "file": str(flow_file), "file_sha256": _digest_file(flow_file),
                     "layout": "fragment" if fragment else "skill", "rules": rules,
-                    "label": label}, None)
+                    "label": label, "required": list(required)}, None)
     path = directory / f"{run}.jsonl"
     with path.open("x", encoding="utf-8") as stream:
         stream.write(json.dumps(record, sort_keys=True) + "\n")
@@ -208,6 +208,22 @@ def check(path, require_evidence=False):
                                 "satisfied_by": sorted(set(satisfied)),
                                 "violations": violations})
     report["ok"] = not report["integrity"] and not any(r["violations"] for r in report["rules"])
+    report["ordering_valid"] = not any(
+        v["reason"] == "earlier step not completed"
+        for r in report["rules"] for v in r["violations"])
+    report["evidence_valid"] = (not any(
+        v["reason"] == "earlier step only self-reported"
+        for r in report["rules"] for v in r["violations"])) if require_evidence else None
+    required = head.get("required", [])
+    report["missing_milestones"] = [name for name in required if not any(
+        e.get("step") == name and completed(e)
+        and (not require_evidence or e.get("class") != "self") for e in steps)]
+    report["execution_complete"] = (
+        not report["missing_milestones"] and not report["integrity"]
+        if required else None)
+    report["ok"] = report["ok"] and not report["missing_milestones"]
+    report["outcome"] = ("violations" if report["integrity"] or any(r["violations"] for r in report["rules"])
+                         else "incomplete" if not report["execution_complete"] else "complete")
     return report
 
 
@@ -225,7 +241,10 @@ def _print_check(report):
             print("    warning: the earlier step was only self-reported")
         for v in rule["violations"]:
             print(f"    violation at step {v['seq']} {v['step']!r}: {v['reason']}")
-    print("ok" if report["ok"] else "violations")
+    print(f"ordering_valid={report['ordering_valid']}; execution_complete={report['execution_complete']}")
+    for name in report["missing_milestones"]:
+        print(f"  missing milestone: {name}")
+    print(report["outcome"])
 
 
 def show(path):
@@ -245,6 +264,8 @@ def main(argv):
     p_start = sub.add_parser("start", help="commit to a flow file's order rules and open a run")
     p_start.add_argument("flow_file")
     p_start.add_argument("--label")
+    p_start.add_argument("--require", action="append", default=[], dest="required",
+                         help="exact required milestone name (repeatable)")
     p_exec = sub.add_parser("exec", help="run a command (no shell) and record its result as evidence")
     p_exec.add_argument("run")
     p_exec.add_argument("--step", required=True)
@@ -269,7 +290,7 @@ def main(argv):
     args = parser.parse_args(argv)
     try:
         if args.action == "start":
-            run, path, rules = start(args.flow_file, args.dir, args.label)
+            run, path, rules = start(args.flow_file, args.dir, args.label, args.required)
             if not rules:
                 print("skillwren ledger: the flow file has no order rules; steps are recorded,"
                       " nothing is checked", file=sys.stderr)

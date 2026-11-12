@@ -1,6 +1,8 @@
 """Plain-language explanations for every diagnostic code (`check --explain`)."""
 
 RULE_EXPLAIN = {
+    "P2": "Stable operation IDs must be unique within a document so an ordering"
+          " rule cannot silently refer to two different operations.",
     "F1": "The contract header is machine-readable metadata with a strict"
           " schema, so every required field, type, and flag must be"
           " well-formed (SPEC Section 5).",

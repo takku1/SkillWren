@@ -195,3 +195,15 @@ control-flow graph and enforces what v0.3 only described:
 - Refactor CLI dispatch and share evidence classification across checks.
 - Preserve child arguments after `ledger exec --`; cover the parser fix
   and ledger semantics with six regression tests.
+
+## Experimental runtime assurance
+
+- Add a policy-bound `guard` controller with fixed verifiers, exact candidate
+  hashes, target-version binding, single-use approvals and restart revocation.
+- Add independently retained audit checkpoints and recorder-session checks.
+- Add an offline Docker `sandbox` effect observer and real isolation probes.
+- Add exact typed ordering references and duplicate-ID diagnostic P2.
+- Add runtime mutation tests, randomized scripted A/B/C trials, a trusted
+  model-adapter interface, a Linux/Windows CI matrix, and wheel smoke tests.
+- Keep static validity, mechanism tests, deployment assumptions and model
+  reliability measurements explicitly separate.

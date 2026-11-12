@@ -1,0 +1,23 @@
+{
+  "kind": "container mechanism test, not a model benchmark",
+  "image": "python@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b",
+  "probes": {
+    "root_write": true,
+    "protected_write": true,
+    "docker_socket_absent": true,
+    "network_denied": true
+  },
+  "requests": [
+    {
+      "denied": "missing, stale or consumed verification"
+    },
+    {
+      "verified": "write#config",
+      "input_sha256": "91b415068e9e02958c86464025e0c061ed4e6df05b175751c9fa627e9983e989"
+    },
+    {
+      "written": "write#config",
+      "sha256": "91b415068e9e02958c86464025e0c061ed4e6df05b175751c9fa627e9983e989"
+    }
+  ]
+}

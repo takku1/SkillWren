@@ -173,3 +173,42 @@ The ledger checks recorded steps after execution; it does not block actions
 or detect omitted events. Rules are captured at start. Hash chaining detects
 edits within the retained chain, but cannot detect a fully rewritten chain
 or truncation of its tail without an independently retained checkpoint.
+
+## Codex
+
+This checkout includes a Codex skill at `.agents/skills/skillwren/SKILL.md`.
+Start a new Codex session in this repository and ask:
+`Use $skillwren to check tests/fixtures/fragments/skill/flows/build-fixed.md`.
+The skill uses the same checker and ledger as other hosts. See the
+[official skill documentation](https://learn.chatgpt.com/docs/build-skills).
+
+No installation or API key is needed for static checking or ledger commands:
+
+```powershell
+py -3 scripts/skillwren.py check --fragment --summary --audit tests/fixtures/fragments/skill/flows/build-fixed.md
+```
+
+On macOS/Linux use `python3 scripts/skillwren.py` with the same arguments.
+From another project, use the absolute path to this checkout's launcher;
+input paths and ledger output remain relative to your current directory.
+For conversion, the Codex skill links to the canonical conversion procedure
+and repository documentation. Keep this checkout available; copying only
+its skill folder into another project will break those relative references.
+
+`check`, `measure`, `build`, and `ledger` are host-independent. `conform`
+currently launches Claude Code and does **not** evaluate Codex runs. The
+ledger can record commands Codex executes, but is not a Codex hook and does
+not enforce actions or prove model adherence.
+
+### Ledger completion scope
+
+At start, repeat `--require "exact milestone name"` to commit required
+milestones. The report separates `ordering_valid`, `evidence_valid`, and
+`execution_complete`. Without declared milestones, completion is unknown
+(`null`) and the outcome is `incomplete`; the legacy `ok` field and exit
+status still report the requested ordering/evidence checks. With milestones,
+missing successful exact-name events fail the check. Completion describes
+recorded milestones only, not independent proof of actual execution.
+
+See the [independent review response](docs/current/design/independent-review-response.md)
+for unresolved verifier binding, trusted enforcement and benchmark work.

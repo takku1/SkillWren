@@ -1048,3 +1048,43 @@ It checks the written procedure, not the model's behavior: whether the
 agent actually performs the earlier step is a runtime question for
 hooks, guards, or `conform`. The research review ranks compiling order
 rules into such enforcement as the next step (Section 17).
+
+## Experimental runtime interface (unreleased)
+
+`guard` is a trusted-host JSON-lines controller, distinct from the advisory
+ledger and Claude `conform` observer. See [runtime quickstart](quickstart-runtime.md)
+and [design and research](design/runtime-assurance.md) for deployment conditions.
+
+Policy version 1 contains exactly `version` and `operations`. Each operation
+ID maps to an absolute `target`, fixed string-list `argv`, file-SHA256 `pins`
+(including the executable), and a positive `timeout` no greater than 60 seconds.
+Trusted verifier scripts and all runtime dependencies must be protected by
+host permissions. Requests contain exactly `action`, `operation`, `content`;
+`action` is `verify` or `write`. `{"action":"status"}` is also supported.
+Candidate text is limited to 1 MiB UTF-8. The verifier receives those exact
+bytes on stdin and must return JSON with literal `ok: true` and the matching
+`input_sha256`, and exit zero. Extra fields in its result are ignored.
+
+A write requires a successful verification bound to the same candidate and
+target preimage. Evidence is consumed on a write attempt and not persisted
+across restart. There is no command or path field in an agent request. This
+binding verifies the declared predicate, not the general meaning of a label
+such as "security review". The example predicate checks only `debug: false`.
+The host must prevent direct access to the target; the library alone cannot.
+
+An independent checkpoint records audit length and head. `audit LOG ANCHOR`
+checks consistency and interrupted recorder sessions. It proves neither
+cryptographic authenticity nor absence of out-of-controller activity. An
+unfinished intent requires host reconciliation. Run one writer per audit pair.
+
+Typed order patterns `verify#review before write#output` match statements
+`verify #review ...` and `write #output ...` by exact verb and ID. IDs use
+lowercase letters, digits and hyphens, beginning with a letter. Duplicate
+IDs within a document are P2. Text patterns retain prior prefix semantics.
+Typed IDs do not change variable binding, gate success, or branch inference.
+
+`ledger start --require NAME` captures exact required milestones. Its report
+separates `ordering_valid`, mechanism-level `evidence_valid` (null unless
+strict checking was requested), and recorded `execution_complete` (null if
+no milestones were declared). Completion does not imply evidence relevance,
+coverage of unrecorded effects, or independent authenticity.

@@ -102,7 +102,20 @@ def commands_from(events):
 def undeclared_commands(commands, executes_declared):
     if executes_declared:
         return []
-    return [c for c in commands if not c.strip().startswith(READ_ONLY_COMMANDS)]
+    # A deliberately small exact-token language, not a shell parser. Unknown
+    # options, paths, quoting and shell operators receive no exemption.
+    allowed = {
+        "status": {"--short", "--porcelain", "--branch", "-s", "-b"},
+        "diff": {"--stat", "--name-only", "--name-status", "--cached", "--staged"},
+    }
+    def exempt(command):
+        if any(c in command for c in "\r\n\x00"):
+            return False
+        words = command.split()
+        return (len(words) >= 2 and words[0] == "git"
+                and words[1] in allowed
+                and all(w in allowed[words[1]] for w in words[2:]))
+    return [c for c in commands if not exempt(c)]
 
 
 def skill_digest(skill_path):

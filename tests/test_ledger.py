@@ -56,3 +56,26 @@ class LedgerTests(unittest.TestCase):
     def test_missing_command_is_usage_error(self):
         with self.assertRaises(ledger.LedgerError):
             ledger.exec_step(self.path, self.first, [])
+
+    def test_unscoped_run_never_claims_complete(self):
+        report = ledger.check(self.path)
+        self.assertIsNone(report['execution_complete'])
+        self.assertEqual(report['outcome'], 'incomplete')
+
+    def test_required_milestone_is_exact_and_must_succeed(self):
+        _, path, _ = ledger.start(self.flow, self.directory, required=['security'])
+        ledger.note_step(path, 'security notes')
+        self.assertFalse(ledger.check(path)['execution_complete'])
+        ledger.exec_step(path, 'security', [sys.executable, '-c', 'raise SystemExit(1)'])
+        self.assertFalse(ledger.check(path)['execution_complete'])
+        ledger.exec_step(path, 'security', [sys.executable, '-c', 'pass'])
+        self.assertTrue(ledger.check(path)['execution_complete'])
+
+class CommandPolicyTests(unittest.TestCase):
+    def test_shell_and_git_option_bypasses_are_not_exempt(self):
+        from skillwren.conform import undeclared_commands
+        attacks = ['git status; echo bad', 'git diff && echo bad',
+                   'git status\necho bad', 'git diff --output=target',
+                   'git diff --ext-diff', 'git status $(echo bad)', 'git statusx']
+        self.assertEqual(undeclared_commands(attacks, False), attacks)
+        self.assertEqual(undeclared_commands(['git status --short', 'git diff --stat'], False), [])

@@ -90,3 +90,17 @@ argument forwarding, failed and successful evidence, strict self-report
 checking, tampering, and missing commands. The ledger is an offline trace
 checker, not runtime enforcement. Unrecorded actions, rewritten chains,
 and tail truncation remain outside its guarantees.
+
+## Runtime assurance work — 2026-11-12
+
+Implemented: trusted-host guard, verifier/input/target binding, restart and
+single-use evidence, retained checkpoints, audit coverage reporting, isolated
+command observation, typed operation references, CI definition, scripted
+A/B/C harness and short onboarding. See
+`current/design/runtime-assurance.md` and `current/quickstart-runtime.md`.
+
+The guard's reference deployment denies the agent direct protected mounts;
+ordinary same-account Codex/Claude shells are not automatically confined.
+The offline sandbox command is separate from networked Claude `conform`.
+Model A/B/C runs await a model/provider and usage budget. Remote CI and branch
+protection are not established merely by adding a workflow locally.

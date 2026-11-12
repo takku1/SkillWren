@@ -491,6 +491,17 @@ def analyze_document(doc, workspace):
     errors, warnings = list(doc.errors), list(doc.warnings)
     if not doc.readable:
         return errors, warnings, {}
+    # IDs are unique within a document. Cross-file run guarantees retain the
+    # callee's document scope; no natural-language predicate inference occurs.
+    identifiers = set()
+    for root in doc.trees.values():
+        for node in walk(root):
+            identity = re.match(r"[a-z]+\s+#([a-z][a-z0-9-]*)(?=\s|$)", node.text)
+            if identity:
+                if identity[1] in identifiers:
+                    errors.append(Diag(node.line, "P2", "duplicate operation ID " + identity[1],
+                                       "Use one stable ID per operation in a document."))
+                identifiers.add(identity[1])
     # Preserve independent fence diagnostics, but do not run semantic passes
     # against a header whose container/type invariants failed validation.
     if any(diag.rule == "F1" for diag in errors):
