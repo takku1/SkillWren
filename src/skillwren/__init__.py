@@ -1,12 +1,14 @@
-"""SkillWren: logic-first skills.
+"""SkillWren: checked procedures for agent skills.
 
-Skills written as logic instead of prose: a contract header for cheap,
-headers-only routing plus a closed control vocabulary with gates,
-authority, effects, and local recovery.
+Skills keep their prose meaning, and their control flow (gates, authority,
+effects, recovery, ordering) is written in a closed vocabulary that a static
+checker can read. Complete SkillWren skills carry a contract header; flow
+fragments embed `logic` blocks in ordinary Markdown next to a SKILL.md that
+keeps only the host fields.
 """
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
-from .validator import validate_file, validate_files
+from .validator import validate_file, validate_files, validate_fragment
 
-__all__ = ["__version__", "validate_file", "validate_files"]
+__all__ = ["__version__", "validate_file", "validate_files", "validate_fragment"]

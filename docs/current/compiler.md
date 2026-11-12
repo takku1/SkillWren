@@ -124,7 +124,9 @@ automatic summary, semantic compression, network retrieval, or hidden selection.
 This is an initial compiler using the existing grammar and its documented
 analysis limits. Stronger types, named verifier implementations, scoped approval
 tokens, automatic requirement mapping, and richer source-mapped diagnostics
-remain future work. Warnings are retained in the manifest and counted in the
+remain future work. `build` compiles complete skills only; flow-file
+fragments (SPEC Section 20) are checked with `check --fragment` and are not
+built or measured as a unit yet. Warnings are retained in the manifest and counted in the
 CLI result. Error locations currently refer to the generated `SKILL.md`;
 context spans identify originating files, but general location remapping is
 not yet built.

@@ -2,6 +2,11 @@
 
 Date: 2026-10-21. Baseline: `d2735af` (0.5.0 documentation).
 
+Follow-up: the [November review](research-review-2026-11.md) applies this
+framework to full-stack field report 3 and recent procedure-following and
+runtime-enforcement work, and records what format 0.6 changed. Section
+references below to the SPEC predate 0.6.
+
 This is a literature-informed engineering review and a proposed experimental
 program, not a completed empirical study or a proof of soundness. The local
 experiments below use synthetic sessions; no paid model experiments were run.
@@ -45,8 +50,8 @@ validated.
 
 ## What the current pilots establish
 
-The preserved [round 1](../benchmarks/benchmark-report.md) and
-[round 2](../benchmarks/benchmark-report-r2.md) reports describe one paired
+The preserved [round 1](../../../benchmarks/benchmark-report.md) and
+[round 2](../../../benchmarks/benchmark-report-r2.md) reports describe one paired
 comparison per round, one model, parent-authored targets and scoring, and
 simulated interactive questions. Both representations find eight seeded
 issues in each round. The logic skill loads substantially fewer bytes.
@@ -105,8 +110,8 @@ covered and which model/host assumptions remain outside the theorem.
 
 ## Reproduced engineering faults and repairs
 
-See [runtime tests](../tests/test_conform.py) and
-[input tests](../tests/test_input_robustness.py). Regressions were run against
+See [runtime tests](../../../tests/test_conform.py) and
+[input tests](../../../tests/test_input_robustness.py). Regressions were run against
 the original behavior before fixes; further tests cover related boundaries.
 
 | Fault | Consequence | Change |
@@ -202,13 +207,13 @@ language for agent procedures**, with a small formal control core, explicit
 evidence/authority boundaries, and multiple host backends. A terse syntax by
 itself is unlikely to be the important novelty.
 
-The [language design](language-design.md) specifies
+The [language design](../language-design.md) specifies
 what preservation means, how source context connects to control nodes, and
 which promises need a compiler, a verifier, or empirical evidence. The research
 program should be judged by those explicit obligations, not a universal
 compression ratio or a few successful demonstrations.
 
-An [initial Markdown compiler](compiler.md) now implements exact source
+An [initial Markdown compiler](../compiler.md) now implements exact source
 retention and full expansion of declared context. It reuses the existing
 control-language checks and distinguishes opaque examples/data from executable
 blocks. This is an implementation of the retention layer, not empirical

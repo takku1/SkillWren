@@ -21,16 +21,18 @@ REAL_RUN = subprocess.run
 
 class TestSession(unittest.TestCase):
     def run_case(self, mutate=lambda work: None, result=None, returncode=0,
-                 workspace=None, events=()):
+                 workspace=None, events=(), claude=None, seen=None):
         args = argparse.Namespace(workspace=workspace, auth_from_profile=False,
                                   prompt="add a note", model="offline", budget_usd=0.1,
-                                  timeout=10)
+                                  timeout=10, claude=claude)
         if result is None:
             result = {"type": "result", "subtype": "success", "is_error": False}
 
         def fake_run(command, **kwargs):
-            if command[0] != "claude":
+            if Path(command[0]).stem != "claude":
                 return REAL_RUN(command, **kwargs)
+            if seen is not None:
+                seen.append(command)
             mutate(Path(kwargs["cwd"]))
             return subprocess.CompletedProcess(command, returncode,
                                                "\n".join(json.dumps(e) for e in [*events, result]), "")
@@ -105,6 +107,24 @@ class TestSession(unittest.TestCase):
             self.assertEqual((source / "private/old.txt").read_text(), "before")
 
 
+    def test_commands_are_reported_and_undeclared_ones_flagged(self):
+        def bash(command):
+            return {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "Bash", "input": {"command": command}}]}}
+        report = self.run_case(events=[bash("git status --short"), bash("py -3 build.py")])
+        self.assertEqual(report["commands"], ["git status --short", "py -3 build.py"])
+        self.assertEqual(report["undeclared_commands"], ["py -3 build.py"])
+
+    def test_resolved_launcher_path_is_used(self):
+        seen = []
+        self.run_case(claude="C:/tools/npm/claude.cmd", seen=seen)
+        self.assertEqual(seen[0][0], "C:/tools/npm/claude.cmd")
+
+    def test_windows_interpreters_are_allowed(self):
+        for tool in ("Bash(python:*)", "Bash(python3:*)", "Bash(py:*)"):
+            self.assertIn(tool, conform.TOOLS)
+
+
 class TestCli(unittest.TestCase):
     argv = [str(SKILL), "--prompt", "x", "--model", "offline", "--budget-usd", "0.1"]
 
@@ -123,6 +143,22 @@ class TestCli(unittest.TestCase):
                 patch.object(conform, "run_session", side_effect=OSError("offline failure")), \
                 contextlib.redirect_stderr(io.StringIO()):
             self.assertEqual(conform.main(self.argv), 2)
+
+    def test_record_keeps_successes_and_errors(self):
+        report = dict(skill="notes-skill", changed=["x"], cost_usd=0, undeclared=["x"],
+                      effects_without_glob=[], dismissal_violation=False)
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(conform.shutil, "which", return_value="claude"), \
+                contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            with patch.object(conform, "run_session", return_value=report):
+                self.assertEqual(conform.main(self.argv + ["--record", directory]), 1)
+            with patch.object(conform, "run_session", side_effect=ValueError("no result")):
+                self.assertEqual(conform.main(self.argv + ["--record", directory]), 2)
+            lines = (Path(directory) / conform.RECORD_FILE).read_text(encoding="utf-8").splitlines()
+        entries = [json.loads(line) for line in lines]
+        self.assertEqual([e["outcome"] for e in entries], ["violations", "error"])
+        self.assertEqual(entries[1]["error"], "no result")
+        self.assertEqual(len(entries[0]["skill_sha256"]), 64)
 
     def test_invalid_limits_do_not_start_session(self):
         with patch.object(conform, "run_session") as run:

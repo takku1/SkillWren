@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "skillwren"
-version = "0.5.0"
-description = "Convert SKILL.md into tighter, validated logic with reviewed requirements and measured context savings."
+version = "0.6.0"
+description = "Check agent-skill procedures: SkillWren skills and logic blocks inside ordinary SKILL.md flow files, with ordering invariants, reviewed conversions, and runtime conformance runs."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }

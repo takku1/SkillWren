@@ -37,7 +37,7 @@ budget: { header: 400, body: 2500 }
 # My Skill
 
 TODO: copy this file, rename the skill, then work the TODOs top to
-bottom. Procedure: docs/authoring-guide.md. This preamble is ignored.
+bottom. Procedure: docs/current/authoring-guide.md. This preamble is ignored.
 
 ```contract
 resources:

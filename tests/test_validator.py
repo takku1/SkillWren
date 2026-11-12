@@ -40,7 +40,7 @@ class TestValidFiles(unittest.TestCase):
 
     def test_skill_template_is_clean(self):
         errors, warnings = skillwren.validate_file(
-            str(ROOT / "docs/skill-template.md"))
+            str(ROOT / "docs/current/skill-template.md"))
         self.assertEqual(errors, [])
         self.assertEqual(warnings, [])
 
@@ -64,7 +64,7 @@ class TestHostYaml(unittest.TestCase):
             self.skipTest("PyYAML not installed")
         paths = sorted(FIX.glob("valid-*.md")) + [ROOT / "examples/theme-factory.golden.md",
                                                   ROOT / "examples/code-reviewer.md",
-                                                  ROOT / "docs/skill-template.md"]
+                                                  ROOT / "docs/current/skill-template.md"]
         for path in paths:
             with self.subTest(path=path.name):
                 header = path.read_text(encoding="utf-8").split("---\n", 2)[1]
@@ -627,11 +627,13 @@ class TestExplainCoverage(unittest.TestCase):
     """Every diagnostic code the validator can emit has a --explain entry."""
 
     def test_all_emitted_codes_explained(self):
-        import inspect
         import re
         import skillwren.validator as v
-        src = inspect.getsource(v)
+        package = Path(v.__file__).parent
+        src = "\n".join(p.read_text(encoding="utf-8") for p in sorted(package.glob("*.py"))
+                        if p.name != "explain.py")
         emitted = set(re.findall(r'["\']([A-Z]\d{1,2})["\']', src))
+        self.assertGreater(len(emitted), 30)  # the scan must see the rule sources
         missing = sorted(c for c in emitted if c not in v.RULE_EXPLAIN)
         self.assertEqual(missing, [])
 

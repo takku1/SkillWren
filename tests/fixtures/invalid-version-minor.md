@@ -2,7 +2,7 @@
 skill: tiny
 name: tiny
 description: Minimal fixture skill.
-version: 0.6
+version: 0.7
 purpose: Do the thing.
 accepts:
   input: { type: Text, required: true }

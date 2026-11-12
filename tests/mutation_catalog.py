@@ -13,6 +13,7 @@ BASES = {
     "golden": "examples/theme-factory.golden.md",
     "else": "tests/fixtures/valid-else.md",
     "exec": "tests/fixtures/valid-exec.md",
+    "order": "tests/fixtures/valid-order.md",
 }
 
 
@@ -163,4 +164,23 @@ MUTANTS = [
          "  exec acceptance checks from checks as results\n",
          "  exec acceptance checks from checks as outcome\n")},
      "rules": {"U1", "W5"}},
+    # --- order base (format 0.6; field report 3, G1: a skipped earlier step) ---
+    {"name": "order-later-step-early",
+     "edits": {"order": sub(
+         "  generate copy from input as output\n",
+         "  generate copy from input as output\n  return output as output\n")},
+     "rules": {"P1"}},
+    {"name": "order-earlier-step-conditional",
+     "edits": {"order": sub(
+         "  verify output passes the acceptance checks from results\n"
+         "    otherwise:\n      abort with \"Checks failed; nothing returned.\"\n",
+         "  if output needs checking:\n"
+         "    verify output passes the acceptance checks from results\n"
+         "      otherwise:\n        abort with \"Checks failed; nothing returned.\"\n")},
+     "rules": {"P1"}},
+    {"name": "order-repair-falls-through",
+     "edits": {"order": sub(
+         "      abort with \"Checks failed; nothing returned.\"\n",
+         "      show output\n")},
+     "rules": {"P1"}},
 ]

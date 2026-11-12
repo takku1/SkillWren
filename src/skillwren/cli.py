@@ -1,17 +1,32 @@
-"""SkillWren console entry point."""
+"""SkillWren console entry point: one table of subcommands.
+
+`check` takes the full argv (it predates the table); every other
+subcommand receives the arguments after its name. Modules load lazily so
+`check` stays stdlib-only and fast.
+"""
+import importlib
 import sys
 
-from .validator import main as _main
+COMMANDS = {
+    "measure": ("skillwren.metrics", "compare measured context sizes"),
+    "build": ("skillwren.compiler", "compile and package a reviewed skill"),
+    "conform": ("skillwren.conform", "run a skill headless and compare effects"),
+    "ledger": ("skillwren.ledger", "record a run's steps and check its order rules"),
+}
+
+
+def dispatch(argv):
+    name = argv[1] if len(argv) > 1 else None
+    if name in COMMANDS:
+        module = importlib.import_module(COMMANDS[name][0])
+        return module.main(argv[2:])
+    from .validator import main as check_main
+    code = check_main(argv)
+    if code == 2 and name not in (None, "check"):
+        print("other commands: " + ", ".join(
+            f"{cmd} ({text})" for cmd, (_module, text) in COMMANDS.items()))
+    return code
 
 
 def main() -> None:
-    if len(sys.argv) > 1 and sys.argv[1] == "measure":
-        from .metrics import main as measure_main
-        sys.exit(measure_main(sys.argv[2:]))
-    if len(sys.argv) > 1 and sys.argv[1] == "build":
-        from .compiler import main as build_main
-        sys.exit(build_main(sys.argv[2:]))
-    if len(sys.argv) > 1 and sys.argv[1] == "conform":
-        from .conform import main as conform_main
-        sys.exit(conform_main(sys.argv[2:]))
-    sys.exit(_main(sys.argv))
+    sys.exit(dispatch(sys.argv))

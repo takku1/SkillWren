@@ -1,6 +1,51 @@
 # Changelog
 
-## Unreleased
+## 0.6.0 (2026-11-12)
+
+From full-stack field report 3 and the 2026-11 research review
+(`docs/current/research/research-review-2026-11.md`). Format 0.6 is
+additive: 0.5.x files keep validating.
+
+- Fragments: `skillwren check --fragment` checks `logic` blocks embedded in
+  ordinary Markdown flow files (optional frontmatter and contract, prose
+  anywhere, foreign code fences ignored, prose anchors `apply` steps).
+  Full-stack's flow files were rejected by 0.5 and now check;
+  `flows/implement.md` is clean and `flows/design.md` shows one U1
+  (`integration`), reported upstream.
+- Cross-file runs: `run <flow> from <file> with:` resolves beside the file
+  and up to the skill root; returns bind in the caller, a mutating callee
+  counts for M1, and unresolvable targets are R3.
+- Order rules: contract `order:` entries (`<earlier> before <later>`) and
+  error P1 when a path reaches the later step without the earlier one
+  completing. Failed gates establish nothing; runs count when the callee
+  guarantees the step on every return. Reproduces field report 3's G1.
+- Contract `inputs:` for fragments (strict U1); otherwise inputs are
+  inferred from unbound and presence-tested names. `check --summary`
+  prints them.
+- Warnings W13 (order rule never applies) and W14 (fragment without
+  logic). `check` flags may appear in any order; unknown flags are usage
+  errors.
+- SPEC: `exec` command text is an argument list without a shell (D3);
+  goals reordered so header routing is an optional convention; research
+  grounding adds procedure-following and runtime-enforcement work; new
+  Section 20; Section 17 re-ranked around enforcement and a controlled
+  comparison.
+- `conform`: allows `python`, `python3`, and `py`; launches the resolved
+  `claude` path; reports commands and fails undeclared ones;
+  `--record DIR` appends a JSONL run log including errors.
+- Refactor: `validator.py` split into the `skillwren.validator` package
+  with a shared must-dataflow solver and a `FlowAnalysis` class; every
+  diagnostic on every fixture, example, and mutant compared before and
+  after.
+- Tests: 172 (fragment suite, conform additions, template check);
+  mutation catalog gains a fourth base with three P1 mutants (31 total,
+  0 misses).
+- Docs: `docs/STATUS.md`; active docs moved to `docs/current/`, the
+  shipped backfill design to `docs/archive/2026-10-05-full-stack-backfill/`;
+  new fragment template, design note, and research review; authoring
+  guide gains flow files, order rules, and mistakes 23-25.
+
+Also first released here (developed after 0.5.0):
 
 - Optimization workflow (no format change): `measure` and `build --original/--review`
   add hash-bound manual requirement review, exact cl100k_base token or
@@ -140,3 +185,13 @@ control-flow graph and enforces what v0.3 only described:
   available as `python -m skillwren check <file>...`.
 - Spec: Section 15 now describes the shipped CLI surface; `--all` and
   `--explain` are deferred to a later release.
+
+## Unreleased: evidence and runtime traces
+
+- Add evidence auditing (`check --audit`) and W15 for self-reported ordering
+  prerequisites, informed by the game-theory research note.
+- Add the runtime ledger with command execution, artifact hashes, captured
+  order rules, strict evidence checking, and chained records.
+- Refactor CLI dispatch and share evidence classification across checks.
+- Preserve child arguments after `ledger exec --`; cover the parser fix
+  and ledger semantics with six regression tests.

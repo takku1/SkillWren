@@ -1,10 +1,19 @@
-# SkillWren Authoring Guide for Logic-First Skills (v0.5)
+# SkillWren Authoring Guide for Logic-First Skills (v0.6)
+
+Two ways to use SkillWren. **Complete skills** carry the contract header
+and are checked with `skillwren check`; the 12 steps below build one.
+**Flow files** keep `SKILL.md` to the host fields and put `logic` blocks
+in on-demand Markdown files, checked with `skillwren check --fragment`
+(see "Flow files and order rules" below). Full-stack, the one skill in
+long-term use, moved to flow files in its 0.4.0 because hosts ignore the
+header and it cost about 400 tokens per run. Choose flow files unless a
+tool you run reads the header.
 
 Companion to `SPEC.md` (the contract).
 This guide is the procedure: follow it top to bottom to produce a conforming
 skill. Audience: humans and agents authoring new skills or converting prose
 skills. Prerequisite: read spec Sections 4-8 before your first skill; keep
-`../examples/theme-factory.golden.md` open beside you.
+`../../examples/theme-factory.golden.md` open beside you.
 
 ## The 12 steps
 
@@ -195,6 +204,60 @@ Hash-bound maps reject stale or incomplete bookkeeping, but cannot prove
 semantic equivalence. Behavioral trials must record wrong turns, repair loops,
 coverage, and verified outcomes, with costs unavailable when not exposed.
 
+## Flow files and order rules
+
+Start from [fragment-template.md](fragment-template.md). Layout:
+
+- `SKILL.md`: `name`, `description`, a short core of always-on rules, and a
+  table saying which flow file to read when. Keep it small; instruction
+  volume costs adherence as well as tokens.
+- `flows/<name>.md`: prose, one or more `logic` blocks, and a
+  `## Step meanings` list that defines every `apply` step. Code fences in
+  other languages are fine; they are treated as examples.
+- Calls between files: `run design from flows/design.md with:`. Paths
+  resolve beside the file, then up to the folder holding `SKILL.md`.
+
+Check with `skillwren check --fragment flows/*.md`. Add `--summary` to
+see each flow's inputs, writes, and runs: inputs are inferred from names
+the flow uses but never binds and names it presence-tests (`require
+request exists`, `unless design is known:`), so a typo can show up there
+as an "input". To make that strict, list inputs in the contract:
+
+```text
+inputs:
+  request, design, subject
+```
+
+**Order rules: make the skipped step impossible to skip silently.** If a
+step must happen before another, write it as a rule:
+
+```text
+order:
+  apply assurance screen before write implementation
+```
+
+The checker then follows every path. The usual way this breaks is the one
+field report 3 found: the earlier step lives inside a called flow, and the
+caller calls it only on some paths (`unless design is known: run design`).
+A supplied design skips the screen, and P1 points at the write. Fix it by
+putting a gate on every path, with a repair that does the step:
+
+```text
+verify design has an assurance table
+  otherwise:
+    apply assurance screen with design as design
+    retry
+```
+
+A gate counts only when it passes, and a `run` counts only when the
+callee does the step on every path that returns. Use the full statement
+prefix as the pattern; W13 warns when the later step matches nothing,
+which is how misspelled rules show up.
+
+Order rules check the procedure as written. They do not make a model
+follow it. For that, pair the rule with runtime evidence: a guard script
+whose log shows the earlier step ran, a hook, or a `conform` run.
+
 ## Piloting a conversion side-by-side
 
 For a side-by-side pilot, use a distinct skill id (the original id plus a
@@ -241,6 +304,17 @@ conversion.
     (SPEC §12). If independent work should survive a no, repair by
     marking the dependent work and continuing; abort only when nothing
     useful remains.
+23. A required step reachable only through a conditional call — when the
+    step that matters runs inside a flow that is called only on some
+    paths, every other path skips it. State it as an `order:` rule and
+    gate it on every path (field report 3, G1).
+24. Quoted or piped commands in an `exec` line or a guard's `--each` —
+    commands run as argument lists without a shell, so inner quotes are
+    lost; put anything beyond plain arguments in a script file
+    (SPEC Section 6; field report 3, D3).
+25. Writing `python` for a script call — on Windows it can be a
+    Microsoft Store stub (exit 49); say "the interpreter that works:
+    `python3`, `python`, or `py -3`" (field report 3, D2).
 
 ## Report-producing skills (round-2 learnings)
 
@@ -338,4 +412,8 @@ walk at least one happy path and one failure path by hand.
 - [ ] Reviewer can answer what it touches, requires, and who decides
 - [ ] Same task class behaves the same across flows (early-return
   branches agree on side effects such as registry writes)
+- [ ] Flow files: `check --fragment` clean, `--summary` inputs reviewed
+  for typos
+- [ ] Every "must happen before" in the prose is an `order:` rule, and
+  no rule warns W13
 

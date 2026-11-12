@@ -1,13 +1,17 @@
 # SkillWren — Skill Logic Architecture (Contract-Header + Logic-Body)
 
-- Date: 2026-10-01
-- Status: v0.4.1 (2026-10-01)
+- Date: 2026-10-01; last revised 2026-11-12
+- Status: format 0.6 (package 0.6.0, 2026-11-12)
 - Source idea: `brainstorm - to be deleted.md` (theme-factory agent-DSL sketch)
-- Direction: contract-header + logic-body (direction 1 of 3 proposed; user-approved)
+- Direction: contract-header + logic-body (direction 1 of 3 proposed;
+  user-approved). From 0.6 the checked unit is the `logic` block, which can
+  live in a complete SkillWren skill or as a fragment inside an ordinary
+  Markdown flow file (Section 20).
 - Document set: this spec (contract), `authoring-guide.md` (authoring
-  procedure, template, checklists), `../examples/theme-factory.golden.md`
-  (worked golden example). Shipped with the SkillWren validator
-  (`src/skillwren/`, CLI: `skillwren check <file>...`).
+  procedure, template, checklists), `fragment-template.md` (flow-file
+  starting point), `../../examples/theme-factory.golden.md` (worked golden
+  example). Shipped with the SkillWren validator (`src/skillwren/validator/`,
+  CLI: `skillwren check [--fragment] <file>...`).
 
 ## 1. Problem and goals
 
@@ -18,17 +22,26 @@ skill format that is frictionless to trigger and tight on context.
 
 Goals:
 
-1. Cut context: relevance decisions use ~400-token headers, never full bodies.
-   This is the SkillWren routing convention for tooling that adopts it;
-   current hosts (Claude Code, Codex) select skills from `name` and
-   `description` only (Section 16).
-2. Raise precision: sequencing, gates, authority, and effects are mechanically
-   checked; transform specifications (`apply`/`generate` prose) are structured
-   but advisory — prose describes meaning, including what a transform should do.
+1. Raise precision: sequencing, gates, authority, effects, and ordering are
+   mechanically checked; transform specifications (`apply`/`generate` prose)
+   are structured but advisory — prose describes meaning, including what a
+   transform should do.
+2. Check what agents tend to skip. Procedure-following benchmarks find that
+   agents complete tasks far more often than they follow the required steps,
+   and field use of full-stack showed the same: an assurance step skipped in
+   two of two live builds. Ordering rules (Section 20) let a skill state
+   "A before B" and have every path checked.
 3. Stay frictionless: plain `.md` files that work with today's agents and gain
-   checking/enforcement as tooling adopts the spec.
+   checking/enforcement as tooling adopts the spec. A skill may keep only the
+   host fields in `SKILL.md` and still check its flow files (Section 20).
 4. Be verifiable: a static validator answers "what can this touch, what does it
-   require, who decides" without executing anything.
+   require, who decides, what must come first" without executing anything.
+5. Context (optional): a SkillWren-aware router could decide relevance from
+   ~400-token headers (Section 9). No current host does: Claude Code and
+   Codex select from `name` and `description` only (Section 16), and the
+   one maintained consumer (full-stack 0.4.0) dropped the header because it
+   cost about 400 tokens per run with no host benefit. Treat header routing
+   as a convention for tooling that adopts it, not a reason to add a header.
 
 Evaluation goals: headers fit the token ceiling; selected benchmark
 conversions target at most half the original tokens while preserving behavior;
@@ -44,8 +57,9 @@ behavior.
   enforceable later; this release is contract plus static validation.
 - No automatic prompt compression (direction 3). Structure delivers the first
   context win; compression layers on afterward.
-- No named reusable failure handlers, no skill inheritance/imports, no
-  versioning story, no marketplace, no new file extension.
+- No named reusable failure handlers, no skill inheritance, no versioning
+  story, no marketplace, no new file extension. (0.6 adds one narrow form
+  of import: `run <flow> from <file>`, Section 11.)
 
 ## 3. Research grounding
 
@@ -66,6 +80,26 @@ behavior.
   <https://arxiv.org/pdf/2608.14590>
 - LLMLingua / LongLLMLingua (prompt compression, fewer tokens with gains):
   <https://arxiv.org/abs/2310.05736>
+- Typestate (Strom and Yemini, 1986): an object's operations are legal only
+  in certain states, checked statically over control flow. Order rules
+  (Section 20) apply the same idea to procedure steps.
+- AgentSpec (ICSE 2026): trigger, predicate, and enforcement rules that
+  intercept agent actions at run time:
+  <https://arxiv.org/abs/2503.18666>
+- Agent-C: Before/After/Forall ordering constraints over tool calls,
+  enforced during generation with SMT; reported conformance rising to 100%:
+  <https://arxiv.org/abs/2512.23738>
+- AgentLTL: first-order LTL rules over agent traces, scored offline or
+  gated online (date unusual; verify the listing before citing):
+  <https://huggingface.co/papers/2607.02599>
+- SOPBench and SOP-Bench: agents follow standard operating procedures in
+  roughly 27-50% of cases even when tasks complete:
+  <https://arxiv.org/abs/2503.08669>, <https://arxiv.org/abs/2506.08119>
+- JourneyBench: routing an agent through workflow states beats one static
+  prompt: <https://arxiv.org/abs/2601.00596>
+- IFScale (NeurIPS 2025): instruction-following accuracy falls as the number
+  of simultaneous instructions grows, with a bias toward earlier ones:
+  <https://arxiv.org/abs/2507.11538>
 
 Guiding principle (from the brainstorm doc): natural language describes meaning;
 formal structure describes control.
@@ -80,10 +114,17 @@ invariants, and local recovery. Optional prose appendices cover steps that
 are genuinely creative and must not be proceduralized.
 
 Lifecycle: author writes header plus body; validator checks the file statically;
-the agent loads headers only, routes by trigger plus satisfied preconditions,
-loads the winning body on demand, executes gates in order, and chains via typed
-`run`. Five units with clean interfaces: header schema, body language,
-validator, router/loader convention, authoring template.
+the host routes on `description` (a SkillWren-aware router could route on
+headers, Section 9), loads the body when the skill runs, and the model
+follows the gates in order and chains via `run`. Nothing executes the
+logic: it is checked instruction text. Five units with clean interfaces:
+header schema, body language, validator, router/loader convention,
+authoring template.
+
+Fragment variant (0.6): `SKILL.md` keeps only `name` and `description`
+and a short core; flow files hold `logic` blocks among prose and are
+checked with `check --fragment`, including runs between them and `order:`
+rules (Section 20). This is how full-stack is built.
 
 ## 5. Contract header schema
 
@@ -188,7 +229,8 @@ positive integers (F1).
 
 Each flow lives in its own fenced block with info string `logic`; each file
 has exactly one fenced block with info string `contract` carrying `resources:`,
-`always:`, and `never:` sections in that order. Mislabelled, misplaced, or
+`always:`, and `never:` sections in that order, optionally followed by
+`order:` (0.6, Section 20). Mislabelled, misplaced, or
 duplicated fences fail validation. The vocabulary is closed, in five groups:
 
 - Actions change or retrieve (13): `open, read, write, save, show, ask,
@@ -253,6 +295,18 @@ bind with `as` (V1), its source must be covered by `effects.executes`
 change anything it reaches. `verify <condition> from <name>` names the
 binding that holds the gate's evidence, usually an `exec` result, which
 must be bound (U1).
+
+The `<command>` text of `exec` is opaque to the validator. Runners and
+guards should treat it as an argument list split like a POSIX shell and
+run without a shell: quotes group words and are then removed, and pipes,
+redirects, `&&`, and nested quoting have no meaning. A command that needs
+any of those, or a one-liner for another shell (`sh -c '...'`,
+`powershell -Command "..."`), belongs in a script file that the `from`
+resource names. Field report 3 (2026-11-12) recorded both failure
+directions: a quoted pattern that lost its quotes failed falsely, and the
+reverse case, a grep that silently matches less and passes, is worse. Name
+the interpreter the host actually has: on Windows `python` and `python3`
+can be Microsoft Store stubs and only `py -3` works.
 
 Binding is path-sensitive: a name must be bound on every control-flow path
 to its use (definite binding, U1). Bindings created inside a branch are
@@ -339,6 +393,9 @@ guide step 10).
 
 ## 9. Discovery and routing (headers-only protocol)
 
+Status: a convention for SkillWren-aware routers. No current host
+implements it (Section 16); nothing in the validator depends on it.
+
 The agent parses frontmatter from every skill file and never opens bodies
 during selection. Matching order: `owns-when` overlap score, then `accepts`
 satisfiability (caller can supply required inputs), then header `requires`
@@ -394,8 +451,20 @@ is rejected outright.
 
 A cross-skill `run` is an unverified effect boundary (W8): the single-file
 validator cannot see the callee's effects, authority, or dismissal safety,
-so it warns once per call site instead of checking. Resolving external
-runs is the top priority for the future workspace validator.
+so it warns once per call site instead of checking.
+
+Cross-file runs (0.6): `run <flow> from <relative file> with:` invokes the
+named logic block in another file. The validator resolves the path beside
+the calling file, then in each parent directory up to the skill root (the
+nearest directory holding `SKILL.md`). A path that does not resolve, or a
+file without that flow, is R3. A resolved callee is checked in part: its
+returned names bind in the caller, a callee that writes, saves, or
+executes (directly or through its own runs) counts as a mutation for M1,
+and a callee that completes an order rule's earlier step on every
+returning path satisfies that rule at the call site (Section 20). Its
+effects are not reconciled with the caller's header, so in a complete
+skill a cross-file run still warns W8; fragments have no header to
+reconcile and do not warn.
 
 ## 12. Failure semantics
 
@@ -458,7 +527,8 @@ Errors:
 - R2 returns: `return` naming an undeclared `produces` entry; `produces`
   entry never returned by any flow; reachable path falling off the end
   without `return`/`abort`; flow with no reachable terminal.
-- R3 run: `run` target naming no flow in the file.
+- R3 run: `run` target naming no flow in the file; a cross-file `run ...
+  from <file>` whose file does not resolve or has no such flow.
 - R4 required inputs: a `required: true` accepts entry used by a flow
   without a leading `require <name> exists`.
 - T1 for-each type: iterating a binding whose declared type is known and
@@ -486,8 +556,12 @@ Errors:
 - O1 block structure: `otherwise:` not directly under a fallible gate;
   statements nested where no block is allowed.
 - B1 budget: header/body token overruns; a declared header ceiling above 400.
-- M1 dismissal: a resource write (or call to a mutating same-skill flow)
-  on a path to a dismissible `ask`.
+- M1 dismissal: a resource write (or call to a mutating same-skill or
+  resolved cross-file flow) on a path to a dismissible `ask`.
+- P1 order (0.6): a statement matching an order rule's later step is
+  reachable on a path where the earlier step has not completed (Section 20).
+- F2 also covers malformed `order:` entries and an `inputs:` section in a
+  complete skill (fragments only).
 
 Warnings:
 
@@ -503,7 +577,10 @@ Warnings:
 - W10 unreachable statement.
 - W11 declared body ceiling above the 2500-token default.
 - W12 `apply` spec with no appendix anchor: no appendix list item or
-  paragraph contains all of the spec's content words.
+  paragraph contains all of the spec's content words. In fragments every
+  line outside the semantic blocks counts as appendix text.
+- W13 order rule that never applies: its later step matches no statement.
+- W14 fragment without a `logic` block: nothing was checked.
 
 Output is a file/line list with one-line fixes.
 
@@ -535,6 +612,18 @@ cannot reach a user headless, so it is a dismissal). It spends model usage,
 so it is opt-in and never part of `check` or CI. It samples behavior; a
 conforming run is evidence for that prompt, not proof for all inputs.
 
+From 0.6 the report also lists the shell commands the session ran
+(`commands`); running any besides read-only `git status`/`git diff` while
+the header declares no `effects.executes` is an undeclared command and
+fails conformance. This is coarse: with `executes` declared, commands are
+listed but not matched to resources. The session may use `python`,
+`python3`, or `py` so scripts work on Windows hosts, and the resolved
+`claude` path is launched so npm `.cmd` shims work. `--record DIR` appends
+one JSON line per run to `DIR/conform-runs.jsonl`, including errors, with
+the skill folder's sha256, prompt, model, budget, and outcome. Failed runs
+stay in the record: full-stack's guard log showed that kept failures, and
+a log a fresh session can query, are what make handoff trustworthy.
+
 The observer compares before/after file contents independently of Git status,
 including ignored files and the installed skill. A failed process, missing
 terminal result, or unsuccessful terminal result is an environment/session
@@ -557,12 +646,15 @@ the semantic-only fence rule for these explicitly marked context blocks.
 
 ## 15. Authoring kit and migration
 
-Ship a one-file template (`docs/skill-template.md`), the validator as a
+Ship a one-file template (`docs/current/skill-template.md`), the validator as a
 CLI (`skillwren check <file>...`, exit 0 clean, 1 on errors;
 `check --all` checks every `*.md` under the current directory except
 `benchmarks/archive/` with a one-line summary per file, exit 1 when any
 file fails; `check --explain <file>...` adds a plain-language paragraph
-per error naming the SPEC section; `conform` as described in Section 14),
+per diagnostic naming the SPEC section; `check --fragment <file>...` checks
+flow files (Section 20); `check --summary` lists each flow's inputs,
+writes, and runs; flags may appear in any order; `conform` as described in
+Section 14), the flow-file template (`docs/current/fragment-template.md`),
 and the `authoring-guide.md` companion
 guide, which carries the full procedure, template, and checklists. New
 skills start from the template; prose-first drafting is allowed only as a
@@ -592,27 +684,46 @@ script (Section 8).
 
 ## 17. Future work
 
-EBNF grammar plus parser; constrained-decoding profile; measured compression
-layer; cross-skill imports; named failure handlers only after three skills
+Ranked by the 2026-11 review (`research/research-review-2026-11.md`):
+
+1. Enforcement backends: compile order rules and `verify ... from`
+   evidence gates into host hooks or guard preconditions (for example a
+   Claude Code PreToolUse hook that refuses an edit until the earlier step
+   left evidence). This is condition 5 of the controlled evaluation in the
+   2026-10 review, and the clearest route from checked text to checked runs.
+2. A controlled comparison with content held constant: the same procedure
+   as prose, as SkillWren fragments, and as fragments plus enforcement.
+   Without it no claim about the format's effect on behavior is supported.
+3. Order rules across flow entry points (today each flow is checked from
+   its own entry), and identifiers so rules and `allow` can cite exact
+   invariants.
+4. Path-sensitive branch conditions, so repeated conditions such as
+   `if subject has X` can be correlated instead of reported as U1.
+5. A run log query (`conform --history`): pass/fail counts and the last run
+   per skill hash, as full-stack's report proposed for its guard.
+
+Carried forward: EBNF grammar plus parser; constrained-decoding profile;
+measured compression layer; named failure handlers only after three skills
 demonstrably need them; invariant identifiers so `allow` can reference the
 exact `never` it narrows instead of word overlap; repair-provenance and
 dataflow-correctness analysis (accepted corrections must reach the values
 they repair); dataflow type inference (binding types from `run` outputs
 and transforms, so `for each` checks more than declared inputs);
-loop-scoped `for each` bindings; a workspace validator that
-resolves cross-skill `run` effects, authority, and dismissal safety;
-optional resources (`required: false` on resources, with reads and writes
-dominated by a presence guard).
+loop-scoped `for each` bindings; effect and authority reconciliation for
+dotted cross-skill runs (cross-file `run ... from` resolution shipped in
+0.6); optional resources (`required: false` on resources, with reads and
+writes dominated by a presence guard).
 Shipped in 0.5 from full-stack evidence (BF-1 to BF-8 in
-`docs/design/full-stack-backfill.md`; see Section 19): YAML-safe header
+`docs/archive/2026-10-05-full-stack-backfill/full-stack-backfill.md`; see Section 19): YAML-safe header
 values, budget-cap alignment, decline versus dismissal,
 host-compatibility notes, an `apply` anchor warning, `else:`,
 `access: read+write`, optional `purpose` and `release`, an `exec`
 action with `executes` effects, and runtime conformance runs. Still
 deferred from that evidence: nesting SkillWren fields under an Agent
 Skills `metadata:` map (blocked on host-loader evidence) and real
-tokenizer-based budget counting (counts are `ceil(chars/4)` estimates,
-Section 10).
+tokenizer-based budget counting in `check` (its counts are
+`ceil(chars/4)` estimates, Section 10; `skillwren measure` gives exact
+cl100k_base counts for conversions).
 
 ## 18. Glossary
 
@@ -626,11 +737,48 @@ target inside a flow. Repair block: an `otherwise:` block with its owning
 gate. Dismissal safety: no mutation on any path to a user decision.
 Kebab-case: `[a-z0-9]+(-[a-z0-9]+)*` identifiers. Frontmatter Profile: the
 strict YAML-compatible header grammar (Section 5). Definite binding: bound
-on every path to the use.
+on every path to the use. Fragment: a Markdown file whose `logic` blocks
+are checked without a SkillWren header (Section 20). Order rule: an
+`A before B` contract entry checked over every path (Section 20).
 
 ## 19. Amendment log
 
-### Unreleased
+### v0.6 (format change, 2026-11-12): fragments, cross-file runs, order rules
+
+Additive: every 0.5.x file that validated clean still does. Evidence:
+full-stack field report 3 (MochiOS, 2026-11-12), full-stack 0.4.0 dropping
+the header (D-017), and the literature in the 2026-11 research review.
+
+- Fragment layout (`check --fragment`, Section 20). Full-stack's flow files
+  embed `logic` blocks in prose next to a `SKILL.md` with only `name` and
+  `description`; 0.5 rejected every one of them (F1/F2), so the format's
+  only maintained consumer could not be checked at all.
+- `run <flow> from <file> with:` resolves another file's flow (Section 11),
+  binding its returns, propagating mutation to M1, and carrying order
+  guarantees. Full-stack's implement flow already used this form.
+- Contract `order:` rules and new error P1 (Section 20). Field report 3
+  found the assurance screen skipped in two of two live builds; in
+  full-stack's flows the screen runs inside `design`, which `implement`
+  calls only when no design is supplied. The rule
+  `apply assurance screen before write implementation` flags that path.
+- Contract `inputs:` (fragments only): declared inputs make U1 strict.
+- Warnings W13 (order rule never applies) and W14 (fragment without
+  logic).
+- `exec` command text is defined as an argument list without a shell
+  (Section 6), from field report 3 finding D3.
+- Mutation catalog: a fourth base (`valid-order`) with three one-break
+  mutants (later step early, earlier step conditional, repair falls
+  through), all killed by P1.
+- Runtime: `conform` allows `python`/`python3`/`py`, launches the resolved
+  `claude` path, lists commands and fails undeclared ones, and can append
+  a run record (`--record`).
+- Internal: the validator is now a package of focused modules (syntax,
+  document, schema, flowgraph, ordering, analysis, files, explain). Every
+  diagnostic on every fixture, example, and mutant was compared before and
+  after the split; the only differences were the version number in
+  messages.
+
+### Unreleased (0.5 docs refresh, released with 0.6.0)
 
 Docs and explain refresh (no format change; the only validator change
 is `--explain` output):
@@ -751,7 +899,7 @@ Final hardening pass, no format change:
   prints a one-line summary per file, and exits 1 when any file fails;
   `check --explain <file>...` adds a plain-language paragraph per
   error naming the violated SPEC section.
-- One-file template ships at `docs/skill-template.md` (Section 15
+- One-file template ships at `docs/current/skill-template.md` (Section 15
   promise): header with every required field, one contract block, one
   logic flow exercising ask/confirm, one `otherwise` repair, `# TODO`
   markers at each fill site. It passes `skillwren check` clean and is
@@ -838,3 +986,65 @@ trial conversion of code-reviewer plus benchmark rounds 1-2 (`benchmarks/`).
    200 fit no real header; bodies stay under 2500).
 8. Flow/fence set mismatch is an error; the unimplementable `unused flow`
    warning is removed.
+
+## 20. Fragments and ordering (0.6)
+
+### Fragments
+
+A fragment is a Markdown file that embeds `logic` blocks among ordinary
+prose, such as the on-demand flow files of a skill whose `SKILL.md` keeps
+only the host fields. `skillwren check --fragment <file>...` checks them.
+
+Layout. Frontmatter is optional; if present it must parse (F1) but is not
+held to the SkillWren header schema. A `contract` block is optional and,
+if present, precedes the logic blocks and may hold `always:`, `never:`,
+`inputs:`, and `order:` in that order (`resources:` is not available: a
+fragment declares no effects). Prose may sit anywhere. Code fences in
+other languages are opaque examples, not errors. Every line outside the
+semantic blocks counts as appendix text for W12, so a "Step meanings" list
+anchors `apply` steps.
+
+What is checked: the control vocabulary and block structure (V1, O1),
+labels and retries (L1, L3), termination (R2), definite binding (U1),
+loop rules (L1, T1 where types are known), same-file and cross-file run
+targets (R3), recursion (L2), authority structure (A1, A2), dismissal
+safety (M1), order rules (P1), apply anchors (W12), and unused bindings
+(W5). What is not: resource targets and effect coverage (E1-E4), the header
+(F1 schema, F3, R1, R4, B1), and authority-list coverage (W2, W3).
+
+Inputs. With an `inputs:` list, those names are bound at entry and every
+other name must be bound on every path (U1). Without one, inputs are
+inferred: names that are used but never bound in the flow, plus names the
+flow tests for presence (`require request exists`, `unless design is
+known:`). A name bound on only some paths and never presence-tested stays
+subject to U1. `check --summary` prints the inferred inputs so a typo
+that became an "input" is visible.
+
+### Order rules
+
+```text
+order:
+  apply assurance screen before write implementation
+```
+
+Each entry is `<earlier> before <later>`, with `before` exactly once
+(F2 otherwise). Both sides are statement prefixes, compared after
+lowercasing and collapsing spaces; `*` matches any text. The rule holds
+when, on every path through a flow, a statement matching the earlier step
+has completed before any statement matching the later step starts (P1).
+
+- A gate completes only when it passes: the edge into its `otherwise:`
+  repair carries the facts from before the gate, so a repair that falls
+  through does not satisfy the rule.
+- A `run` completes the earlier step when every returning path of the
+  callee (same file or cross-file) completes it.
+- A step inside a branch completes it only on that branch's paths.
+- Each flow is checked from its own entry, because a host can enter any
+  flow directly.
+- A rule whose later step matches no statement warns (W13).
+
+This is a must-analysis over the control-flow graph (typestate-style).
+It checks the written procedure, not the model's behavior: whether the
+agent actually performs the earlier step is a runtime question for
+hooks, guards, or `conform`. The research review ranks compiling order
+rules into such enforcement as the next step (Section 17).
