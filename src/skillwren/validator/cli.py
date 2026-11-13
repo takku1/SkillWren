@@ -80,6 +80,9 @@ def main(argv):
         print(USAGE)
         return 2
     args = argv[2:]
+    if "--help" in args or "-h" in args:
+        print(USAGE)
+        return 0
     if "--all" in args:
         return check_all()
     paths = [a for a in args if a not in FLAGS]

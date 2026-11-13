@@ -8,6 +8,7 @@ Modules, in dependency order:
   document   fences, contract block (resources/always/never/inputs/order)
   schema     header schema (F1, B1, W7, W11)
   flowgraph  AST, CFG, dominators, must-dataflow (V1, O1, L1, L3, W9)
+  workflow   versioned AST dump and deterministic plain-language explainer
   ordering   `order:` rules over the CFG (P1)
   evidence   evidence classes and branch controllers (W15, --audit)
   analysis   per-flow checks (U1, E1-E4, T1-T2, R2-R4, A1-A2, M1, ...)
@@ -52,14 +53,15 @@ from .explain import RULE_EXPLAIN
 from .files import (Document, Workspace, audit, summarize, validate_file,
                     validate_files, validate_fragment)
 from .flowgraph import build_cfg, build_tree, walk
+from .workflow import DUMP_VERSION, dump_workflow, explain_workflow
 from .schema import check_schema
 from .syntax import (FORMAT_VERSION, Diag, match_resource, parse_block,
                      split_frontmatter, valid_type)
 
-__all__ = ["Diag", "Document", "FORMAT_VERSION", "RULE_EXPLAIN", "USAGE",
+__all__ = ["DUMP_VERSION", "Diag", "Document", "FORMAT_VERSION", "RULE_EXPLAIN", "USAGE",
            "Workspace", "analyze_flow", "audit", "build_cfg", "build_tree",
            "check_all", "check_schema", "classify", "collect_flow_facts",
-           "main", "match_resource", "parse_block",
+           "dump_workflow", "explain_workflow", "main", "match_resource", "parse_block",
            "parse_contract", "parse_fences", "read_contract",
            "split_frontmatter", "summarize", "valid_type", "validate_file",
            "validate_files", "validate_fragment", "walk"]

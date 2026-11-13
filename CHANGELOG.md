@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.8.0 (2026-11-12)
+
+Authoring pipeline plus field-report fixes.
+
+- `skillwren explain-workflow`: deterministic plain-language meaning of a
+  flow derived from the AST only -- steps, branches, order rules,
+  authority, effects, enforcement eligibility, and cross-file run targets.
+- `skillwren approve`: human approval bound to the exact file digest, with
+  enforceable-operation coverage against a guard policy; `approve --check`
+  fails when the file changed since approval.
+- `skillwren draft`: proposal-only workflow drafting through a model
+  adapter (intent in, flow plus assumptions and unresolved questions out).
+  The proposal still needs `check`, `explain-workflow`, and human approval.
+- AST dump (`dump_workflow`, `DUMP_VERSION = 1`): versioned serialization
+  with line provenance and an explicit/inferred split.
+- NL fidelity corpus: 26 hand-authored intent-to-flow pairs in
+  `docs/current/research/nl-fidelity/` with reviewer protocol and
+  regression facts pinned by tests.
+- Ledger: `exec --cwd`, `exec --readonly` (sandbox-verified, digest-pinned
+  image, fails closed on writes), `note --detail` (milestones still match
+  step names exactly), and `ledger attempt` for tries that satisfy nothing.
+- Authoring guide: record-a-step-when-it-completes and
+  separate-reproduction-from-acceptance patterns from live use.
+- Fixes from the full-stack field report: `__version__` aligned to the
+  package version; `--help` exits 0; CLI help test coverage.
+
 ## 0.7.0 (2026-11-12)
 
 Runtime assurance release. The static 0.6 checker is unchanged in behavior;

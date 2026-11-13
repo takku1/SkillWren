@@ -15,11 +15,19 @@ COMMANDS = {
     "build": ("skillwren.compiler", "compile and package a reviewed skill"),
     "conform": ("skillwren.conform", "run a skill headless and compare effects"),
     "ledger": ("skillwren.ledger", "record a run's steps and check its order rules"),
+    "explain-workflow": ("skillwren.validator.workflow", "describe a workflow's meaning deterministically"),
+    "approve": ("skillwren.validator.approval", "record or check human approval of a workflow"),
+    "draft": ("skillwren.validator.draft", "propose a workflow from intent via a model adapter"),
 }
 
 
 def dispatch(argv):
     name = argv[1] if len(argv) > 1 else None
+    if name is None or name in ("--help", "-h"):
+        print("usage: skillwren <command> [<args>] | check [flags] <file>...")
+        for command in sorted(COMMANDS):
+            print(f"  {command}: {COMMANDS[command][1]}")
+        return 0
     if name in COMMANDS:
         module = importlib.import_module(COMMANDS[name][0])
         return module.main(argv[2:])

@@ -121,7 +121,7 @@ python3 -m unittest discover -s tests -p 'test_*.py'
 
 ## Evidence
 
-- **Static:** 211 tests; 31 one-break mutants, all killed by their expected
+- **Static:** 231 tests; 31 one-break mutants, all killed by their expected
   rule. The 0.6 refactor was checked by comparing every diagnostic on every
   fixture, example, and mutant before and after.
 - **Enforcement (scripted):** 90 paired A/B/C trials
@@ -156,12 +156,35 @@ observed behavior).
 
 ## Status
 
-v0.7.0 (2026-11-12). See [docs/STATUS.md](docs/STATUS.md) and
-[CHANGELOG.md](CHANGELOG.md). 0.7 adds the runtime controller (`guard`),
-the isolated observer (`sandbox`), the checkpointed audit log (`audit`),
-and ledger completeness contracts. 0.5 files keep validating. Next: the
-model A/B/C comparison with content held constant
-([plan](docs/current/research/model-evaluation-plan.md)).
+v0.8.0 (2026-11-12). See [docs/STATUS.md](docs/STATUS.md) and
+[CHANGELOG.md](CHANGELOG.md). 0.8 adds the authoring pipeline
+(`draft`, `explain-workflow`, `approve`), the NL fidelity corpus, and
+ledger `cwd`/`readonly`/`detail`/`attempt` support. 0.7 added the
+runtime controller (`guard`), the isolated observer (`sandbox`), the
+checkpointed audit log (`audit`), and ledger completeness contracts.
+0.5 files keep validating. Next: the model A/B/C comparison with content
+held constant ([plan](docs/current/research/model-evaluation-plan.md)).
+
+## Authoring pipeline: intent to approved workflow
+
+Draft a proposal from natural language, validate it, read what it
+means, approve the exact bytes, then enforce the covered operations:
+
+```text
+skillwren draft --intent-file intent.md --adapter '["python", "adapter.py"]' --out proposal.md
+skillwren check --fragment proposal.md
+skillwren explain-workflow --fragment proposal.md
+skillwren approve --fragment proposal.md --by you --policy policy.json
+skillwren approve --check proposal.md
+```
+
+The drafter only proposes: assumptions and unresolved questions are
+part of its output, and nothing is approved without a human. Approval
+records the file digest and which enforceable operations the guard
+policy covers; any edit invalidates it. The
+[NL fidelity corpus](docs/current/research/nl-fidelity/) holds 26
+hand-authored intent-to-flow pairs whose key facts the explainer must
+state, so reviewers can judge meaning without reading the logic.
 
 ## Guarded write end to end
 

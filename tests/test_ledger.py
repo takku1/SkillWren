@@ -88,6 +88,71 @@ class LedgerTests(unittest.TestCase):
         ledger.exec_step(path, 'security', [sys.executable, '-c', 'pass'])
         self.assertTrue(ledger.check(path)['execution_complete'])
 
+class FrictionTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.directory = Path(self.tmp.name)
+        self.flow = ROOT / 'tests/fixtures/fragments/skill/flows/build-fixed.md'
+        self.run, self.path, self.rules = ledger.start(self.flow, self.directory)
+        self.first = self.rules[0]['first']
+        self.then = self.rules[0]['then']
+
+    def test_exec_accepts_working_directory(self):
+        work = Path(self.tmp.name) / 'subject'
+        work.mkdir()
+        code, _, _ = ledger.exec_step(
+            self.path, self.first,
+            [sys.executable, '-c', 'import pathlib; pathlib.Path("marker").touch()'],
+            cwd=str(work))
+        self.assertEqual(code, 0)
+        self.assertTrue((work / 'marker').is_file())
+        self.assertFalse((self.directory / 'marker').exists())
+
+    def test_note_detail_keeps_exact_milestone_match(self):
+        _, path, _ = ledger.start(self.flow, self.directory, required=['security'])
+        ledger.note_step(path, 'security', detail='A-1 other user cannot delete')
+        record = ledger.load(path)[-1]
+        self.assertEqual(record['detail'], 'A-1 other user cannot delete')
+        report = ledger.check(path)
+        self.assertTrue(report['execution_complete'])
+        self.assertEqual(report['completeness'], 'complete')
+
+    def test_attempt_satisfies_nothing(self):
+        ledger.attempt_step(self.path, self.then, detail='early try')
+        self.assertTrue(ledger.check(self.path)['ok'])
+        _, path, _ = ledger.start(self.flow, self.directory, required=['security'])
+        ledger.attempt_step(path, 'security', detail='early try before setup')
+        report = ledger.check(path)
+        self.assertEqual(report['missing_milestones'], ['security'])
+        self.assertFalse(report['execution_complete'])
+
+    def test_readonly_exec_passes_and_writes_fail(self):
+        import shutil
+        if not shutil.which('docker'):
+            self.skipTest('docker unavailable')
+        image = ('python@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b')
+        work = Path(self.tmp.name) / 'ws'
+        work.mkdir()
+        env = dict(os.environ, PYTHONPATH=str(ROOT / 'src'))
+        base = [sys.executable, '-m', 'skillwren', 'ledger', 'exec', self.run,
+                '--dir', str(self.directory)]
+        clean = subprocess.run(
+            base + ['--step', 'probe', '--readonly', '--sandbox-image', image,
+                    '--cwd', str(work), '--', 'python', '-c', 'pass'],
+            env=env, capture_output=True, text=True)
+        if clean.returncode == 2 and 'sandbox unavailable' in clean.stderr:
+            self.skipTest('container runtime unavailable')
+        self.assertEqual(clean.returncode, 0, clean.stderr)
+        dirty = subprocess.run(
+            base + ['--step', 'probe', '--readonly', '--sandbox-image', image,
+                    '--cwd', str(work), '--', 'python', '-c',
+                    'open("sneaky", "w").write("1")'],
+            env=env, capture_output=True, text=True)
+        self.assertEqual(dirty.returncode, 1, dirty.stdout)
+        self.assertFalse((work / 'sneaky').exists())
+
+
 class CommandPolicyTests(unittest.TestCase):
     def test_shell_and_git_option_bypasses_are_not_exempt(self):
         from skillwren.conform import undeclared_commands

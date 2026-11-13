@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "skillwren"
-version = "0.7.0"
+version = "0.8.0"
 description = "Check agent-skill procedures and enforce them at runtime: static validation of logic blocks and order rules, a trusted-host guard controller, an isolated sandbox observer, and an evidence ledger."
 readme = "README.md"
 requires-python = ">=3.9"

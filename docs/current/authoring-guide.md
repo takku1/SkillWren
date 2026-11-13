@@ -390,6 +390,19 @@ a header they cannot parse. Quote inline values containing `[ ] { }`, and
 write `description` as the routing text, including what the skill is not
 for.
 
+**Record a step when it completes, not when it is attempted.** A failed
+`close` noted as `exec guard close` before its prerequisites leaves a
+violation no later step can clear, because order rules judge completed
+steps. Note premature or exploratory runs with `ledger attempt`, which
+satisfies nothing, and record the step again (as `exec`/`note`) when it
+really completes.
+
+**Separate reproduction from acceptance.** Running a failing check before
+the fix is good practice but violates a `write ... before exec ...
+checks` rule. Record pre-fix runs under a different step name (for
+example `exec reproduction checks`) so the acceptance rule keeps its
+meaning; the authoring intent is two phases, so write two step names.
+
 ## Golden discipline
 
 Golden means validator-clean plus manually semantic-reviewed plus

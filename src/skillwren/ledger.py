@@ -1,8 +1,9 @@
 """Run ledger: record what a run did, then check its order rules on the trace.
 
     skillwren ledger start <flow-file> [--label TEXT] [--dir DIR]
-    skillwren ledger exec  <run> --step TEXT [--dir DIR] -- <command> [args...]
-    skillwren ledger note  <run> --step TEXT [--artifact PATH]... [--dir DIR]
+    skillwren ledger exec  <run> --step TEXT [--cwd DIR] [--readonly --sandbox-image IMG] [--dir DIR] -- <command> [args...]
+    skillwren ledger note  <run> --step TEXT [--artifact PATH]... [--detail TEXT] [--dir DIR]
+    skillwren ledger attempt <run> --step TEXT [--detail TEXT] [--dir DIR]
     skillwren ledger check <run> [--require-evidence] [--require-completeness] [--json] [--dir DIR]
     skillwren ledger show  <run> [--dir DIR]
 
@@ -129,12 +130,12 @@ def start(flow_file, directory=DEFAULT_DIR, label=None, required=()):
     return run, path, rules
 
 
-def exec_step(path, step, argv):
+def exec_step(path, step, argv, cwd=None):
     if not argv:
         raise LedgerError("exec needs a command after --")
     began = time.monotonic()
     try:
-        proc = subprocess.run(argv, capture_output=True)
+        proc = subprocess.run(argv, capture_output=True, cwd=cwd)
         code, out, err, failure = proc.returncode, proc.stdout, proc.stderr, None
     except OSError as error:
         code, out, err, failure = 127, b"", str(error).encode("utf-8"), str(error)
@@ -143,13 +144,41 @@ def exec_step(path, step, argv):
     record = {"type": "step", "class": "evidence", "step": step, "argv": list(argv),
               "exit": code, "seconds": seconds, "stdout_sha256": _digest_bytes(out),
               "stderr_sha256": _digest_bytes(err), "output_tail": tail}
+    if cwd is not None:
+        record["cwd"] = str(cwd)
     if failure:
         record["error"] = failure
     _append(path, record)
     return code, out, err
 
 
-def note_step(path, step, artifacts=()):
+def readonly_step(path, step, argv, image, workspace="."):
+    """Run argv in a disposable networkless container and fail closed on writes.
+
+    The sandbox image must be pinned by digest. A nonzero exit, any file
+    change inside the workspace copy, or a missing container runtime fails
+    the step; the failure is recorded, not silently dropped.
+    """
+    from .sandbox import run
+    record = {"type": "step", "class": "evidence", "step": step,
+              "argv": list(argv), "readonly": True, "image": image}
+    try:
+        report = run(image, workspace, argv)
+    except OSError as error:
+        record["error"] = f"sandbox unavailable: {error}"
+        _append(path, record)
+        raise LedgerError(record["error"])
+    record.update({"exit": report["exit"], "changed": report["changed"],
+                   "undeclared": report["undeclared"],
+                   "output_tail": (report["stdout"] + report["stderr"])[-TAIL:]})
+    _append(path, record)
+    if not report["ok"]:
+        raise LedgerError(f"readonly step failed: exit {report['exit']}, "
+                          f"undeclared changes {report['undeclared']}")
+    return report
+
+
+def note_step(path, step, artifacts=(), detail=None):
     digests = {}
     for artifact in artifacts:
         if not Path(artifact).is_file():
@@ -158,6 +187,21 @@ def note_step(path, step, artifacts=()):
     record = {"type": "step", "class": "effect" if digests else "self", "step": step}
     if digests:
         record["artifacts"] = digests
+    if detail is not None:
+        record["detail"] = detail
+    return _append(path, record)
+
+
+def attempt_step(path, step, detail=None):
+    """Record a try that must not satisfy order or milestones.
+
+    Attempts are for premature or exploratory runs: `check` ignores them,
+    so recording an attempt can never clear a violation or complete a run.
+    Record the step again (as exec/note) when it actually completes.
+    """
+    record = {"type": "attempt", "step": step}
+    if detail is not None:
+        record["detail"] = detail
     return _append(path, record)
 
 
@@ -263,8 +307,9 @@ def show(path):
             print(f"{record['seq']:>3} {record['time']} start {record['file']}"
                   f" ({len(record.get('rules', []))} order rules)")
             continue
+        kind = record.get("class") or record["type"]
         status = f"exit {record['exit']}" if record.get("class") == "evidence" else ""
-        print(f"{record['seq']:>3} {record['time']} [{record['class']}] {record['step']} {status}".rstrip())
+        print(f"{record['seq']:>3} {record['time']} [{kind}] {record['step']} {status}".rstrip())
 
 
 def main(argv):
@@ -279,10 +324,20 @@ def main(argv):
     p_exec = sub.add_parser("exec", help="run a command (no shell) and record its result as evidence")
     p_exec.add_argument("run")
     p_exec.add_argument("--step", required=True)
+    p_exec.add_argument("--cwd", help="run the command in this directory")
+    p_exec.add_argument("--readonly", action="store_true",
+                        help="run in a disposable networkless container and fail on any write")
+    p_exec.add_argument("--sandbox-image",
+                        help="digest-pinned image for --readonly (required with it)")
     p_note = sub.add_parser("note", help="record a step without running anything")
     p_note.add_argument("run")
     p_note.add_argument("--step", required=True)
     p_note.add_argument("--artifact", action="append", default=[])
+    p_note.add_argument("--detail", help="criterion or detail; the step name still matches exactly")
+    p_attempt = sub.add_parser("attempt", help="record a try that satisfies nothing")
+    p_attempt.add_argument("run")
+    p_attempt.add_argument("--step", required=True)
+    p_attempt.add_argument("--detail", default=None)
     p_check = sub.add_parser("check", help="check the order rules against the recorded steps")
     p_check.add_argument("run")
     p_check.add_argument("--require-evidence", action="store_true")
@@ -291,7 +346,7 @@ def main(argv):
     p_check.add_argument("--json", action="store_true")
     p_show = sub.add_parser("show", help="list the recorded steps")
     p_show.add_argument("run")
-    for p in (p_start, p_exec, p_note, p_check, p_show):
+    for p in (p_start, p_exec, p_note, p_attempt, p_check, p_show):
         p.add_argument("--dir", default=str(DEFAULT_DIR))
     # The command after `--` is passed through untouched, so its own flags and
     # quoting never reach argparse.
@@ -310,13 +365,30 @@ def main(argv):
             return 0
         path = run_path(args.dir, args.run)
         if args.action == "exec":
-            code, out, err = exec_step(path, args.step, command)
+            if args.readonly:
+                if not args.sandbox_image:
+                    print("skillwren ledger: --readonly needs --sandbox-image",
+                          file=sys.stderr)
+                    return 2
+                try:
+                    readonly_step(path, args.step, command, args.sandbox_image,
+                                  args.cwd or ".")
+                except LedgerError as error:
+                    print(f"skillwren ledger: {error}", file=sys.stderr)
+                    return 1
+                print(f"recorded readonly step {args.step}")
+                return 0
+            code, out, err = exec_step(path, args.step, command, args.cwd)
             sys.stdout.buffer.write(out)
             sys.stderr.buffer.write(err)
             return code
         if args.action == "note":
-            record = note_step(path, args.step, args.artifact)
+            record = note_step(path, args.step, args.artifact, args.detail)
             print(f"recorded step {record['seq']} as {record['class']}")
+            return 0
+        if args.action == "attempt":
+            record = attempt_step(path, args.step, args.detail)
+            print(f"recorded attempt {record['seq']}; satisfies nothing")
             return 0
         if args.action == "check":
             report = check(path, args.require_evidence)
