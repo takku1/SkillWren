@@ -1,0 +1,3 @@
+{"action": "write", "operation": "write#report", "content": "{\"banned\": [], \"licenses\": {\"MIT\": true}, \"verdict\": \"clean\"}"}
+{"action": "verify", "operation": "write#report", "content": "{\"banned\": [], \"licenses\": {\"MIT\": true}, \"verdict\": \"clean\"}"}
+{"action": "write", "operation": "write#report", "content": "{\"banned\": [], \"licenses\": {\"MIT\": true}, \"verdict\": \"clean\"}"}

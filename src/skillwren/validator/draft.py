@@ -40,13 +40,19 @@ def main(argv):
                                                  "Proposal only: still needs check, "
                                                  "explanation, and human approval.")
     parser.add_argument("--intent-file", required=True)
-    parser.add_argument("--adapter", required=True,
-                        help="adapter argv as JSON array")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--adapter", help="adapter argv as JSON array")
+    group.add_argument("--adapter-file",
+                       help="file holding the adapter argv as a JSON array "
+                            "(avoids shell quoting)")
     parser.add_argument("--out", help="write the proposed flow markdown here")
     args = parser.parse_args(argv)
     try:
         intent = Path(args.intent_file).read_text(encoding="utf-8-sig")
-        proposal = draft(intent, json.loads(args.adapter))
+        adapter = (json.loads(args.adapter) if args.adapter is not None
+                   else json.loads(Path(args.adapter_file).read_text(
+                       encoding="utf-8-sig")))
+        proposal = draft(intent, adapter)
     except (OSError, ValueError) as error:
         print(f"skillwren draft: {error}", file=sys.stderr)
         return 2

@@ -178,6 +178,9 @@ skillwren approve --fragment proposal.md --by you --policy policy.json
 skillwren approve --check proposal.md
 ```
 
+(Windows shells mangle inline JSON quotes; put the adapter argv in a
+file and pass `--adapter-file` instead of `--adapter`.)
+
 The drafter only proposes: assumptions and unresolved questions are
 part of its output, and nothing is approved without a human. Approval
 records the file digest and which enforceable operations the guard

@@ -77,6 +77,17 @@ class DraftTests(unittest.TestCase):
         self.assertIn('unresolved questions', proc.stderr)
         self.assertIn('Not approved', proc.stderr)
 
+    def test_adapter_file_avoids_inline_json(self):
+        intent = self.root / 'intent.md'
+        intent.write_text('Summarize the request.')
+        adapter_file = self.root / 'adapter.json'
+        adapter_file.write_text(json.dumps(ADAPTER), encoding='utf-8')
+        out = self.root / 'proposal.md'
+        proc = self.run_draft('--intent-file', str(intent), '--adapter-file',
+                              str(adapter_file), '--out', str(out))
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn('return notes as notes', out.read_text())
+
     def test_bad_adapter_json_fails(self):
         intent = self.root / 'intent.md'
         intent.write_text('Summarize the request.')

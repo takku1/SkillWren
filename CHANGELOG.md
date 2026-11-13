@@ -13,6 +13,8 @@ Authoring pipeline plus field-report fixes.
 - `skillwren draft`: proposal-only workflow drafting through a model
   adapter (intent in, flow plus assumptions and unresolved questions out).
   The proposal still needs `check`, `explain-workflow`, and human approval.
+  `--adapter-file` reads the adapter argv from a file for shells that
+  cannot pass inline JSON.
 - AST dump (`dump_workflow`, `DUMP_VERSION = 1`): versioned serialization
   with line provenance and an explicit/inferred split.
 - NL fidelity corpus: 26 hand-authored intent-to-flow pairs in

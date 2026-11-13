@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "operations": {
+    "write#note": {
+      "target": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\skill-subjects\\b-clean\\COVERAGE.md",
+      "argv": [
+        "C:\\Users\\dcarn\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-I",
+        "Z:\\SkillWren\\docs\\current\\research\\lifecycle\\b-drafted\\tools\\verify_note.py"
+      ],
+      "pins": {
+        "C:\\Users\\dcarn\\AppData\\Local\\Programs\\Python\\Python312\\python.exe": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+        "Z:\\SkillWren\\docs\\current\\research\\lifecycle\\b-drafted\\tools\\verify_note.py": "1daff3f597bb652c2b5c3305d232aa31ec77de1b429c9aaa2115074357283e4e"
+      },
+      "timeout": 5
+    }
+  }
+}

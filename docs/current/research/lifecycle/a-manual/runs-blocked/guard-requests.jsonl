@@ -1,0 +1,1 @@
+{"action": "verify", "operation": "write#report", "content": "{\"banned\": [\"requests==1.0.0\"], \"verdict\": \"blocked\"}"}

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "operations": {
+    "write#report": {
+      "target": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\skill-subjects\\a-clean\\REPORT.md",
+      "argv": [
+        "C:\\Users\\dcarn\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-I",
+        "Z:\\SkillWren\\docs\\current\\research\\lifecycle\\a-manual\\tools\\verify_report.py"
+      ],
+      "pins": {
+        "C:\\Users\\dcarn\\AppData\\Local\\Programs\\Python\\Python312\\python.exe": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+        "Z:\\SkillWren\\docs\\current\\research\\lifecycle\\a-manual\\tools\\verify_report.py": "49eaf8a0eca9508414a54d4739d9d704dca292f55d9a7f4d5f3f88e63d713423"
+      },
+      "timeout": 5
+    }
+  }
+}

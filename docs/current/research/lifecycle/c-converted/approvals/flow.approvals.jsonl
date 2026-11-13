@@ -1,0 +1,1 @@
+{"by": "lifecycle-probe", "covered": {}, "dump_version": 1, "enforceable": ["evidence"], "file": "docs/current/research/lifecycle/c-converted/flow.md", "file_sha256": "225c91840e2750263a78c8aec1fe65145a8dcf0e41b3ac33162c4e5bafc7eb14", "policy": null, "time": "2026-11-13T02:43:58+00:00", "type": "approval", "uncovered": ["evidence"]}

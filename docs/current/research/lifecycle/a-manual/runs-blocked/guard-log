@@ -1,0 +1,4 @@
+{"coverage": "controller requests only; not direct host activity", "hash": "52965aa29501aa26a9bda20463f6cd204da396ad9e1d57056f74fe92e27359b5", "policy_sha256": "5ce89e0417ba6b9b30c6714b591ba1996fe69bee00476432d5fc4e72dc797094", "prev": null, "seq": 0, "type": "start"}
+{"hash": "1416b77048a07292a8ccf1c3eb47c0b5ba27b7b4d2748b44ec9bc3c6726396e1", "prev": "52965aa29501aa26a9bda20463f6cd204da396ad9e1d57056f74fe92e27359b5", "request_sha256": "107daf5d9c2c3ffb7e2616a1e0abf07ea578b5070914d302887d0685b5b42160", "seq": 1, "type": "intent"}
+{"hash": "a78bd8e1ff28817f2e6b675426993a26d39e10f36a169efeed4f9e1c6abdabbc", "ok": false, "prev": "1416b77048a07292a8ccf1c3eb47c0b5ba27b7b4d2748b44ec9bc3c6726396e1", "seq": 2, "type": "result"}
+{"hash": "4baf7a908da6e60a16dc053d207b20a07045c2d48d9153284bf56462d272a68b", "prev": "a78bd8e1ff28817f2e6b675426993a26d39e10f36a169efeed4f9e1c6abdabbc", "seq": 3, "type": "stop"}
