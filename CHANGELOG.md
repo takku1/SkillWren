@@ -223,24 +223,26 @@ control-flow graph and enforces what v0.3 only described:
 - Spec: Section 15 now describes the shipped CLI surface; `--all` and
   `--explain` are deferred to a later release.
 
-## Unreleased: evidence and runtime traces
+## Pre-0.7.0 development trail (all items shipped in 0.7.0 above)
 
-- Add evidence auditing (`check --audit`) and W15 for self-reported ordering
+- Evidence auditing (`check --audit`) and W15 for self-reported ordering
   prerequisites, informed by the game-theory research note.
-- Add the runtime ledger with command execution, artifact hashes, captured
+- Runtime ledger with command execution, artifact hashes, captured
   order rules, strict evidence checking, and chained records.
-- Refactor CLI dispatch and share evidence classification across checks.
-- Preserve child arguments after `ledger exec --`; cover the parser fix
+- CLI dispatch refactor and share evidence classification across checks.
+- Child arguments preserved after `ledger exec --`; cover the parser fix
   and ledger semantics with six regression tests.
 
-## Experimental runtime assurance
-
-- Add a policy-bound `guard` controller with fixed verifiers, exact candidate
+- Policy-bound `guard` controller with fixed verifiers, exact candidate
   hashes, target-version binding, single-use approvals and restart revocation.
-- Add independently retained audit checkpoints and recorder-session checks.
-- Add an offline Docker `sandbox` effect observer and real isolation probes.
-- Add exact typed ordering references and duplicate-ID diagnostic P2.
-- Add runtime mutation tests, randomized scripted A/B/C trials, a trusted
+- Independently retained audit checkpoints and recorder-session checks.
+- Offline Docker `sandbox` effect observer and real isolation probes.
+- Exact typed ordering references and duplicate-ID diagnostic P2.
+- Runtime mutation tests, randomized scripted A/B/C trials, a trusted
   model-adapter interface, a Linux/Windows CI matrix, and wheel smoke tests.
-- Keep static validity, mechanism tests, deployment assumptions and model
+- Static validity, mechanism tests, deployment assumptions and model
   reliability measurements explicitly separate.
+
+
+
+
