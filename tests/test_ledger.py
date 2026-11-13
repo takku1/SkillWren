@@ -88,6 +88,20 @@ class LedgerTests(unittest.TestCase):
         ledger.exec_step(path, 'security', [sys.executable, '-c', 'pass'])
         self.assertTrue(ledger.check(path)['execution_complete'])
 
+def _linux_container_usable(image):
+    """True only if this host runs the pinned Linux image (skips Windows CI)."""
+    import shutil
+    if not shutil.which('docker'):
+        return False
+    try:
+        proc = subprocess.run(['docker', 'run', '--rm', image,
+                               'python', '-c', 'pass'],
+                              capture_output=True, timeout=180)
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return proc.returncode == 0
+
+
 class FrictionTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -128,10 +142,9 @@ class FrictionTests(unittest.TestCase):
         self.assertFalse(report['execution_complete'])
 
     def test_readonly_exec_passes_and_writes_fail(self):
-        import shutil
-        if not shutil.which('docker'):
-            self.skipTest('docker unavailable')
         image = ('python@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b')
+        if not _linux_container_usable(image):
+            self.skipTest('container runtime cannot run the Linux image here')
         work = Path(self.tmp.name) / 'ws'
         work.mkdir()
         env = dict(os.environ, PYTHONPATH=str(ROOT / 'src'))
@@ -141,8 +154,6 @@ class FrictionTests(unittest.TestCase):
             base + ['--step', 'probe', '--readonly', '--sandbox-image', image,
                     '--cwd', str(work), '--', 'python', '-c', 'pass'],
             env=env, capture_output=True, text=True)
-        if clean.returncode == 2 and 'sandbox unavailable' in clean.stderr:
-            self.skipTest('container runtime unavailable')
         self.assertEqual(clean.returncode, 0, clean.stderr)
         dirty = subprocess.run(
             base + ['--step', 'probe', '--readonly', '--sandbox-image', image,
