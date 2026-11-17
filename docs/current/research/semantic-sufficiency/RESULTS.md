@@ -71,14 +71,27 @@ executions, verifies their saved skill text, retries other attempts
 serially, archives replaced attempts under `archived-attempts/`, and
 stops at the first new execution error. The `score` function is unchanged.
 
-Wait for provider capacity before retrying. Use the original source
-repository and revision: the original harness did not save source
-provenance, so that identity must be recovered before resuming. Do not
-silently substitute a different source or rewrite the tested forms.
-Keep the original variants, models, five repetitions, and all seven
-`--text NAME=FILE` arguments (three forms plus four compressor outputs).
-If the original source cannot be established, retain this run as
-incomplete and preregister a new run with source provenance.
+Wait for provider capacity before retrying. The original launch command
+was recovered from Claude session `299fd589-f751-474b-b56d-99157159d3f2`:
+source `Z:/vulnscanner`, five repetitions, five workers, all eight ablations
+and seven text files. The source's HEAD and reflog identify commit
+`3b47485c6c96191f98efd09b8bd4f3a4b6556e5a` (April 3, 2026), with no later
+HEAD movement recorded. Local uncommitted source changes are irrelevant
+because setup uses `git clone`; they were not included in the subjects.
+This is recovered provenance, not a source hash captured by the original
+harness. Verify that source HEAD still matches before running:
+
+```powershell
+$textArgs = @()
+Get-ChildItem examples/sufficiency/forms/*.md, examples/sufficiency/lingua/*.md | ForEach-Object {
+    $textArgs += '--text'
+    $textArgs += "$($_.BaseName)=$($_.FullName)"
+}
+py -3 scripts/sufficiency_lab.py --source Z:/vulnscanner --variants 'full,-readonly,-blocked,-report,-nofake,-final,-readonly-blocked,-readonly-blocked-nofake-final' @textArgs --models haiku,sonnet --reps 5 --resume
+```
+
+Do not substitute another source or rewrite the tested forms. Resume is
+serial regardless of `--jobs` to avoid queuing more usage-limit failures.
 
 The follow-up has not rerun paid model calls or modified the existing
 attempts. The external `takku1/full-stack#1` remains for the user's review.
