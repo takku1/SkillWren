@@ -1,0 +1,48 @@
+Workflow in draft.md:
+flow `f16`:
+  - 'if fast flag is set:' (line 15) -- branch
+    - 'apply fast path with request as fast_result' (line 16)
+    - 'return fast_result as request' (line 17)
+  - 'return request as request' (line 18)
+flow `f17`:
+  - 'verify #window window is open' (line 23) -- gate; failure follows its otherwise branch
+    - otherwise (line 24)
+      - 'abort with "The window shut."' (line 25)
+  - 'write #book slot with bookings' (line 26)
+  - 'return' (line 27)
+flow `f18`:
+  - 'apply redaction with draft as clean' (line 32)
+  - 'write clean with output' (line 33)
+  - 'return clean as clean' (line 34)
+flow `f19`:
+  - 'generate parts from request as parts' (line 39)
+  - 'generate assembly from parts as assembly' (line 40)
+  - 'exec fresh check from checks as check' (line 41)
+  - 'verify #match assembly matches check from check' (line 42) -- gate; failure follows its otherwise branch
+    - otherwise (line 43)
+      - 'discard assembly' (line 44)
+      - 'abort with "Assembly does not match the fresh check."' (line 45)
+  - 'write #out assembly with output' (line 46)
+  - 'return assembly as assembly' (line 47)
+flow `f20`:
+  - 'show audit_report' (line 52)
+  - 'return' (line 53)
+Ordering (must hold on every path):
+  - 'verify#window' before 'write#book' (line 7)
+  - 'apply redaction' before 'write clean' (line 8)
+  - 'generate parts' before 'generate assembly' (line 9)
+  - 'verify#match' before 'write#out' (line 10)
+Authority: no ask steps; nothing requires a human decision.
+Effects (files written or flows run):
+  - flow `f17` writes bookings
+  - flow `f18` writes output
+  - flow `f19` writes output
+Enforcement:
+  - 'verify #window window is open' (line 23) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #book slot with bookings' (line 26) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #match assembly matches check from check' (line 42) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #out assembly with output' (line 46) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write clean with output' (line 33) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec fresh check from checks as check' (line 41) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

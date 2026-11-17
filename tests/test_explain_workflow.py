@@ -31,6 +31,13 @@ def load_facts(name):
 
 
 class ExplainerTests(unittest.TestCase):
+    def test_retry_and_default_failure_are_spelled_out(self):
+        text = explain_workflow(PAIRS / 'pairs06-flow.md', fragment=True)
+        self.assertIn("retry (line 67) -- re-runs the failed gate "
+                      "'verify #backup backup is complete from state' (line 62)", text)
+        self.assertIn("'verify #recheck backup is complete from state' (line 66) -- "
+                      "gate with no otherwise; failure discards", text)
+
     def test_all_pairs_present(self):
         for flow_name, facts_name in CORPUS:
             self.assertTrue((PAIRS / flow_name).is_file(), flow_name)

@@ -493,15 +493,20 @@ def analyze_document(doc, workspace):
         return errors, warnings, {}
     # IDs are unique within a document. Cross-file run guarantees retain the
     # callee's document scope; no natural-language predicate inference occurs.
-    identifiers = set()
+    # A typed return names one exit point, so the same return ID may label
+    # every return of that exit (each must then satisfy the order rules).
+    identifiers = {}
     for root in doc.trees.values():
         for node in walk(root):
-            identity = re.match(r"[a-z]+\s+#([a-z][a-z0-9-]*)(?=\s|$)", node.text)
+            identity = re.match(r"([a-z]+)\s+#([a-z][a-z0-9-]*)(?=[\s:]|$)", node.text)
             if identity:
-                if identity[1] in identifiers:
-                    errors.append(Diag(node.line, "P2", "duplicate operation ID " + identity[1],
-                                       "Use one stable ID per operation in a document."))
-                identifiers.add(identity[1])
+                verb, ident = identity[1], identity[2]
+                shared_exit = verb == "return" and identifiers.get(ident) == "return"
+                if ident in identifiers and not shared_exit:
+                    errors.append(Diag(node.line, "P2", "duplicate operation ID " + ident,
+                                       "Use one stable ID per operation in a document "
+                                       "(only returns of one exit may share an ID)."))
+                identifiers.setdefault(ident, verb)
     # Preserve independent fence diagnostics, but do not run semantic passes
     # against a header whose container/type invariants failed validation.
     if any(diag.rule == "F1" for diag in errors):

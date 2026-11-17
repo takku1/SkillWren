@@ -34,6 +34,7 @@ import argparse
 import datetime
 import hashlib
 import json
+import re
 import secrets
 import subprocess
 import sys
@@ -220,6 +221,22 @@ def verify_chain(records):
     return problems
 
 
+def step_matches(pattern, text):
+    """Rule matching for recorded steps.
+
+    Besides statement text (`verify #deps ...`), a step named exactly as the
+    rule's typed reference (`verify#deps`), optionally followed by a space and
+    detail, matches it: authors copy the reference from the `order:` line.
+    """
+    if matches(pattern, text):
+        return True
+    reference = pattern.strip()
+    if not re.fullmatch(r"[a-z]+#[a-z][a-z0-9-]*", reference):
+        return False
+    step = text.strip()
+    return step == reference or step.startswith(reference + " ")
+
+
 def completed(event):
     return event.get("class") != "evidence" or event.get("exit") == 0
 
@@ -237,7 +254,7 @@ def check(path, require_evidence=False):
         satisfied, violations, exercised = [], [], False
         for event in steps:
             text = event.get("step", "")
-            if matches(rule["then"], text) and not matches(rule["first"], text):
+            if step_matches(rule["then"], text) and not step_matches(rule["first"], text):
                 exercised = True
                 if not satisfied:
                     violations.append({"seq": event["seq"], "step": text,
@@ -245,7 +262,7 @@ def check(path, require_evidence=False):
                 elif require_evidence and set(satisfied) <= {"self"}:
                     violations.append({"seq": event["seq"], "step": text,
                                        "reason": "earlier step only self-reported"})
-            if matches(rule["first"], text) and completed(event):
+            if step_matches(rule["first"], text) and completed(event):
                 satisfied.append(event["class"])
         report["rules"].append({"rule": f"{rule['first']} before {rule['then']}",
                                 "line": rule.get("line"), "exercised": exercised,

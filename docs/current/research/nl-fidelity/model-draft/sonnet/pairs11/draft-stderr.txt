@@ -1,0 +1,13 @@
+assumptions:
+  - f11: the approving party is 'holder'; the rotated key is the written value, written to a resource named access_key; flow returns rotated_key (the intent names no return).
+  - f11: order rule ensures approval ask precedes the write.
+  - f12: 'observe' is modelled as `read audit check as report`, with an abort if it cannot be read (needed for O1); no write and no ask.
+  - f13: the copy writes the source content to the destination; returns 'copy' (the intent names no return). Missing source or destination uses the default require abort.
+  - f14: processed items are written to a resource named processed_items (not the iterated list, to avoid mutating it); items is a List input.
+  - f15: a single return block returning request unchanged as 'request'.
+unresolved questions:
+  - f11/f13/f14: what should each flow return, if anything? The intent gives no return for f11 and f13, so I invented names.
+  - f11: how is the new key produced? The fragment writes a `rotated_key` binding that nothing generates.
+  - f14: what does 'process' do to an item, and where should processed items be written?
+  - f12: what should happen if the audit check can't be observed? I added an abort.
+Not approved. Run check, explain-workflow, and approve before use.

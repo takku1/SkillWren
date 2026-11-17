@@ -88,6 +88,26 @@ class DraftTests(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertIn('return notes as notes', out.read_text())
 
+    def test_adapter_after_separator_needs_no_json(self):
+        intent = self.root / 'intent.md'
+        intent.write_text('Summarize the request.')
+        out = self.root / 'proposal.md'
+        proc = self.run_draft('--intent-file', str(intent), '--out', str(out), '--', *ADAPTER)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn('return notes as notes', out.read_text())
+
+    def test_adapter_given_twice_or_never_is_usage_error(self):
+        intent = self.root / 'intent.md'
+        intent.write_text('Summarize the request.')
+        twice = self.run_draft('--intent-file', str(intent), '--adapter',
+                               json.dumps(ADAPTER), '--', *ADAPTER)
+        never = self.run_draft('--intent-file', str(intent))
+        self.assertEqual(twice.returncode, 2)
+        self.assertEqual(never.returncode, 2)
+        bad = self.run_draft('--intent-file', str(intent), '--adapter', '"py"')
+        self.assertEqual(bad.returncode, 2)
+        self.assertIn('non-empty list', bad.stderr)
+
     def test_bad_adapter_json_fails(self):
         intent = self.root / 'intent.md'
         intent.write_text('Summarize the request.')

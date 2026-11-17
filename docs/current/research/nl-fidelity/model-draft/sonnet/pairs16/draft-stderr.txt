@@ -1,0 +1,16 @@
+assumptions:
+  - f16: the fast path is an in-memory `apply fast path` step defined in Step meanings, not a separate flow; the request is returned on both paths.
+  - f17: the window check is a `verify` with abort on failure, and the booking is a write to a `bookings` resource, ordered after the verify.
+  - f18: redaction is an in-memory `apply`, ordered before writing the clean result to `output`.
+  - f19: the fresh check is an `exec` from a `checks` resource, and the assembly is verified against it. A mismatch discards the assembly and aborts.
+  - f20: showing is advisory, so there is no order rule and no enforcement. The `audit_report` binding is assumed to exist as an input.
+  - Resource names (bookings, output, checks) are placeholders. The fragment does not declare them in a resources block, because the intent names no paths.
+  - f17, f18, f19 and f20 have no return, because the intent states none.
+unresolved questions:
+  - f16: what does the fast path actually do, and does it change the returned request?
+  - f17: where is the slot booked (which resource)? How is window openness determined?
+  - f18: where should the clean result be written?
+  - f19: what is the fresh check, and does it run as a command (`exec`) or is it generated? Where is the assembly written?
+  - f20: should the flow return anything after showing the report? Is the audit report an input or generated elsewhere?
+  - Should flows without a stated return end with a `return`, so that they end on every path?
+Not approved. Run check, explain-workflow, and approve before use.

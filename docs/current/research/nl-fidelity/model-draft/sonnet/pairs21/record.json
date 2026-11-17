@@ -1,0 +1,117 @@
+{
+  "name": "pairs21",
+  "draft_exit": 0,
+  "valid_first": true,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:27: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:28: warning W5: binding 'restarted' never referenced -- Use it or drop the `as`.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:30: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:31: warning W5: binding 'reloaded' never referenced -- Use it or drop the `as`.",
+    "clean"
+  ],
+  "valid_after_repair": true,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:27: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:28: warning W5: binding 'restarted' never referenced -- Use it or drop the `as`.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:30: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:31: warning W5: binding 'reloaded' never referenced -- Use it or drop the `as`.",
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "f21ingest": {
+        "candidate": "f21ingest",
+        "dropped": {
+          "gate:require": 1,
+          "action:abort": 1
+        },
+        "added": {
+          "action:read": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f21store": {
+        "candidate": "f21store",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f22": {
+        "candidate": "f22",
+        "dropped": {
+          "action:apply": 2
+        },
+        "added": {
+          "gate:verify": 2,
+          "action:exec": 1,
+          "action:read": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f23": {
+        "candidate": "f23",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f24": {
+        "candidate": "f24",
+        "dropped": {
+          "gate:require": 1,
+          "action:abort": 1
+        },
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f25": {
+        "candidate": "f25",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 6,
+    "added_statements": 5,
+    "reference_statements": 30,
+    "dropped_rules": {},
+    "added_rules": {
+      "ask->verify": 1
+    },
+    "reference_rules": 1,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 15,
+    "recovered": 8,
+    "missed": [
+      "write #record incoming record",
+      "apply service restart",
+      "service reload",
+      "ask operator to approve the note",
+      "write #memo recorded note",
+      "No note",
+      "Shipment refused"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "f22: health verify step loses its stable ID (#service), so it is advisory-only and can't be guard-enforced",
+      "f21store: record write loses its stable ID (#record), so it can't be guard-enforced",
+      "f23: note write loses its stable ID (#note), so it can't be guard-enforced"
+    ],
+    "added": [],
+    "changed": [
+      "f22: the reference runs restart, then reload, then aborts unconditionally. The candidate checks health again after each step: it skips reload and succeeds if restart fixes the service, and it succeeds instead of aborting if reload fixes it",
+      "f22: the reference gets the state from an exec check before verifying. The candidate verifies without that check result and reads the state only after the health gates"
+    ],
+    "cost_usd": 0.05934400000000001
+  },
+  "draft_cost_usd": 0.0289,
+  "draft_calls": 1
+}

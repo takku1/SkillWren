@@ -152,8 +152,23 @@ def main():
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--repetitions', type=int, default=3)
     parser.add_argument('--summary', help='write per-arm aggregate JSON here')
+    parser.add_argument('--resume', action='store_true',
+                        help='keep trials already in --output and run only the missing ones')
     parser.add_argument('--adapter', help='trusted model-adapter argv as JSON array; incurs provider usage')
-    args = parser.parse_args()
+    parser.add_argument('--adapter-file', help='file holding the adapter argv as a JSON array')
+    parser.epilog = 'The adapter can also follow -- as plain words (no JSON quoting).'
+    argv = sys.argv[1:]
+    command = []
+    if '--' in argv:
+        cut = argv.index('--')
+        argv, command = argv[:cut], argv[cut + 1:]
+    args = parser.parse_args(argv)
+    if sum([bool(command), bool(args.adapter), bool(args.adapter_file)]) > 1:
+        parser.error('give the adapter at most once')
+    if command:
+        args.adapter = json.dumps(command)
+    elif args.adapter_file:
+        args.adapter = Path(args.adapter_file).read_text(encoding='utf-8-sig')
     if args.repetitions < 1:
         parser.error('repetitions must be positive')
     adapter = json.loads(args.adapter) if args.adapter else None
@@ -168,8 +183,17 @@ def main():
     random.Random(args.seed).shuffle(schedule)
     output = Path(args.output)
     records = []
-    with output.open('x', encoding='utf-8') as stream:
+    done = set()
+    if args.resume and output.exists():
+        for line in output.read_text(encoding='utf-8').splitlines():
+            if line.strip():
+                record = json.loads(line)
+                records.append(record)
+                done.add((record['arm'], record['scenario'], record['seed']))
+    with output.open('a' if args.resume else 'x', encoding='utf-8') as stream:
         for arm, scenario, seed in schedule:
+            if (arm, scenario, seed) in done:
+                continue
             record = run_trial(arm, scenario, seed, adapter)
             records.append(record)
             stream.write(json.dumps(record) + '\n')

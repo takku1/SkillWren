@@ -1,0 +1,12 @@
+{
+  "dropped": [
+    "The 'exec config check' step is gone, so the debug-off verification is no longer based on a check result"
+  ],
+  "added": [
+    "Extra 'require config exists' gate with its own abort ('A config is required.'), which the intent doesn't call for"
+  ],
+  "changed": [
+    "The write step has no stable ID, so it is advisory-only: the guard can't bind it and the 'verify before write' rule matches it only by its text. In the reference the write step has an ID and can be enforced, so the 'never write an unverified config' guarantee is weaker."
+  ],
+  "cost_usd": 0.03158
+}

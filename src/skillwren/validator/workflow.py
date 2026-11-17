@@ -74,12 +74,26 @@ def _describe(node, depth):
     ref = f"(line {node.line})"
     kind, text = node.kind, node.text
     if kind == "gate":
-        return f"{pad}- {text!r} {ref} -- gate; failure follows its otherwise branch"
+        if any(child.kind == "otherwise" for child in node.children):
+            return f"{pad}- {text!r} {ref} -- gate; failure follows its otherwise branch"
+        verb = (node.data or text.split()[0]).lower()
+        if verb == "require":
+            default = "failure aborts the flow, quoting the condition"
+        elif verb == "verify":
+            default = ("failure discards derived artifacts, reports, leaves sources "
+                       "unchanged, and aborts the flow")
+        else:
+            default = "failure aborts the flow"
+        return f"{pad}- {text!r} {ref} -- gate with no otherwise; {default}"
     if kind == "branch":
         return f"{pad}- {text!r} {ref} -- branch"
     if kind == "otherwise":
         return f"{pad}- otherwise {ref}"
     if kind == "action":
+        if node.data == "exec" and re.match(r"exec\s+readonly\s", text):
+            return (f"{pad}- {text!r} {ref} -- declared read-only: not counted as a "
+                    "mutation before asks; enforced only when run with "
+                    "`ledger exec --readonly`")
         return f"{pad}- {text!r} {ref}"
     if kind == "assign":
         return f"{pad}- set {text!r} {ref}"
@@ -88,6 +102,11 @@ def _describe(node, depth):
     if kind == "returnto":
         return f"{pad}- return to {text!r} {ref}"
     if kind == "retry":
+        gate = node.parent.parent if node.parent and node.parent.kind == "otherwise" else None
+        if gate is not None and gate.kind == "gate":
+            return (f"{pad}- retry {ref} -- re-runs the failed gate {gate.text!r} "
+                    f"(line {gate.line}) after the repair steps above; no retry "
+                    "limit is stated")
         return f"{pad}- retry {ref}"
     if kind == "label":
         return f"{pad}- label {text!r} {ref}"

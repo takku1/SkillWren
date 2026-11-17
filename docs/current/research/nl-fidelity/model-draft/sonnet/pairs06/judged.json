@@ -1,0 +1,14 @@
+{
+  "dropped": [
+    "f09: recheck verification gate inside the repair/retry loop is missing (reference re-verifies 'backup is complete' before retry; candidate only re-execs the check then retries)",
+    "f09: backup-complete verify steps have no stable IDs, so they are advisory-only and cannot be guard-enforced (weaker enforcement)",
+    "f08: 'cache is warm' verify has no stable ID, so it is advisory-only and cannot be guard-enforced",
+    "f06: ordering constraint 'first approval (plan) before second approval (budget)' is missing; only both-before-write is required"
+  ],
+  "added": [],
+  "changed": [
+    "f09: the check binds its result as 'report', but the flow returns 'state', which is never produced or updated by the check/repair, so it does not return the checked state",
+    "f09: repair is an exec from checks with no input instead of applying repair to the current state"
+  ],
+  "cost_usd": 0.07474
+}

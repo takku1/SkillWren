@@ -1,0 +1,66 @@
+{
+  "name": "05",
+  "facts": 4,
+  "recovered": 4,
+  "missed": [],
+  "uncovered": [
+    "Flow `summarize` in 05-flow.md has two top-level steps.",
+    "Step 1, 'require request exists' (line 8), is a gate that checks that a request exists.",
+    "Step 2, 'return request as request' (line 11), returns the request under the name `request`.",
+    "Calls: there are no cross-file runs, and the explanation says its meaning is complete.",
+    "If 'require request exists' fails, the gate follows its otherwise branch (line 9).",
+    "The otherwise branch runs 'abort with \"Nothing to summarize.\"' (line 10), which ends the run.",
+    "If the gate passes, there is no other branching. The flow returns the request.",
+    "The explanation says approval here is not a guard policy and grants no capabilities."
+  ],
+  "intent_mismatches": [
+    "The intent asks for a summary of the request, but no step summarizes anything. 'return request as request' just returns the request as-is under the same name. There's no summarize or condense step, and only the flow name `summarize` and the abort message hint at summarizing.",
+    "The intent says the summary is 'for the log', but no step logs, records or sends the result. The flow only returns the request. Because no effects are declared, this can't be a hidden write. That fits 'nothing is written', but nothing shows the output reaching a log either.",
+    "The flow has no order rules ('steps may run in any order'). So the explanation doesn't guarantee that the existence gate runs before the return step. The intent expects a missing request to abort the run, which needs the gate to come first.",
+    "The rest matches the intent: a missing request aborts the run, nothing is written (no effects), and no human decision is needed (no ask steps)."
+  ],
+  "limitations_recovered": [
+    "The prose meaning of untyped steps is not machine-checked, so rewording a step could silently change its intent.",
+    "Branch conditions that depend on each other are not recognized.",
+    "Approval is not a guard policy and grants no capabilities.",
+    "Rule compliance is not shown. The explanation says to run `check` for that.",
+    "No guard verbs are present, so nothing in the workflow can be enforced.",
+    "The explanation says it comes straight from the AST with no model paraphrase. It can only show structure, not what each step actually does at runtime."
+  ],
+  "notes": {
+    "requirements": [
+      "Flow `summarize` in 05-flow.md has two top-level steps.",
+      "Step 1, 'require request exists' (line 8), is a gate that checks that a request exists.",
+      "Step 2, 'return request as request' (line 11), returns the request under the name `request`.",
+      "Ordering: the explanation declares no order rules and says the steps may run in any order.",
+      "Effects: none are declared, and the explanation says the workflow changes nothing (no writes).",
+      "Calls: there are no cross-file runs, and the explanation says its meaning is complete."
+    ],
+    "branches": [
+      "If 'require request exists' fails, the gate follows its otherwise branch (line 9).",
+      "The otherwise branch runs 'abort with \"Nothing to summarize.\"' (line 10), which ends the run.",
+      "If the gate passes, there is no other branching. The flow returns the request."
+    ],
+    "authority": [
+      "There are no ask steps, so no human decision is required.",
+      "Nothing is written, and no effects are declared.",
+      "There are no guard verbs, so nothing is enforced by guard policy.",
+      "The explanation says approval here is not a guard policy and grants no capabilities."
+    ],
+    "limitations": [
+      "The prose meaning of untyped steps is not machine-checked, so rewording a step could silently change its intent.",
+      "Branch conditions that depend on each other are not recognized.",
+      "Approval is not a guard policy and grants no capabilities.",
+      "Rule compliance is not shown. The explanation says to run `check` for that.",
+      "No guard verbs are present, so nothing in the workflow can be enforced.",
+      "The explanation says it comes straight from the AST with no model paraphrase. It can only show structure, not what each step actually does at runtime."
+    ],
+    "intent_mismatches": [
+      "The intent asks for a summary of the request, but no step summarizes anything. 'return request as request' just returns the request as-is under the same name. There's no summarize or condense step, and only the flow name `summarize` and the abort message hint at summarizing.",
+      "The intent says the summary is 'for the log', but no step logs, records or sends the result. The flow only returns the request. Because no effects are declared, this can't be a hidden write. That fits 'nothing is written', but nothing shows the output reaching a log either.",
+      "The flow has no order rules ('steps may run in any order'). So the explanation doesn't guarantee that the existence gate runs before the return step. The intent expects a missing request to abort the run, which needs the gate to come first.",
+      "The rest matches the intent: a missing request aborts the run, nothing is written (no effects), and no human decision is needed (no ask steps)."
+    ]
+  },
+  "cost_usd": 0.067
+}

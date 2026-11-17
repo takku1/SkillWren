@@ -1,0 +1,86 @@
+{
+  "name": "03",
+  "facts": 5,
+  "recovered": 5,
+  "missed": [],
+  "uncovered": [
+    "Gate 'require design exists' (line 13); if it fails, the flow aborts with \"No design.\" (line 15)",
+    "'exec table check from checks as screen' (line 16) produces `screen`",
+    "Gate 'verify #table design has an assurance table from screen' (line 17)",
+    "Repair block: a second exec table check (line 20) and gate verify #recheck (line 21)",
+    "'generate implementation from design as implementation' (line 23)",
+    "'write #implementation implementation with subject' (line 24)",
+    "'return implementation as implementation' (line 25)",
+    "Branch: design missing leads to abort; nothing else runs",
+    "Branch: table present skips the repair block",
+    "Branch: verify #recheck has no otherwise branch listed",
+    "No ask steps: no human makes any decision",
+    "The flow writes to `subject`",
+    "No cross-file runs",
+    "Approving the explanation is not a guard policy and grants no capabilities"
+  ],
+  "intent_mismatches": [
+    "Effect not in the intent: the workflow writes the implementation to `subject` (line 24). The intent only says to generate the implementation and return it.",
+    "Gate not in the intent: 'require design exists' with an abort on failure (lines 13\u201315). The intent does not mention this check.",
+    "'Retry until the table is present' is only partly shown. The retry (line 22) has no stated target, condition or bound, so it may loop forever.",
+    "The retry also comes after verify #recheck in the same block, so it is unclear whether it runs even when the recheck passes.",
+    "verify #recheck says failures follow an otherwise branch, but none is shown. So the explanation does not show that 'repeat until present' actually happens when the recheck fails.",
+    "The ordering rule only requires verify#table before write#implementation. On the repair path verify#table has already failed, and no ordering rule requires verify #recheck to pass before generate or write. Nothing enforceable guarantees the table is present before the implementation is generated or written.",
+    "Nothing orders 'generate implementation' after a passing check. Only the write is constrained.",
+    "The table checks the intent depends on ('exec table check', lines 16 and 20) are advisory-only and cannot be bound by the guard. 'Apply the screen' is also unverified prose."
+  ],
+  "limitations_recovered": [
+    "Untyped prose steps (for example 'apply assurance screen', 'exec table check', 'generate implementation') are not machine-checked. Rewording them could silently change what they mean.",
+    "Correlated branch conditions are not recognized.",
+    "Approval of this explanation is not a guard policy and grants no capabilities.",
+    "The explanation does not show the rule-compliance result. You need to run `check` for that.",
+    "It does not show the retry's target, limit, or termination condition.",
+    "It does not show what `subject`, `checks` or the assurance screen are."
+  ],
+  "notes": {
+    "requirements": [
+      "Flow `develop` (03-flow.md) starts with the gate 'require design exists' (line 13). If it fails, the flow aborts with \"No design.\" (line 15).",
+      "It runs 'exec table check from checks as screen' (line 16) to produce `screen`.",
+      "Gate 'verify #table design has an assurance table from screen' (line 17).",
+      "If that gate fails, the repair block runs: 'apply assurance screen with design as design' (line 19), then a second 'exec table check from checks as screen' (line 20), then gate 'verify #recheck design has an assurance table from screen' (line 21), then 'retry' (line 22).",
+      "It runs 'generate implementation from design as implementation' (line 23).",
+      "It runs 'write #implementation implementation with subject' (line 24).",
+      "It runs 'return implementation as implementation' (line 25).",
+      "Ordering rule (line 8): 'verify#table' must come before 'write#implementation' on every path."
+    ],
+    "branches": [
+      "Design missing (line 13 fails): abort with \"No design.\" Nothing else runs.",
+      "Assurance table present (line 17 passes): skip the repair block and go straight to generate, write, return.",
+      "Assurance table missing (line 17 fails): apply the screen, run the check again, verify #recheck, then retry (line 22).",
+      "verify #recheck (line 21) is marked 'failure follows its otherwise branch', but no otherwise branch is listed under it. So the explanation does not say what happens when the recheck fails, or how it relates to the retry.",
+      "The retry on line 22 has no stated target or bound. It does not say what it restarts (the line-17 gate, the repair block, or line 21), or how many attempts are allowed."
+    ],
+    "authority": [
+      "No ask steps: no human makes any decision.",
+      "The flow writes to `subject` (write #implementation, line 24).",
+      "No cross-file runs.",
+      "Guard enforcement: verify #table, verify #recheck and write #implementation can be enforced, but only if a guard policy defines those operations.",
+      "Both 'exec table check' steps (lines 16 and 20) have no stable ID. Order rules can match them only by their prose text, and the guard cannot bind them.",
+      "The explanation says that approving it is not a guard policy and grants no capabilities."
+    ],
+    "limitations": [
+      "Untyped prose steps (for example 'apply assurance screen', 'exec table check', 'generate implementation') are not machine-checked. Rewording them could silently change what they mean.",
+      "Correlated branch conditions are not recognized.",
+      "Approval of this explanation is not a guard policy and grants no capabilities.",
+      "The explanation does not show the rule-compliance result. You need to run `check` for that.",
+      "It does not show the retry's target, limit, or termination condition.",
+      "It does not show what `subject`, `checks` or the assurance screen are."
+    ],
+    "intent_mismatches": [
+      "Effect not in the intent: the workflow writes the implementation to `subject` (line 24). The intent only says to generate the implementation and return it.",
+      "Gate not in the intent: 'require design exists' with an abort on failure (lines 13\u201315). The intent does not mention this check.",
+      "'Retry until the table is present' is only partly shown. The retry (line 22) has no stated target, condition or bound, so it may loop forever.",
+      "The retry also comes after verify #recheck in the same block, so it is unclear whether it runs even when the recheck passes.",
+      "verify #recheck says failures follow an otherwise branch, but none is shown. So the explanation does not show that 'repeat until present' actually happens when the recheck fails.",
+      "The ordering rule only requires verify#table before write#implementation. On the repair path verify#table has already failed, and no ordering rule requires verify #recheck to pass before generate or write. Nothing enforceable guarantees the table is present before the implementation is generated or written.",
+      "Nothing orders 'generate implementation' after a passing check. Only the write is constrained.",
+      "The table checks the intent depends on ('exec table check', lines 16 and 20) are advisory-only and cannot be bound by the guard. 'Apply the screen' is also unverified prose."
+    ]
+  },
+  "cost_usd": 0.1041
+}

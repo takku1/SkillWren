@@ -236,6 +236,32 @@ steps get skipped, and self-reports are not evidence.
 | Goodhart, reward hacking | `--require-evidence` | Proxy catalog | Claims of unhackability |
 | Coordination, Shapley | | Notes | |
 
+## Robust value of information for clarifying questions (assessed 2026-11-17)
+
+Proposed rule: ask query q only when its robust value V_q (reduction of the
+worst-case expected loss ρ over models within a KL ball of radius σ around
+the prior π) and its nominal value N_q both exceed its cost c_q, and ask the
+argmax of V_q − c_q. The dual form ρ(x) = min_γ>0 [(1/γ) log Σ_m π_m
+e^{γ L_m(x)} + σ/γ] = max_{KL(w‖π) ≤ σ} Σ_m w_m L_m(x) is correct when L
+is a loss. As written, L_m is built from a reward R̄, so the inner max is
+the optimistic case; use L = −R̄ (or an inner min) to make it robust.
+
+Where it would sit: choosing which of the drafter's questions (or
+`approve` coverage gaps) to put to the human. Prerequisite test, run on the
+model-draft results (`nl-fidelity/model-draft/README.md`,
+`scripts/question_coverage.py`): of 22 requirement defects, 9 would have
+been exposed by answering one of the drafter's 38 questions, 14 were
+disclosed as assumptions, and 7 were silent.
+
+Verdict: not adopted now. A ranker over the existing question pool could
+cut the human's question load (at most about one question in four mattered), but
+it cannot reach the silent third, which is where loss concentrates, and
+SkillWren has no π, L_m or r_q to feed it. Cheaper first steps: make the
+drafter run `check --audit` and flag gates that lost their evidence. If
+revisited, the natural instance is empirical: sample K drafts (models m,
+π uniform), take L_m(x) as the structural distance between a chosen draft
+and draft m, and score each question by how it partitions the drafts.
+
 ## Limits
 
 These are design arguments from theory, not measurements. The models assume

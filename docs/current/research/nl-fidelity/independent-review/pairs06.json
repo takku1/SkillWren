@@ -1,0 +1,111 @@
+{
+  "name": "pairs06",
+  "facts": 16,
+  "recovered": 16,
+  "missed": [],
+  "uncovered": [
+    "f07: exec first check from checks as first (line 33), then verify #a as a gate",
+    "f08: 'require request exists' gate (line 46) runs before anything else",
+    "f09: exec backup check as state (line 61), then verify #backup as a gate",
+    "f09: return state (line 68)",
+    "f10: exec suite check as report (line 79), then verify #suite as a gate",
+    "f10 order rule: verify#suite before write#log (line 9)",
+    "No order rules apply to f08 or f09",
+    "No cross-file calls",
+    "Branch f06: if plan confirmation fails, abort with \"Plan rejected.\"",
+    "Branch f08: if no request, abort with \"No request.\"",
+    "Branch f09: verify #recheck has no otherwise branch listed; what happens when the recheck fails and what retry repeats is not stated",
+    "Authority: SkillWren checks only the ask/confirm structure, not that a human actually decided",
+    "Authority: approval is not a guard policy and grants no capabilities",
+    "Authority: write targets per file (f06 target; f07 and f10 logfile and target; f08 and f09 write nothing)",
+    "Authority: guard enforcement for the typed write/verify operations only if the guard policy defines them",
+    "Authority: exec steps are advisory only (no stable ID, matched by prose, the guard can't bind them)",
+    "Limitation: the prose meaning of untyped steps is not machine-checked",
+    "Limitation: correlated branch conditions are not recognized (f08)",
+    "Limitation: guard enforcement depends on a guard policy that isn't shown",
+    "Limitation: rule compliance needs a separate check run"
+  ],
+  "intent_mismatches": [
+    "f06: The intent says 'two humans', but nothing shows that #first and #second must be different people. The explanation also says it does not verify that a human decided at all.",
+    "f06: The order rules cover only the ask steps (ask#first before ask#second before write#final), not the confirmation gates. 'Only a twice-approved plan is written' depends on the abort structure, not an order rule, and write#final is enforced only if the guard policy defines it.",
+    "f07: The intent says 'three-step', but four steps are listed (exec, verify, write first result, write summary).",
+    "f07: The intent says each step depends on the previous one. No order rule puts the exec (line 33) before verify#a. That link is advisory only, because exec has no stable ID and the guard cannot bind it.",
+    "f08: There is an extra gate the intent doesn't mention, 'require request exists', which aborts with \"No request.\" So even a warm cache does not always return the request.",
+    "f08: The explanation doesn't show that the request is returned 'unchanged'. It only shows 'return request as request'.",
+    "f08: The skipped branch depends on 'cache is warm' being judged the same way in the unless-condition and in verify #cache. Correlated conditions are not recognized, and there are no order rules for f08.",
+    "f09: The retry loop is unclear. Verify #recheck has no otherwise branch shown, and 'retry' (line 67) comes right after it in sequence. That could mean it retries even after a successful recheck, or it doesn't say what is retried. 'Retry until complete' is not clearly shown.",
+    "f09: The retry is unbounded, so a backup that can never be repaired could loop forever (no limit or way out is shown).",
+    "f09: There are no order rules for f09, so 'only then return the state' depends on structure alone, and the exec steps are advisory only.",
+    "f10: No order rule puts the suite exec (line 79) before verify#suite. That exec is advisory only.",
+    "f10: 'Before anything is published' covers only the two listed writes. The explanation doesn't say what counts as publishing, and it doesn't show that nothing else is published."
+  ],
+  "limitations_recovered": [
+    "The prose meaning of untyped steps is not machine-checked, so rewording can silently change intent",
+    "Correlated branch conditions are not recognized. This matters for f08: 'unless cache is warm' and 'verify cache is warm' are linked but not recognized as linked.",
+    "Approval here is not a guard policy and grants no capabilities",
+    "Whether a guard actually enforces any operation depends on a guard policy that is not shown",
+    "Rule compliance needs a separate `check` run"
+  ],
+  "notes": {
+    "requirements": [
+      "f06: ask #first user to approve the plan (line 17), then 'require confirmation' gate (line 18)",
+      "f06: ask #second user to approve the budget (line 21), then 'require confirmation' gate (line 22)",
+      "f06: write #final approved plan to target (line 25), then return plan (line 26)",
+      "f06 order rules: ask#first before ask#second (line 5); ask#second before write#final (line 6)",
+      "f07: exec first check from checks as first (line 33), then verify #a first check passed from first (line 34) as a gate",
+      "f07: write #b first result to logfile (line 37), then write #c summary to target (line 38), then return summary (line 39)",
+      "f07 order rules: verify#a before write#b (line 7); write#b before write#c (line 8)",
+      "f08: 'require request exists' gate (line 46) runs before anything else",
+      "f08: unless cache is warm: exec cache warm from checks (line 50), then verify #cache cache is warm (line 51) as a gate",
+      "f08: return request as request (line 54)",
+      "f09: exec backup check as state (line 61), then verify #backup backup is complete (line 62) as a gate",
+      "f09: return state (line 68)",
+      "f10: exec suite check as report (line 79), then verify #suite suite is green (line 80) as a gate",
+      "f10: write #log test log to logfile (line 83), then write #notes release notes to target (line 84), then return notes (line 85)",
+      "f10 order rules: verify#suite before write#log (line 9); write#log before write#notes (line 10)",
+      "No order rules apply to f08 or f09",
+      "No cross-file calls"
+    ],
+    "branches": [
+      "f06: if plan confirmation fails, abort with \"Plan rejected.\" (lines 19-20)",
+      "f06: if budget confirmation fails, abort with \"Budget rejected.\" (lines 23-24)",
+      "f07: if verify #a fails, abort with \"First check failed.\" (lines 35-36)",
+      "f08: if no request, abort with \"No request.\" (lines 47-48)",
+      "f08: if the cache is warm, skip lines 50-53 and go straight to return request",
+      "f08: if the cache is not warm and verify #cache fails, abort with \"Cache cold.\" (lines 52-53)",
+      "f09: if verify #backup fails, the otherwise branch runs: apply backup repair (line 64), exec backup check again (line 65), verify #recheck (line 66), then retry (line 67)",
+      "f09: verify #recheck is called a gate whose failure 'follows its otherwise branch', but no otherwise branch is listed for it. What happens when the recheck fails, and what retry repeats, is not stated.",
+      "f10: if verify #suite fails, abort with \"Red suite.\" (lines 81-82)"
+    ],
+    "authority": [
+      "Human decisions: ask #first user to approve the plan (line 17) and ask #second user to approve the budget (line 21)",
+      "SkillWren checks only the ask/confirm structure. It does not check that a human actually decided.",
+      "Approval is not a guard policy and grants no capabilities",
+      "Writes: f06 writes target; f07 writes logfile and target; f10 writes logfile and target. f08 and f09 write nothing.",
+      "Guard enforcement is possible for write#final, verify#a, write#b, write#c, verify#cache, verify#backup, verify#recheck, verify#suite, write#log and write#notes, but only if the guard policy defines those operations",
+      "All exec steps (lines 33, 50, 61, 65, 79) are advisory only: they have no stable ID, order rules match them by prose text, and the guard cannot bind them"
+    ],
+    "limitations": [
+      "The prose meaning of untyped steps is not machine-checked, so rewording can silently change intent",
+      "Correlated branch conditions are not recognized. This matters for f08: 'unless cache is warm' and 'verify cache is warm' are linked but not recognized as linked.",
+      "Approval here is not a guard policy and grants no capabilities",
+      "Whether a guard actually enforces any operation depends on a guard policy that is not shown",
+      "Rule compliance needs a separate `check` run"
+    ],
+    "intent_mismatches": [
+      "f06: The intent says 'two humans', but nothing shows that #first and #second must be different people. The explanation also says it does not verify that a human decided at all.",
+      "f06: The order rules cover only the ask steps (ask#first before ask#second before write#final), not the confirmation gates. 'Only a twice-approved plan is written' depends on the abort structure, not an order rule, and write#final is enforced only if the guard policy defines it.",
+      "f07: The intent says 'three-step', but four steps are listed (exec, verify, write first result, write summary).",
+      "f07: The intent says each step depends on the previous one. No order rule puts the exec (line 33) before verify#a. That link is advisory only, because exec has no stable ID and the guard cannot bind it.",
+      "f08: There is an extra gate the intent doesn't mention, 'require request exists', which aborts with \"No request.\" So even a warm cache does not always return the request.",
+      "f08: The explanation doesn't show that the request is returned 'unchanged'. It only shows 'return request as request'.",
+      "f08: The skipped branch depends on 'cache is warm' being judged the same way in the unless-condition and in verify #cache. Correlated conditions are not recognized, and there are no order rules for f08.",
+      "f09: The retry loop is unclear. Verify #recheck has no otherwise branch shown, and 'retry' (line 67) comes right after it in sequence. That could mean it retries even after a successful recheck, or it doesn't say what is retried. 'Retry until complete' is not clearly shown.",
+      "f09: The retry is unbounded, so a backup that can never be repaired could loop forever (no limit or way out is shown).",
+      "f09: There are no order rules for f09, so 'only then return the state' depends on structure alone, and the exec steps are advisory only.",
+      "f10: No order rule puts the suite exec (line 79) before verify#suite. That exec is advisory only.",
+      "f10: 'Before anything is published' covers only the two listed writes. The explanation doesn't say what counts as publishing, and it doesn't show that nothing else is published."
+    ]
+  },
+  "cost_usd": 0.1602
+}

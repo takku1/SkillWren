@@ -1,0 +1,44 @@
+Workflow in draft.md:
+flow `f11`:
+  - 'ask #approval holder to approve key rotation' (line 10)
+  - 'require confirmation' (line 11) -- gate; failure follows its otherwise branch
+    - otherwise (line 12)
+      - 'abort with "Key rotation was refused."' (line 13)
+  - 'write #rotation rotated_key with access_key' (line 14)
+  - 'return rotated_key as rotated_key' (line 15)
+flow `f12`:
+  - 'read audit check as report' (line 20)
+    - otherwise (line 21)
+      - 'abort with "The audit check could not be observed."' (line 22)
+  - 'return report as report' (line 23)
+flow `f13`:
+  - 'require source exists' (line 28) -- gate; failure follows its otherwise branch
+  - 'require destination exists' (line 29) -- gate; failure follows its otherwise branch
+  - 'write source with destination' (line 30)
+  - 'return source as copy' (line 31)
+flow `f14`:
+  - for each 'for each items as item:' (line 36)
+    - 'apply process with item as processed' (line 37)
+    - 'write processed with processed_items' (line 38)
+  - 'return items as items' (line 39)
+flow `f15`:
+  - 'require request exists' (line 44) -- gate; failure follows its otherwise branch
+    - otherwise (line 45)
+      - 'abort with "A request is required."' (line 46)
+  - return (line 47)
+    - set 'request = request' (line 48)
+Ordering (must hold on every path):
+  - 'ask#approval' before 'write#rotation' (line 5)
+Authority: human decisions are asked here:
+  - 'ask #approval holder to approve key rotation' (line 10)
+  SkillWren checks the ask/confirm structure, not that a human actually decided -- approval confirms intended meaning, not formal equivalence.
+Effects (files written or flows run):
+  - flow `f11` writes access_key
+  - flow `f13` writes destination
+  - flow `f14` writes processed_items
+Enforcement:
+  - 'write #rotation rotated_key with access_key' (line 14) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write source with destination' (line 30) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'write processed with processed_items' (line 38) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

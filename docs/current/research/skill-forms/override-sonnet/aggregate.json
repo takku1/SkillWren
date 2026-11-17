@@ -1,0 +1,284 @@
+{
+  "model": "sonnet",
+  "source": "vulnscanner",
+  "runs": 9,
+  "arms": {
+    "both/all": {
+      "runs": 3,
+      "procedure_followed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "task_completed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "order_rule_by_evidence": {
+        "k": 0,
+        "n": 0,
+        "wilson95": null
+      },
+      "no_stray_writes": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "skill_loaded": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "cost_usd_mean": 0.0849,
+      "output_tokens_mean": 1346.3333,
+      "input_tokens_mean": 190598.3333,
+      "num_turns_mean": 8.0,
+      "seconds_mean": 22.5,
+      "read_flow": 0
+    },
+    "both/override": {
+      "runs": 3,
+      "procedure_followed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "task_completed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "order_rule_by_evidence": {
+        "k": 0,
+        "n": 0,
+        "wilson95": null
+      },
+      "no_stray_writes": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "skill_loaded": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "cost_usd_mean": 0.0849,
+      "output_tokens_mean": 1346.3333,
+      "input_tokens_mean": 190598.3333,
+      "num_turns_mean": 8.0,
+      "seconds_mean": 22.5,
+      "read_flow": 0
+    },
+    "logic/all": {
+      "runs": 3,
+      "procedure_followed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "task_completed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "order_rule_by_evidence": {
+        "k": 0,
+        "n": 0,
+        "wilson95": null
+      },
+      "no_stray_writes": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "skill_loaded": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "cost_usd_mean": 0.0908,
+      "output_tokens_mean": 1564.3333,
+      "input_tokens_mean": 218522.6667,
+      "num_turns_mean": 9.0,
+      "seconds_mean": 24.4,
+      "read_flow": 3
+    },
+    "logic/override": {
+      "runs": 3,
+      "procedure_followed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "task_completed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "order_rule_by_evidence": {
+        "k": 0,
+        "n": 0,
+        "wilson95": null
+      },
+      "no_stray_writes": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "skill_loaded": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "cost_usd_mean": 0.0908,
+      "output_tokens_mean": 1564.3333,
+      "input_tokens_mean": 218522.6667,
+      "num_turns_mean": 9.0,
+      "seconds_mean": 24.4,
+      "read_flow": 3
+    },
+    "prose/all": {
+      "runs": 3,
+      "procedure_followed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "task_completed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "order_rule_by_evidence": {
+        "k": 0,
+        "n": 0,
+        "wilson95": null
+      },
+      "no_stray_writes": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "skill_loaded": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "cost_usd_mean": 0.0845,
+      "output_tokens_mean": 1336.6667,
+      "input_tokens_mean": 190275.0,
+      "num_turns_mean": 8.0,
+      "seconds_mean": 20.3,
+      "read_flow": 0
+    },
+    "prose/override": {
+      "runs": 3,
+      "procedure_followed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "task_completed": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "order_rule_by_evidence": {
+        "k": 0,
+        "n": 0,
+        "wilson95": null
+      },
+      "no_stray_writes": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "skill_loaded": {
+        "k": 3,
+        "n": 3,
+        "wilson95": [
+          0.438,
+          1.0
+        ]
+      },
+      "cost_usd_mean": 0.0845,
+      "output_tokens_mean": 1336.6667,
+      "input_tokens_mean": 190275.0,
+      "num_turns_mean": 8.0,
+      "seconds_mean": 20.3,
+      "read_flow": 0
+    }
+  },
+  "caveat": "Same model, subject, tools and permissions per arm; only the skill text differs. Small n: read the Wilson intervals, not the point estimates."
+}

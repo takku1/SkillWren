@@ -1,0 +1,5 @@
+Z:\SkillWren\docs\current\research\nl-fidelity\model-draft\sonnet\pairs21\draft.md:27: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.
+Z:\SkillWren\docs\current\research\nl-fidelity\model-draft\sonnet\pairs21\draft.md:28: warning W5: binding 'restarted' never referenced -- Use it or drop the `as`.
+Z:\SkillWren\docs\current\research\nl-fidelity\model-draft\sonnet\pairs21\draft.md:30: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.
+Z:\SkillWren\docs\current\research\nl-fidelity\model-draft\sonnet\pairs21\draft.md:31: warning W5: binding 'reloaded' never referenced -- Use it or drop the `as`.
+clean

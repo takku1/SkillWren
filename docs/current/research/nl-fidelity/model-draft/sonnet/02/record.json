@@ -1,0 +1,63 @@
+{
+  "name": "02",
+  "draft_exit": 0,
+  "valid_first": true,
+  "first_errors": [
+    "clean"
+  ],
+  "valid_after_repair": true,
+  "final_errors": [
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "release": {
+        "candidate": "deploy-to-production",
+        "dropped": {
+          "action:write": 1
+        },
+        "added": {
+          "action:exec": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 1,
+    "added_statements": 1,
+    "reference_statements": 5,
+    "dropped_rules": {
+      "ask->write": 1
+    },
+    "added_rules": {
+      "ask->exec": 1
+    },
+    "reference_rules": 1,
+    "writes_delta": {
+      "release": -1
+    }
+  },
+  "facts": {
+    "facts": 5,
+    "recovered": 2,
+    "missed": [
+      "'ask#approval' before 'write#release'",
+      "No approval",
+      "eligible for guard enforcement"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "The production deploy is no longer listed as a file write: the reference says flow writes target, while the candidate says 'Effects: none declared; the workflow changes nothing', so the deploy's effect goes unrecorded",
+      "The deploy step can no longer be enforced by the guard: the reference's '#release' write has a stable ID and can be guarded, but the candidate's 'exec deploy' is advisory-only and the guard can't bind it"
+    ],
+    "added": [],
+    "changed": [
+      "The deploy action is an untyped 'exec deploy from deploy_tool' with no stable ID, not a typed write to the production target, so the meaning of the deploy step isn't machine-checked",
+      "The rule 'ask before deploy' still exists, but it now finds the deploy step by its prose text instead of a stable ID, so rewording that step could quietly break the rule"
+    ],
+    "cost_usd": 0.03052
+  },
+  "draft_cost_usd": 0.0134,
+  "draft_calls": 1
+}

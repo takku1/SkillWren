@@ -13,8 +13,11 @@ missed limitations separately. Structural validity (does it parse, do
 rules hold) is already established by `check`; judge only semantic
 fidelity: does the explanation carry the intent's meaning?
 
-Independent review is pending: no reviewer outside this session has
-assessed the corpus yet. Do not cite corpus scores until that happens.
+Independent review: done 2026-11-17 by a fresh model session outside the
+authoring session (not a human), 82/83 facts recovered; it found four
+semantic defects in reference flows, recorded in
+`independent-review/README.md`. These bytes stay frozen; fixes go into a
+re-frozen v2. Model-draft results: `model-draft/README.md`.
 
 ## Manifest (sha256)
 

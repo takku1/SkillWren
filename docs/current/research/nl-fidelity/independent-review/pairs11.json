@@ -1,0 +1,77 @@
+{
+  "name": "pairs11",
+  "facts": 13,
+  "recovered": 13,
+  "missed": [],
+  "uncovered": [
+    "f11: 'require confirmation' gate (line 13) and return of key (line 17)",
+    "f11 write: 'write #key fresh key with target' (line 16)",
+    "f13: 'write #copy source content with target' (line 38); returns copy (line 39)",
+    "f13 branch: no source -> abort \"No source.\" (lines 33-34)",
+    "f14: gate 'require items exist' (line 46)",
+    "f14 branch: no items -> abort \"No items.\" (lines 47-48)",
+    "f15: gate 'require request exists' (line 58)",
+    "f15 branch: no request -> abort \"Nothing.\" (lines 59-60)",
+    "f12: no branches; no writes listed",
+    "Authority: the only human decision is 'ask #holder key holder to approve rotation' in f11",
+    "Authority: the explainer checks only the ask/confirm structure, not that a human actually decided. Approval grants no capabilities",
+    "Authority: f11, f13 and f14 write to target. f12 and f15 write nothing",
+    "Authority: write #key, write #copy and write #item can be guard-enforced only if the policy defines them",
+    "Authority: 'exec audit check' in f12 is advisory-only and cannot be bound by the guard"
+  ],
+  "intent_mismatches": [
+    "f14: the workflow adds a 'require items exist' gate that aborts with \"No items.\" The intent asks for no such precondition, so a missing (or possibly empty) item collection aborts instead of returning nothing",
+    "f14: the loop writes 'processed item', but no separate processing step is shown. Processing exists only as untyped prose inside the write",
+    "f15: the return block sets 'notes = request', so the request comes back under the key 'notes' rather than plainly as the request. Whether that counts as 'unchanged' is unclear",
+    "f13: the copy is written 'with target', not explicitly to the destination that was checked. Nothing shows that the write target is the destination",
+    "f12: 'nothing is written' holds only at the workflow level (no write effects). The exec step is advisory-only and not guard-bindable, so the explanation cannot rule out side effects from the audit check itself",
+    "f11: 'only after its holder approves' is enforced as structure (ask, then require confirmation, then write), not as a verified human decision. The explainer says so itself"
+  ],
+  "limitations_recovered": [
+    "The prose meaning of untyped steps (e.g. 'processed item', 'fresh key', 'source content', 'audit check') is not machine-checked, so rewording could silently change intent",
+    "Correlated branch conditions are not recognized",
+    "Approval does not prove a human decided and grants no capabilities",
+    "Rule compliance is not shown here; the explanation says to run `check`",
+    "The explanation lists no cross-file runs, but it cannot show the side effects of the exec in f12"
+  ],
+  "notes": {
+    "requirements": [
+      "f11: asks #holder (key holder) to approve rotation (line 12), then 'require confirmation' gate (line 13) before 'write #key fresh key with target' (line 16); returns key (line 17)",
+      "f11 ordering rule: 'ask#holder' must come before 'write#key' on every path (line 5)",
+      "f12: 'exec audit check from checks as report' (line 24), then returns report (line 25); no writes listed for f12",
+      "f13: gate 'require source exists' (line 32), then gate 'require destination exists' (line 35), then 'write #copy source content with target' (line 38); returns copy (line 39)",
+      "f14: gate 'require items exist' (line 46); for each item in items, 'write #item processed item with target' (line 50); then returns items (line 51)",
+      "f15: gate 'require request exists' (line 58); return block that sets 'notes = request' (lines 61-62)"
+    ],
+    "branches": [
+      "f11: if confirmation fails, otherwise branch aborts with \"Rotation refused.\" before any write (lines 14-15)",
+      "f13: no source -> abort \"No source.\" (lines 33-34); no destination -> abort \"No destination.\" (lines 36-37); both happen before the write",
+      "f14: no items -> abort \"No items.\" (lines 47-48)",
+      "f15: no request -> abort \"Nothing.\" (lines 59-60)",
+      "f12: no branches"
+    ],
+    "authority": [
+      "Only one human decision: 'ask #holder key holder to approve rotation' in f11 (line 12)",
+      "The explainer checks only the ask/confirm structure, not that a human actually decided. Approval is not a guard policy and grants no capabilities",
+      "Writes: f11, f13 and f14 each write to target. f12 and f15 write nothing",
+      "write #key, write #copy and write #item have stable IDs and can be guard-enforced only if the guard policy defines those operations",
+      "'exec audit check' in f12 is advisory-only: it has no stable ID, order rules match it by prose text, and the guard cannot bind it"
+    ],
+    "limitations": [
+      "The prose meaning of untyped steps (e.g. 'processed item', 'fresh key', 'source content', 'audit check') is not machine-checked, so rewording could silently change intent",
+      "Correlated branch conditions are not recognized",
+      "Approval does not prove a human decided and grants no capabilities",
+      "Rule compliance is not shown here; the explanation says to run `check`",
+      "The explanation lists no cross-file runs, but it cannot show the side effects of the exec in f12"
+    ],
+    "intent_mismatches": [
+      "f14: the workflow adds a 'require items exist' gate that aborts with \"No items.\" The intent asks for no such precondition, so a missing (or possibly empty) item collection aborts instead of returning nothing",
+      "f14: the loop writes 'processed item', but no separate processing step is shown. Processing exists only as untyped prose inside the write",
+      "f15: the return block sets 'notes = request', so the request comes back under the key 'notes' rather than plainly as the request. Whether that counts as 'unchanged' is unclear",
+      "f13: the copy is written 'with target', not explicitly to the destination that was checked. Nothing shows that the write target is the destination",
+      "f12: 'nothing is written' holds only at the workflow level (no write effects). The exec step is advisory-only and not guard-bindable, so the explanation cannot rule out side effects from the audit check itself",
+      "f11: 'only after its holder approves' is enforced as structure (ask, then require confirmation, then write), not as a verified human decision. The explainer says so itself"
+    ]
+  },
+  "cost_usd": 0.1031
+}

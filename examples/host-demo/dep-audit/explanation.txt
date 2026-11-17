@@ -1,0 +1,19 @@
+Workflow in flow.md:
+flow `audit`:
+  - 'exec dependency check from checks as findings' (line 13)
+  - 'verify #deps findings show no banned dependencies from findings' (line 14) -- gate; failure follows its otherwise branch
+    - otherwise (line 15)
+      - 'abort with "Blocked findings."' (line 16)
+  - 'write #report audit findings with target' (line 17)
+  - 'return report as report' (line 18)
+Ordering (must hold on every path):
+  - 'verify#deps' before 'write#report' (line 8)
+Authority: no ask steps; nothing requires a human decision.
+Effects (files written or flows run):
+  - flow `audit` writes target
+Enforcement:
+  - 'verify #deps findings show no banned dependencies from findings' (line 14) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #report audit findings with target' (line 17) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec dependency check from checks as findings' (line 13) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

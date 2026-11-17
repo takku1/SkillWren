@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.9.0 (2026-11-17)
+
+Real-host evidence and the first model measurements.
+
+- Real-host demo (`scripts/host_demo.py`, `examples/host-demo/dep-audit`):
+  headless Claude Code loads a packaged skill from a one-line request on
+  a disposable clone of a real repository; the host then checks approval,
+  ledger completeness with the order rule satisfied by evidence, the
+  audit checkpoint, protected bytes, and denies replay and blocked
+  submissions. Clean and blocked variants pass
+  (`docs/current/research/host-demo/`). `--forms`/`--prompts` compare
+  skill forms; 72 runs in `docs/current/research/skill-forms/`.
+- Language (SPEC Section 21): typed return anchors (`return #id ... as
+  ...`, `return #id:`), so order rules can constrain flow exits; returns
+  of one exit may share an ID. `exec readonly ...` declares an
+  observation that M1 does not count as a mutation; the explainer marks it
+  as a claim enforced only by `ledger exec --readonly`.
+- Ledger: a step named as a typed reference (`verify#deps`) now matches
+  its rule. Before, only statement text matched, so the documented
+  pattern left rules unexercised (found by the host demo).
+- Explainer: `retry` names the gate it re-runs; gates without `otherwise`
+  state the spec's default failure (found by the independent review).
+- `build DIR` packages a fragment-set skill (every logic fragment checked,
+  all files carried, manifest with digests); `measure` accepts
+  directories and counts every Markdown file a host could load.
+- `draft` and `scripts/benchmark_runtime.py` take the adapter as plain
+  words after `--`, so no JSON quoting is needed on any shell; the
+  benchmark gains `--adapter-file` and `--resume`.
+- Model adapters for headless Claude Code: `scripts/adapters/
+  claude_draft.py` (drafting) and `claude_runtime.py` (runtime trials).
+- Measurements: model-draft reproduction over the frozen corpus
+  (`scripts/fidelity_eval.py`), independent corpus review
+  (`scripts/corpus_review.py`), question coverage of draft defects
+  (`scripts/question_coverage.py`), and the model A/B/C runtime comparison
+  (90 trials: no unauthorized write attempted in any arm; the prose arm's
+  low completion is a protocol artefact, see `model-evaluation-plan.md`).
+- Lifecycle `explanation.txt` files re-encoded from UTF-16 to UTF-8
+  (content unchanged; they had been saved through a PowerShell redirect).
+
 ## 0.8.0 (2026-11-12)
 
 Authoring pipeline plus field-report fixes.

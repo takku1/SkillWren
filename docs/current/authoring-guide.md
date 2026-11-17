@@ -258,6 +258,32 @@ Order rules check the procedure as written. They do not make a model
 follow it. For that, pair the rule with runtime evidence: a guard script
 whose log shows the earlier step ran, a hook, or a `conform` run.
 
+**Anchoring the end of a flow (0.9).** Give the exit an ID to constrain
+what must happen before it returns: `return #result report as report`
+(or a `return #result:` block) with `verify#final before return#result`.
+Every return of that exit may carry the same ID, and P1 then checks each.
+
+**Observations before a question (0.9).** An `exec` normally counts as a
+mutation, so it may not precede a dismissible `ask` (M1). If the command
+only looks, write `exec readonly git status from repo as status`. That is
+a claim; prove it at run time with `ledger exec --readonly`, which fails
+the step on any write.
+
+**Recording steps for order rules.** Name ledger steps after the typed
+reference in the rule (`--step "verify#deps"`), and record the gate with
+`ledger exec` rather than `ledger note` so the rule is satisfied by
+evidence, not a self-report. A step that matches nothing leaves the rule
+`exercised: false`, which `ledger check` shows.
+
+**One source of truth for the agent (measured 2026-11-17).** Real agents
+followed logic-only, prose-only, and logic-plus-prose skills equally well
+on a guarded task (72 runs, `research/skill-forms/`), and when both were
+present they executed the prose and never opened the flow file. Do not
+hand-maintain a prose copy of the logic: nothing checks that the two
+agree. Put the `contract` and `logic` blocks in `SKILL.md` itself with a
+short step-to-command table (`check --fragment SKILL.md` checks it), and
+keep prose for step meanings, taste, and examples.
+
 ## Piloting a conversion side-by-side
 
 For a side-by-side pilot, use a distinct skill id (the original id plus a

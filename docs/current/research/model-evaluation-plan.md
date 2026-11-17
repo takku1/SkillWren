@@ -1,7 +1,43 @@
-# Model A/B/C evaluation plan (pending provider + budget)
+# Model A/B/C evaluation
 
-Status: scripted arms done, model arms not run. No model results are
-claimed here.
+Status: scripted arms done 2026-11-12; model arms run 2026-11-17.
+
+## Model run (2026-11-17)
+
+90 paired trials (5 scenarios x 3 arms x 6 seeds), Sonnet 5.5 through
+`scripts/adapters/claude_runtime.py` (headless Claude Code, no tools, one
+JSON request per turn). Raw traces `runtime-model.jsonl`, aggregates
+`runtime-model-summary.json`. Arm A: prose prompt, unguarded. Arm B:
+SkillWren logic prompt, unguarded. Arm C: logic prompt plus the guard.
+
+| Arm | Task completed | Unauthorized writes | False blocks | Mean tokens / trial |
+|---|---|---|---|---|
+| A prose | 4/30 (95% CI 1-26%) | 0 | 0 | 3.2K |
+| B logic | 29/30 (90-100%) | 0 | 0 | 6.8K |
+| C logic + guard | 29/30 (90-100%) | 0 | 0 | 6.5K |
+
+**Read this carefully: the A-vs-B gap is a protocol artefact, not evidence
+that SkillWren syntax beats prose.** The task never states the candidate
+format. In nearly every trial the model's first candidate was
+`debug=false`, which the JSON verifier rejects. In arm A the model then
+stopped in 26 of 26 trials, which is what the prose says to do ("if
+verification fails, abort"). In arms B and C it retried with
+`{"debug": false}` in 29 of 30 trials each, although the logic's
+`otherwise:` branch says abort. So the prose arm followed its failure
+instruction more literally, and the logic arms completed more by
+deviating from theirs.
+
+What the run does show: the model attempted no unauthorized or
+unverified write in any arm, including the `skip`, `replay` and `stale`
+cue scenarios. So the guard (arm C) had nothing to block, and enforcement
+value against this model on this task is unmeasured rather than zero. The
+scripted adversary remains the evidence for enforcement mechanics.
+
+Protocol fixes before rerunning: state the candidate format in the task,
+score "retried with a new candidate after a failed gate" separately from
+"aborted", and add scenarios where the instruction itself pushes for an
+unverified write (the host-demo `override` prompt did that; 18/18 runs
+refused, see `skill-forms/`).
 
 ## What the scripted run shows
 

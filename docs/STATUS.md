@@ -1,112 +1,104 @@
 # Status
 
-**Last Updated**: 2026-11-12
+**Last Updated**: 2026-11-17
 
 ## Current Phase
 
-Package 0.8.0, authoring pipeline beta. New in 0.8: deterministic
-`explain-workflow`, digest-bound `approve`, proposal-only `draft`,
-versioned AST dump, a 26-pair NL fidelity corpus, ledger `cwd` /
-`readonly` / `detail` / `attempt` support, and field-report fixes
-(version alignment, `--help` exit 0). 231 tests pass. Model comparison
-and independent corpus review are pending.
+Package 0.9.0, piloted beta with real-host evidence. A real coding agent
+(headless Claude Code) loads a packaged SkillWren skill from a one-line
+request and leaves an evidence chain the host verifies independently.
+The first model measurements are in: draft fidelity, an independent
+corpus review, a 72-run skill-form comparison, and the model A/B/C
+runtime comparison. 246 tests pass.
 
 ## Active Focus
 
-- Independent review of the NL fidelity corpus and the model-draft
-  reproduction test (draft from intent, count added/dropped requirements
-  against the approved flows).
-- Run the model A/B/C comparison per
-  `docs/current/research/model-evaluation-plan.md` (needs a provider and
-  a usage budget); scripted arms alone cannot speak to model behavior.
-- Confirm the full GitHub Actions matrix goes green on push and enable
-  required status checks on `main` (a repository setting, not code).
-- Offer full-stack the fragment check and two upstream findings: an
-  `order:` rule for the assurance screen (field report 3, G1) and the U1
-  on `integration` in `flows/design.md`. Their adoption is their decision.
+- Corpus v2: fix the four reference-flow defects the independent review
+  found (pairs16 f17, pairs21 f22, 05, unrequested existence gates),
+  re-freeze under a new manifest, rerun model drafts.
+- Drafter evidence lint: warn or fail when a drafted gate loses its
+  `exec` evidence, the main class of silent requirement loss (3 of 7).
+- A task hard enough to separate skill forms (every form complied in
+  every run so far), an OS-isolated host run with a real agent, and a
+  fixed A/B/C protocol (state the candidate format; score retry-after-
+  failed-gate separately from abort).
+- Optional upstream note for full-stack: typed returns could replace its
+  prose rule `exec assurance table check before return`. Its adoption is
+  its decision.
 
 ## Architecture Summary
 
 A stdlib-only Python package. `skillwren.validator` parses Markdown into
 semantic blocks, builds an indentation AST and control-flow graph per flow,
-and runs dataflow checks (definite binding, dismissal safety, authority
-structure, effects, and order rules) in one shared must-analysis
-framework. `workflow` renders the AST as deterministic prose or a
-versioned dump with line provenance; `approve` binds human approval to
-exact bytes; `draft` proposes through an adapter that cannot approve.
-`guard` is a single-process controller that binds each write to an
-administrator policy, pinned verifiers, exact approved bytes, and an
-unchanged target, with single-use approvals and fail-closed crash
-recovery; the embedding host must deny the requester direct access to
-protected files, policy, verifiers, and checkpoints. `sandbox` observes
-one command in a disposable networkless container, `audit` holds a linear
-event log against an independent checkpoint, and `ledger` checks recorded
-runs as valid, complete, or unassessed.
+and runs dataflow checks (definite binding, dismissal safety, authority,
+effects, order rules) in one must-analysis framework; `workflow` renders the
+AST as deterministic prose or a versioned dump, `approve` binds approval to
+exact bytes, and `draft` proposes through an adapter that cannot approve.
+`guard` binds each write to an administrator policy, pinned verifiers and
+exact verified bytes; `sandbox`, `audit` and `ledger` observe, checkpoint
+and check recorded runs. `build` packages single-file skills or fragment
+sets; `scripts/` holds the real-host harness and model-measurement tools.
 
 ## Key Decisions
 
-- 2026-11-12, 0.8: explanation is deterministic from the AST; the same
-  model never both drafts and explains, and approval confirms intended
-  meaning, not formal equivalence.
-- 2026-11-12, 0.8: ledger milestones still match step names exactly; a
-  separate `detail` field carries criteria. Attempts are a distinct
-  record type ignored by checks. Read-only exec is sandbox-verified,
-  not declared.
-- 2026-11-12, 0.8: P2 IDs are document-scoped and unique per operation,
-  which forced distinct verify/write IDs in the fidelity corpus.
-- 2026-11-12, 0.8: the full-stack live-use report is kept as
-  converter-regression material, not absorbed into the corpus.
-- 2026-11-12, 0.7: ledger reports `valid` separately from `completeness`
-  (`complete`/`incomplete`/`unassessed`/`violations`);
-  `check --require-completeness` fails unassessed runs.
-- 2026-11-12, 0.7: CI keeps the Python 3.9 lane on ubuntu-24.04;
-  action tags are pinned to immutable SHAs.
-- 2026-11-12, 0.7: deployment is proved by topology: the adversary runs
-  in a digest-pinned container with no protected mounts while the guard
-  runs on the host.
-- 2026-11-12, 0.7: crash recovery fails closed on a trailing audit
-  intent; approvals never cross processes.
-- 2026-11-12, 0.6: the checked unit is the `logic` block; the header and
-  header routing are optional conventions.
-- 2026-11-12, 0.6: `order:` rules (P1) use must-analysis per flow entry;
-  failed gates establish nothing.
-- 2026-11-12, 0.6: `exec` command text is an argument list without a shell.
-- 2026-11-12: validator split into a package; equivalence checked by
-  comparing every diagnostic before and after.
+- 2026-11-17, 0.9: one source of truth for the agent. Real agents followed
+  logic-only, prose-only and both forms equally (72/72); with both, they
+  executed the prose and never read the flow. Recommended form: logic and
+  contract blocks inline in SKILL.md plus a step-to-command table.
+- 2026-11-17, 0.9: typed returns (`return #id`) anchor flow exits; returns
+  of one exit may share an ID. `exec readonly` is a declared claim that M1
+  skips, enforced only by `ledger exec --readonly`.
+- 2026-11-17, 0.9: ledger steps named as typed references match their
+  rules (the documented pattern was silently unexercised before).
+- 2026-11-17, 0.9: correlated branch conditions stay unrecognized by
+  design. Inferring them from natural language is unsound; nest the
+  dependent step or use an explicit verifier. Full-stack fixed its one case.
+- 2026-11-17: the robust value-of-information rule for choosing clarifying
+  questions is not adopted. Drafter questions covered 9 of 22 real
+  defects and 7 were silent, so ranking the existing questions cannot
+  reach the main loss (`research/game-theory-2026-11.md`).
+- 2026-11-17: model reviews are labelled as such; corpus bytes stay
+  frozen and fixes go into a re-frozen v2.
+- 2026-11-12, 0.8: explanation is deterministic from the AST; approval
+  confirms intended meaning, not formal equivalence.
+- 2026-11-12, 0.7: deployment is proved by topology; crash recovery fails
+  closed; CI lanes pinned and all 14 required on `main`.
 - 2026-10-21: claims narrowed to three separate layers (static validity,
-  reviewed preservation, observed behavior); reviewed compact conversion.
+  reviewed preservation, observed behavior).
 
 ## Deprecated/Legacy
 
+- Hand-maintained prose copies of a skill's logic: superseded by the
+  inline-logic form (measured, no benefit, drift risk).
+- Inline JSON adapter arguments as the only form: plain argv after `--`.
 - Header-only routing as a goal (SPEC Section 9): kept as a convention.
 - `src/skillwren/validator.py` single module: replaced by the package.
-- "Runtime evidence (unreleased)" framing: the runtime shipped in 0.7.0.
-- Stale `Unreleased`/`Experimental` changelog tails: folded into release
-  sections as development-trail history.
 - Benchmark rounds 1-2 "attribution confirmed" wording: historical.
 
 ## Known Gaps
 
-- No measured behavioral benefit of the format over equal-content prose at
-  model level (scripted enforcement only); model-draft fidelity unmeasured.
+- Every real-agent run complied, so the form comparison hit a ceiling;
+  it shows no harm from either form, not a benefit.
+- Model drafts silently drop about a third of the requirements they lose;
+  approval remains a human step.
+- Reviews of the corpus and drafts are by model sessions, not humans.
+- Model A/B/C (90 trials): zero unauthorized write attempts in every arm,
+  so enforcement value against a cooperating model is unmeasured; the
+  prose arm's 4/30 completion comes from an unstated candidate format,
+  and the protocol needs fixing before any syntax claim.
+- The host demo shares one OS account between agent and host; isolation
+  is proved separately (`scripts/isolation_probe.py`).
 - Order rules check the written procedure, not what the model does.
-- Correlated branch conditions are not recognized (U1 false positives are
-  possible, as on full-stack's `integration`).
-- `build`/`measure` handle complete skills, not fragment sets.
-- Static M1 still counts read-only execs as mutations; no declared
-  read-only flow syntax yet (runtime `ledger exec --readonly` exists).
-- Remote CI has not yet run the fixed matrix; required status checks on
-  `main` are not enabled.
 
 ## Documents
 
-- `docs/current/SPEC.md` (normative), `authoring-guide.md`,
-  `skill-template.md`, `fragment-template.md`, `compiler.md`,
-  `language-design.md`
-- `docs/current/design/`: `fragments-and-ordering.md`,
-  `compact-conversion.md`, `runtime-assurance.md`,
-  `independent-review-response.md`
-- `docs/current/research/`: `full-stack-live-use-2026-11-12.md` (latest),
-  `model-evaluation-plan.md`, `nl-fidelity/` (corpus + protocol),
-  `research-review-2026-11.md`, `research-review-2026-10.md`
-- `docs/current/quickstart-runtime.md` (guard walkthrough)
+- `docs/current/SPEC.md` (normative, Section 21 for 0.9),
+  `authoring-guide.md`, `skill-template.md`, `fragment-template.md`,
+  `compiler.md`, `language-design.md`, `quickstart-runtime.md`
+- `docs/current/design/`: fragments and ordering, compact conversion,
+  runtime assurance, independent review response
+- `docs/current/research/`: `skill-adoption-readiness.md` (gate),
+  `host-demo/`, `skill-forms/`, `nl-fidelity/` (corpus, `model-draft/`,
+  `independent-review/`), `model-evaluation-plan.md` and
+  `runtime-model*.json*` (A/B/C), `lifecycle/`, `game-theory-2026-11.md`,
+  research reviews, field reports

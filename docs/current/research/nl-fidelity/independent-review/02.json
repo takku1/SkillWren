@@ -1,0 +1,68 @@
+{
+  "name": "02",
+  "facts": 5,
+  "recovered": 5,
+  "missed": [],
+  "uncovered": [
+    "Flow `release` (02-flow.md) runs these steps in order: ask #approval (line 13), require confirmation (line 14), write #release (line 17), return bundle (line 18).",
+    "Line 14, 'require confirmation', is a gate. If it fails, the flow takes its otherwise branch.",
+    "Line 17 writes the production bundle to `target`. The write is tagged #release.",
+    "Line 18 returns the bundle as `bundle`.",
+    "Only effect: flow `release` writes `target`. No cross-file runs or calls.",
+    "Confirmation passes: the flow goes on to write the production bundle to `target`, then returns it.",
+    "SkillWren checks only the ask/confirm structure. It does not verify that a human actually decided.",
+    "Approval is not a guard policy and grants no capabilities."
+  ],
+  "intent_mismatches": [
+    "The ordering rule at line 8 only requires the approval *ask* to come before the write. It does not require the *confirmation gate* to come before it. The intent says no deploy without confirmation, but the confirmation-before-deploy guarantee comes only from the step sequence, not from a declared rule, so removing or moving line 14 would not break the line 8 rule.",
+    "Nothing explicitly ties 'require confirmation' to the #approval ask. It is untyped prose, so the explanation cannot show that the confirmation being checked is the user's answer to the line 13 question.",
+    "SkillWren says it does not verify that a human actually decided. The intent's 'needs a human decision' is enforced only structurally.",
+    "The deploy is shown as a file write ('write #release production bundle with target'). Whether writing to `target` actually means deploying to production, and what `target` is, are prose meaning only and are not checked.",
+    "There is no evidence of a guard policy covering the #release write. Without one, nothing outside the flow structure blocks the write when there is no approval; the approval itself grants and restricts no capabilities.",
+    "On a failed confirmation, the flow aborts with 'No approval.' before the write, which matches 'stop and deploy nothing.' Because correlated conditions are not recognized, the explanation cannot rule out other paths, though none are shown."
+  ],
+  "limitations_recovered": [
+    "The prose meaning of untyped steps (for example 'require confirmation' and 'approve production deploy') is not machine-checked, so rewording could silently change the intent.",
+    "Correlated branch conditions are not recognized.",
+    "The approval is structural only: it is not a guard policy and grants no capabilities.",
+    "Rule compliance is not shown here; you need to run `check` for that.",
+    "Guard enforcement of the write depends on a guard policy that the explanation does not show."
+  ],
+  "notes": {
+    "requirements": [
+      "Flow `release` (02-flow.md) runs these steps in order: ask #approval (line 13), require confirmation (line 14), write #release (line 17), return bundle (line 18).",
+      "Line 13 asks the user to approve the production deploy. The step is tagged #approval.",
+      "Line 14, 'require confirmation', is a gate. If it fails, the flow takes its otherwise branch.",
+      "Line 17 writes the production bundle to `target`. The write is tagged #release.",
+      "Line 18 returns the bundle as `bundle`.",
+      "Ordering rule (line 8): 'ask#approval' must come before 'write#release' on every path.",
+      "Only effect: flow `release` writes `target`. No cross-file runs or calls."
+    ],
+    "branches": [
+      "Confirmation passes: the flow goes on to write the production bundle to `target`, then returns it.",
+      "Confirmation fails: the otherwise branch (line 15) runs 'abort with \"No approval.\"' (line 16). The flow stops before the write, so nothing is written or deployed on this path."
+    ],
+    "authority": [
+      "The user is the human decision-maker, asked at line 13 ('ask #approval user to approve production deploy').",
+      "SkillWren checks only the ask/confirm structure. It does not verify that a human actually decided.",
+      "Approval is not a guard policy and grants no capabilities.",
+      "The write at line 17 is the only writing step. It can be targeted by order rules and could be guard-enforced, but only if a guard policy defines that operation. The explanation shows no such policy."
+    ],
+    "limitations": [
+      "The prose meaning of untyped steps (for example 'require confirmation' and 'approve production deploy') is not machine-checked, so rewording could silently change the intent.",
+      "Correlated branch conditions are not recognized.",
+      "The approval is structural only: it is not a guard policy and grants no capabilities.",
+      "Rule compliance is not shown here; you need to run `check` for that.",
+      "Guard enforcement of the write depends on a guard policy that the explanation does not show."
+    ],
+    "intent_mismatches": [
+      "The ordering rule at line 8 only requires the approval *ask* to come before the write. It does not require the *confirmation gate* to come before it. The intent says no deploy without confirmation, but the confirmation-before-deploy guarantee comes only from the step sequence, not from a declared rule, so removing or moving line 14 would not break the line 8 rule.",
+      "Nothing explicitly ties 'require confirmation' to the #approval ask. It is untyped prose, so the explanation cannot show that the confirmation being checked is the user's answer to the line 13 question.",
+      "SkillWren says it does not verify that a human actually decided. The intent's 'needs a human decision' is enforced only structurally.",
+      "The deploy is shown as a file write ('write #release production bundle with target'). Whether writing to `target` actually means deploying to production, and what `target` is, are prose meaning only and are not checked.",
+      "There is no evidence of a guard policy covering the #release write. Without one, nothing outside the flow structure blocks the write when there is no approval; the approval itself grants and restricts no capabilities.",
+      "On a failed confirmation, the flow aborts with 'No approval.' before the write, which matches 'stop and deploy nothing.' Because correlated conditions are not recognized, the explanation cannot rule out other paths, though none are shown."
+    ]
+  },
+  "cost_usd": 0.0885
+}

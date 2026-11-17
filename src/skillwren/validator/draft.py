@@ -40,18 +40,33 @@ def main(argv):
                                                  "Proposal only: still needs check, "
                                                  "explanation, and human approval.")
     parser.add_argument("--intent-file", required=True)
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = parser.add_mutually_exclusive_group()
     group.add_argument("--adapter", help="adapter argv as JSON array")
     group.add_argument("--adapter-file",
                        help="file holding the adapter argv as a JSON array "
                             "(avoids shell quoting)")
     parser.add_argument("--out", help="write the proposed flow markdown here")
+    parser.epilog = ("The adapter can also follow `--` as plain words, with no JSON "
+                     "quoting: skillwren draft --intent-file i.md -- py -3 adapter.py")
+    command = []
+    if "--" in argv:
+        cut = argv.index("--")
+        argv, command = argv[:cut], argv[cut + 1:]
     args = parser.parse_args(argv)
+    given = [bool(command), args.adapter is not None, args.adapter_file is not None]
+    if sum(given) != 1:
+        parser.error("give the adapter exactly once: after --, --adapter, or --adapter-file")
     try:
         intent = Path(args.intent_file).read_text(encoding="utf-8-sig")
-        adapter = (json.loads(args.adapter) if args.adapter is not None
-                   else json.loads(Path(args.adapter_file).read_text(
-                       encoding="utf-8-sig")))
+        if command:
+            adapter = command
+        elif args.adapter is not None:
+            adapter = json.loads(args.adapter)
+        else:
+            adapter = json.loads(Path(args.adapter_file).read_text(encoding="utf-8-sig"))
+        if (not isinstance(adapter, list) or not adapter
+                or not all(isinstance(part, str) for part in adapter)):
+            raise ValueError("adapter must be a non-empty list of strings")
         proposal = draft(intent, adapter)
     except (OSError, ValueError) as error:
         print(f"skillwren draft: {error}", file=sys.stderr)

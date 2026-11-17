@@ -1,0 +1,16 @@
+{
+  "dropped": [
+    "f20: show report is not directed to the requester (no audience)",
+    "f20: audit check that produces the report is missing; candidate returns nothing instead of the report",
+    "f18: write of clean result has no stable ID, so it is advisory-only and the guard cannot bind it (weaker enforcement)"
+  ],
+  "added": [
+    "f19: extra 'discard assembly' step before aborting on mismatch"
+  ],
+  "changed": [
+    "f16: fast path changed from writing a fast result to target into an in-memory apply with an early return of fast_result; nothing is written",
+    "f17: a closed window now aborts the whole flow, where the reference skips the booking and returns the request",
+    "f17: booking happens unconditionally after a top-level gate instead of inside the window-open branch; returns nothing instead of the request"
+  ],
+  "cost_usd": 0.066632
+}

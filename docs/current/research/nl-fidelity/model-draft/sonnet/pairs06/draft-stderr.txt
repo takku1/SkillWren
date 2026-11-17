@@ -1,0 +1,16 @@
+assumptions:
+  - Fragment is unchecked: I could not run `skillwren check --fragment` here.
+  - No resources or authority header are declared; fragments carry only inputs and order rules, as in the template.
+  - Targets such as plan_file, summary_file, first_result_file, test_log_file and release_notes_file are placeholder resource names.
+  - f06: 'two humans' are modelled as two separate decision asks, each followed by a confirmation, with plan approval first.
+  - f07 and f10 end with a bare `return` because the intent names no returned value.
+  - f08: after a successful warm-up check the flow also returns the request unchanged, through the single final return.
+  - f09: repair is an `exec` from checks, because it changes backups and so cannot be an in-memory `apply`.
+  - f10: the release notes content is an input named release_notes, and the test log is the suite report.
+unresolved questions:
+  - f06: Must the plan approver and budget approver be different people, and should that be enforced?
+  - f08: Should a cold cache that passes the warm-up check return the request unchanged, as I assumed?
+  - f09: Is there a limit on retries? The intent says 'until complete', so I set none.
+  - f07 and f10: What should the flows return, if anything?
+  - f07 and f10: Where do the summary and the release notes come from? I treated them as inputs.
+Not approved. Run check, explain-workflow, and approve before use.
