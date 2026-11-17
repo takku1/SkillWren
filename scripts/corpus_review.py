@@ -24,7 +24,8 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from fidelity_eval import CORPUS, explain, manifest, sha  # noqa: E402
+import fidelity_eval  # noqa: E402
+from fidelity_eval import explain, sha  # noqa: E402
 
 RECOVER = """You are an independent reviewer of a workflow explainer. You see a
 natural-language INTENT and an EXPLANATION generated deterministically from a
@@ -91,7 +92,7 @@ def ask(system, schema, model):
 
 
 def review(name, out, model, pins):
-    files = [CORPUS / f'{name}-{kind}' for kind in ('intent.md', 'flow.md', 'facts.json')]
+    files = [fidelity_eval.CORPUS / f'{name}-{kind}' for kind in ('intent.md', 'flow.md', 'facts.json')]
     for f in files:
         if sha(f) != pins[f.name]:
             raise SystemExit(f'{f.name} does not match the frozen manifest')
@@ -120,10 +121,13 @@ def review(name, out, model, pins):
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     parser.add_argument('--model', default='opus')
-    parser.add_argument('--out', default=str(CORPUS / 'independent-review'))
+    parser.add_argument('--corpus', default=str(fidelity_eval.CORPUS), help='frozen corpus directory')
+    parser.add_argument('--out', help='default: <corpus>/independent-review')
     parser.add_argument('--jobs', type=int, default=3)
     args = parser.parse_args()
-    pins = manifest()
+    fidelity_eval.CORPUS = Path(args.corpus).resolve()
+    args.out = args.out or str(fidelity_eval.CORPUS / 'independent-review')
+    pins = fidelity_eval.manifest()
     names = sorted(n[:-len('-intent.md')] for n in pins if n.endswith('-intent.md'))
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

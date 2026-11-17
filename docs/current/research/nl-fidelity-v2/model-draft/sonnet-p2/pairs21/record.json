@@ -1,0 +1,100 @@
+{
+  "name": "pairs21",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:74: error U1: return value 'shipment' is not bound -- Bind it with `as` or list it under the contract's inputs:.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:30: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:31: warning W5: binding 'restart' never referenced -- Use it or drop the `as`.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:34: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:35: warning W5: binding 'reload' never referenced -- Use it or drop the `as`."
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": false,
+  "unbacked_final": 0,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:31: error V1: exec without `as` discards its result -- Bind the outcome with `as <name>` so a gate can cite it.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:35: error V1: exec without `as` discards its result -- Bind the outcome with `as <name>` so a gate can cite it."
+  ],
+  "structural": {
+    "flows": {
+      "f21ingest": {
+        "candidate": "f21ingest",
+        "dropped": {},
+        "added": {
+          "action:read": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f21store": {
+        "candidate": "f21store",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f22": {
+        "candidate": "f22",
+        "dropped": {
+          "action:apply": 2
+        },
+        "added": {
+          "action:exec": 2
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f23": {
+        "candidate": "f23",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f24": {
+        "candidate": "f24",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f25": {
+        "candidate": "f25",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 2,
+    "added_statements": 3,
+    "reference_statements": 32,
+    "dropped_rules": {},
+    "added_rules": {},
+    "reference_rules": 1,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 17,
+    "recovered": 9,
+    "missed": [
+      "return request as request",
+      "write #record incoming record",
+      "apply service restart",
+      "service reload",
+      "ask operator to approve the note",
+      "write #memo recorded note",
+      "Shipment refused",
+      "ask #lead"
+    ]
+  },
+  "judged": {
+    "dropped": [],
+    "added": [],
+    "changed": [],
+    "cost_usd": 0.057008
+  },
+  "draft_cost_usd": 0.053,
+  "draft_calls": 2
+}

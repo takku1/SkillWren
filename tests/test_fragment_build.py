@@ -26,7 +26,7 @@ class FragmentBuildTests(unittest.TestCase):
         manifest = build(GOOD, out)
         self.assertEqual(manifest['mode'], 'fragments')
         self.assertIn('flow.md', manifest['checked_fragments'])
-        self.assertIn('SKILL.inline.md', manifest['checked_fragments'])
+        self.assertIn('forms/inline.md', manifest['checked_fragments'])
         self.assertEqual((out / 'flow.md').read_bytes(), (GOOD / 'flow.md').read_bytes())
         recorded = json.loads((out / 'manifest.json').read_text())
         self.assertEqual(recorded['sources']['check_deps.py']['bytes'],
@@ -55,15 +55,14 @@ class FragmentBuildTests(unittest.TestCase):
 
     def test_expanded_text_counts_every_markdown_file_once(self):
         text = expanded_text(GOOD).decode('utf-8')
-        for name in ('SKILL.md', 'flow.md', 'SKILL.prose.md'):
+        for name in ('SKILL.md', 'flow.md', 'forms/prose.md'):
             self.assertEqual(text.count(f'<!-- file: {name} -->'), 1)
         self.assertNotIn('<!-- file: check_deps.py -->', text)
 
     def test_measure_accepts_directories(self):
         smaller = self.root / 'smaller'
         shutil.copytree(GOOD, smaller)
-        for name in ('SKILL.prose.md', 'SKILL.logic.md', 'SKILL.inline.md'):
-            (smaller / name).unlink()
+        shutil.rmtree(smaller / 'forms')
         proc = subprocess.run([sys.executable, str(ROOT / 'scripts/skillwren.py'), 'measure',
                                str(GOOD), str(smaller), '--metric', 'characters', '--json'],
                               capture_output=True, text=True)

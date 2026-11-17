@@ -1,0 +1,2 @@
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p1\01\draft.md:9: warning W13: order rule never applies: no statement starts with 'write#prod_write' -- Fix the pattern so it matches the later statement, or drop the rule.
+clean

@@ -1,0 +1,22 @@
+Workflow in draft.md:
+flow `publish-release-notes`:
+  - 'require release_notes_text exists' (line 10) -- gate; failure follows its otherwise branch
+    - otherwise (line 11)
+      - 'abort with "Release notes are required."' (line 12)
+  - 'exec checks from checks as results' (line 14)
+  - 'verify #report_clean the report shows no failures from results' (line 16) -- gate; failure follows its otherwise branch
+    - otherwise (line 17)
+      - 'abort with "Report is missing or failing; not publishing."' (line 18)
+  - 'write #publish release_notes_text with release_notes' (line 20)
+  - 'return release_notes_text as published' (line 22)
+Ordering (must hold on every path):
+  - 'verify#report_clean' before 'write#publish' (line 5)
+Authority: no ask steps; nothing requires a human decision.
+Effects (files written or flows run):
+  - flow `publish-release-notes` writes release_notes
+Enforcement:
+  - 'verify #report_clean the report shows no failures from results' (line 16) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #publish release_notes_text with release_notes' (line 20) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec checks from checks as results' (line 14) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

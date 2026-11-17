@@ -1,0 +1,11 @@
+assumptions:
+  - The flow is named guarded-config-write after its purpose since the intent names no flow.
+  - The 'config' input is the candidate production config; the destination resource is called production_config and the check command is 'debug off check' in a 'checks' resource.
+  - The abort message states the failure reason generically; the actual reason comes from the check's evidence.
+  - Returned name 'config' is assumed to be a produces entry of the enclosing skill.
+  - The check is run with exec so the verify carries evidence.
+unresolved questions:
+  - What is the exact command or script that checks debug is off, and where is the production config path?
+  - Should the returned value be the written config or a status/report?
+  - Should the abort report include the check's output as the reason (beyond the static message)?
+Not approved. Run check, explain-workflow, and approve before use.

@@ -1,0 +1,113 @@
+{
+  "name": "pairs06",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:77: error U1: return value 'release_notes' is not bound -- Bind it with `as` or list it under the contract's inputs:.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:8: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:9: warning W13: order rule never applies: no statement starts with 'verify#first_passed' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:10: warning W13: order rule never applies: no statement starts with 'write#first_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:11: warning W13: order rule never applies: no statement starts with 'write#summary_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:12: warning W13: order rule never applies: no statement starts with 'verify#suite_green' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:13: warning W13: order rule never applies: no statement starts with 'write#test_log' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:14: warning W13: order rule never applies: no statement starts with 'write#release_notes' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:61: warning W5: binding 'repair_result' never referenced -- Use it or drop the `as`."
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": false,
+  "unbacked_final": 0,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:61: error V1: exec without `as` discards its result -- Bind the outcome with `as <name>` so a gate can cite it.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:8: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:9: warning W13: order rule never applies: no statement starts with 'verify#first_passed' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:10: warning W13: order rule never applies: no statement starts with 'write#first_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:11: warning W13: order rule never applies: no statement starts with 'write#summary_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:12: warning W13: order rule never applies: no statement starts with 'verify#suite_green' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:13: warning W13: order rule never applies: no statement starts with 'write#test_log' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs06\\draft.md:14: warning W13: order rule never applies: no statement starts with 'write#release_notes' -- Fix the pattern so it matches the later statement, or drop the rule."
+  ],
+  "structural": {
+    "flows": {
+      "f06": {
+        "candidate": "f06",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f07": {
+        "candidate": "f07",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f08": {
+        "candidate": "f08",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f09": {
+        "candidate": "f09",
+        "dropped": {
+          "gate:verify": 1,
+          "action:apply": 1
+        },
+        "added": {
+          "action:exec": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f10": {
+        "candidate": "f10",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 2,
+    "added_statements": 1,
+    "reference_statements": 32,
+    "dropped_rules": {
+      "ask->ask": 1
+    },
+    "added_rules": {
+      "ask->write": 1,
+      "exec->verify": 2
+    },
+    "reference_rules": 6,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 16,
+    "recovered": 12,
+    "missed": [
+      "'ask#first' before 'ask#second'",
+      "Cache cold",
+      "Red suite",
+      "release notes"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "f09: recheck verify gate after repair (with abort on failure) missing; candidate only re-execs the check before retry",
+      "f09: main backup-complete verify has no stable ID, so it is advisory-only and not guard-enforceable (reference #backup is)",
+      "f08: cache-is-warm verify has no stable ID, so it is advisory-only and not guard-enforceable (reference #cache is)"
+    ],
+    "added": [],
+    "changed": [
+      "f09: repair is 'exec backup repair from checks' (no state input/output) instead of applying repair to the backup state, so the repair doesn't feed the rechecked value",
+      "f09: verifies backup_status but returns an unrelated 'state', so the returned value is not the one verified complete",
+      "f06: ordering rules require only each approval before the write; reference also requires plan approval before budget approval (the flow body still runs that order)"
+    ],
+    "cost_usd": 0.082004
+  },
+  "draft_cost_usd": 0.0624,
+  "draft_calls": 2
+}

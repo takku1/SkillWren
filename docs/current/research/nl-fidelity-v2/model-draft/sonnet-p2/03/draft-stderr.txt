@@ -1,0 +1,14 @@
+assumptions:
+  - The assurance table check is run as `exec assurance table check from checks`, following the template; the intent names no specific command.
+  - The repair block re-runs the check and verifies its new result before `retry`, per the repair-loop rule.
+  - The `retry` repeats until the table is present; the intent sets no retry limit, so none is added.
+  - `design` is declared as a contract input rather than gated with `require`.
+  - The `apply assurance screen` step is defined in a Step meanings list, with wording kept minimal since the intent gives no detail.
+  - No order rule is added since the intent states none explicitly beyond sequence; the verify steps have typed IDs anyway.
+  - The flow returns `implementation` under the name `implementation`, assuming it is a produces entry.
+unresolved questions:
+  - What command does the `assurance table check` run, and what does a passing result look like?
+  - Should the retry loop have a maximum number of attempts or an escalation/abort if the screen never produces a table?
+  - Should the repaired design be written back anywhere (e.g. a design file)? The intent names no write, so none was added.
+  - What should the assurance screen actually add to the design?
+Not approved. Run check, explain-workflow, and approve before use.

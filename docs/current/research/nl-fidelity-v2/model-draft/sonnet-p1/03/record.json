@@ -1,0 +1,66 @@
+{
+  "name": "03",
+  "draft_exit": 0,
+  "valid_first": true,
+  "first_errors": [
+    "clean"
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": true,
+  "unbacked_final": 0,
+  "final_errors": [
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "develop": {
+        "candidate": "screen-repair-retry",
+        "dropped": {
+          "gate:verify": 1,
+          "action:write": 1
+        },
+        "added": {
+          "gate:require": 1,
+          "action:abort": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 2,
+    "added_statements": 2,
+    "reference_statements": 9,
+    "dropped_rules": {
+      "verify->write": 1
+    },
+    "added_rules": {
+      "verify->generate": 1
+    },
+    "reference_rules": 1,
+    "writes_delta": {
+      "develop": -1
+    }
+  },
+  "facts": {
+    "facts": 5,
+    "recovered": 4,
+    "missed": [
+      "'verify#table' before 'write#implementation'"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "Post-repair recheck gate ('verify #recheck design has an assurance table') that aborts (discarding derived artifacts, leaving sources unchanged) on failure; candidate only re-execs the check before retrying",
+      "Writing the generated implementation to subject (reference effect 'develop writes subject'); candidate declares no effects"
+    ],
+    "added": [
+      "Precondition gate 'require design exists' that aborts with 'A design is required.' \u2014 not in intent"
+    ],
+    "changed": [
+      "Ordering constraint: reference requires verify#table before write#implementation; candidate requires verify#table before generate#impl"
+    ],
+    "cost_usd": 0.047119999999999995
+  },
+  "draft_cost_usd": 0.0477,
+  "draft_calls": 1
+}

@@ -1,0 +1,19 @@
+Workflow in draft.md:
+flow `guarded-config-write`:
+  - 'exec debug off check from checks as debug_check' (line 12)
+  - 'verify #debug-off config has debug off from debug_check' (line 13) -- gate; failure follows its otherwise branch
+    - otherwise (line 14)
+      - 'abort with "Config verification failed: debug is not off."' (line 15)
+  - 'write #prod-config config with production_config' (line 17)
+  - 'return config as config' (line 19)
+Ordering (must hold on every path):
+  - 'verify#debug-off' before 'write#prod-config' (line 7)
+Authority: no ask steps; nothing requires a human decision.
+Effects (files written or flows run):
+  - flow `guarded-config-write` writes production_config
+Enforcement:
+  - 'verify #debug-off config has debug off from debug_check' (line 13) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #prod-config config with production_config' (line 17) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec debug off check from checks as debug_check' (line 12) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

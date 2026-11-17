@@ -1,0 +1,45 @@
+{
+  "name": "05",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\05\\draft.md:3: error F2: contract sections out of order -- Use always:, never:, inputs:, order: in that order."
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": true,
+  "unbacked_final": 0,
+  "final_errors": [
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "summarize": {
+        "candidate": "summarize-request",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 0,
+    "added_statements": 0,
+    "reference_statements": 4,
+    "dropped_rules": {},
+    "added_rules": {},
+    "reference_rules": 0,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 5,
+    "recovered": 5,
+    "missed": []
+  },
+  "judged": {
+    "dropped": [],
+    "added": [],
+    "changed": [],
+    "cost_usd": 0.0167
+  },
+  "draft_cost_usd": 0.0196,
+  "draft_calls": 2
+}

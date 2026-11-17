@@ -1,0 +1,2 @@
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p2\pairs21\draft.md:31: error V1: exec without `as` discards its result -- Bind the outcome with `as <name>` so a gate can cite it.
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p2\pairs21\draft.md:35: error V1: exec without `as` discards its result -- Bind the outcome with `as <name>` so a gate can cite it.

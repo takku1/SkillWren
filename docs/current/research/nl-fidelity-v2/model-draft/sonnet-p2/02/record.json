@@ -1,0 +1,64 @@
+{
+  "name": "02",
+  "draft_exit": 0,
+  "valid_first": true,
+  "first_errors": [
+    "clean"
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": true,
+  "unbacked_final": 0,
+  "final_errors": [
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "release": {
+        "candidate": "approve-production-deploy",
+        "dropped": {
+          "action:write": 1
+        },
+        "added": {
+          "action:exec": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 1,
+    "added_statements": 1,
+    "reference_statements": 5,
+    "dropped_rules": {
+      "ask->write": 1
+    },
+    "added_rules": {
+      "ask->exec": 1
+    },
+    "reference_rules": 1,
+    "writes_delta": {
+      "release": -1
+    }
+  },
+  "facts": {
+    "facts": 5,
+    "recovered": 2,
+    "missed": [
+      "'ask#approval' before 'write#release'",
+      "No approval",
+      "eligible for guard enforcement"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "production deploy no longer declared as a write effect to target (candidate says the workflow changes nothing)",
+      "deploy step lost its stable ID, so order rules match it only by prose and the guard cannot enforce it (reference write is addressable and eligible for guard enforcement)"
+    ],
+    "added": [],
+    "changed": [
+      "deploy is now an untyped 'exec deploy' returning a result instead of a 'write production bundle with target'"
+    ],
+    "cost_usd": 0.031272
+  },
+  "draft_cost_usd": 0.05,
+  "draft_calls": 1
+}

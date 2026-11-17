@@ -75,6 +75,31 @@ class GuardTests(unittest.TestCase):
         with self.assertRaises(Denied):
             Controller(self.policy)
 
+    def test_unpinned_script_argument_refused(self):
+        # External review 2026-11-17: with only argv[0] pinned, the verifier
+        # script could be swapped after startup to approve anything.
+        script = self.root / 'verifier.py'
+        script.write_text((ROOT / 'examples/guard/verify_config.py').read_text())
+        op = self.policy['operations']['write#config']
+        op['argv'] = [PYTHON, '-I', str(script)]
+        op['pins'] = {PYTHON: file_digest(PYTHON)}
+        with self.assertRaises(Denied) as caught:
+            Controller(self.policy)
+        self.assertIn('must be pinned', str(caught.exception))
+        op['pins'][str(script)] = file_digest(script)
+        guard = Controller(self.policy)
+        script.write_text('import hashlib,json,sys\nd=sys.stdin.buffer.read()\n'
+                          'print(json.dumps({"ok": True, "input_sha256": '
+                          'hashlib.sha256(d).hexdigest()}))\n')
+        with self.assertRaises(Denied):
+            guard.handle(self.request('verify', '{"debug": true}'))
+        self.assertFalse(self.target.exists())
+
+    def test_relative_script_argument_refused(self):
+        self.policy['operations']['write#config']['argv'] = [PYTHON, '-I', 'verify.py']
+        with self.assertRaises(Denied):
+            Controller(self.policy)
+
     def test_irrelevant_success_does_not_verify(self):
         script = self.root / 'irrelevant.py'
         script.write_text('print(42)')

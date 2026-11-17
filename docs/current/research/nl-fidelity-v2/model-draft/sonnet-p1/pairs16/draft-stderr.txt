@@ -1,0 +1,18 @@
+assumptions:
+  - f16: 'the fast path' is modelled as an `apply fast path` step defined in Step meanings; its result rebinds `request`, which is then returned.
+  - f17: booking the slot is `write slot with booking`; `booking` is an assumed resource name. No contract `resources:` block was added because the template shows none; a real skill may need one declared.
+  - f18: the destination of the clean write is an assumed target named `destination`.
+  - f19: parts are generated from `request`, since the intent names no source. The 'fresh check' is an `exec fresh check from checks`, run after the assembly is generated. The write target is `target`.
+  - f19: the abort path discards the assembly first, per the guide's rule against leaving derived work behind.
+  - f20: advisory only, so there are no order rules or gates. Flows must end in return or abort, so it ends in a bare `return`.
+  - Flows that finish without a named output use a bare `return`, since the intent names no produced values.
+  - Every inferred input (fast flag, window, slot, draft, request, checks) is left undeclared in an `inputs:` list.
+unresolved questions:
+  - f16: what does the fast path actually do? Is it an inline step or a separate flow?
+  - f17: what resource is the slot booked into? How is 'the window is open' determined?
+  - f18: where should the clean result be written?
+  - f19: what are the parts generated from? What does the 'fresh check' run? Where does the assembly get written?
+  - f20: should the flow return the report as an output, or only show it?
+verify gates without recorded evidence (the model's own judgment; cite an exec result with `from`, or confirm this is intended):
+  - f17 line 20: verify #window window is open
+Not approved. Run check, explain-workflow, and approve before use.

@@ -1,0 +1,14 @@
+Workflow in draft.md:
+flow `summarize-request`:
+  - 'require request exists' (line 12) -- gate; failure follows its otherwise branch
+    - otherwise (line 13)
+      - 'abort with "A request is required."' (line 14)
+  - 'generate summary from request as summary' (line 16)
+  - 'return summary as summary' (line 18)
+Ordering: no order rules; steps may run in any order.
+Authority: no ask steps; nothing requires a human decision.
+Effects: none declared; the workflow changes nothing.
+Enforcement:
+  No guard verbs present; nothing here can be enforced.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

@@ -1,0 +1,14 @@
+assumptions:
+  - Flow named publish-release-notes after its purpose since the intent names no flow.
+  - The test suite is run via `exec test suite from checks`; the actual command lives in the checks resource.
+  - `release_notes` is an input declared in the contract, not gated with require.
+  - Publishing is modeled as `write release_notes with release_notes_destination`; the destination is not named in the intent.
+  - A missing or failing report is handled by a single verify with abort, with no repair or retry loop since the intent states none.
+  - Returned name `published` must be a skill produces entry; the intent does not name an output.
+  - The order rule `exec test suite before verify#report_clean` uses the statement prefix of the exec.
+unresolved questions:
+  - Where should the release notes be published (path or target)?
+  - What is the exact command for the test suite in the checks resource?
+  - Should release notes be generated, or are they supplied as an input?
+  - What should the flow return after publishing, if anything?
+Not approved. Run check, explain-workflow, and approve before use.

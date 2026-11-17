@@ -1,0 +1,15 @@
+assumptions:
+  - f11: the intent does not say where the rotated key is written; modeled as `write rotation with key`, with `key` as an input naming the access key resource.
+  - f11, f13, f14 end in a bare `return` (f11, f13) or return of items (f14), since every flow must end in return or abort; f11 and f13 return nothing.
+  - f12: `exec readonly` used because the audit check only observes; `checks` is the resource it runs from.
+  - f13: the copy is modeled as `write source with destination`, with order rules requiring both `require` gates before the write.
+  - f14: each processed item is written to an `item_store` target; the transform is a single `apply processing` step defined in Step meanings.
+  - f15: no write or other step beyond the require and the return block; `request` is returned as-is.
+  - Typed IDs on f11/f13 steps are unreferenced by order rules except where prefix patterns are used; they are harmless labels.
+unresolved questions:
+  - f11: What exactly is written when rotating (new key value, where, and who generates it)?
+  - f11: Who is the 'holder' and should the ask be phrased with a specific user-decides entry?
+  - f14: Where should each processed item be written, and what does 'process' mean concretely?
+  - f14: If an item fails processing, should the flow abort, skip, or retry?
+  - f13: What is the copy's content and target path — is `destination` the path written to?
+Not approved. Run check, explain-workflow, and approve before use.

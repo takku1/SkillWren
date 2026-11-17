@@ -1,6 +1,6 @@
 # Status
 
-**Last Updated**: 2026-11-17
+**Last Updated**: 2026-11-17 (0.10 work in progress)
 
 ## Current Phase
 
@@ -13,18 +13,16 @@ runtime comparison. 246 tests pass.
 
 ## Active Focus
 
-- Corpus v2: fix the four reference-flow defects the independent review
-  found (pairs16 f17, pairs21 f22, 05, unrequested existence gates),
-  re-freeze under a new manifest, rerun model drafts.
-- Drafter evidence lint: warn or fail when a drafted gate loses its
-  `exec` evidence, the main class of silent requirement loss (3 of 7).
-- A task hard enough to separate skill forms (every form complied in
-  every run so far), an OS-isolated host run with a real agent, and a
-  fixed A/B/C protocol (state the candidate format; score retry-after-
-  failed-gate separately from abort).
-- Optional upstream note for full-stack: typed returns could replace its
-  prose rule `exec assurance table check before return`. Its adoption is
-  its decision.
+- 0.10 in progress on branch `next-0.10`: corpus v2 (frozen), drafter
+  evidence check and prompt 2 (requirement defects 19 -> 7 on v2), runtime
+  benchmark protocol 2, inline-form example. Release after the protocol-2
+  A/B/C result is written up.
+- Still open, needs a decision or resources: a task hard enough to
+  separate skill forms; an OS-isolated host run (the agent needs
+  credentials inside the isolated account or container); a human review
+  of corpus v2 and the drafts.
+- full-stack PR takku1/full-stack#1 (typed return anchors) awaits that
+  project's review.
 
 ## Architecture Summary
 

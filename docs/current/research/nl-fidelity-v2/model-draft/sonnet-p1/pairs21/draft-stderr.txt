@@ -1,0 +1,15 @@
+assumptions:
+  - f21ingest: 'the request' is read as a described source into `request` and returned under the name `request`.
+  - f21store: the record is written to a resource named `store`; a bare `return` ends the flow because the intent states no return value.
+  - f22: 'state' is the health check result, returned as `state`. Health is checked with an exec before the first verify and again after each repair (restart, then reload). Failure after reload aborts with an error.
+  - f23: no order rule is declared, as the intent says only the written sequence governs. The decline path aborts without writing.
+  - f24: the flow only writes the note and verifies nothing. No gate, ask or order rule is added. The note goes to a resource named `notes`.
+  - f25: 'check' is an exec of the goods checks whose result feeds the readiness verify. Two order rules (ask before write, verify before write) express 'ship only approved, ready goods'. Decline or failed readiness aborts before any write.
+  - Abort messages are my wording, and a bare `return` ends flows that return no value; neither is dictated by the intent.
+unresolved questions:
+  - f21ingest: Where does the request come from (an input, a file)? Should a failed read abort?
+  - f21store and f24: Should these flows return the record or note, or nothing?
+  - f22: Should the restart and reload each be followed by a fresh health check, as written? What does 'state' contain?
+  - f25: What does 'check' mean, and what should happen when readiness fails (abort, or retry)?
+  - f23 and f25: What should happen if the operator or lead declines?
+Not approved. Run check, explain-workflow, and approve before use.

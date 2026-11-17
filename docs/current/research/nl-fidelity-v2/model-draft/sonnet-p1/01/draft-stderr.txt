@@ -1,0 +1,14 @@
+assumptions:
+  - The config to write is supplied as an input named `config`.
+  - The production config is declared as a write resource with a generic path description since none was given.
+  - The 'report the reason' requirement is expressed as the abort message; no separate show step was added.
+  - Flow named guarded-config-write after its purpose.
+  - The `always:` invariant is placed after `order:` in the contract; the template shows resources before always, so ordering may need adjusting if the checker complains.
+  - Returning `config` as the flow result is added only to end the happy path; the intent states no return value.
+unresolved questions:
+  - What is the actual path of the production config?
+  - How should the abort report the specific reason debug verification failed (the message is currently fixed text)?
+  - Should the flow return anything on success, and if so what?
+verify gates without recorded evidence (the model's own judgment; cite an exec result with `from`, or confirm this is intended):
+  - guarded-config-write line 23: verify #debug_off config has debug off
+Not approved. Run check, explain-workflow, and approve before use.

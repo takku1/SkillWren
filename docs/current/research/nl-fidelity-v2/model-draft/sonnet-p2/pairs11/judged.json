@@ -1,0 +1,8 @@
+{
+  "dropped": [],
+  "added": [],
+  "changed": [
+    "f15: return block holds an untyped bareword 'request' instead of a checked field assignment (notes = request), so 'return the request unchanged' is no longer checked as a field binding"
+  ],
+  "cost_usd": 0.045748
+}

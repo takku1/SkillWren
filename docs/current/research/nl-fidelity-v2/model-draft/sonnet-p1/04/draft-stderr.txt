@@ -1,0 +1,13 @@
+assumptions:
+  - Single flow named publish-release-notes, since the intent names no flow.
+  - The test suite is run via a declared 'checks' resource using exec; the exact command is not specified.
+  - A missing report is handled by the same verify failure as a failing report (abort), since a missing report cannot show no failures.
+  - Release notes content is supplied as input release_notes_text; 'publish' is modeled as a write to a release_notes resource.
+  - The return name 'published' must be a skill produces entry in the enclosing skill; the fragment does not declare headers.
+  - Resource access value 'execute' and 'write' are assumed to be valid access flags for the checker.
+unresolved questions:
+  - What is the exact command for running the test suite?
+  - Where and how are the release notes published (file path, release tool, or remote)?
+  - Where do the release notes come from: supplied by the user, or an existing file to read?
+  - Should a failing or missing report be retried (re-run the suite) rather than just aborting?
+Not approved. Run check, explain-workflow, and approve before use.

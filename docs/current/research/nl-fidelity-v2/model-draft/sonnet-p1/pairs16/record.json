@@ -1,0 +1,114 @@
+{
+  "name": "pairs16",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:14: error U1: apply target 'request' may be unbound on some path -- Bind it on every path to this use.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:15: error U1: return value 'request' may be unbound on some path -- Bind it on every path to this use.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:24: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:31: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:44: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:50: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:5: warning W15: order rule rests on self-report: every statement matching 'verify#window' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:6: warning W15: order rule rests on self-report: every statement matching 'apply redaction' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'generate assembly' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:29: warning W5: binding 'clean' never referenced -- Use it or drop the `as`."
+  ],
+  "unbacked_first": 1,
+  "valid_after_repair": true,
+  "unbacked_final": 1,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'verify#window' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:8: warning W15: order rule rests on self-report: every statement matching 'apply redaction' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs16\\draft.md:9: warning W15: order rule rests on self-report: every statement matching 'generate assembly' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "f16": {
+        "candidate": "f16",
+        "dropped": {
+          "action:write": 1
+        },
+        "added": {
+          "action:apply": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f17": {
+        "candidate": "f17",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f18": {
+        "candidate": "f18",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f19": {
+        "candidate": "f19",
+        "dropped": {},
+        "added": {
+          "action:discard": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f20": {
+        "candidate": "f20",
+        "dropped": {
+          "action:exec": 1
+        },
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 2,
+    "added_statements": 2,
+    "reference_statements": 20,
+    "dropped_rules": {},
+    "added_rules": {
+      "apply->write": 1,
+      "generate->exec": 1
+    },
+    "reference_rules": 2,
+    "writes_delta": {
+      "f16": -1
+    }
+  },
+  "facts": {
+    "facts": 14,
+    "recovered": 7,
+    "missed": [
+      "fast result",
+      "Window shut",
+      "booked slot",
+      "redacted draft",
+      "Mismatch",
+      "finished assembly",
+      "show report to requester"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "f20: the step that runs the audit check to produce the report is missing, so the report has no source",
+      "f20: the report is no longer shown specifically to the requester ('show report' names no recipient)"
+    ],
+    "added": [
+      "f19: an extra 'discard assembly' step runs in the mismatch branch before the abort; the intent doesn't call for it"
+    ],
+    "changed": [
+      "f16: the fast branch applies the fast path in memory ('apply fast path') instead of writing the fast result to target, so f16 no longer has a file-write effect",
+      "f19: the gate checks the assembly against the fresh check result instead of checking that the assembly matches the parts using the report"
+    ],
+    "cost_usd": 0.047036
+  },
+  "draft_cost_usd": 0.0499,
+  "draft_calls": 2
+}

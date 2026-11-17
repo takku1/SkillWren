@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased (0.10)
+
+- NL fidelity corpus v2 (`docs/current/research/nl-fidelity-v2/`), derived
+  from frozen v1 by `scripts/make_corpus_v2.py`: fixes the four defects
+  the independent review found (pairs16 f17, pairs21 f22, 05, unrequested
+  existence gates); every flow checks clean and all 86 facts are pinned
+  by tests, including the manifest digests. v1 stays frozen.
+- Evidence check for drafts: `skillwren draft` lists `verify` gates that
+  cite no `exec`/`read`/`open` result (the model's own judgment);
+  `approve` records them as `unbacked_verifies` and warns.
+  (`evidence.unbacked_verifies`.)
+- Drafter prompt 2 (`scripts/adapters/claude_draft.py`, default): evidence,
+  typed-ID, return and input rules; the repair round feeds back unbacked
+  verifies. On v2: requirement defects 19 -> 7, silent ones 8 -> 3,
+  valid after repair 6/9 -> 8/9, questions asked 36 -> 18 (one run).
+- `fidelity_eval.py`/`corpus_review.py` take `--corpus`; `fidelity_eval`
+  takes `--prompt`.
+- Runtime benchmark protocol 2: the task states the candidate format, and
+  trials count failed gates and whether the model continued after one.
+- `examples/host-demo/dep-audit` now ships the recommended inline form as
+  its `SKILL.md`; the experiment variants moved to `forms/`, and
+  `host_demo.py --forms` defaults to `inline`.
+- `.gitattributes` pins digest-bound files (frozen corpora, approved
+  flows, lifecycle evidence) byte-exact on every checkout.
+
 ## 0.9.0 (2026-11-17)
 
 Real-host evidence and the first model measurements.

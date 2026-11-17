@@ -1,0 +1,59 @@
+{
+  "name": "04",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\04\\draft.md:2: error F2: unexpected 'resources:' in contract block -- Only always:/never:/inputs:/order: live here.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\04\\draft.md:3: error F2: contract line outside any section -- Place it under resources:/always:/never:.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\04\\draft.md:4: error F2: contract line outside any section -- Place it under resources:/always:/never:.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\04\\draft.md:5: error F2: contract line outside any section -- Place it under resources:/always:/never:.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\04\\draft.md:6: error F2: contract line outside any section -- Place it under resources:/always:/never:.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\04\\draft.md:7: error F2: contract line outside any section -- Place it under resources:/always:/never:.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\04\\draft.md:8: error F2: contract line outside any section -- Place it under resources:/always:/never:."
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": false,
+  "unbacked_final": 0,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\04\\draft.md:20: error P1: 'write #publish release_notes_text with release_notes' can run before 'verify#report_clean' (order rule, line 5) -- Make `verify#report_clean` (or a run that always performs it) complete on every path to this statement."
+  ],
+  "structural": {
+    "flows": {
+      "publish": {
+        "candidate": "publish-release-notes",
+        "dropped": {},
+        "added": {
+          "gate:require": 1,
+          "action:abort": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 0,
+    "added_statements": 2,
+    "reference_statements": 5,
+    "dropped_rules": {},
+    "added_rules": {},
+    "reference_rules": 1,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 5,
+    "recovered": 3,
+    "missed": [
+      "Failing tests",
+      "exec test suite"
+    ]
+  },
+  "judged": {
+    "dropped": [],
+    "added": [
+      "extra gate 'require release_notes_text exists' with abort \"Release notes are required.\" placed before running the tests (intent only stops publishing for a missing or failing report; this extra gate also blocks the test run)"
+    ],
+    "changed": [],
+    "cost_usd": 0.030240000000000003
+  },
+  "draft_cost_usd": 0.0247,
+  "draft_calls": 2
+}

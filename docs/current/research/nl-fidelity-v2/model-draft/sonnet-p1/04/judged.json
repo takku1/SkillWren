@@ -1,0 +1,8 @@
+{
+  "dropped": [],
+  "added": [
+    "extra gate 'require release_notes_text exists' with abort \"Release notes are required.\" placed before running the tests (intent only stops publishing for a missing or failing report; this extra gate also blocks the test run)"
+  ],
+  "changed": [],
+  "cost_usd": 0.030240000000000003
+}

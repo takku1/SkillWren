@@ -1,0 +1,79 @@
+Workflow in draft.md:
+flow `f06`:
+  - 'ask #plan_approval plan approver to approve plan' (line 19)
+  - 'require confirmation' (line 20) -- gate; failure follows its otherwise branch
+    - otherwise (line 21)
+      - 'abort with "Plan rejected."' (line 22)
+  - 'ask #budget_approval budget approver to approve budget' (line 23)
+  - 'require confirmation' (line 24) -- gate; failure follows its otherwise branch
+    - otherwise (line 25)
+      - 'abort with "Budget rejected."' (line 26)
+  - 'write #plan_write plan with plan_store' (line 27)
+  - 'return plan as plan' (line 28)
+flow `f07`:
+  - 'exec first check from checks as first' (line 35)
+  - 'verify #first_passed first check passed from first' (line 36) -- gate; failure follows its otherwise branch
+    - otherwise (line 37)
+      - 'abort with "First check failed."' (line 38)
+  - 'write #first_result first with first_result_file' (line 39)
+  - 'write #summary_write summary with summary_file' (line 40)
+  - 'return summary as summary' (line 41)
+flow `f08`:
+  - 'if cache is not warm:' (line 48) -- branch
+    - 'exec warm-up check from checks as warmup' (line 49)
+    - 'verify #cache_warm cache is warm from warmup' (line 50) -- gate; failure follows its otherwise branch
+      - otherwise (line 51)
+        - 'abort with "Cache is cold."' (line 52)
+  - 'return request as request' (line 53)
+flow `f09`:
+  - 'exec backup completeness check from checks as backups' (line 60)
+  - 'verify #backups_complete backups are complete from backups' (line 61) -- gate; failure follows its otherwise branch
+    - otherwise (line 62)
+      - 'apply backup repair with state as state' (line 63)
+      - 'exec backup completeness check from checks as backups' (line 64)
+      - 'verify backups are complete from backups' (line 65) -- gate with no otherwise; failure discards derived artifacts, reports, leaves sources unchanged, and aborts the flow
+      - retry (line 66) -- re-runs the failed gate 'verify #backups_complete backups are complete from backups' (line 61) after the repair steps above; no retry limit is stated
+  - 'return state as state' (line 67)
+flow `f10`:
+  - 'exec test suite from checks as report' (line 74)
+  - 'verify #suite_green suite is green from report' (line 75) -- gate; failure follows its otherwise branch
+    - otherwise (line 76)
+      - 'abort with "Suite is not green."' (line 77)
+  - 'write #test_log report with test_log' (line 78)
+  - 'write #release_notes_write release_notes with release_notes_file' (line 79)
+  - 'return release_notes as release_notes' (line 80)
+Ordering (must hold on every path):
+  - 'ask#plan_approval' before 'write#plan_write' (line 7)
+  - 'ask#budget_approval' before 'write#plan_write' (line 8)
+  - 'verify#first_passed' before 'write#first_result' (line 9)
+  - 'write#first_result' before 'write#summary_write' (line 10)
+  - 'verify#suite_green' before 'write#test_log' (line 11)
+  - 'write#test_log' before 'write#release_notes_write' (line 12)
+Authority: human decisions are asked here:
+  - 'ask #plan_approval plan approver to approve plan' (line 19)
+  - 'ask #budget_approval budget approver to approve budget' (line 23)
+  SkillWren checks the ask/confirm structure, not that a human actually decided -- approval confirms intended meaning, not formal equivalence.
+Effects (files written or flows run):
+  - flow `f06` writes plan_store
+  - flow `f07` writes first_result_file
+  - flow `f07` writes summary_file
+  - flow `f10` writes release_notes_file
+  - flow `f10` writes test_log
+Enforcement:
+  - 'write #plan_write plan with plan_store' (line 27) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #first_passed first check passed from first' (line 36) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #first_result first with first_result_file' (line 39) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #summary_write summary with summary_file' (line 40) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #cache_warm cache is warm from warmup' (line 50) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #backups_complete backups are complete from backups' (line 61) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #suite_green suite is green from report' (line 75) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #test_log report with test_log' (line 78) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #release_notes_write release_notes with release_notes_file' (line 79) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec first check from checks as first' (line 35) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec warm-up check from checks as warmup' (line 49) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec backup completeness check from checks as backups' (line 60) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec backup completeness check from checks as backups' (line 64) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'verify backups are complete from backups' (line 65) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec test suite from checks as report' (line 74) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

@@ -1,0 +1,116 @@
+{
+  "name": "pairs06",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:30: error V1: unknown statement 'f07:' -- Use only the v0.6 verb set.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:31: error O1: 'exec first check from checks as first' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:32: error O1: 'verify #first_passed first check passed from first' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:35: error O1: 'write #first_result first with first_result_file' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:36: error O1: 'write #summary_write summary with summary_file' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:37: error O1: 'return summary as summary' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:39: error V1: unknown statement 'f08:' -- Use only the v0.6 verb set.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:40: error O1: 'if cache is not warm:' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:45: error O1: 'return #cache_ok request as request' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:45: error V1: malformed return 'return #cache_ok request as request' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:47: error V1: unknown statement 'f09:' -- Use only the v0.6 verb set.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:48: error O1: 'exec backup completeness check from checks as backups' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:49: error O1: 'verify #backups_complete backups are complete from backups' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:54: error O1: 'return #backup_state state as state' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:54: error V1: malformed return 'return #backup_state state as state' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:56: error V1: unknown statement 'f10:' -- Use only the v0.6 verb set.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:57: error O1: 'exec test suite from checks as report' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:58: error O1: 'verify #suite_green suite is green from report' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:61: error O1: 'write #test_log report with test_log' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:62: error O1: 'write #release_notes_write release_notes with release_notes_file' cannot nest here -- Dedent it or move it into a branch or repair block."
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": true,
+  "unbacked_final": 0,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:8: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:9: warning W13: order rule never applies: no statement starts with 'write#first_result' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:10: warning W13: order rule never applies: no statement starts with 'write#summary_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:11: warning W13: order rule never applies: no statement starts with 'write#test_log' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:12: warning W13: order rule never applies: no statement starts with 'write#release_notes_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "f06": {
+        "candidate": "f06",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f07": {
+        "candidate": "f07",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f08": {
+        "candidate": "f08",
+        "dropped": {
+          "branch:unless": 1
+        },
+        "added": {
+          "branch:if": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f09": {
+        "candidate": "f09",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f10": {
+        "candidate": "f10",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 1,
+    "added_statements": 1,
+    "reference_statements": 32,
+    "dropped_rules": {
+      "ask->ask": 1
+    },
+    "added_rules": {
+      "ask->write": 1
+    },
+    "reference_rules": 6,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 16,
+    "recovered": 11,
+    "missed": [
+      "'ask#first' before 'ask#second'",
+      "unless cache is warm",
+      "Cache cold",
+      "Red suite",
+      "release notes"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "f09: the recheck gate after repair has no stable ID, so it is advisory-only and can't be targeted by order rules or bound by guards (REFERENCE: verify #recheck)"
+    ],
+    "added": [],
+    "changed": [
+      "f09: the check output goes to `backups` instead of `state`; repair changes `state` and the flow returns `state`, so the returned state is no longer the checked state (REFERENCE checks, repairs, rechecks and returns the same `state`)"
+    ],
+    "cost_usd": 0.074384
+  },
+  "draft_cost_usd": 0.0832,
+  "draft_calls": 2
+}

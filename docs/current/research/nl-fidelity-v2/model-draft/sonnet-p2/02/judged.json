@@ -1,0 +1,11 @@
+{
+  "dropped": [
+    "production deploy no longer declared as a write effect to target (candidate says the workflow changes nothing)",
+    "deploy step lost its stable ID, so order rules match it only by prose and the guard cannot enforce it (reference write is addressable and eligible for guard enforcement)"
+  ],
+  "added": [],
+  "changed": [
+    "deploy is now an untyped 'exec deploy' returning a result instead of a 'write production bundle with target'"
+  ],
+  "cost_usd": 0.031272
+}

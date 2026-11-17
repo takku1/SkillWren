@@ -149,6 +149,16 @@ def compare(ref, cand):
                              if cw.get(pairs.get(n, n), 0) != rw.get(n, 0)}}
 
 
+def unbacked_lines(flow):
+    sys.path.insert(0, str(ROOT / 'src'))
+    from skillwren.validator.evidence import unbacked_verifies
+    try:
+        return [f"- {g['flow']} line {g['line']}: {g['text']}"
+                for g in unbacked_verifies(flow, fragment=True)]
+    except Exception:
+        return []
+
+
 def abstract(text):
     text = re.sub(r"\b([a-z]+)#[a-z][a-z0-9_-]*", r"\1#", text)
     text = re.sub(r"\b([a-z]+) #[a-z][a-z0-9_-]*", r"\1 #", text)
@@ -196,7 +206,8 @@ def evaluate(name, out, args, pins):
     work.mkdir(parents=True, exist_ok=True)
     adapter_file = work / 'adapter.json'
     adapter_file.write_text(json.dumps(ADAPTER), encoding='utf-8')
-    env = dict(os.environ, SW_DRAFT_MODEL=args.model, SW_ADAPTER_LOG=str(work / 'usage.jsonl'))
+    env = dict(os.environ, SW_DRAFT_MODEL=args.model, SW_DRAFT_PROMPT=args.prompt,
+               SW_ADAPTER_LOG=str(work / 'usage.jsonl'))
     draft = work / 'draft.md'
     proc = subprocess.run(SW + ['draft', '--intent-file', str(intent_file), '--adapter-file',
                                 str(adapter_file), '--out', str(draft)],
@@ -208,13 +219,23 @@ def evaluate(name, out, args, pins):
     code, check_out, check_err = sw('check', '--fragment', str(draft))
     record['valid_first'] = code == 0
     record['first_errors'] = (check_out + check_err).strip().splitlines()[:20]
-    if code != 0:
+    unbacked = unbacked_lines(draft) if args.prompt == '2' else []
+    record['unbacked_first'] = len(unbacked_lines(draft))
+    if code != 0 or unbacked:
+        feedback = ''
+        if code != 0:
+            feedback += ('`skillwren check --fragment` reported:\n\n' + check_out + check_err)
+        if unbacked:
+            feedback += ('\n`skillwren draft` reported verify gates without recorded '
+                         'evidence (your own judgment):\n' + '\n'.join(unbacked) +
+                         '\nCite the exec result each one judges, unless the intent '
+                         'gives no check to run.\n')
         repair_intent = work / 'repair-intent.md'
         repair_intent.write_text(
             intent_file.read_text(encoding='utf-8') +
             '\n\nYour previous draft was:\n\n' + draft.read_text(encoding='utf-8') +
-            '\n\n`skillwren check --fragment` reported:\n\n' + (check_out + check_err) +
-            '\nReturn a corrected full fragment that fixes these errors without '
+            '\n\n' + feedback +
+            '\nReturn a corrected full fragment that fixes these problems without '
             'changing what the intent requires.\n', encoding='utf-8')
         shutil.copy2(draft, work / 'draft-first.md')
         proc = subprocess.run(SW + ['draft', '--intent-file', str(repair_intent),
@@ -222,6 +243,7 @@ def evaluate(name, out, args, pins):
                               capture_output=True, text=True, env=env)
         code, check_out, check_err = sw('check', '--fragment', str(draft))
     record['valid_after_repair'] = code == 0
+    record['unbacked_final'] = len(unbacked_lines(draft))
     record['final_errors'] = (check_out + check_err).strip().splitlines()[:20]
     (work / 'check.txt').write_text(check_out + check_err, encoding='utf-8')
     ref_dump, cand_dump = dump(reference), dump(draft)
@@ -249,19 +271,26 @@ def evaluate(name, out, args, pins):
 
 
 def main():
+    global CORPUS
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     parser.add_argument('--model', default='sonnet')
+    parser.add_argument('--prompt', choices=['1', '2'], default='2',
+                        help='drafter prompt version; 2 adds evidence and ID rules '
+                             'and feeds unbacked verifies into the repair round')
     parser.add_argument('--judge-model', default='opus')
-    parser.add_argument('--out', default=str(CORPUS / 'model-draft'))
+    parser.add_argument('--corpus', default=str(CORPUS), help='frozen corpus directory')
+    parser.add_argument('--out', help='default: <corpus>/model-draft')
     parser.add_argument('--jobs', type=int, default=3)
     parser.add_argument('--no-judge', action='store_true')
     parser.add_argument('--only', help='comma list of corpus names, e.g. 01,pairs06')
     args = parser.parse_args()
+    CORPUS = Path(args.corpus).resolve()
+    args.out = args.out or str(CORPUS / 'model-draft')
     pins = manifest()
     names = sorted(n[:-len('-intent.md')] for n in pins if n.endswith('-intent.md'))
     if args.only:
         names = [n for n in names if n in args.only.split(',')]
-    out = Path(args.out) / args.model
+    out = Path(args.out) / f'{args.model}-p{args.prompt}'
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
         records = list(pool.map(lambda n: evaluate(n, out, args, pins), names))
     totals = {

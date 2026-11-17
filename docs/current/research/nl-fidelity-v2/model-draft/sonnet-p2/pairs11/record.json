@@ -1,0 +1,108 @@
+{
+  "name": "pairs11",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:19: error V1: unknown statement 'f12:' -- Use only the v0.6 verb set.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:20: error O1: 'exec audit check from checks as report' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:21: error O1: 'return report as report' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:23: error V1: unknown statement 'f13:' -- Use only the v0.6 verb set.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:24: error O1: 'require source exists' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:27: error O1: 'require destination exists' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:30: error O1: 'write #write_copy source with destination' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:31: error O1: 'return destination as destination' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:33: error V1: unknown statement 'f14:' -- Use only the v0.6 verb set.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:34: error O1: 'for each items as item:' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:37: error O1: 'return items as items' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:39: error V1: unknown statement 'f15:' -- Use only the v0.6 verb set.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:40: error O1: 'require request exists' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:43: error O1: 'return:' cannot nest here -- Dedent it or move it into a branch or repair block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#rotate_key' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:19: warning W10: unreachable statement -- Remove it or fix the control flow.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:20: warning W10: unreachable statement -- Remove it or fix the control flow.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:20: warning W5: binding 'report' never referenced -- Use it or drop the `as`.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:21: warning W10: unreachable statement -- Remove it or fix the control flow.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:23: warning W10: unreachable statement -- Remove it or fix the control flow."
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": true,
+  "unbacked_final": 0,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#rotate_key' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:41: warning W5: binding 'processed' never referenced -- Use it or drop the `as`.",
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "f11": {
+        "candidate": "f11",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f12": {
+        "candidate": "f12",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f13": {
+        "candidate": "f13",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f14": {
+        "candidate": "f14",
+        "dropped": {},
+        "added": {
+          "action:apply": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f15": {
+        "candidate": "f15",
+        "dropped": {
+          "assign:notes": 1
+        },
+        "added": {
+          "bareword:request": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 1,
+    "added_statements": 2,
+    "reference_statements": 20,
+    "dropped_rules": {},
+    "added_rules": {},
+    "reference_rules": 1,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 13,
+    "recovered": 8,
+    "missed": [
+      "Rotation refused",
+      "key holder",
+      "No destination",
+      "processed item",
+      "set 'notes = request'"
+    ]
+  },
+  "judged": {
+    "dropped": [],
+    "added": [],
+    "changed": [
+      "f15: return block holds an untyped bareword 'request' instead of a checked field assignment (notes = request), so 'return the request unchanged' is no longer checked as a field binding"
+    ],
+    "cost_usd": 0.045748
+  },
+  "draft_cost_usd": 0.0567,
+  "draft_calls": 2
+}

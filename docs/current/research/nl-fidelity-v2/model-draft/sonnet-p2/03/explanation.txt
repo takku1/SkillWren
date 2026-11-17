@@ -1,0 +1,21 @@
+Workflow in draft.md:
+flow `screen-repair-retry`:
+  - 'exec assurance table check from checks as screen' (line 8)
+  - 'verify #table design has an assurance table from screen' (line 9) -- gate; failure follows its otherwise branch
+    - otherwise (line 10)
+      - 'apply assurance screen with design as design' (line 11)
+      - 'exec assurance table check from checks as screen' (line 12)
+      - 'verify #table_recheck design has an assurance table from screen' (line 13) -- gate with no otherwise; failure discards derived artifacts, reports, leaves sources unchanged, and aborts the flow
+      - retry (line 14) -- re-runs the failed gate 'verify #table design has an assurance table from screen' (line 9) after the repair steps above; no retry limit is stated
+  - 'generate implementation from design as implementation' (line 16)
+  - 'return implementation as implementation' (line 17)
+Ordering: no order rules; steps may run in any order.
+Authority: no ask steps; nothing requires a human decision.
+Effects: none declared; the workflow changes nothing.
+Enforcement:
+  - 'verify #table design has an assurance table from screen' (line 9) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #table_recheck design has an assurance table from screen' (line 13) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec assurance table check from checks as screen' (line 8) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec assurance table check from checks as screen' (line 12) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

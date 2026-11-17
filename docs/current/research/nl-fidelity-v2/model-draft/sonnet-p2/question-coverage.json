@@ -1,0 +1,120 @@
+{
+  "totals": {
+    "defects": 10,
+    "requirement_defects": 7,
+    "requirement_defects_covered_by_question": 4,
+    "requirement_defects_disclosed_as_assumption": 4,
+    "requirement_defects_silent": 3,
+    "questions_asked": 18
+  },
+  "items": [
+    {
+      "name": "01",
+      "defects": []
+    },
+    {
+      "name": "02",
+      "questions": 3,
+      "defects": [
+        {
+          "defect": "dropped: production deploy no longer declared as a write effect to target (candidate says the workflow changes nothing)",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "dropped: deploy step lost its stable ID, so order rules match it only by prose and the guard cannot enforce it",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "changed: deploy is now an untyped 'exec deploy' returning a result instead of a 'write production bundle with target'",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0107819
+    },
+    {
+      "name": "03",
+      "defects": []
+    },
+    {
+      "name": "04",
+      "defects": []
+    },
+    {
+      "name": "05",
+      "defects": []
+    },
+    {
+      "name": "pairs06",
+      "questions": 5,
+      "defects": [
+        {
+          "defect": "f09: recheck gate after repair has no stable ID, so it is advisory-only and cannot be targeted by order rules or guards",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "f09: check output bound to `backups` instead of `state`, so the returned state is not the checked/repaired state",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0107119
+    },
+    {
+      "name": "pairs11",
+      "questions": 4,
+      "defects": [
+        {
+          "defect": "f15: return block holds an untyped bareword 'request' instead of a checked field assignment (notes = request), so 'return the request unchanged' is no longer checked as a field binding",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": true
+        }
+      ],
+      "cost_usd": 0.0069919000000000005
+    },
+    {
+      "name": "pairs16",
+      "questions": 6,
+      "defects": [
+        {
+          "defect": "f20: the step that runs the audit check to produce the report is missing; the candidate shows a report it never produced",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "f20: the show step no longer names the requester as recipient",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "f17: an extra 'exec window check' step runs before the window gate, and the gate now depends on its output",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "f16: the fast path inside the branch is an in-memory apply step instead of a write to the target (so f16 has no file effect)",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0095879
+    },
+    {
+      "name": "pairs21",
+      "defects": []
+    }
+  ]
+}

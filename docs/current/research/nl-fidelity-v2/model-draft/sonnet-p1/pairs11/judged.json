@@ -1,0 +1,12 @@
+{
+  "dropped": [
+    "f11: the explicit ordering rule that the holder's approval ask must come before the key write is missing (candidate has no order rules, so 'only after approval' is not enforced on every path)",
+    "f14: the per-item write has no stable ID, so order rules and the guard cannot bind it (the reference's write is addressable and guard-eligible)"
+  ],
+  "added": [],
+  "changed": [
+    "f13: returns the destination instead of the written copy",
+    "f15: the return block holds a bare word 'request' instead of a field bound to the request (notes = request), so returning it unchanged is not clearly expressed"
+  ],
+  "cost_usd": 0.041784
+}
