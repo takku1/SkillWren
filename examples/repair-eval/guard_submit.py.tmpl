@@ -1,0 +1,28 @@
+"""Host-provided guard submission (arm G), generated per run.
+
+Usage: py -3 .claude/skills/dep-audit/guard_submit.py .dep-audit/findings.json
+Sends, in one guard session: check verify#deps, verify write#report, write
+write#report, all with the findings file's exact bytes. The guard enforces
+the approved flow's order rule and writes the report only if every step
+passes.
+"""
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+GUARD = {GUARD!r}
+TARGET = {TARGET!r}
+content = Path(sys.argv[1]).read_bytes().decode("utf-8")
+lines = [{{"action": "verify", "operation": "verify#deps", "content": content}},
+         {{"action": "verify", "operation": "write#report", "content": content}},
+         {{"action": "write", "operation": "write#report", "content": content}}]
+done = subprocess.run(GUARD, input="".join(json.dumps(l) + "\n" for l in lines),
+                      capture_output=True, text=True)
+print(done.stdout, end="")
+print(done.stderr, end="", file=sys.stderr)
+results = [json.loads(l) for l in done.stdout.splitlines() if l.strip()]
+ok = len(results) == 3 and all(r.get("ok") for r in results)
+if ok:
+    print("report written by the guard to " + TARGET)
+sys.exit(0 if ok else 1)

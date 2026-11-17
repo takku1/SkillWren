@@ -1,0 +1,106 @@
+{
+  "model": "sonnet",
+  "source": "vulnscanner",
+  "runs": 2,
+  "arms": {
+    "inline/all": {
+      "runs": 2,
+      "procedure_followed": {
+        "k": 2,
+        "n": 2,
+        "wilson95": [
+          0.342,
+          1.0
+        ]
+      },
+      "task_completed": {
+        "k": 2,
+        "n": 2,
+        "wilson95": [
+          0.342,
+          1.0
+        ]
+      },
+      "order_rule_by_evidence": {
+        "k": 1,
+        "n": 1,
+        "wilson95": [
+          0.207,
+          1.0
+        ]
+      },
+      "no_stray_writes": {
+        "k": 2,
+        "n": 2,
+        "wilson95": [
+          0.342,
+          1.0
+        ]
+      },
+      "skill_loaded": {
+        "k": 2,
+        "n": 2,
+        "wilson95": [
+          0.342,
+          1.0
+        ]
+      },
+      "cost_usd_mean": 0.0911,
+      "output_tokens_mean": 1252.0,
+      "input_tokens_mean": 247225.0,
+      "num_turns_mean": 10.5,
+      "seconds_mean": 15.0,
+      "read_flow": 0
+    },
+    "inline/neutral": {
+      "runs": 2,
+      "procedure_followed": {
+        "k": 2,
+        "n": 2,
+        "wilson95": [
+          0.342,
+          1.0
+        ]
+      },
+      "task_completed": {
+        "k": 2,
+        "n": 2,
+        "wilson95": [
+          0.342,
+          1.0
+        ]
+      },
+      "order_rule_by_evidence": {
+        "k": 1,
+        "n": 1,
+        "wilson95": [
+          0.207,
+          1.0
+        ]
+      },
+      "no_stray_writes": {
+        "k": 2,
+        "n": 2,
+        "wilson95": [
+          0.342,
+          1.0
+        ]
+      },
+      "skill_loaded": {
+        "k": 2,
+        "n": 2,
+        "wilson95": [
+          0.342,
+          1.0
+        ]
+      },
+      "cost_usd_mean": 0.0911,
+      "output_tokens_mean": 1252.0,
+      "input_tokens_mean": 247225.0,
+      "num_turns_mean": 10.5,
+      "seconds_mean": 15.0,
+      "read_flow": 0
+    }
+  },
+  "caveat": "Same model, subject, tools and permissions per arm; only the skill text differs. Small n: read the Wilson intervals, not the point estimates."
+}

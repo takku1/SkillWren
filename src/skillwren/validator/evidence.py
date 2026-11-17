@@ -70,6 +70,23 @@ def branch_controller(node, evidence, asks):
     return "model"
 
 
+def unbacked_verifies(path, fragment=True):
+    """`verify` gates that rest on the model's own judgment.
+
+    A verify that cites no `exec`/`read`/`open` result with `from <name>` is
+    a self-report: nothing outside the model shows the check happened. This
+    was the main class of silent requirement loss in model drafts (0.9
+    fidelity run), so `draft` and `approve` list them for the reviewer."""
+    from .files import Document
+    doc = Document(path, fragment)
+    found = []
+    for flow, root in doc.trees.items():
+        for line, text, cls in classify(root)["gates"]:
+            if text.split(None, 1)[0] == "verify" and cls == "self":
+                found.append({"flow": flow, "line": line, "text": text})
+    return found
+
+
 def classify(root):
     """Gates and branches of one flow with their classes, in line order."""
     evidence = bound_names(root, EVIDENCE_VERBS)

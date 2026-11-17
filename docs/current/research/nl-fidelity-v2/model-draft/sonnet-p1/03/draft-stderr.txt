@@ -1,0 +1,11 @@
+assumptions:
+  - The design is supplied as an input named `design`; a leading `require design exists` gates it, aborting if absent (the intent does not state this, but it is required for a consumed input).
+  - The table check is run via `exec assurance table check from checks`, adopted from the fragment template, so the verify rests on external evidence (W15). `checks` is an assumed resource.
+  - 'Retry until present' is expressed as the standard repair-then-retry loop, with no attempt cap, as the intent states none.
+  - The returned value is named `implementation`.
+  - The `assurance screen` step meaning is taken from the template wording.
+unresolved questions:
+  - Should the retry loop have a maximum number of attempts or an escalation if the screen repeatedly fails to produce a table?
+  - How should the table presence be checked: via an exec command (as assumed) or by inspecting the design directly? If exec, which resource/command?
+  - Should a missing design abort, or be requested from the user?
+Not approved. Run check, explain-workflow, and approve before use.

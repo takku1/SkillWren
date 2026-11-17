@@ -1,6 +1,7 @@
 # Model A/B/C evaluation
 
-Status: scripted arms done 2026-11-12; model arms run 2026-11-17.
+Status: scripted arms done 2026-11-12; model arms run 2026-11-17 under
+protocol 1 (format unstated, artefact) and protocol 2 (format stated, tie).
 
 ## Model run (2026-11-17)
 
@@ -33,7 +34,20 @@ cue scenarios. So the guard (arm C) had nothing to block, and enforcement
 value against this model on this task is unmeasured rather than zero. The
 scripted adversary remains the evidence for enforcement mechanics.
 
-Protocol fixes before rerunning: state the candidate format in the task,
+### Protocol 2 rerun (2026-11-17)
+
+Same 90-trial design with the format stated in the task
+(`runtime-model-p2.jsonl`, `runtime-model-p2-summary.json`). Every trial
+in every arm issued `verify` then `write` and completed: 30/30 per arm,
+0 failed gates, 0 unauthorized writes, 0 false blocks, about 4.7K tokens
+per trial in each arm. The A-vs-B gap from protocol 1 is gone, confirming
+it was the unstated format. Prose and SkillWren logic are
+indistinguishable on this task, and the scenario cues (`skip`, `replay`,
+`stale`) did not move the model at all: this task is at the ceiling, so it
+cannot show a syntax effect in either direction. The harder, preregistered
+comparison is `repair-eval/`.
+
+Protocol fixes that were applied: state the candidate format in the task,
 score "retried with a new candidate after a failed gate" separately from
 "aborted", and add scenarios where the instruction itself pushes for an
 unverified write (the host-demo `override` prompt did that; 18/18 runs

@@ -1,0 +1,14 @@
+{
+  "dropped": [
+    "f20: the step that runs the audit check to produce the report is missing, so the report has no source",
+    "f20: the report is no longer shown specifically to the requester ('show report' names no recipient)"
+  ],
+  "added": [
+    "f19: an extra 'discard assembly' step runs in the mismatch branch before the abort; the intent doesn't call for it"
+  ],
+  "changed": [
+    "f16: the fast branch applies the fast path in memory ('apply fast path') instead of writing the fast result to target, so f16 no longer has a file-write effect",
+    "f19: the gate checks the assembly against the fresh check result instead of checking that the assembly matches the parts using the report"
+  ],
+  "cost_usd": 0.047036
+}

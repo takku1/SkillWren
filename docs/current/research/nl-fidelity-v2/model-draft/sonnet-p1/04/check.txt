@@ -1,0 +1,1 @@
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p1\04\draft.md:20: error P1: 'write #publish release_notes_text with release_notes' can run before 'verify#report_clean' (order rule, line 5) -- Make `verify#report_clean` (or a run that always performs it) complete on every path to this statement.

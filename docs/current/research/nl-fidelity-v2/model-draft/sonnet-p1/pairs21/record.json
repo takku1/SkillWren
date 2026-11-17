@@ -1,0 +1,106 @@
+{
+  "name": "pairs21",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs21\\draft.md:21: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs21\\draft.md:48: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs21\\draft.md:54: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs21\\draft.md:68: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs21\\draft.md:28: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs21\\draft.md:29: warning W5: binding 'restarted' never referenced -- Use it or drop the `as`.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs21\\draft.md:32: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs21\\draft.md:33: warning W5: binding 'reloaded' never referenced -- Use it or drop the `as`."
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": false,
+  "unbacked_final": 0,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs21\\draft.md:29: error V1: exec without `as` discards its result -- Bind the outcome with `as <name>` so a gate can cite it.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs21\\draft.md:33: error V1: exec without `as` discards its result -- Bind the outcome with `as <name>` so a gate can cite it."
+  ],
+  "structural": {
+    "flows": {
+      "f21ingest": {
+        "candidate": "f21ingest",
+        "dropped": {},
+        "added": {
+          "action:read": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f21store": {
+        "candidate": "f21store",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f22": {
+        "candidate": "f22",
+        "dropped": {
+          "action:apply": 2
+        },
+        "added": {
+          "action:exec": 2
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f23": {
+        "candidate": "f23",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f24": {
+        "candidate": "f24",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f25": {
+        "candidate": "f25",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 2,
+    "added_statements": 3,
+    "reference_statements": 32,
+    "dropped_rules": {},
+    "added_rules": {
+      "ask->write": 1
+    },
+    "reference_rules": 1,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 17,
+    "recovered": 10,
+    "missed": [
+      "write #record incoming record",
+      "apply service restart",
+      "service reload",
+      "ask operator to approve the note",
+      "Not approved",
+      "write #memo recorded note",
+      "Shipment refused"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "Stable IDs on f22 health verifies (#service/#restarted/#reloaded) and on writes in f21store (#record), f23 (#note), f24 (#memo) lost; these steps become advisory-only and not guard-bindable"
+    ],
+    "added": [],
+    "changed": [],
+    "cost_usd": 0.06442
+  },
+  "draft_cost_usd": 0.0514,
+  "draft_calls": 2
+}

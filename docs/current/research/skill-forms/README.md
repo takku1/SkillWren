@@ -52,6 +52,13 @@ evidence where it applies. Per-run evidence is in each arm's directory;
    reading `flow.md` adds a turn; inlining the block recovers most of that
    (+3% over prose).
 
+Layout note (0.10): the four skill texts now live in
+`examples/host-demo/dep-audit/forms/` (`both.md`, `logic.md`, `prose.md`,
+`inline.md`), and the example's own `SKILL.md` is the inline form. The
+run directories above used the earlier file names; contents are the same.
+The canonical inline skill was re-run end to end after the move
+(`../host-demo/inline-canonical/`, clean and blocked both pass).
+
 ## Recommendation
 
 Do not hand-maintain both. Keep one checked source of truth, the logic

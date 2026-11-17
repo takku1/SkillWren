@@ -12,7 +12,11 @@ MUTATIONS = {
     'permit-replay': ('approval = self.approvals.pop(name, None)', 'approval = self.approvals.get(name)'),
     'ignore-target-version': ('binding = (digest(data), file_digest(target))', 'binding = (digest(data), None)'),
     'ignore-verifier-pin': ('file_digest(path) != expected', 'False'),
-    'retain-failed-evidence': ('self.approvals.pop(name, None)\n                # Verifiers', 'self.approvals.get(name)\n                # Verifiers'),
+    'pin-only-executable': ("if Path(arg).is_absolute() and arg not in op['pins']:", 'if False:'),
+    'retain-failed-evidence': ('self.approvals.pop(name, None)\n                self._run_verifier', 'self.approvals.get(name)\n                self._run_verifier'),
+    'skip-order-rules': ("if then == name and first not in self.completed]", "if False]"),
+    'ignore-workflow-approval': ("if not report.get('approved'):", 'if False:'),
+    'keep-failed-check': ('self.completed.discard(name)', 'pass'),
 }
 results = []
 for name, (old, new) in MUTATIONS.items():
@@ -22,12 +26,13 @@ for name, (old, new) in MUTATIONS.items():
             shutil.copytree(ROOT / folder, root / folder, ignore=shutil.ignore_patterns('__pycache__', '*.egg-info'))
         (root / 'tests').mkdir()
         shutil.copy2(ROOT / 'tests/test_guard.py', root / 'tests/test_guard.py')
+        shutil.copy2(ROOT / 'tests/test_guard_workflow.py', root / 'tests/test_guard_workflow.py')
         path = root / 'src/skillwren/guard.py'
         source = path.read_text()
         if source.count(old) != 1:
             raise ValueError('mutation location drift: ' + name)
         path.write_text(source.replace(old, new, 1))
-        proc = subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_guard.py', '-q'],
+        proc = subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_guard*.py', '-q'],
                               cwd=root, capture_output=True, text=True, timeout=60)
         # A syntax/import failure is not a valid kill.
         killed = proc.returncode != 0 and 'FAILED (' in proc.stderr and 'SyntaxError' not in proc.stderr

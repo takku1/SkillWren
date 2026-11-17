@@ -1,0 +1,16 @@
+assumptions:
+  - f11: the intent names no key-generation step, so the rotation write is modeled as `write access_key with access_key`; the real new-key value and target are unspecified.
+  - f11: the flow returns the access key as `access_key` because every path must end in a return or abort.
+  - f11: refusal is handled by the `otherwise:` under `require confirmation`, which aborts before any write.
+  - f12: no verify is included because the intent only asks to observe and return the report; `audit check` is run via `exec ... from checks`.
+  - f13: the copy is modeled as `write source with destination`; it returns `destination` since the intent names no return.
+  - f13: the leading `require ... exists` gates are explicitly requested by the intent.
+  - f14: the processing is an `apply processing` step with a placeholder meaning, and writes go to a resource named `processed_items`.
+  - f15: `request` is returned unchanged in a `return:` block; nothing else is done.
+  - Input names (holder, access_key, source, destination, items, request) are declared in the contract.
+unresolved questions:
+  - f11: What is the new key value and where is the rotated key written?
+  - f11: Should the flow return anything specific after a successful rotation?
+  - f13: What should f13 return after copying, if anything?
+  - f14: What does processing an item actually do, and where is each processed item written?
+Not approved. Run check, explain-workflow, and approve before use.

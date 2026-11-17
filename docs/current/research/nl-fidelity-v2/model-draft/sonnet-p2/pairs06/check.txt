@@ -1,0 +1,7 @@
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p2\pairs06\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p2\pairs06\draft.md:8: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p2\pairs06\draft.md:9: warning W13: order rule never applies: no statement starts with 'write#first_result' -- Fix the pattern so it matches the later statement, or drop the rule.
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p2\pairs06\draft.md:10: warning W13: order rule never applies: no statement starts with 'write#summary_write' -- Fix the pattern so it matches the later statement, or drop the rule.
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p2\pairs06\draft.md:11: warning W13: order rule never applies: no statement starts with 'write#test_log' -- Fix the pattern so it matches the later statement, or drop the rule.
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p2\pairs06\draft.md:12: warning W13: order rule never applies: no statement starts with 'write#release_notes_write' -- Fix the pattern so it matches the later statement, or drop the rule.
+clean

@@ -1,0 +1,46 @@
+Workflow in draft.md:
+flow `f11`:
+  - 'ask #approval key holder to approve access key rotation' (line 10)
+  - 'require confirmation' (line 11) -- gate; failure follows its otherwise branch
+    - otherwise (line 12)
+      - 'abort with "Rotation refused by the key holder."' (line 13)
+  - 'write #rotation key with key' (line 14)
+  - 'return key as key' (line 15)
+flow `f12`:
+  - 'exec readonly audit check from checks as report' (line 20) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+  - 'return report as report' (line 21)
+flow `f13`:
+  - 'require source exists' (line 26) -- gate; failure follows its otherwise branch
+    - otherwise (line 27)
+      - 'abort with "The source is required."' (line 28)
+  - 'require destination exists' (line 29) -- gate; failure follows its otherwise branch
+    - otherwise (line 30)
+      - 'abort with "The destination is required."' (line 31)
+  - 'write #copy source with destination' (line 32)
+  - 'return destination as destination' (line 33)
+flow `f14`:
+  - for each 'for each items as item:' (line 38)
+    - 'apply processing with item as processed' (line 39)
+    - 'write processed with item_store' (line 40)
+  - 'return items as items' (line 41)
+flow `f15`:
+  - 'require request exists' (line 46) -- gate; failure follows its otherwise branch
+    - otherwise (line 47)
+      - 'abort with "A request is required."' (line 48)
+  - return (line 49)
+    - 'request' (line 50) [bareword]
+Ordering: no order rules; steps may run in any order.
+Authority: human decisions are asked here:
+  - 'ask #approval key holder to approve access key rotation' (line 10)
+  SkillWren checks the ask/confirm structure, not that a human actually decided -- approval confirms intended meaning, not formal equivalence.
+Effects (files written or flows run):
+  - flow `f11` writes key
+  - flow `f13` writes destination
+  - flow `f14` writes item_store
+Enforcement:
+  - 'write #rotation key with key' (line 14) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #copy source with destination' (line 32) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec readonly audit check from checks as report' (line 20) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'write processed with item_store' (line 40) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

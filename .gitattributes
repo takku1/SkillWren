@@ -1,0 +1,12 @@
+# Digest-bound files must keep their exact bytes on every checkout (no
+# CRLF conversion): frozen corpora (manifests pin them), approved flows
+# (approvals pin them), and recorded lifecycle evidence.
+docs/current/research/nl-fidelity/*-intent.md -text
+docs/current/research/nl-fidelity/*-flow.md -text
+docs/current/research/nl-fidelity/*-facts.json -text
+docs/current/research/nl-fidelity/README.md -text
+docs/current/research/nl-fidelity-v2/*-intent.md -text
+docs/current/research/nl-fidelity-v2/*-flow.md -text
+docs/current/research/nl-fidelity-v2/*-facts.json -text
+docs/current/research/lifecycle/** -text
+examples/host-demo/dep-audit/flow.md -text

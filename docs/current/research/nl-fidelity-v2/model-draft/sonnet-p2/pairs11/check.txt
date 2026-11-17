@@ -1,0 +1,3 @@
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p2\pairs11\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#rotate_key' -- Fix the pattern so it matches the later statement, or drop the rule.
+Z:\SkillWren\docs\current\research\nl-fidelity-v2\model-draft\sonnet-p2\pairs11\draft.md:41: warning W5: binding 'processed' never referenced -- Use it or drop the `as`.
+clean

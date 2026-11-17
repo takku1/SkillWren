@@ -1,0 +1,11 @@
+assumptions:
+  - The flow is named deploy-to-production, after its purpose, since the intent names no flow.
+  - The deploy action is modeled as `exec #deploy deploy to production from production as result`; the intent gives no concrete command or resource, so these names are placeholders.
+  - The flow returns the deploy result as `result`; the intent does not state a return value, but a flow must end in return or abort.
+  - A `ledger`-style evidence record is not added; the order rule rests on the user's decision as the signal.
+  - No `require`, `verify`, or other checks were added beyond the approval gate, as the intent states none.
+unresolved questions:
+  - What is the actual deploy command or resource (to replace the placeholder `exec ... from production`)?
+  - Should the flow return anything specific after a successful deploy, or is the raw deploy result fine?
+  - If the user declines, should the abort message be anything specific?
+Not approved. Run check, explain-workflow, and approve before use.

@@ -1,0 +1,11 @@
+assumptions:
+  - The intent names a deploy action but no command or resource, so I modelled it as `exec deploy from deploy as result`; the `deploy` resource and the command name are placeholders to be declared by the host skill.
+  - Returned binding is named `deployment`; it may need to be added to the skill's `produces`.
+  - The exec step is not followed by a verify because the intent gives no post-deploy check.
+  - Flow name `approve-production-deploy` chosen because the intent names no flow.
+  - The user-decides entry for the ask should share two content words with 'approve the deploy' (e.g. 'whether to approve the deploy').
+unresolved questions:
+  - What command or resource actually performs the production deploy?
+  - Should anything be reported or returned after deploying, and what is it called?
+  - If the user declines, should the abort message or any other notice be specified?
+Not approved. Run check, explain-workflow, and approve before use.

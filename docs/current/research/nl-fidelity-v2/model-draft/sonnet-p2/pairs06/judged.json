@@ -1,0 +1,10 @@
+{
+  "dropped": [
+    "f09: the recheck gate after repair has no stable ID, so it is advisory-only and can't be targeted by order rules or bound by guards (REFERENCE: verify #recheck)"
+  ],
+  "added": [],
+  "changed": [
+    "f09: the check output goes to `backups` instead of `state`; repair changes `state` and the flow returns `state`, so the returned state is no longer the checked state (REFERENCE checks, repairs, rechecks and returns the same `state`)"
+  ],
+  "cost_usd": 0.074384
+}

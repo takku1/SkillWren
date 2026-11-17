@@ -39,7 +39,7 @@ Rules:
   that an `order:` rule references, and reference them as `verify#id`.
   IDs must be unique across the whole fragment.
 - Never paraphrase the procedure outside the fenced blocks.
-
+{extra}
 === AUTHORING GUIDE ===
 {guide}
 
@@ -47,11 +47,31 @@ Rules:
 {template}
 """
 
+# Prompt 2 (0.10) targets the defect classes the 0.9 fidelity run found:
+# gates that lost their evidence, untyped guard verbs, bare returns, and
+# invented existence gates.
+PROMPT_V2_RULES = """- Every check the intent mentions is an observation: run it with
+  `exec <check> from checks as <name>` and judge it with
+  `verify #id <condition> from <name>`. A verify without `from` is your own
+  judgment and loses the evidence; use one only when the intent gives no
+  check to run, and say so in `assumptions`.
+- Give every `verify` and `write` a typed ID, even when no order rule names
+  it, so a guard can bind it.
+- Every path ends in `return <binding> as <name>`, a `return:` block, or
+  `abort`; a bare `return` is invalid.
+- Do not add `require <input> exists` gates the intent does not ask for.
+  Declare inputs in the contract (`inputs:`) instead.
+- A repair loop re-checks before `retry`: exec the check again and verify
+  its new result inside the repair block.
+"""
+
 
 def main():
     request = json.load(sys.stdin)
     intent = request["intent"]
+    version = os.environ.get("SW_DRAFT_PROMPT", "2")
     system = INSTRUCTIONS.format(
+        extra=PROMPT_V2_RULES if version == "2" else "",
         guide=(ROOT / "docs/current/authoring-guide.md").read_text(encoding="utf-8"),
         template=(ROOT / "docs/current/fragment-template.md").read_text(encoding="utf-8"))
     model = os.environ.get("SW_DRAFT_MODEL", "sonnet")

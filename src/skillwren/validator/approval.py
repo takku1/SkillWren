@@ -80,11 +80,14 @@ def approve(flow_file, fragment, by, policy, directory=DEFAULT_DIR):
     ids = enforceable_ids(dump)
     operations = policy_operations(policy) if policy else []
     covered, uncovered = coverage(ids, operations)
+    from .evidence import unbacked_verifies
+    unbacked = [f"{g['flow']}:{g['line']}" for g in unbacked_verifies(flow_file, fragment)]
     record = {"type": "approval", "time": _now(), "file": str(flow_file),
               "file_sha256": digest, "dump_version": DUMP_VERSION,
               "enforceable": ids, "by": by,
               "policy": str(policy) if policy else None,
-              "covered": covered, "uncovered": uncovered}
+              "covered": covered, "uncovered": uncovered,
+              "unbacked_verifies": unbacked}
     path = record_path(directory, flow_file)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as stream:
@@ -137,6 +140,10 @@ def main(argv):
         if record["uncovered"]:
             print("warning: no policy operation covers: "
                   + ", ".join("#" + i for i in record["uncovered"]),
+                  file=sys.stderr)
+        if record["unbacked_verifies"]:
+            print("warning: verify gates rest on the model's own judgment (no "
+                  "`from <exec result>`): " + ", ".join(record["unbacked_verifies"]),
                   file=sys.stderr)
         return 0
     except (OSError, ValueError) as error:

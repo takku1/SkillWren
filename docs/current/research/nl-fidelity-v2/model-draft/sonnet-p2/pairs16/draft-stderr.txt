@@ -1,0 +1,16 @@
+assumptions:
+  - f16: the intent does not define the fast path, so it is modeled as `apply fast path` with a step-meanings entry. Both arms return the (possibly transformed) request.
+  - f17: the window check is an exec of `window check` from checks, since the intent names a check but not its command. The slot is written to a `bookings` resource, which the intent does not name.
+  - f18: the clean result is written to an `output` resource that the intent does not name. Redaction is an `apply`, so it stays in memory, and an order rule puts it before the write.
+  - f19: 'fresh check' is modeled as an exec after the assembly is generated, and an order rule enforces that. Verify compares the assembly to the check result. Parts and assembly are written to `output`.
+  - f20: no order rule or enforcement is added, because the intent says showing is advisory.
+  - Return names (request, booking, result, report) are assumed to be declared in produces by the host skill.
+  - No `require ... exists` gates are added. The inputs request, fast, draft, slot and report are declared in the contract.
+unresolved questions:
+  - f16: what exactly is the fast path, and should its result replace the request that is returned?
+  - f17: how is 'window open' checked, and where is the slot booked (which resource)?
+  - f17: should the window be re-verified at the moment of booking, or is one check before the write enough?
+  - f18: where should the clean result be written, and what counts as redacted?
+  - f19: what is the 'fresh check', and what does a mismatch compare (assembly against the check output)? Should the parts also be written?
+  - f20: should the report be returned after it is shown, or does the flow end at showing?
+Not approved. Run check, explain-workflow, and approve before use.

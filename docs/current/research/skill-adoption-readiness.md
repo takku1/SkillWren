@@ -97,9 +97,11 @@ adapters follow `--` as plain words (0.9).
 - P2 typed terminal steps and declared read-only exec: done (SPEC
   Section 21).
 
-## Next gate (0.10)
+## Next gate (0.10): status
 
-- Corpus v2: fix the four reference defects, re-freeze, rerun drafts.
-- Drafter evidence lint: fail or warn when a gate loses its `exec`
-  evidence (the main silent-loss class).
-- A task hard enough to separate skill forms, and an OS-isolated host run.
+- Corpus v2: done, frozen (`nl-fidelity-v2/`), drafts rerun.
+- Drafter evidence check: done (`draft` and `approve` list unbacked
+  verifies; prompt 2 removed them on first draft in the v2 run).
+- A/B/C protocol 2: run (`model-evaluation-plan.md`).
+- Open: a task hard enough to separate skill forms; an OS-isolated host
+  run with a real agent; human review.

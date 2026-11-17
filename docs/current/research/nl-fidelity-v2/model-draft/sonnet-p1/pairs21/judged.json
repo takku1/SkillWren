@@ -1,0 +1,8 @@
+{
+  "dropped": [
+    "Stable IDs on f22 health verifies (#service/#restarted/#reloaded) and on writes in f21store (#record), f23 (#note), f24 (#memo) lost; these steps become advisory-only and not guard-bindable"
+  ],
+  "added": [],
+  "changed": [],
+  "cost_usd": 0.06442
+}

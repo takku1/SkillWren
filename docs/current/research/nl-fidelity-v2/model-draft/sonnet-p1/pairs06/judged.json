@@ -1,0 +1,14 @@
+{
+  "dropped": [
+    "f09: recheck verify gate after repair (with abort on failure) missing; candidate only re-execs the check before retry",
+    "f09: main backup-complete verify has no stable ID, so it is advisory-only and not guard-enforceable (reference #backup is)",
+    "f08: cache-is-warm verify has no stable ID, so it is advisory-only and not guard-enforceable (reference #cache is)"
+  ],
+  "added": [],
+  "changed": [
+    "f09: repair is 'exec backup repair from checks' (no state input/output) instead of applying repair to the backup state, so the repair doesn't feed the rechecked value",
+    "f09: verifies backup_status but returns an unrelated 'state', so the returned value is not the one verified complete",
+    "f06: ordering rules require only each approval before the write; reference also requires plan approval before budget approval (the flow body still runs that order)"
+  ],
+  "cost_usd": 0.082004
+}

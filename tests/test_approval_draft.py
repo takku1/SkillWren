@@ -44,6 +44,15 @@ class ApproveTests(unittest.TestCase):
         self.assertFalse(report['approved'])
         self.assertIn('changed', report['reason'])
 
+    def test_approve_lists_unbacked_verifies(self):
+        record = approve(self.flow, True, 'reviewer', None, self.dir)
+        self.assertEqual(record['unbacked_verifies'], [])
+        text = self.flow.read_text(encoding='utf-8').replace(
+            'debug off from result', 'debug off')
+        self.flow.write_text(text, encoding='utf-8')
+        record = approve(self.flow, True, 'reviewer', None, self.dir)
+        self.assertEqual(record['unbacked_verifies'], ['deploy:13'])
+
     def test_check_without_approval_is_not_approval(self):
         self.assertFalse(check(self.flow, self.dir)['approved'])
 
@@ -107,6 +116,21 @@ class DraftTests(unittest.TestCase):
         bad = self.run_draft('--intent-file', str(intent), '--adapter', '"py"')
         self.assertEqual(bad.returncode, 2)
         self.assertIn('non-empty list', bad.stderr)
+
+    def test_draft_lists_unbacked_verifies(self):
+        intent = self.root / 'intent.md'
+        intent.write_text('Check then write.')
+        flow = ('```logic\nmain:\n  verify #ok result is fine\n    otherwise:\n'
+                '      abort with "No."\n  write #out result with target\n'
+                '  return result as result\n```\n')
+        script = self.root / 'adapter.py'
+        script.write_text('import json,sys\njson.load(sys.stdin)\n'
+                          f'print(json.dumps({{"flow": {flow!r}}}))\n')
+        proc = self.run_draft('--intent-file', str(intent), '--out', str(self.root / 'p.md'),
+                              '--', PYTHON, str(script))
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn('verify gates without recorded evidence', proc.stderr)
+        self.assertIn('verify #ok result is fine', proc.stderr)
 
     def test_bad_adapter_json_fails(self):
         intent = self.root / 'intent.md'

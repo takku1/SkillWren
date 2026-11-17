@@ -1,0 +1,20 @@
+{
+  "model": "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+  "original_body_chars": 767,
+  "variants": {
+    "lingua-plain-0.5": {
+      "origin_tokens": 189,
+      "compressed_tokens": 92
+    },
+    "lingua-protected-0.5": {
+      "chars": 478
+    },
+    "lingua-plain-0.33": {
+      "origin_tokens": 189,
+      "compressed_tokens": 52
+    },
+    "lingua-protected-0.33": {
+      "chars": 344
+    }
+  }
+}

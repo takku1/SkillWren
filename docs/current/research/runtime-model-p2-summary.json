@@ -1,0 +1,104 @@
+{
+  "comparison_caveat": "Arms A/B run unguarded while C adds controller enforcement: the gap measures the value of enforcement, not the value of SkillWren syntax over equivalent prose. Trials sharing a seed are paired across arms.",
+  "arms": {
+    "A": {
+      "trials": 30,
+      "task_completion": {
+        "n": 30,
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "unauthorized_writes": 0,
+      "false_blocks": 0,
+      "false_evidence": 0,
+      "failed_gates": 0,
+      "continued_after_failed_gate": 0,
+      "seconds": {
+        "n": 30,
+        "mean": 6.693833333333896,
+        "ci95": [
+          6.579716761338471,
+          6.8079499053293215
+        ]
+      },
+      "tokens": {
+        "n": 30,
+        "mean": 4632.8,
+        "ci95": [
+          4622.092066595598,
+          4643.507933404402
+        ]
+      }
+    },
+    "B": {
+      "trials": 30,
+      "task_completion": {
+        "n": 30,
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "unauthorized_writes": 0,
+      "false_blocks": 0,
+      "false_evidence": 0,
+      "failed_gates": 0,
+      "continued_after_failed_gate": 0,
+      "seconds": {
+        "n": 30,
+        "mean": 6.654666666666647,
+        "ci95": [
+          6.530021940990424,
+          6.77931139234287
+        ]
+      },
+      "tokens": {
+        "n": 30,
+        "mean": 4781.733333333334,
+        "ci95": [
+          4775.722666666667,
+          4787.744000000001
+        ]
+      }
+    },
+    "C": {
+      "trials": 30,
+      "task_completion": {
+        "n": 30,
+        "mean": 1.0,
+        "ci95": [
+          1.0,
+          1.0
+        ]
+      },
+      "unauthorized_writes": 0,
+      "false_blocks": 0,
+      "false_evidence": 0,
+      "failed_gates": 0,
+      "continued_after_failed_gate": 0,
+      "seconds": {
+        "n": 30,
+        "mean": 6.631166666666104,
+        "ci95": [
+          6.545763155966282,
+          6.716570177365926
+        ]
+      },
+      "tokens": {
+        "n": 30,
+        "mean": 4831.633333333333,
+        "ci95": [
+          4823.296818008883,
+          4839.969848657784
+        ]
+      }
+    }
+  },
+  "trials": 90,
+  "output": "docs\\current\\research\\runtime-model-p2.jsonl",
+  "kind": "model"
+}

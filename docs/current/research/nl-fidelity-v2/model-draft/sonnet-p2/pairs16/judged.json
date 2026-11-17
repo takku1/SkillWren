@@ -1,0 +1,13 @@
+{
+  "dropped": [
+    "f20: the step that runs the audit check to produce the report is missing; the candidate shows a report it never produced",
+    "f20: the show step no longer names the requester as recipient"
+  ],
+  "added": [
+    "f17: an extra 'exec window check' step runs before the window gate, and the gate now depends on its output"
+  ],
+  "changed": [
+    "f16: the fast path inside the branch is an in-memory apply step instead of a write to the target (so f16 has no file effect)"
+  ],
+  "cost_usd": 0.044396
+}

@@ -59,6 +59,29 @@ class ExplainerTests(unittest.TestCase):
                     count += 1
         self.assertGreaterEqual(count, 80, count)
 
+    def test_v2_corpus_is_clean_frozen_and_explained(self):
+        import hashlib
+        import re
+        from skillwren.validator import validate_fragment
+        v2 = PAIRS.parent / 'nl-fidelity-v2'
+        manifest = re.findall(r'^([0-9a-f]{64})  (\S+)$',
+                              (v2 / 'FROZEN.md').read_text(encoding='utf-8'), re.M)
+        self.assertEqual(len(manifest), 27)
+        for digest, name in manifest:
+            self.assertEqual(hashlib.sha256((v2 / name).read_bytes()).hexdigest(),
+                             digest, name)
+        count = 0
+        for flow_name, facts_name in CORPUS:
+            errors, _ = validate_fragment(str(v2 / flow_name))
+            self.assertEqual(errors, [], flow_name)
+            text = explain_workflow(v2 / flow_name, fragment=True)
+            facts = json.loads((v2 / facts_name).read_text())
+            for group in (facts.values() if isinstance(facts, dict) else [facts]):
+                for fact in group:
+                    self.assertIn(fact, text, f'v2 {flow_name}: {fact!r}')
+                    count += 1
+        self.assertEqual(count, 86)
+
     def test_explainer_is_deterministic(self):
         flow = PAIRS / '03-flow.md'
         self.assertEqual(explain_workflow(flow, fragment=True),

@@ -1,0 +1,15 @@
+assumptions:
+  - f06: the plan approver and budget approver are the two distinct humans; each decision ask is followed by a confirmation, and a decline of either aborts before any write. The plan is returned after the write.
+  - f07: the summary is a supplied input (declared in the contract); the intent gives no step to generate it. The first result written is the exec binding `first`. The flow returns the summary.
+  - f08: the verify of the warm-up check means a cold result after warm-up aborts. Both the already-warm path and the successfully-warmed path return the request unchanged.
+  - f09: the repair is modeled as an in-memory `apply backup repair` on state, since the intent names no repair command; the recheck is an exec before retry. The `return#backup_state` order rule makes the return follow the verified gate.
+  - f10: the release notes are a supplied input and are what gets published (written). A non-green suite aborts.
+  - Write targets (plan_store, first_result_file, summary_file, test_log, release_notes_file) and the `checks` resource are named by me; the intent gives no paths. The commands for each check are not specified.
+  - All checks use `exec ... from checks` with `verify ... from` binding evidence.
+unresolved questions:
+  - f06: should the two approvers be required to be different people, and does the order (plan first, then budget) matter, or can they approve in either order?
+  - f07: where does the summary come from: is it supplied, or should it be generated from the first result?
+  - f08: what should happen after a successful warm-up: return the request unchanged (as assumed), or something else?
+  - f09: what command or action performs the backup repair, and should there be a limit on retries?
+  - f10: what is the release notes' source (supplied or generated), and should a failing suite write the test log anyway?
+Not approved. Run check, explain-workflow, and approve before use.

@@ -1,0 +1,53 @@
+{
+  "name": "03",
+  "draft_exit": 0,
+  "valid_first": true,
+  "first_errors": [
+    "clean"
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": true,
+  "unbacked_final": 0,
+  "final_errors": [
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "develop": {
+        "candidate": "screen-repair-retry",
+        "dropped": {
+          "action:write": 1
+        },
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 1,
+    "added_statements": 0,
+    "reference_statements": 9,
+    "dropped_rules": {
+      "verify->write": 1
+    },
+    "added_rules": {},
+    "reference_rules": 1,
+    "writes_delta": {
+      "develop": -1
+    }
+  },
+  "facts": {
+    "facts": 5,
+    "recovered": 4,
+    "missed": [
+      "'verify#table' before 'write#implementation'"
+    ]
+  },
+  "judged": {
+    "dropped": [],
+    "added": [],
+    "changed": [],
+    "cost_usd": 0.039528
+  },
+  "draft_cost_usd": 0.047,
+  "draft_calls": 1
+}

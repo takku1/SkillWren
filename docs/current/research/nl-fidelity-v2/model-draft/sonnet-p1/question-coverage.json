@@ -1,0 +1,216 @@
+{
+  "totals": {
+    "defects": 24,
+    "requirement_defects": 19,
+    "requirement_defects_covered_by_question": 7,
+    "requirement_defects_disclosed_as_assumption": 8,
+    "requirement_defects_silent": 8,
+    "questions_asked": 36
+  },
+  "items": [
+    {
+      "name": "01",
+      "questions": 4,
+      "defects": [
+        {
+          "defect": "added: extra 'require config exists' gate before the check, with its own abort ('A config is required.')",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.008246
+    },
+    {
+      "name": "02",
+      "questions": 3,
+      "defects": [
+        {
+          "defect": "The deploy is no longer a declared effect: REFERENCE writes the production bundle to target, but CANDIDATE says the workflow changes nothing",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "The deploy step changed from a write (#release, which writes target) to an untyped exec (#deploy) that writes no file. The ordering rule and guard eligibility now point at this exec step, which has no declared effect",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0119399
+    },
+    {
+      "name": "03",
+      "questions": 3,
+      "defects": [
+        {
+          "defect": "Post-repair recheck gate dropped: no verify #recheck design has an assurance table that aborts and discards derived artifacts on failure; candidate only re-execs the check before retrying",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "Writing the generated implementation to subject (develop writes subject effect) is missing; candidate declares no effects",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "Added precondition gate 'require design exists' aborting with 'A design is required.' not in intent",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "Ordering constraint changed: reference requires verify#table before write#implementation; candidate requires verify#table before generate#impl",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0093099
+    },
+    {
+      "name": "04",
+      "questions": 4,
+      "defects": [
+        {
+          "defect": "added: extra gate 'require release_notes_text exists' with abort 'Release notes are required.' placed before running the tests (intent only stops publishing for a missing or failing report; this extra gate also blocks the test run)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0066979
+    },
+    {
+      "name": "05",
+      "defects": []
+    },
+    {
+      "name": "pairs06",
+      "questions": 6,
+      "defects": [
+        {
+          "defect": "dropped: f09: recheck verify gate after repair (with abort on failure) missing; candidate only re-execs the check before retry",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "dropped: f09: main backup-complete verify has no stable ID, so advisory-only and not guard-enforceable",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "dropped: f08: cache-is-warm verify has no stable ID, so advisory-only and not guard-enforceable",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "changed: f09: repair is 'exec backup repair from checks' with no state input/output instead of applying repair to the backup state",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "changed: f09: verifies backup_status but returns an unrelated 'state', not the verified value",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "changed: f06: ordering rules require only each approval before the write; reference also requires plan approval before budget approval (flow body still runs that order)",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": true
+        }
+      ],
+      "cost_usd": 0.012257899999999999
+    },
+    {
+      "name": "pairs11",
+      "questions": 5,
+      "defects": [
+        {
+          "defect": "dropped: f11 explicit ordering rule that the holder's approval ask must come before the key write is missing",
+          "covered_by_question": true,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "dropped: f14 per-item write has no stable ID, so order rules and guard cannot bind it",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "changed: f13 returns the destination instead of the written copy",
+          "covered_by_question": true,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "changed: f15 return block holds a bare word 'request' instead of a field bound to the request (notes = request)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0093999
+    },
+    {
+      "name": "pairs16",
+      "questions": 6,
+      "defects": [
+        {
+          "defect": "dropped: f20: the step that runs the audit check to produce the report is missing, so the report has no source",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "dropped: f20: the report is no longer shown specifically to the requester ('show report' names no recipient)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "added: f19: an extra 'discard assembly' step runs in the mismatch branch before the abort; the intent doesn't call for it",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "changed: f16: the fast branch applies the fast path in memory ('apply fast path') instead of writing the fast result to target, so f16 no longer has a file-write effect",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "changed: f19: the gate checks the assembly against the fresh check result instead of checking that the assembly matches the parts using the report",
+          "covered_by_question": true,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.010939899999999999
+    },
+    {
+      "name": "pairs21",
+      "questions": 5,
+      "defects": [
+        {
+          "defect": "Stable IDs on f22 health verifies (#service/#restarted/#reloaded) and on writes in f21store (#record), f23 (#note), f24 (#memo) lost; these steps become advisory-only and not guard-bindable",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        }
+      ],
+      "cost_usd": 0.0075679
+    }
+  ]
+}

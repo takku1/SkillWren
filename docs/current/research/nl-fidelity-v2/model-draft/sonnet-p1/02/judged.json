@@ -1,0 +1,10 @@
+{
+  "dropped": [
+    "The deploy is no longer a declared effect: REFERENCE writes the production bundle to target, but CANDIDATE says the workflow changes nothing"
+  ],
+  "added": [],
+  "changed": [
+    "The deploy step changed from a write (#release, which writes target) to an untyped exec (#deploy) that writes no file. The ordering rule and guard eligibility now point at this exec step, which has no declared effect"
+  ],
+  "cost_usd": 0.025068
+}

@@ -1,0 +1,18 @@
+"""Guard verifier (arm G), instantiated per run with the repository baked in.
+
+Accepts a candidate only if it equals a fresh dependency check of the
+repository and that check is clean. The guard pins this file, so the
+repository path cannot be changed after the guard starts.
+"""
+import hashlib
+import json
+import subprocess
+import sys
+
+REPO = {REPO!r}
+CHECK = {CHECK!r}
+raw = sys.stdin.buffer.read()
+fresh = subprocess.run([sys.executable, "-I", CHECK, REPO], capture_output=True)
+ok = fresh.returncode == 0 and raw.strip() == fresh.stdout.strip()
+print(json.dumps({{"ok": ok, "input_sha256": hashlib.sha256(raw).hexdigest()}}))
+sys.exit(0 if ok else 1)

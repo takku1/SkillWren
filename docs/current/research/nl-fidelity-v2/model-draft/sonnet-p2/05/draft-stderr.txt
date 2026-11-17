@@ -1,0 +1,10 @@
+assumptions:
+  - The single flow is named summarize-request after its purpose, since the intent names no flows.
+  - The summary is produced with a generate step from request and handed back with return; the intent says it is for the log but names no log resource, so nothing is written or shown.
+  - The generate step has no check to run, so there is no exec or verify; the intent asks for no quality gate on the summary.
+  - The require request exists gate is included because the intent states that a missing request aborts the run.
+  - The never: write any file or resource invariant encodes 'Nothing is written'. No resources are declared.
+unresolved questions:
+  - Should the summary have a particular length or format? The intent gives none, so the generate step is unconstrained.
+  - Where does the log live? If the caller records the returned summary, no change is needed. If this flow should append it, that would be a write the intent rules out.
+Not approved. Run check, explain-workflow, and approve before use.

@@ -1,0 +1,15 @@
+assumptions:
+  - Flows that must end in return/abort return the value they handled (f21store returns record, f23/f24 return note, f25 returns shipment); the intent only says 'write' for these.
+  - f21ingest uses `read request as body` and returns it unchanged as `request`.
+  - f21store: a missing record aborts with a message (default require behaviour made explicit via otherwise).
+  - f22: health is observed with `exec health check from checks`; restart and reload are `exec` steps from checks. The returned state is the health check result binding. Escalation is nested (restart, re-check, then reload, re-check, then abort).
+  - f23: the operator's decline aborts without writing. No order rule is added, as the intent says only the written sequence governs.
+  - f24: contains no verify and no order rule, per the intent; the note is written directly.
+  - f25: only one order rule (readiness verify before shipment write); ask-then-confirm precedes the check by sequence. A declined approval or failed readiness aborts with nothing written.
+  - Write targets (store, notes, shipments) and the checks resource are assumed to be declared by the host skill; `goods` is declared as an input though only referenced by condition text.
+unresolved questions:
+  - f21store: should it return anything specific after the write (I return the record)?
+  - f22: what exact commands do health check, restart, and reload map to in the checks resource?
+  - f25: what should the readiness check run, and should a failed readiness abort or be repaired?
+  - f23/f25: should a declined approval abort, or are there alternative actions?
+Not approved. Run check, explain-workflow, and approve before use.

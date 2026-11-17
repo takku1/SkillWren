@@ -34,6 +34,19 @@ def draft(intent, adapter):
             "questions": proposal.get("questions", [])}
 
 
+def _unbacked(flow_text):
+    """Unbacked verify gates in a proposal; empty if it does not parse."""
+    import tempfile
+    from .evidence import unbacked_verifies
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "proposal.md"
+        path.write_text(flow_text, encoding="utf-8")
+        try:
+            return unbacked_verifies(path, fragment=True)
+        except Exception:  # an unparseable proposal is reported by `check`
+            return []
+
+
 def main(argv):
     parser = argparse.ArgumentParser(prog="skillwren draft",
                                      description="Propose a workflow from intent. "
@@ -81,6 +94,14 @@ def main(argv):
     print("unresolved questions:", file=sys.stderr)
     for question in proposal["questions"]:
         print(f"  - {question}", file=sys.stderr)
+    unbacked = _unbacked(proposal["flow"])
+    if unbacked:
+        print("verify gates without recorded evidence (the model's own judgment; "
+              "cite an exec result with `from`, or confirm this is intended):",
+              file=sys.stderr)
+        for gate in unbacked:
+            print(f"  - {gate['flow']} line {gate['line']}: {gate['text']}",
+                  file=sys.stderr)
     print("Not approved. Run check, explain-workflow, and approve before use.",
           file=sys.stderr)
     return 0

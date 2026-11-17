@@ -1,0 +1,736 @@
+{
+  "totals": {
+    "model": "sonnet",
+    "judge_model": "opus",
+    "items": 9,
+    "flows_reference": 26,
+    "valid_first": 3,
+    "valid_after_repair": 8,
+    "dropped_statements": 8,
+    "added_statements": 9,
+    "reference_statements": 132,
+    "reference_rules": 14,
+    "dropped_rules": 3,
+    "added_rules": 6,
+    "facts": 86,
+    "facts_recovered": 55,
+    "judged_dropped": 5,
+    "judged_added": 1,
+    "judged_changed": 4,
+    "draft_cost_usd": 0.449,
+    "judge_cost_usd": 0.363
+  },
+  "records": [
+    {
+      "name": "01",
+      "draft_exit": 0,
+      "valid_first": true,
+      "first_errors": [
+        "clean"
+      ],
+      "unbacked_first": 0,
+      "valid_after_repair": true,
+      "unbacked_final": 0,
+      "final_errors": [
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "deploy": {
+            "candidate": "guarded-config-write",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 0,
+        "added_statements": 0,
+        "reference_statements": 5,
+        "dropped_rules": {},
+        "added_rules": {},
+        "reference_rules": 1,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 6,
+        "recovered": 4,
+        "missed": [
+          "Unverified config",
+          "flow `deploy` writes target"
+        ]
+      },
+      "judged": {
+        "dropped": [],
+        "added": [],
+        "changed": [],
+        "cost_usd": 0.026071999999999998
+      },
+      "draft_cost_usd": 0.0452,
+      "draft_calls": 1
+    },
+    {
+      "name": "02",
+      "draft_exit": 0,
+      "valid_first": true,
+      "first_errors": [
+        "clean"
+      ],
+      "unbacked_first": 0,
+      "valid_after_repair": true,
+      "unbacked_final": 0,
+      "final_errors": [
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "release": {
+            "candidate": "approve-production-deploy",
+            "dropped": {
+              "action:write": 1
+            },
+            "added": {
+              "action:exec": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 1,
+        "added_statements": 1,
+        "reference_statements": 5,
+        "dropped_rules": {
+          "ask->write": 1
+        },
+        "added_rules": {
+          "ask->exec": 1
+        },
+        "reference_rules": 1,
+        "writes_delta": {
+          "release": -1
+        }
+      },
+      "facts": {
+        "facts": 5,
+        "recovered": 2,
+        "missed": [
+          "'ask#approval' before 'write#release'",
+          "No approval",
+          "eligible for guard enforcement"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "production deploy no longer declared as a write effect to target (candidate says the workflow changes nothing)",
+          "deploy step lost its stable ID, so order rules match it only by prose and the guard cannot enforce it (reference write is addressable and eligible for guard enforcement)"
+        ],
+        "added": [],
+        "changed": [
+          "deploy is now an untyped 'exec deploy' returning a result instead of a 'write production bundle with target'"
+        ],
+        "cost_usd": 0.031272
+      },
+      "draft_cost_usd": 0.05,
+      "draft_calls": 1
+    },
+    {
+      "name": "03",
+      "draft_exit": 0,
+      "valid_first": true,
+      "first_errors": [
+        "clean"
+      ],
+      "unbacked_first": 0,
+      "valid_after_repair": true,
+      "unbacked_final": 0,
+      "final_errors": [
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "develop": {
+            "candidate": "screen-repair-retry",
+            "dropped": {
+              "action:write": 1
+            },
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 1,
+        "added_statements": 0,
+        "reference_statements": 9,
+        "dropped_rules": {
+          "verify->write": 1
+        },
+        "added_rules": {},
+        "reference_rules": 1,
+        "writes_delta": {
+          "develop": -1
+        }
+      },
+      "facts": {
+        "facts": 5,
+        "recovered": 4,
+        "missed": [
+          "'verify#table' before 'write#implementation'"
+        ]
+      },
+      "judged": {
+        "dropped": [],
+        "added": [],
+        "changed": [],
+        "cost_usd": 0.039528
+      },
+      "draft_cost_usd": 0.047,
+      "draft_calls": 1
+    },
+    {
+      "name": "04",
+      "draft_exit": 0,
+      "valid_first": false,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\04\\draft.md:17: error P1: 'write #publish release_notes with release_notes_destination' can run before 'verify#report_clean' (order rule, line 6) -- Make `verify#report_clean` (or a run that always performs it) complete on every path to this statement.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\04\\draft.md:5: warning W13: order rule never applies: no statement starts with 'verify#report_clean' -- Fix the pattern so it matches the later statement, or drop the rule."
+      ],
+      "unbacked_first": 0,
+      "valid_after_repair": true,
+      "unbacked_final": 0,
+      "final_errors": [
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "publish": {
+            "candidate": "publish-release-notes",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 0,
+        "added_statements": 0,
+        "reference_statements": 5,
+        "dropped_rules": {},
+        "added_rules": {
+          "exec->verify": 1
+        },
+        "reference_rules": 1,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 5,
+        "recovered": 4,
+        "missed": [
+          "Failing tests"
+        ]
+      },
+      "judged": {
+        "dropped": [],
+        "added": [],
+        "changed": [],
+        "cost_usd": 0.028004
+      },
+      "draft_cost_usd": 0.0281,
+      "draft_calls": 2
+    },
+    {
+      "name": "05",
+      "draft_exit": 0,
+      "valid_first": false,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\05\\draft.md:3: error F2: contract sections out of order -- Use always:, never:, inputs:, order: in that order."
+      ],
+      "unbacked_first": 0,
+      "valid_after_repair": true,
+      "unbacked_final": 0,
+      "final_errors": [
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "summarize": {
+            "candidate": "summarize-request",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 0,
+        "added_statements": 0,
+        "reference_statements": 4,
+        "dropped_rules": {},
+        "added_rules": {},
+        "reference_rules": 0,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 5,
+        "recovered": 5,
+        "missed": []
+      },
+      "judged": {
+        "dropped": [],
+        "added": [],
+        "changed": [],
+        "cost_usd": 0.0167
+      },
+      "draft_cost_usd": 0.0196,
+      "draft_calls": 2
+    },
+    {
+      "name": "pairs06",
+      "draft_exit": 0,
+      "valid_first": false,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:30: error V1: unknown statement 'f07:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:31: error O1: 'exec first check from checks as first' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:32: error O1: 'verify #first_passed first check passed from first' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:35: error O1: 'write #first_result first with first_result_file' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:36: error O1: 'write #summary_write summary with summary_file' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:37: error O1: 'return summary as summary' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:39: error V1: unknown statement 'f08:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:40: error O1: 'if cache is not warm:' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:45: error O1: 'return #cache_ok request as request' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:45: error V1: malformed return 'return #cache_ok request as request' -- Use `return <binding> as <name>` or a `return:` block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:47: error V1: unknown statement 'f09:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:48: error O1: 'exec backup completeness check from checks as backups' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:49: error O1: 'verify #backups_complete backups are complete from backups' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:54: error O1: 'return #backup_state state as state' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:54: error V1: malformed return 'return #backup_state state as state' -- Use `return <binding> as <name>` or a `return:` block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:56: error V1: unknown statement 'f10:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:57: error O1: 'exec test suite from checks as report' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:58: error O1: 'verify #suite_green suite is green from report' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:61: error O1: 'write #test_log report with test_log' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:62: error O1: 'write #release_notes_write release_notes with release_notes_file' cannot nest here -- Dedent it or move it into a branch or repair block."
+      ],
+      "unbacked_first": 0,
+      "valid_after_repair": true,
+      "unbacked_final": 0,
+      "final_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:8: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:9: warning W13: order rule never applies: no statement starts with 'write#first_result' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:10: warning W13: order rule never applies: no statement starts with 'write#summary_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:11: warning W13: order rule never applies: no statement starts with 'write#test_log' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs06\\draft.md:12: warning W13: order rule never applies: no statement starts with 'write#release_notes_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "f06": {
+            "candidate": "f06",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f07": {
+            "candidate": "f07",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f08": {
+            "candidate": "f08",
+            "dropped": {
+              "branch:unless": 1
+            },
+            "added": {
+              "branch:if": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f09": {
+            "candidate": "f09",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f10": {
+            "candidate": "f10",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 1,
+        "added_statements": 1,
+        "reference_statements": 32,
+        "dropped_rules": {
+          "ask->ask": 1
+        },
+        "added_rules": {
+          "ask->write": 1
+        },
+        "reference_rules": 6,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 16,
+        "recovered": 11,
+        "missed": [
+          "'ask#first' before 'ask#second'",
+          "unless cache is warm",
+          "Cache cold",
+          "Red suite",
+          "release notes"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "f09: the recheck gate after repair has no stable ID, so it is advisory-only and can't be targeted by order rules or bound by guards (REFERENCE: verify #recheck)"
+        ],
+        "added": [],
+        "changed": [
+          "f09: the check output goes to `backups` instead of `state`; repair changes `state` and the flow returns `state`, so the returned state is no longer the checked state (REFERENCE checks, repairs, rechecks and returns the same `state`)"
+        ],
+        "cost_usd": 0.074384
+      },
+      "draft_cost_usd": 0.0832,
+      "draft_calls": 2
+    },
+    {
+      "name": "pairs11",
+      "draft_exit": 0,
+      "valid_first": false,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:19: error V1: unknown statement 'f12:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:20: error O1: 'exec audit check from checks as report' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:21: error O1: 'return report as report' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:23: error V1: unknown statement 'f13:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:24: error O1: 'require source exists' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:27: error O1: 'require destination exists' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:30: error O1: 'write #write_copy source with destination' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:31: error O1: 'return destination as destination' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:33: error V1: unknown statement 'f14:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:34: error O1: 'for each items as item:' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:37: error O1: 'return items as items' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:39: error V1: unknown statement 'f15:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:40: error O1: 'require request exists' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:43: error O1: 'return:' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#rotate_key' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:19: warning W10: unreachable statement -- Remove it or fix the control flow.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:20: warning W10: unreachable statement -- Remove it or fix the control flow.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:20: warning W5: binding 'report' never referenced -- Use it or drop the `as`.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:21: warning W10: unreachable statement -- Remove it or fix the control flow.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:23: warning W10: unreachable statement -- Remove it or fix the control flow."
+      ],
+      "unbacked_first": 0,
+      "valid_after_repair": true,
+      "unbacked_final": 0,
+      "final_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#rotate_key' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs11\\draft.md:41: warning W5: binding 'processed' never referenced -- Use it or drop the `as`.",
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "f11": {
+            "candidate": "f11",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f12": {
+            "candidate": "f12",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f13": {
+            "candidate": "f13",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f14": {
+            "candidate": "f14",
+            "dropped": {},
+            "added": {
+              "action:apply": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f15": {
+            "candidate": "f15",
+            "dropped": {
+              "assign:notes": 1
+            },
+            "added": {
+              "bareword:request": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 1,
+        "added_statements": 2,
+        "reference_statements": 20,
+        "dropped_rules": {},
+        "added_rules": {},
+        "reference_rules": 1,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 13,
+        "recovered": 8,
+        "missed": [
+          "Rotation refused",
+          "key holder",
+          "No destination",
+          "processed item",
+          "set 'notes = request'"
+        ]
+      },
+      "judged": {
+        "dropped": [],
+        "added": [],
+        "changed": [
+          "f15: return block holds an untyped bareword 'request' instead of a checked field assignment (notes = request), so 'return the request unchanged' is no longer checked as a field binding"
+        ],
+        "cost_usd": 0.045748
+      },
+      "draft_cost_usd": 0.0567,
+      "draft_calls": 2
+    },
+    {
+      "name": "pairs16",
+      "draft_exit": 0,
+      "valid_first": false,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:20: error V1: unknown statement 'f17:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:21: error O1: 'exec window check from checks as window_status' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:22: error O1: 'verify #window_open window is open from window_status' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:25: error O1: 'write #book_slot slot with bookings' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:26: error O1: 'return slot as booking' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:28: error V1: unknown statement 'f18:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:29: error O1: 'apply redaction with draft as clean' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:30: error O1: 'write #write_clean clean with output' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:31: error O1: 'return clean as result' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:33: error V1: unknown statement 'f19:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:34: error O1: 'generate parts from request as parts' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:35: error O1: 'generate assembly from parts as assembly' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:36: error O1: 'exec fresh check from checks as check' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:37: error O1: 'verify #assembly_match assembly matches check from check' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:40: error O1: 'write #write_assembly assembly with output' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:41: error O1: 'return assembly as result' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:43: error V1: unknown statement 'f20:' -- Use only the v0.6 verb set.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:44: error O1: 'show report' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:45: error O1: 'return report as report' cannot nest here -- Dedent it or move it into a branch or repair block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#book_slot' -- Fix the pattern so it matches the later statement, or drop the rule."
+      ],
+      "unbacked_first": 0,
+      "valid_after_repair": true,
+      "unbacked_final": 0,
+      "final_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#book_slot' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:8: warning W13: order rule never applies: no statement starts with 'write#write_clean' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:8: warning W15: order rule rests on self-report: every statement matching 'apply redaction' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:9: warning W15: order rule rests on self-report: every statement matching 'generate parts' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:10: warning W15: order rule rests on self-report: every statement matching 'generate assembly' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs16\\draft.md:11: warning W13: order rule never applies: no statement starts with 'write#write_assembly' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "f16": {
+            "candidate": "f16",
+            "dropped": {
+              "action:write": 1
+            },
+            "added": {
+              "action:apply": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f17": {
+            "candidate": "f17",
+            "dropped": {},
+            "added": {
+              "action:exec": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f18": {
+            "candidate": "f18",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f19": {
+            "candidate": "f19",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f20": {
+            "candidate": "f20",
+            "dropped": {
+              "action:exec": 1
+            },
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 2,
+        "added_statements": 2,
+        "reference_statements": 20,
+        "dropped_rules": {},
+        "added_rules": {
+          "apply->write": 1,
+          "generate->generate": 1,
+          "generate->exec": 1
+        },
+        "reference_rules": 2,
+        "writes_delta": {
+          "f16": -1
+        }
+      },
+      "facts": {
+        "facts": 14,
+        "recovered": 8,
+        "missed": [
+          "fast result",
+          "booked slot",
+          "redacted draft",
+          "Mismatch",
+          "finished assembly",
+          "show report to requester"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "f20: the step that runs the audit check to produce the report is missing; the candidate shows a report it never produced",
+          "f20: the show step no longer names the requester as recipient"
+        ],
+        "added": [
+          "f17: an extra 'exec window check' step runs before the window gate, and the gate now depends on its output"
+        ],
+        "changed": [
+          "f16: the fast path inside the branch is an in-memory apply step instead of a write to the target (so f16 has no file effect)"
+        ],
+        "cost_usd": 0.044396
+      },
+      "draft_cost_usd": 0.0658,
+      "draft_calls": 2
+    },
+    {
+      "name": "pairs21",
+      "draft_exit": 0,
+      "valid_first": false,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:74: error U1: return value 'shipment' is not bound -- Bind it with `as` or list it under the contract's inputs:.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:30: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:31: warning W5: binding 'restart' never referenced -- Use it or drop the `as`.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:34: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:35: warning W5: binding 'reload' never referenced -- Use it or drop the `as`."
+      ],
+      "unbacked_first": 0,
+      "valid_after_repair": false,
+      "unbacked_final": 0,
+      "final_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:31: error V1: exec without `as` discards its result -- Bind the outcome with `as <name>` so a gate can cite it.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p2\\pairs21\\draft.md:35: error V1: exec without `as` discards its result -- Bind the outcome with `as <name>` so a gate can cite it."
+      ],
+      "structural": {
+        "flows": {
+          "f21ingest": {
+            "candidate": "f21ingest",
+            "dropped": {},
+            "added": {
+              "action:read": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f21store": {
+            "candidate": "f21store",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f22": {
+            "candidate": "f22",
+            "dropped": {
+              "action:apply": 2
+            },
+            "added": {
+              "action:exec": 2
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f23": {
+            "candidate": "f23",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f24": {
+            "candidate": "f24",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f25": {
+            "candidate": "f25",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 2,
+        "added_statements": 3,
+        "reference_statements": 32,
+        "dropped_rules": {},
+        "added_rules": {},
+        "reference_rules": 1,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 17,
+        "recovered": 9,
+        "missed": [
+          "return request as request",
+          "write #record incoming record",
+          "apply service restart",
+          "service reload",
+          "ask operator to approve the note",
+          "write #memo recorded note",
+          "Shipment refused",
+          "ask #lead"
+        ]
+      },
+      "judged": {
+        "dropped": [],
+        "added": [],
+        "changed": [],
+        "cost_usd": 0.057008
+      },
+      "draft_cost_usd": 0.053,
+      "draft_calls": 2
+    }
+  ],
+  "caveat": "Structural and fact counts are deterministic; judged counts come from a model reviewer and are assisted review, not ground truth."
+}

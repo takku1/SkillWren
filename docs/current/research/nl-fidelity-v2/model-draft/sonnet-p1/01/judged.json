@@ -1,0 +1,8 @@
+{
+  "dropped": [],
+  "added": [
+    "extra 'require config exists' gate before the check, with its own abort ('A config is required.')"
+  ],
+  "changed": [],
+  "cost_usd": 0.026119999999999997
+}

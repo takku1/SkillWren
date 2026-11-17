@@ -1,0 +1,17 @@
+assumptions:
+  - f06: the plan binding is supplied as input; the flow returns the written plan. Rejection of either approval aborts. Plan write target named plan_store.
+  - f06: the two humans are modeled as two separate decision asks (reviewer, budget approver), each followed by a confirmation; plan approval comes first.
+  - f07: 'first check' runs via exec from a `checks` resource; summary is a supplied input and is returned after being written; write targets are named results and summaries.
+  - f08: the warm-up check is an exec; after warm-up the cache must verify as warm, otherwise abort. A warm cache skips the block and returns request unchanged.
+  - f09: the repair is an exec of a backup repair command from `checks`; retry loop is unbounded as the intent states. State is a supplied input and returned.
+  - f10: 'the suite' is run via exec; release_notes is a supplied input; test log and notes write targets are test_logs and publication. Returns release_notes.
+  - All failure paths abort with a short message; messages are my wording.
+  - Flow outputs (plan, summary, request, state, release_notes) are returned values I chose since the intent does not name them; the fragment declares no `produces`.
+unresolved questions:
+  - f06: should the budget approver be asked only after the plan is approved (as drafted), or can both approvals be requested independently?
+  - f06: must the two approvers be different people? The fragment cannot enforce that distinction.
+  - f07: where does the summary come from: supplied input, or generated from the first result?
+  - f09: should the repair/recheck/retry loop have a bound or an escalation, or is unbounded retry intended?
+  - f10: should the release notes be generated from the report, or are they supplied?
+  - What should each flow return? The intent names a return only for f08 (request) and f09 (state).
+Not approved. Run check, explain-workflow, and approve before use.

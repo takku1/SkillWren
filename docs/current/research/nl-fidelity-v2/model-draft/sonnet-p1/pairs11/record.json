@@ -1,0 +1,98 @@
+{
+  "name": "pairs11",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs11\\draft.md:18: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs11\\draft.md:36: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs11\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write copy' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs11\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'require source exists' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs11\\draft.md:8: warning W13: order rule never applies: no statement starts with 'write copy' -- Fix the pattern so it matches the later statement, or drop the rule.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity-v2\\model-draft\\sonnet-p1\\pairs11\\draft.md:8: warning W15: order rule rests on self-report: every statement matching 'require destination exists' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision."
+  ],
+  "unbacked_first": 0,
+  "valid_after_repair": true,
+  "unbacked_final": 0,
+  "final_errors": [
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "f11": {
+        "candidate": "f11",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f12": {
+        "candidate": "f12",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f13": {
+        "candidate": "f13",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f14": {
+        "candidate": "f14",
+        "dropped": {},
+        "added": {
+          "action:apply": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f15": {
+        "candidate": "f15",
+        "dropped": {
+          "assign:notes": 1
+        },
+        "added": {
+          "bareword:request": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 1,
+    "added_statements": 2,
+    "reference_statements": 20,
+    "dropped_rules": {
+      "ask->write": 1
+    },
+    "added_rules": {},
+    "reference_rules": 1,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 13,
+    "recovered": 8,
+    "missed": [
+      "'ask#holder' before 'write#key'",
+      "exec audit check from checks as report",
+      "No destination",
+      "processed item",
+      "set 'notes = request'"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "f11: the explicit ordering rule that the holder's approval ask must come before the key write is missing (candidate has no order rules, so 'only after approval' is not enforced on every path)",
+      "f14: the per-item write has no stable ID, so order rules and the guard cannot bind it (the reference's write is addressable and guard-eligible)"
+    ],
+    "added": [],
+    "changed": [
+      "f13: returns the destination instead of the written copy",
+      "f15: the return block holds a bare word 'request' instead of a field bound to the request (notes = request), so returning it unchanged is not clearly expressed"
+    ],
+    "cost_usd": 0.041784
+  },
+  "draft_cost_usd": 0.0439,
+  "draft_calls": 2
+}

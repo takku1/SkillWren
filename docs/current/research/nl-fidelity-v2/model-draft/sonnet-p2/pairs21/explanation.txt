@@ -1,0 +1,75 @@
+Workflow in draft.md:
+flow `f21ingest`:
+  - 'read request as body' (line 12)
+  - 'return body as request' (line 13)
+flow `f21store`:
+  - 'require record exists' (line 18) -- gate; failure follows its otherwise branch
+    - otherwise (line 19)
+      - 'abort with "A record is required."' (line 20)
+  - 'write #storewrite record with store' (line 22)
+  - 'return record as record' (line 23)
+flow `f22`:
+  - 'exec health check from checks as health' (line 28)
+  - 'verify #healthy service is healthy from health' (line 29) -- gate; failure follows its otherwise branch
+    - otherwise (line 30)
+      - 'exec restart service from checks' (line 31)
+      - 'exec health check from checks as health' (line 32)
+      - 'verify #restarted service is healthy from health' (line 33) -- gate; failure follows its otherwise branch
+        - otherwise (line 34)
+          - 'exec reload service from checks' (line 35)
+          - 'exec health check from checks as health' (line 36)
+          - 'verify #reloaded service is healthy from health' (line 37) -- gate; failure follows its otherwise branch
+            - otherwise (line 38)
+              - 'abort with "Service is still unhealthy after restart and reload."' (line 39)
+          - 'return health as state' (line 40)
+      - 'return health as state' (line 41)
+  - 'return health as state' (line 43)
+flow `f23`:
+  - 'ask operator to approve note' (line 48)
+  - 'require confirmation' (line 49) -- gate; failure follows its otherwise branch
+    - otherwise (line 50)
+      - 'abort with "The note was not approved."' (line 51)
+  - 'write #notewrite note with notes' (line 53)
+  - 'return note as note' (line 54)
+flow `f24`:
+  - 'write #recordwrite note with notes' (line 59)
+  - 'return note as note' (line 60)
+flow `f25`:
+  - 'ask lead to approve shipment' (line 65)
+  - 'require confirmation' (line 66) -- gate; failure follows its otherwise branch
+    - otherwise (line 67)
+      - 'abort with "The shipment was not approved."' (line 68)
+  - 'exec readiness check from checks as readiness' (line 70)
+  - 'verify #ready goods are ready from readiness' (line 71) -- gate; failure follows its otherwise branch
+    - otherwise (line 72)
+      - 'abort with "Goods are not ready to ship."' (line 73)
+  - 'write #shipwrite goods with shipments' (line 75)
+  - 'return goods as shipment' (line 76)
+Ordering (must hold on every path):
+  - 'verify#ready' before 'write#shipwrite' (line 7)
+Authority: human decisions are asked here:
+  - 'ask operator to approve note' (line 48)
+  - 'ask lead to approve shipment' (line 65)
+  SkillWren checks the ask/confirm structure, not that a human actually decided -- approval confirms intended meaning, not formal equivalence.
+Effects (files written or flows run):
+  - flow `f21store` writes store
+  - flow `f23` writes notes
+  - flow `f24` writes notes
+  - flow `f25` writes shipments
+Enforcement:
+  - 'write #storewrite record with store' (line 22) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #healthy service is healthy from health' (line 29) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #restarted service is healthy from health' (line 33) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #reloaded service is healthy from health' (line 37) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #notewrite note with notes' (line 53) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #recordwrite note with notes' (line 59) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #ready goods are ready from readiness' (line 71) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #shipwrite goods with shipments' (line 75) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec health check from checks as health' (line 28) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec restart service from checks' (line 31) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec health check from checks as health' (line 32) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec reload service from checks' (line 35) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec health check from checks as health' (line 36) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readiness check from checks as readiness' (line 70) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

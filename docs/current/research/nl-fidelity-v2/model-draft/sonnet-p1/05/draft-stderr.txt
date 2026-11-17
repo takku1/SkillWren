@@ -1,0 +1,9 @@
+assumptions:
+  - The flow is named summarize-request after its purpose, since the intent names no flow.
+  - The summary is produced with a single generate step from the request and returned as `summary`; it is not shown, written, or saved, because the intent says nothing is written.
+  - The returned value is named `summary`, which a skill header would need to list under `produces`.
+  - No order rules are included because the intent states no ordering constraint.
+unresolved questions:
+  - Should the summary be shown to the user as well as returned, or is returning it to the caller enough for the log?
+  - Should the summary have a length or format constraint, such as one line or a short paragraph?
+Not approved. Run check, explain-workflow, and approve before use.
