@@ -9,9 +9,18 @@ Package 0.9.0, piloted beta with real-host evidence. A real coding agent
 request and leaves an evidence chain the host verifies independently.
 The first model measurements are in: draft fidelity, an independent
 corpus review, a 72-run skill-form comparison, and the model A/B/C
-runtime comparison. 246 tests pass.
+runtime comparison. Current verification results are recorded in CI.
 
 ## Active Focus
+
+- Empirical sufficiency selector: `skillwren select` evaluates a fixed
+  candidate set using declared authority/dependency sets, simultaneous
+  risk bounds, worst-cell loss and optional CVaR. Empty certification
+  abstains. [Formulation](current/research/semantic-sufficiency/FORMULATION.md)
+  and [notes](current/research/semantic-sufficiency/NOTES.md) preserve the
+  user's broader model; decision deficiency, adaptive search and regret
+  guarantees remain research work. The historical main run and its
+  preregistered decision rule are unchanged.
 
 - 0.10 in progress on branch `next-0.10`: corpus v2 (frozen), drafter
   evidence check and prompt 2 (requirement defects 19 -> 7 on v2), runtime
