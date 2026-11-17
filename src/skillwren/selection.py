@@ -180,6 +180,9 @@ def select(study):
     if eta == 0:
         raise ValueError('delta is too small for this comparison count')
     gamma = confidence_radius(planned, eta)
+    loss_radius = maximum * min(1.0, gamma)
+    tail_radius = (maximum * min(1.0, gamma / (1 - tail['nu']))
+                   if tail is not None else None)
     reports, feasible = {}, []
     for name, candidate in sorted(candidates.items()):
         _name(name, 'candidate id')
@@ -203,8 +206,8 @@ def select(study):
             if len(completed) != planned:
                 reasons.append(f'{cell_id}:incomplete')
                 continue  # No confidence claim on a filtered, potentially biased subset.
-            mean = math.fsum(s['loss'] / planned for s in completed)
-            bounds = {'loss': _interval(mean, maximum * min(1.0, gamma), maximum), 'requirements': {}}
+            mean = math.fsum(s['loss'] for s in completed) / planned
+            bounds = {'loss': _interval(mean, loss_radius, maximum), 'requirements': {}}
             for key, tolerance in sorted(requirements.items()):
                 estimate = sum(s['violations'][key] for s in completed) / planned
                 bound = _interval(estimate, gamma, 1)
@@ -214,8 +217,7 @@ def select(study):
             if tail is not None:
                 estimate = empirical_cvar([s['loss'] for s in completed], tail['nu'])
                 # Clamp the radius too: the parameter itself lies in [0, loss_max].
-                radius = maximum * min(1.0, gamma / (1 - tail['nu']))
-                bounds['tail'] = _interval(estimate, radius, maximum)
+                bounds['tail'] = _interval(estimate, tail_radius, maximum)
                 if bounds['tail']['upper'] > tail['budget']:
                     reasons.append(f'{cell_id}:tail:upper_exceeds_budget')
             row['bounds'] = bounds
