@@ -1,0 +1,10 @@
+{
+  "dropped": [
+    "The no-failures check before publishing has no stable ID and is advisory-only, so the guard can't enforce the check-before-write ordering (the reference's verify #report can be bound by the guard)"
+  ],
+  "added": [
+    "Extra gate before the tests run: requires release_notes to exist, otherwise stops with 'Release notes are required.' (not in the intent)"
+  ],
+  "changed": [],
+  "cost_usd": 0.036664
+}

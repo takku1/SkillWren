@@ -1,0 +1,79 @@
+{
+  "name": "pairs21",
+  "facts": 15,
+  "recovered": 15,
+  "missed": [],
+  "uncovered": [
+    "f21ingest gate 'require request exists' with abort \"Nothing.\" (line 14)",
+    "f21store gate 'require record exists' with abort \"Nothing.\" (line 22)",
+    "f22 steps 'exec service check from checks as state', 'verify #service service is healthy from state', 'return state as state'",
+    "f22: abort runs every time with no health re-check after restart or reload",
+    "f23 'write #note approved note with target' and 'require confirmation' gate",
+    "f24 gate 'require note exists'",
+    "f25 'exec final check from checks as state' step",
+    "Effects: f21store, f23, f24 and f25 write 'target'; f21ingest and f22 write nothing; no cross-file runs",
+    "No ordering rule applies to f21, f22, f23 or f24",
+    "SkillWren checks only the ask/confirm structure; approval is not a guard policy and grants no capabilities",
+    "Guard-eligible list beyond write #record (verify #service, write #note, write #memo, verify #final, write #shipment)",
+    "Advisory-only steps 'exec service check' (line 31) and 'exec final check' (line 76) cannot be bound by the guard",
+    "Limitations: untyped prose not machine-checked; correlated branch conditions not recognized; rule compliance needs a separate check run; ask steps and require gates have no stable IDs, and no order rule makes approval come before the write"
+  ],
+  "intent_mismatches": [
+    "f22: the intent says to give up with an error only 'if still unhealthy' after the restart and reload. The explanation shows restart, then reload, then an unconditional abort with \"Still unhealthy.\", with no health re-check between or after them. So the flow fails even when the restart or reload fixes the service.",
+    "f21ingest: the intent says 'Read the request and return it unchanged.' The explanation adds a gate, 'require request exists', that aborts with \"Nothing.\". The intent mentions no such gate or failure path.",
+    "f24: the intent says the flow 'verifies nothing itself'. The explanation shows a 'require note exists' gate that aborts with \"No note.\". It is an existence check rather than a verify step, but it is still a gate the intent doesn't describe.",
+    "f25: the ordering rule covers only verify#final before write#shipment. Approval coming before the write ('ship only approved goods') is enforced only by the written sequence and the require gate, not by an order rule. Also, the 'check' step (exec final check) is advisory-only, so the guard cannot bind it.",
+    "f22: no write is shown (consistent with the intent), but the 'exec service check' step is advisory-only and has no stable ID."
+  ],
+  "limitations_recovered": [
+    "The prose meaning of untyped steps is not machine-checked, so rewording can silently change intent.",
+    "Correlated branch conditions are not recognized.",
+    "Approval is not a guard policy and does not prove that a human actually decided.",
+    "Guard enforcement applies only if the guard policy defines the operation. The two exec steps cannot be bound by the guard at all.",
+    "Rule compliance is not shown here; it needs a separate `check` run.",
+    "The ask steps (lines 49, 72) and the require-confirmation gates have no stable IDs. No order rule makes approval come before the write in f23 or f25; only the written sequence does that."
+  ],
+  "notes": {
+    "requirements": [
+      "f21ingest (lines 12-15): gate 'require request exists', then 'return request as request'.",
+      "f21store (lines 20-24): gate 'require record exists', then 'write #record incoming record with target', then return record.",
+      "f22 (lines 31-37): 'exec service check from checks as state', then gate 'verify #service service is healthy from state', then 'return state as state'.",
+      "f23 (lines 49-54): 'ask operator to approve the note', gate 'require confirmation', then 'write #note approved note with target', then return note.",
+      "f24 (lines 61-65): gate 'require note exists', then 'write #memo recorded note with target', then return note.",
+      "f25 (lines 72-81): 'ask #lead operator to approve shipment', gate 'require confirmation', 'exec final check from checks as state', gate 'verify #final shipment is ready from state', then 'write #shipment approved shipment with target', then return shipment.",
+      "Only one declared ordering rule, which must hold on every path: 'verify#final' before 'write#shipment' (line 5). No ordering rule applies to f21, f22, f23 or f24.",
+      "Effects: f21store, f23, f24 and f25 each write 'target'. f21ingest and f22 write nothing. No cross-file runs."
+    ],
+    "branches": [
+      "f21ingest: if the request is missing, abort with \"Nothing.\" (line 14).",
+      "f21store: if the record is missing, abort with \"Nothing.\" (line 22).",
+      "f22: if the health check fails, apply service restart (line 34), then apply service reload (line 35), then abort with \"Still unhealthy.\" (line 36). This abort runs every time; the explanation shows no health re-check after the restart or the reload.",
+      "f23: if confirmation is missing, abort with \"Not approved.\" (line 52).",
+      "f24: if the note is missing, abort with \"No note.\" (line 63).",
+      "f25: if confirmation is missing, abort with \"Shipment refused.\" (line 75). If the readiness check fails, abort with \"Not ready.\" (line 79)."
+    ],
+    "authority": [
+      "Human decisions are asked at two points: 'ask operator to approve the note' (f23, line 49) and 'ask #lead operator to approve shipment' (f25, line 72). Each is followed by a 'require confirmation' gate.",
+      "SkillWren checks only the ask/confirm structure, not whether a human actually decided. Approval is not a guard policy and grants no capabilities.",
+      "Writes to 'target': #record (f21store), #note (f23), #memo (f24), #shipment (f25).",
+      "Guard-eligible steps (only if the guard policy defines the operation): write #record, verify #service, write #note, write #memo, verify #final, write #shipment.",
+      "Advisory-only steps (no stable ID, so the guard cannot bind them): 'exec service check' (line 31) and 'exec final check' (line 76)."
+    ],
+    "limitations": [
+      "The prose meaning of untyped steps is not machine-checked, so rewording can silently change intent.",
+      "Correlated branch conditions are not recognized.",
+      "Approval is not a guard policy and does not prove that a human actually decided.",
+      "Guard enforcement applies only if the guard policy defines the operation. The two exec steps cannot be bound by the guard at all.",
+      "Rule compliance is not shown here; it needs a separate `check` run.",
+      "The ask steps (lines 49, 72) and the require-confirmation gates have no stable IDs. No order rule makes approval come before the write in f23 or f25; only the written sequence does that."
+    ],
+    "intent_mismatches": [
+      "f22: the intent says to give up with an error only 'if still unhealthy' after the restart and reload. The explanation shows restart, then reload, then an unconditional abort with \"Still unhealthy.\", with no health re-check between or after them. So the flow fails even when the restart or reload fixes the service.",
+      "f21ingest: the intent says 'Read the request and return it unchanged.' The explanation adds a gate, 'require request exists', that aborts with \"Nothing.\". The intent mentions no such gate or failure path.",
+      "f24: the intent says the flow 'verifies nothing itself'. The explanation shows a 'require note exists' gate that aborts with \"No note.\". It is an existence check rather than a verify step, but it is still a gate the intent doesn't describe.",
+      "f25: the ordering rule covers only verify#final before write#shipment. Approval coming before the write ('ship only approved goods') is enforced only by the written sequence and the require gate, not by an order rule. Also, the 'check' step (exec final check) is advisory-only, so the guard cannot bind it.",
+      "f22: no write is shown (consistent with the intent), but the 'exec service check' step is advisory-only and has no stable ID."
+    ]
+  },
+  "cost_usd": 0.1265
+}

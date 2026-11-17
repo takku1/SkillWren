@@ -1,0 +1,1 @@
+{"banned": [], "licenses": {"MIT": true}, "verdict": "clean"}

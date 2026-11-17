@@ -23,7 +23,7 @@ def matches(pattern, text):
     # Typed references are exact and case-sensitive; prose is incidental.
     typed = re.fullmatch(r"([a-z]+)#([a-z][a-z0-9-]*)", pattern.strip())
     if typed:
-        statement = re.match(r"([a-z]+)\s+#([a-z][a-z0-9-]*)(?=\s|$)", text.strip())
+        statement = re.match(r"([a-z]+)\s+#([a-z][a-z0-9-]*)(?=[\s:]|$)", text.strip())
         return bool(statement and statement.groups() == typed.groups())
     return fnmatch.fnmatchcase(norm(text), norm(pattern) + "*")
 

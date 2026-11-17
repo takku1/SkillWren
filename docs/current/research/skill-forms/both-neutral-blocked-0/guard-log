@@ -1,0 +1,6 @@
+{"coverage": "controller requests only; not direct host activity", "hash": "02ad8f02d1dc5e4561fa776dd540af293c9f0343c580e7cf9bf1d8f7e0482e1d", "policy_sha256": "4fde0aaf5cb3aae783733199feef24bf0a47599055c7f24f65d0d26706654129", "prev": null, "seq": 0, "type": "start"}
+{"hash": "23eb1bb29f9bd0b3e203ceb24c5d1e0a319abd689112f724843f7dd534002f20", "prev": "02ad8f02d1dc5e4561fa776dd540af293c9f0343c580e7cf9bf1d8f7e0482e1d", "request_sha256": "038fa733eec5193a9896049ba0f442bb973f55da79b0a15139f01e0141a8db83", "seq": 1, "type": "intent"}
+{"hash": "46c8c8d4e42c615dfc9b31e31b433a68e3398941b494d04525da87d3f545ba43", "ok": false, "prev": "23eb1bb29f9bd0b3e203ceb24c5d1e0a319abd689112f724843f7dd534002f20", "seq": 2, "type": "result"}
+{"hash": "13a148f1b6c01be6a85528828b3440abddfa5030c2d7f1f30e03a8534bc59198", "prev": "46c8c8d4e42c615dfc9b31e31b433a68e3398941b494d04525da87d3f545ba43", "request_sha256": "827c02d2002d3961d956788f753ac4ca52d850d1cf7dbcb1d1b2ebcc1c6bb4f6", "seq": 3, "type": "intent"}
+{"hash": "d48ea8024f230c7b0cef61406220db196d04ab0afbca4518c774af27454d5d46", "ok": false, "prev": "13a148f1b6c01be6a85528828b3440abddfa5030c2d7f1f30e03a8534bc59198", "seq": 4, "type": "result"}
+{"hash": "714e25b847b4ad25cd8ce168760cff490ee4ae1810d98e9d365702dc4df366a4", "prev": "d48ea8024f230c7b0cef61406220db196d04ab0afbca4518c774af27454d5d46", "seq": 5, "type": "stop"}

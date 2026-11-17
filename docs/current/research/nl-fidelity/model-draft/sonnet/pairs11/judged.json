@@ -1,0 +1,13 @@
+{
+  "dropped": [
+    "f13: abort when source is missing (gate has no otherwise/abort branch)",
+    "f13: abort when destination is missing (gate has no otherwise/abort branch)"
+  ],
+  "added": [
+    "f12: extra abort branch when the audit check cannot be observed"
+  ],
+  "changed": [
+    "f13: returns the source as the copy instead of the written copy"
+  ],
+  "cost_usd": 0.045248000000000003
+}

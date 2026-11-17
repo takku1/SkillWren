@@ -1,0 +1,101 @@
+{
+  "name": "pairs11",
+  "draft_exit": 0,
+  "valid_first": true,
+  "first_errors": [
+    "clean"
+  ],
+  "valid_after_repair": true,
+  "final_errors": [
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "f11": {
+        "candidate": "f11",
+        "dropped": {},
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f12": {
+        "candidate": "f12",
+        "dropped": {
+          "action:exec": 1
+        },
+        "added": {
+          "action:read": 1,
+          "action:abort": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f13": {
+        "candidate": "f13",
+        "dropped": {
+          "action:abort": 2
+        },
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f14": {
+        "candidate": "f14",
+        "dropped": {
+          "gate:require": 1,
+          "action:abort": 1
+        },
+        "added": {
+          "action:apply": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f15": {
+        "candidate": "f15",
+        "dropped": {
+          "assign:notes": 1
+        },
+        "added": {
+          "assign:request": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 6,
+    "added_statements": 4,
+    "reference_statements": 22,
+    "dropped_rules": {},
+    "added_rules": {},
+    "reference_rules": 1,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 13,
+    "recovered": 7,
+    "missed": [
+      "Rotation refused",
+      "key holder",
+      "exec audit check from checks as report",
+      "No destination",
+      "processed item",
+      "set 'notes = request'"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "f13: abort when source is missing (gate has no otherwise/abort branch)",
+      "f13: abort when destination is missing (gate has no otherwise/abort branch)"
+    ],
+    "added": [
+      "f12: extra abort branch when the audit check cannot be observed"
+    ],
+    "changed": [
+      "f13: returns the source as the copy instead of the written copy"
+    ],
+    "cost_usd": 0.045248000000000003
+  },
+  "draft_cost_usd": 0.0237,
+  "draft_calls": 1
+}

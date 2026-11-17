@@ -1,0 +1,13 @@
+assumptions:
+  - The flow is named screen-and-implement because the intent names no flow.
+  - `design` is an externally supplied input, declared in the contract `inputs`. The intent does not ask for a `require design exists` gate, so I added none.
+  - 'Recheck, and retry until the table is present' is encoded as `retry` inside the `otherwise:` block. `retry` re-executes the failed verify. The intent states no retry cap, so I set none.
+  - The intent says to generate the implementation after the table check, so I added the order rule `verify#table before generate implementation`.
+  - The intent doesn't define the 'assurance screen', so I wrote a minimal step meaning: add the assurance table to the design.
+  - The returned value is named `implementation`. The intent doesn't name the output.
+unresolved questions:
+  - Should the flow abort or escalate if the screen repeatedly fails to produce an assurance table? The intent says to retry until it is present, so it has no cap.
+  - What does the assurance screen do exactly? Does it add risk answers and checks, or only the table?
+  - Should the flow `require design exists` first? Or does the design come from somewhere else, such as a called flow?
+  - Does the implementation need to be written to a resource, or only returned? The intent says only to return it, so I added no write.
+Not approved. Run check, explain-workflow, and approve before use.

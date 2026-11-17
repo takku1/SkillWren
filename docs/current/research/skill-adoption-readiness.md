@@ -31,23 +31,31 @@ silently.
 Structurally yes: the draft adapter cannot approve, and `approve`
 records coverage gaps (`#deps`, `#coverage`, `#evidence` uncovered in
 all three lifecycles). But the stub invented structure (placeholders),
-which the human had to replace. Requirement invention by a real model
-is unmeasured; the fidelity corpus plus model-draft reproduction test
-exists for exactly that measurement.
+which the human had to replace. Measured 2026-11-17 with a real model
+(`nl-fidelity/model-draft/README.md`): no permission was invented, but
+of 22 requirement defects across 26 drafted flows, 7 were silent (no
+question, no stated assumption), mostly gates that lost their evidence
+step. Drafts passed `check` 5/9 first time, 6/9 after one repair.
 
 **Can a user understand exactly what the converted skill does?**
 Largely: `explain-workflow` states steps, branches, order rules,
 authority, effects, enforcement eligibility, and cross-file targets,
 plus what it cannot show (prose meaning of untyped steps, correlated
-conditions). Residual risk: terminal steps cannot be order-anchored
-(no typed-ID form for returns), so pipeline order there rests on
-written sequence.
+conditions). An independent model reviewer recovered 82/83 corpus facts
+from explanations alone. Terminal steps can be order-anchored since 0.9
+(`return #id`), and the explainer now states what `retry` re-runs.
 
 **Can the packaged skill be invoked by a real coding agent against a
-repository?** Not demonstrated. The three lifecycles were executed by
-hand following the skill; packaging is a conventional `SKILL.md`
-entry point, but no host integration test loads it. This is the
-largest gap between the current evidence and the adoption claim.
+repository?** Yes, demonstrated 2026-11-17 [R, rerunnable with
+`scripts/host_demo.py`]. Headless Claude Code, given one sentence and no
+command hints, discovered and loaded `dep-audit` from a disposable clone
+of a real repository, recorded check and verify as ledger evidence,
+wrote through the guard, and left a chain the host verified
+independently (`host-demo/README.md`); on the blocked variant it aborted
+and the guard denied the host's own submission. 72 further runs across
+skill forms and prompts complied in every case (`skill-forms/`). The
+demo found and fixed a real ledger defect (typed step names did not
+match their rules). Not shown: OS-level isolation in that setup.
 
 **Which guarantees are statically checked, runtime-enforced, or
 agent-dependent?**
@@ -64,31 +72,34 @@ agent-dependent?**
 **What manual steps prevent ordinary developers from adopting this?**
 Hand-authoring flows needs DSL knowledge (no syntax help beyond
 `check` errors); guard policies must be hand-built with pinned
-digests; approval is a manual ceremony; inline JSON CLI arguments are
-unusable from Windows shells (`--adapter-file` exists as a workaround,
-added after hitting the C-runtime quoting trap); cross-skill runs need
-the target file present at check time.
+digests; approval is a manual ceremony; cross-skill runs need the target file
+present at check time. Inline JSON arguments are no longer needed:
+adapters follow `--` as plain words (0.9).
 
 ## Unknowns (not assessed)
 
-- Whether a real host integration preserves the evidence chain (no
-  host run yet) [U].
-- Whether model-drafted flows reproduce approved requirements or
-  silently add/drop them (corpus frozen, reproduction unrun) [U].
-- Whether independent reviewers recover the same facts from
-  explanations (protocol written, review pending) [U].
-- Token/latency cost of the pipeline on real tasks [U].
+- Behaviour on a harder task or a weaker host: every real-agent run
+  complied, so the forms comparison hit a ceiling [U].
+- Human (not model) review of the corpus and of the model drafts [U].
+- OS-isolated host integration (guard under a separate account with a
+  real agent) [U]; isolation itself is tested by `isolation_probe.py`.
 
-## 0.9.0 blockers, prioritized
+## 0.9.0 blockers: status 2026-11-17
 
-- P0: real-host invocation demo -- a packaged lifecycle skill loaded by
-  an actual coding agent against a disposable repo, with ledger/guard
-  evidence. Without this, "works with AI coding agents" is unproven.
-- P0: required status checks on `main` (done 2026-11-12, all 14 lanes).
-- P1: model draft + fidelity measurement (needs provider spend) and
-  independent corpus review (needs a reviewer) -- both explicitly
-  awaiting your approval, neither started.
-- P1: Windows CLI quoting ergonomics beyond `--adapter-file`.
-- P2: typed terminal steps for `order:` rules; static read-only exec
-  syntax (runtime `--readonly` exists; the M1/static side needs a SPEC
-  change, deliberately deferred).
+- P0 real-host invocation demo: done (`host-demo/`).
+- P0 required status checks on `main`: done 2026-11-12.
+- P1 model draft + fidelity measurement: done (`nl-fidelity/model-draft/`).
+- P1 independent corpus review: done by a fresh model session, not a
+  human (`nl-fidelity/independent-review/`); four reference-flow defects
+  recorded for a re-frozen v2.
+- P1 Windows quoting: adapters accept plain argv after `--` (`draft`,
+  `benchmark_runtime.py`); `--adapter-file` kept.
+- P2 typed terminal steps and declared read-only exec: done (SPEC
+  Section 21).
+
+## Next gate (0.10)
+
+- Corpus v2: fix the four reference defects, re-freeze, rerun drafts.
+- Drafter evidence lint: fail or warn when a gate loses its `exec`
+  evidence (the main silent-loss class).
+- A task hard enough to separate skill forms, and an OS-isolated host run.

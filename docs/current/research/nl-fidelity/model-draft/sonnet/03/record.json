@@ -1,0 +1,63 @@
+{
+  "name": "03",
+  "draft_exit": 0,
+  "valid_first": true,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\03\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'verify#table' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "clean"
+  ],
+  "valid_after_repair": true,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\03\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'verify#table' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "develop": {
+        "candidate": "screen-and-implement",
+        "dropped": {
+          "gate:require": 1,
+          "action:abort": 1,
+          "action:exec": 2,
+          "gate:verify": 1,
+          "action:write": 1
+        },
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 6,
+    "added_statements": 0,
+    "reference_statements": 11,
+    "dropped_rules": {
+      "verify->write": 1
+    },
+    "added_rules": {
+      "verify->generate": 1
+    },
+    "reference_rules": 1,
+    "writes_delta": {
+      "develop": -1
+    }
+  },
+  "facts": {
+    "facts": 5,
+    "recovered": 3,
+    "missed": [
+      "'verify#table' before 'write#implementation'",
+      "advisory-only"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "initial table check is never run: CANDIDATE's gate checks the design directly instead of using the result of 'exec table check'",
+      "no recheck after applying the screen: REFERENCE runs the table check again and gates on the new result (verify #recheck) before retrying; CANDIDATE goes straight from apply to retry"
+    ],
+    "added": [],
+    "changed": [],
+    "cost_usd": 0.039032
+  },
+  "draft_cost_usd": 0.0149,
+  "draft_calls": 1
+}

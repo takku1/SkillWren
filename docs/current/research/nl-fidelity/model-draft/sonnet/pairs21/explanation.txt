@@ -1,0 +1,69 @@
+Workflow in draft.md:
+flow `f21ingest`:
+  - 'read request as request' (line 11)
+  - 'return request as request' (line 12)
+flow `f21store`:
+  - 'require record exists' (line 17) -- gate; failure follows its otherwise branch
+    - otherwise (line 18)
+      - 'abort with "A record is required."' (line 19)
+  - 'write record with records' (line 20)
+  - 'return record as record' (line 21)
+flow `f22`:
+  - 'verify service is healthy' (line 26) -- gate; failure follows its otherwise branch
+    - otherwise (line 27)
+      - 'exec restart from service as restarted' (line 28)
+      - 'verify service is healthy' (line 29) -- gate; failure follows its otherwise branch
+        - otherwise (line 30)
+          - 'exec reload from service as reloaded' (line 31)
+          - 'verify service is healthy' (line 32) -- gate; failure follows its otherwise branch
+            - otherwise (line 33)
+              - 'abort with "Service is still unhealthy after restart and reload."' (line 34)
+  - 'read service state as state' (line 35)
+  - 'return state as state' (line 36)
+flow `f23`:
+  - 'ask operator to approve note' (line 41)
+  - 'require confirmation' (line 42) -- gate; failure follows its otherwise branch
+    - otherwise (line 43)
+      - 'abort with "The note was not approved."' (line 44)
+  - 'write note with notes' (line 45)
+  - 'return note as note' (line 46)
+flow `f24`:
+  - 'write note with notes' (line 51)
+  - 'return note as note' (line 52)
+flow `f25`:
+  - 'ask #approve lead to approve shipment' (line 57)
+  - 'require confirmation' (line 58) -- gate; failure follows its otherwise branch
+    - otherwise (line 59)
+      - 'abort with "The shipment was not approved."' (line 60)
+  - 'exec goods check from checks as results' (line 61)
+  - 'verify #ready goods are ready from results' (line 62) -- gate; failure follows its otherwise branch
+    - otherwise (line 63)
+      - 'abort with "The goods are not ready."' (line 64)
+  - 'write #shipment shipment with shipments' (line 65)
+  - 'return shipment as shipment' (line 66)
+Ordering (must hold on every path):
+  - 'ask#approve' before 'verify#ready' (line 5)
+  - 'verify#ready' before 'write#shipment' (line 6)
+Authority: human decisions are asked here:
+  - 'ask operator to approve note' (line 41)
+  - 'ask #approve lead to approve shipment' (line 57)
+  SkillWren checks the ask/confirm structure, not that a human actually decided -- approval confirms intended meaning, not formal equivalence.
+Effects (files written or flows run):
+  - flow `f21store` writes records
+  - flow `f23` writes notes
+  - flow `f24` writes notes
+  - flow `f25` writes shipments
+Enforcement:
+  - 'verify #ready goods are ready from results' (line 62) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #shipment shipment with shipments' (line 65) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write record with records' (line 20) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'verify service is healthy' (line 26) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec restart from service as restarted' (line 28) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'verify service is healthy' (line 29) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec reload from service as reloaded' (line 31) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'verify service is healthy' (line 32) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'write note with notes' (line 45) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'write note with notes' (line 51) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec goods check from checks as results' (line 61) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

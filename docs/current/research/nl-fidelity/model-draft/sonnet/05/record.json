@@ -1,0 +1,47 @@
+{
+  "name": "05",
+  "draft_exit": 0,
+  "valid_first": true,
+  "first_errors": [
+    "clean"
+  ],
+  "valid_after_repair": true,
+  "final_errors": [
+    "clean"
+  ],
+  "structural": {
+    "flows": {
+      "summarize": {
+        "candidate": "summarize-request",
+        "dropped": {},
+        "added": {
+          "action:generate": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 0,
+    "added_statements": 1,
+    "reference_statements": 3,
+    "dropped_rules": {},
+    "added_rules": {},
+    "reference_rules": 0,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 4,
+    "recovered": 4,
+    "missed": []
+  },
+  "judged": {
+    "dropped": [],
+    "added": [],
+    "changed": [
+      "Output differs: REFERENCE returns the raw request, while CANDIDATE adds a 'generate summary from request' step and returns that summary (the intent supports summarizing, but the result is no longer the same)"
+    ],
+    "cost_usd": 0.026355999999999997
+  },
+  "draft_cost_usd": 0.0092,
+  "draft_calls": 1
+}

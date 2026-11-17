@@ -1,0 +1,59 @@
+{
+  "name": "01",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\01\\draft.md:1: error F2: contract sections out of order -- Use always:, never:, inputs:, order: in that order.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\01\\draft.md:5: warning W13: order rule never applies: no statement starts with 'write#config_write' -- Fix the pattern so it matches the later statement, or drop the rule."
+  ],
+  "valid_after_repair": false,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\01\\draft.md:22: error P1: 'write config with production_config' can run before 'verify#debug_off' (order rule, line 9) -- Make `verify#debug_off` (or a run that always performs it) complete on every path to this statement."
+  ],
+  "structural": {
+    "flows": {
+      "deploy": {
+        "candidate": "guarded-config-write",
+        "dropped": {
+          "action:exec": 1
+        },
+        "added": {
+          "gate:require": 1,
+          "action:abort": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 1,
+    "added_statements": 2,
+    "reference_statements": 5,
+    "dropped_rules": {},
+    "added_rules": {},
+    "reference_rules": 1,
+    "writes_delta": {}
+  },
+  "facts": {
+    "facts": 6,
+    "recovered": 3,
+    "missed": [
+      "'verify#check' before 'write#config'",
+      "Unverified config",
+      "flow `deploy` writes target"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "The 'exec config check' step is gone, so the debug-off verification is no longer based on a check result"
+    ],
+    "added": [
+      "Extra 'require config exists' gate with its own abort ('A config is required.'), which the intent doesn't call for"
+    ],
+    "changed": [
+      "The write step has no stable ID, so it is advisory-only: the guard can't bind it and the 'verify before write' rule matches it only by its text. In the reference the write step has an ID and can be enforced, so the 'never write an unverified config' guarantee is weaker."
+    ],
+    "cost_usd": 0.03158
+  },
+  "draft_cost_usd": 0.0261,
+  "draft_calls": 2
+}

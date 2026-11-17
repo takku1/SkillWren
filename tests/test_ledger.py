@@ -36,6 +36,23 @@ class LedgerTests(unittest.TestCase):
         self.assertTrue(ledger.check(self.path)['ok'])
         self.assertFalse(ledger.check(self.path, require_evidence=True)['ok'])
 
+    def test_typed_reference_step_names_exercise_rules(self):
+        flow = ROOT / 'examples/host-demo/dep-audit/flow.md'
+        run, path, rules = ledger.start(flow, self.directory / 'typed')
+        self.assertEqual(rules[0]['first'], 'verify#deps')
+        ledger.exec_step(path, 'verify#deps', [sys.executable, '-c', 'print(1)'])
+        ledger.note_step(path, 'write#report')
+        rule = ledger.check(path, require_evidence=True)['rules'][0]
+        self.assertTrue(rule['exercised'])
+        self.assertEqual(rule['satisfied_by'], ['evidence'])
+        self.assertFalse(rule['violations'])
+        early = ledger.start(flow, self.directory / 'early')[1]
+        ledger.note_step(early, 'write#report with detail')
+        self.assertFalse(ledger.check(early)['ok'])
+        other = ledger.start(flow, self.directory / 'other')[1]
+        ledger.note_step(other, 'write#reports')
+        self.assertFalse(ledger.check(other)['rules'][0]['exercised'])
+
     def test_tampering_detected(self):
         ledger.note_step(self.path, self.first)
         records = ledger.load(self.path)

@@ -1,0 +1,2 @@
+Z:\SkillWren\docs\current\research\nl-fidelity\model-draft\sonnet\03\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'verify#table' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.
+clean

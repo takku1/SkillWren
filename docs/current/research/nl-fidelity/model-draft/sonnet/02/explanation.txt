@@ -1,0 +1,18 @@
+Workflow in draft.md:
+flow `deploy-to-production`:
+  - 'ask #approval user to approve deploy' (line 8)
+  - 'require confirmation' (line 9) -- gate; failure follows its otherwise branch
+    - otherwise (line 10)
+      - 'abort with "Deploy not confirmed; nothing was deployed."' (line 11)
+  - 'exec deploy from deploy_tool as result' (line 13)
+  - 'return result as deploy_result' (line 14)
+Ordering (must hold on every path):
+  - 'ask#approval' before 'exec deploy' (line 3)
+Authority: human decisions are asked here:
+  - 'ask #approval user to approve deploy' (line 8)
+  SkillWren checks the ask/confirm structure, not that a human actually decided -- approval confirms intended meaning, not formal equivalence.
+Effects: none declared; the workflow changes nothing.
+Enforcement:
+  - 'exec deploy from deploy_tool as result' (line 13) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

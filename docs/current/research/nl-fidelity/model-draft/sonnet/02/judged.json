@@ -1,0 +1,12 @@
+{
+  "dropped": [
+    "The production deploy is no longer listed as a file write: the reference says flow writes target, while the candidate says 'Effects: none declared; the workflow changes nothing', so the deploy's effect goes unrecorded",
+    "The deploy step can no longer be enforced by the guard: the reference's '#release' write has a stable ID and can be guarded, but the candidate's 'exec deploy' is advisory-only and the guard can't bind it"
+  ],
+  "added": [],
+  "changed": [
+    "The deploy action is an untyped 'exec deploy from deploy_tool' with no stable ID, not a typed write to the production target, so the meaning of the deploy step isn't machine-checked",
+    "The rule 'ask before deploy' still exists, but it now finds the deploy step by its prose text instead of a stable ID, so rewording that step could quietly break the rule"
+  ],
+  "cost_usd": 0.03052
+}

@@ -156,14 +156,17 @@ observed behavior).
 
 ## Status
 
-v0.8.0 (2026-11-12). See [docs/STATUS.md](docs/STATUS.md) and
-[CHANGELOG.md](CHANGELOG.md). 0.8 adds the authoring pipeline
-(`draft`, `explain-workflow`, `approve`), the NL fidelity corpus, and
-ledger `cwd`/`readonly`/`detail`/`attempt` support. 0.7 added the
-runtime controller (`guard`), the isolated observer (`sandbox`), the
-checkpointed audit log (`audit`), and ledger completeness contracts.
-0.5 files keep validating. Next: the model A/B/C comparison with content
-held constant ([plan](docs/current/research/model-evaluation-plan.md)).
+v0.9.0 (2026-11-17). See [docs/STATUS.md](docs/STATUS.md) and
+[CHANGELOG.md](CHANGELOG.md). 0.9 shows a real coding agent (headless
+Claude Code) loading a packaged skill and leaving a host-checkable
+evidence chain ([host demo](docs/current/research/host-demo/README.md)),
+adds typed return anchors and declared read-only `exec`, packages
+fragment-set skills (`build DIR`, `measure DIR`), and reports the first
+model measurements: draft fidelity, an independent corpus review, a
+skill-form comparison, and the model A/B/C runtime comparison. 0.8 added
+the authoring pipeline (`draft`, `explain-workflow`, `approve`); 0.7 the
+runtime controller (`guard`), `sandbox`, `audit`, and ledger contracts.
+0.5 files keep validating.
 
 ## Authoring pipeline: intent to approved workflow
 
@@ -171,7 +174,7 @@ Draft a proposal from natural language, validate it, read what it
 means, approve the exact bytes, then enforce the covered operations:
 
 ```text
-skillwren draft --intent-file intent.md --adapter '["python", "adapter.py"]' --out proposal.md
+skillwren draft --intent-file intent.md --out proposal.md -- python adapter.py
 skillwren check --fragment proposal.md
 skillwren explain-workflow --fragment proposal.md
 skillwren approve --fragment proposal.md --by you --policy policy.json

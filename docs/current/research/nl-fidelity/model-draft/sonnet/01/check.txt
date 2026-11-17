@@ -1,0 +1,1 @@
+Z:\SkillWren\docs\current\research\nl-fidelity\model-draft\sonnet\01\draft.md:22: error P1: 'write config with production_config' can run before 'verify#debug_off' (order rule, line 9) -- Make `verify#debug_off` (or a run that always performs it) complete on every path to this statement.

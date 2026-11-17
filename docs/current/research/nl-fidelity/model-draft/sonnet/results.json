@@ -1,0 +1,779 @@
+{
+  "totals": {
+    "model": "sonnet",
+    "judge_model": "opus",
+    "items": 9,
+    "flows_reference": 26,
+    "valid_first": 5,
+    "valid_after_repair": 6,
+    "dropped_statements": 33,
+    "added_statements": 21,
+    "reference_statements": 142,
+    "reference_rules": 13,
+    "dropped_rules": 3,
+    "added_rules": 10,
+    "facts": 83,
+    "facts_recovered": 46,
+    "judged_dropped": 18,
+    "judged_added": 4,
+    "judged_changed": 12,
+    "draft_cost_usd": 0.262,
+    "judge_cost_usd": 0.41
+  },
+  "records": [
+    {
+      "name": "01",
+      "draft_exit": 0,
+      "valid_first": false,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\01\\draft.md:1: error F2: contract sections out of order -- Use always:, never:, inputs:, order: in that order.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\01\\draft.md:5: warning W13: order rule never applies: no statement starts with 'write#config_write' -- Fix the pattern so it matches the later statement, or drop the rule."
+      ],
+      "valid_after_repair": false,
+      "final_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\01\\draft.md:22: error P1: 'write config with production_config' can run before 'verify#debug_off' (order rule, line 9) -- Make `verify#debug_off` (or a run that always performs it) complete on every path to this statement."
+      ],
+      "structural": {
+        "flows": {
+          "deploy": {
+            "candidate": "guarded-config-write",
+            "dropped": {
+              "action:exec": 1
+            },
+            "added": {
+              "gate:require": 1,
+              "action:abort": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 1,
+        "added_statements": 2,
+        "reference_statements": 5,
+        "dropped_rules": {},
+        "added_rules": {},
+        "reference_rules": 1,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 6,
+        "recovered": 3,
+        "missed": [
+          "'verify#check' before 'write#config'",
+          "Unverified config",
+          "flow `deploy` writes target"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "The 'exec config check' step is gone, so the debug-off verification is no longer based on a check result"
+        ],
+        "added": [
+          "Extra 'require config exists' gate with its own abort ('A config is required.'), which the intent doesn't call for"
+        ],
+        "changed": [
+          "The write step has no stable ID, so it is advisory-only: the guard can't bind it and the 'verify before write' rule matches it only by its text. In the reference the write step has an ID and can be enforced, so the 'never write an unverified config' guarantee is weaker."
+        ],
+        "cost_usd": 0.03158
+      },
+      "draft_cost_usd": 0.0261,
+      "draft_calls": 2
+    },
+    {
+      "name": "02",
+      "draft_exit": 0,
+      "valid_first": true,
+      "first_errors": [
+        "clean"
+      ],
+      "valid_after_repair": true,
+      "final_errors": [
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "release": {
+            "candidate": "deploy-to-production",
+            "dropped": {
+              "action:write": 1
+            },
+            "added": {
+              "action:exec": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 1,
+        "added_statements": 1,
+        "reference_statements": 5,
+        "dropped_rules": {
+          "ask->write": 1
+        },
+        "added_rules": {
+          "ask->exec": 1
+        },
+        "reference_rules": 1,
+        "writes_delta": {
+          "release": -1
+        }
+      },
+      "facts": {
+        "facts": 5,
+        "recovered": 2,
+        "missed": [
+          "'ask#approval' before 'write#release'",
+          "No approval",
+          "eligible for guard enforcement"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "The production deploy is no longer listed as a file write: the reference says flow writes target, while the candidate says 'Effects: none declared; the workflow changes nothing', so the deploy's effect goes unrecorded",
+          "The deploy step can no longer be enforced by the guard: the reference's '#release' write has a stable ID and can be guarded, but the candidate's 'exec deploy' is advisory-only and the guard can't bind it"
+        ],
+        "added": [],
+        "changed": [
+          "The deploy action is an untyped 'exec deploy from deploy_tool' with no stable ID, not a typed write to the production target, so the meaning of the deploy step isn't machine-checked",
+          "The rule 'ask before deploy' still exists, but it now finds the deploy step by its prose text instead of a stable ID, so rewording that step could quietly break the rule"
+        ],
+        "cost_usd": 0.03052
+      },
+      "draft_cost_usd": 0.0134,
+      "draft_calls": 1
+    },
+    {
+      "name": "03",
+      "draft_exit": 0,
+      "valid_first": true,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\03\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'verify#table' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "clean"
+      ],
+      "valid_after_repair": true,
+      "final_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\03\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'verify#table' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "develop": {
+            "candidate": "screen-and-implement",
+            "dropped": {
+              "gate:require": 1,
+              "action:abort": 1,
+              "action:exec": 2,
+              "gate:verify": 1,
+              "action:write": 1
+            },
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 6,
+        "added_statements": 0,
+        "reference_statements": 11,
+        "dropped_rules": {
+          "verify->write": 1
+        },
+        "added_rules": {
+          "verify->generate": 1
+        },
+        "reference_rules": 1,
+        "writes_delta": {
+          "develop": -1
+        }
+      },
+      "facts": {
+        "facts": 5,
+        "recovered": 3,
+        "missed": [
+          "'verify#table' before 'write#implementation'",
+          "advisory-only"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "initial table check is never run: CANDIDATE's gate checks the design directly instead of using the result of 'exec table check'",
+          "no recheck after applying the screen: REFERENCE runs the table check again and gates on the new result (verify #recheck) before retrying; CANDIDATE goes straight from apply to retry"
+        ],
+        "added": [],
+        "changed": [],
+        "cost_usd": 0.039032
+      },
+      "draft_cost_usd": 0.0149,
+      "draft_calls": 1
+    },
+    {
+      "name": "04",
+      "draft_exit": 0,
+      "valid_first": false,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\04\\draft.md:28: error P1: 'write #publish release_notes with publication' can run before 'verify#no_failures' (order rule, line 9) -- Make `verify#no_failures` (or a run that always performs it) complete on every path to this statement.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\04\\draft.md:7: warning W13: order rule never applies: no statement starts with 'verify#report_present' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\04\\draft.md:8: warning W13: order rule never applies: no statement starts with 'verify#no_failures' -- Fix the pattern so it matches the later statement, or drop the rule."
+      ],
+      "valid_after_repair": true,
+      "final_errors": [
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "publish": {
+            "candidate": "publish-release-notes",
+            "dropped": {},
+            "added": {
+              "gate:require": 1,
+              "action:abort": 2,
+              "gate:verify": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 0,
+        "added_statements": 4,
+        "reference_statements": 5,
+        "dropped_rules": {},
+        "added_rules": {
+          "exec->verify": 1,
+          "verify->verify": 1
+        },
+        "reference_rules": 1,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 5,
+        "recovered": 2,
+        "missed": [
+          "'verify#report' before 'write#notes'",
+          "Failing tests",
+          "exec test suite"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "The no-failures check before publishing has no stable ID and is advisory-only, so the guard can't enforce the check-before-write ordering (the reference's verify #report can be bound by the guard)"
+        ],
+        "added": [
+          "Extra gate before the tests run: requires release_notes to exist, otherwise stops with 'Release notes are required.' (not in the intent)"
+        ],
+        "changed": [],
+        "cost_usd": 0.036664
+      },
+      "draft_cost_usd": 0.032,
+      "draft_calls": 2
+    },
+    {
+      "name": "05",
+      "draft_exit": 0,
+      "valid_first": true,
+      "first_errors": [
+        "clean"
+      ],
+      "valid_after_repair": true,
+      "final_errors": [
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "summarize": {
+            "candidate": "summarize-request",
+            "dropped": {},
+            "added": {
+              "action:generate": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 0,
+        "added_statements": 1,
+        "reference_statements": 3,
+        "dropped_rules": {},
+        "added_rules": {},
+        "reference_rules": 0,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 4,
+        "recovered": 4,
+        "missed": []
+      },
+      "judged": {
+        "dropped": [],
+        "added": [],
+        "changed": [
+          "Output differs: REFERENCE returns the raw request, while CANDIDATE adds a 'generate summary from request' step and returns that summary (the intent supports summarizing, but the result is no longer the same)"
+        ],
+        "cost_usd": 0.026355999999999997
+      },
+      "draft_cost_usd": 0.0092,
+      "draft_calls": 1
+    },
+    {
+      "name": "pairs06",
+      "draft_exit": 0,
+      "valid_first": false,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:27: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:38: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:70: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:8: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:9: warning W13: order rule never applies: no statement starts with 'verify#first_passed' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:10: warning W13: order rule never applies: no statement starts with 'write#first_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:11: warning W13: order rule never applies: no statement starts with 'write#summary_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:12: warning W13: order rule never applies: no statement starts with 'write#test_log' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:13: warning W13: order rule never applies: no statement starts with 'write#release_notes' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:56: warning W5: binding 'repair_result' never referenced -- Use it or drop the `as`."
+      ],
+      "valid_after_repair": false,
+      "final_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:56: error V1: exec without `as` discards its result -- Bind the outcome with `as <name>` so a gate can cite it.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:70: error U1: return value 'release_notes' is not bound -- Bind it with `as` or list it under the contract's inputs:.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:7: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:8: warning W13: order rule never applies: no statement starts with 'write#plan_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:9: warning W13: order rule never applies: no statement starts with 'verify#first_passed' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:10: warning W13: order rule never applies: no statement starts with 'write#first_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:11: warning W13: order rule never applies: no statement starts with 'write#summary_write' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:12: warning W13: order rule never applies: no statement starts with 'write#test_log' -- Fix the pattern so it matches the later statement, or drop the rule.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs06\\draft.md:13: warning W13: order rule never applies: no statement starts with 'write#release_notes' -- Fix the pattern so it matches the later statement, or drop the rule."
+      ],
+      "structural": {
+        "flows": {
+          "f06": {
+            "candidate": "f06",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f07": {
+            "candidate": "f07",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f08": {
+            "candidate": "f08",
+            "dropped": {
+              "gate:require": 1,
+              "action:abort": 1
+            },
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f09": {
+            "candidate": "f09",
+            "dropped": {
+              "gate:verify": 1,
+              "action:apply": 1
+            },
+            "added": {
+              "action:exec": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f10": {
+            "candidate": "f10",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 4,
+        "added_statements": 1,
+        "reference_statements": 34,
+        "dropped_rules": {
+          "ask->ask": 1
+        },
+        "added_rules": {
+          "ask->write": 1,
+          "exec->verify": 1
+        },
+        "reference_rules": 6,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 16,
+        "recovered": 11,
+        "missed": [
+          "'ask#first' before 'ask#second'",
+          "First check failed",
+          "Cache cold",
+          "Red suite",
+          "release notes"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "f09: recheck verification gate inside the repair/retry loop is missing (reference re-verifies 'backup is complete' before retry; candidate only re-execs the check then retries)",
+          "f09: backup-complete verify steps have no stable IDs, so they are advisory-only and cannot be guard-enforced (weaker enforcement)",
+          "f08: 'cache is warm' verify has no stable ID, so it is advisory-only and cannot be guard-enforced",
+          "f06: ordering constraint 'first approval (plan) before second approval (budget)' is missing; only both-before-write is required"
+        ],
+        "added": [],
+        "changed": [
+          "f09: the check binds its result as 'report', but the flow returns 'state', which is never produced or updated by the check/repair, so it does not return the checked state",
+          "f09: repair is an exec from checks with no input instead of applying repair to the current state"
+        ],
+        "cost_usd": 0.07474
+      },
+      "draft_cost_usd": 0.0647,
+      "draft_calls": 2
+    },
+    {
+      "name": "pairs11",
+      "draft_exit": 0,
+      "valid_first": true,
+      "first_errors": [
+        "clean"
+      ],
+      "valid_after_repair": true,
+      "final_errors": [
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "f11": {
+            "candidate": "f11",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f12": {
+            "candidate": "f12",
+            "dropped": {
+              "action:exec": 1
+            },
+            "added": {
+              "action:read": 1,
+              "action:abort": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f13": {
+            "candidate": "f13",
+            "dropped": {
+              "action:abort": 2
+            },
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f14": {
+            "candidate": "f14",
+            "dropped": {
+              "gate:require": 1,
+              "action:abort": 1
+            },
+            "added": {
+              "action:apply": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f15": {
+            "candidate": "f15",
+            "dropped": {
+              "assign:notes": 1
+            },
+            "added": {
+              "assign:request": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 6,
+        "added_statements": 4,
+        "reference_statements": 22,
+        "dropped_rules": {},
+        "added_rules": {},
+        "reference_rules": 1,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 13,
+        "recovered": 7,
+        "missed": [
+          "Rotation refused",
+          "key holder",
+          "exec audit check from checks as report",
+          "No destination",
+          "processed item",
+          "set 'notes = request'"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "f13: abort when source is missing (gate has no otherwise/abort branch)",
+          "f13: abort when destination is missing (gate has no otherwise/abort branch)"
+        ],
+        "added": [
+          "f12: extra abort branch when the audit check cannot be observed"
+        ],
+        "changed": [
+          "f13: returns the source as the copy instead of the written copy"
+        ],
+        "cost_usd": 0.045248000000000003
+      },
+      "draft_cost_usd": 0.0237,
+      "draft_calls": 1
+    },
+    {
+      "name": "pairs16",
+      "draft_exit": 0,
+      "valid_first": false,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:25: error R2: flow falls off the end without return or abort -- End every path with a return or abort.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:29: error R2: flow has no reachable return or abort -- End the flow with a return or abort.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:31: error R2: flow falls off the end without return or abort -- End every path with a return or abort.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:43: error R2: flow falls off the end without return or abort -- End every path with a return or abort.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:47: error R2: flow has no reachable return or abort -- End the flow with a return or abort.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:48: error R2: flow falls off the end without return or abort -- End every path with a return or abort.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'verify#window' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:8: warning W15: order rule rests on self-report: every statement matching 'apply redaction' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:9: warning W15: order rule rests on self-report: every statement matching 'generate parts' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:16: warning W5: binding 'fast_result' never referenced -- Use it or drop the `as`."
+      ],
+      "valid_after_repair": false,
+      "final_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:27: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:53: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'verify#window' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:8: warning W15: order rule rests on self-report: every statement matching 'apply redaction' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:9: warning W15: order rule rests on self-report: every statement matching 'generate parts' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision."
+      ],
+      "structural": {
+        "flows": {
+          "f16": {
+            "candidate": "f16",
+            "dropped": {
+              "gate:require": 1,
+              "action:abort": 1,
+              "action:write": 1
+            },
+            "added": {
+              "action:apply": 1,
+              "action:return": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f17": {
+            "candidate": "f17",
+            "dropped": {
+              "gate:require": 1,
+              "action:abort": 1,
+              "branch:when": 1
+            },
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f18": {
+            "candidate": "f18",
+            "dropped": {
+              "gate:require": 1,
+              "action:abort": 1
+            },
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f19": {
+            "candidate": "f19",
+            "dropped": {},
+            "added": {
+              "action:discard": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f20": {
+            "candidate": "f20",
+            "dropped": {
+              "action:exec": 1
+            },
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 9,
+        "added_statements": 3,
+        "reference_statements": 27,
+        "dropped_rules": {},
+        "added_rules": {
+          "verify->write": 1,
+          "apply->write": 1,
+          "generate->generate": 1
+        },
+        "reference_rules": 1,
+        "writes_delta": {
+          "f16": -1
+        }
+      },
+      "facts": {
+        "facts": 14,
+        "recovered": 6,
+        "missed": [
+          "fast result",
+          "when window is open",
+          "booked slot",
+          "redacted draft",
+          "Mismatch",
+          "finished assembly",
+          "show report to requester",
+          "return report as report"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "f20: show report is not directed to the requester (no audience)",
+          "f20: audit check that produces the report is missing; candidate returns nothing instead of the report",
+          "f18: write of clean result has no stable ID, so it is advisory-only and the guard cannot bind it (weaker enforcement)"
+        ],
+        "added": [
+          "f19: extra 'discard assembly' step before aborting on mismatch"
+        ],
+        "changed": [
+          "f16: fast path changed from writing a fast result to target into an in-memory apply with an early return of fast_result; nothing is written",
+          "f17: a closed window now aborts the whole flow, where the reference skips the booking and returns the request",
+          "f17: booking happens unconditionally after a top-level gate instead of inside the window-open branch; returns nothing instead of the request"
+        ],
+        "cost_usd": 0.066632
+      },
+      "draft_cost_usd": 0.0494,
+      "draft_calls": 2
+    },
+    {
+      "name": "pairs21",
+      "draft_exit": 0,
+      "valid_first": true,
+      "first_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:27: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:28: warning W5: binding 'restarted' never referenced -- Use it or drop the `as`.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:30: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:31: warning W5: binding 'reloaded' never referenced -- Use it or drop the `as`.",
+        "clean"
+      ],
+      "valid_after_repair": true,
+      "final_errors": [
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:27: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:28: warning W5: binding 'restarted' never referenced -- Use it or drop the `as`.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:30: warning W9: otherwise: block falls through -- End it with retry, return to, abort, or return.",
+        "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs21\\draft.md:31: warning W5: binding 'reloaded' never referenced -- Use it or drop the `as`.",
+        "clean"
+      ],
+      "structural": {
+        "flows": {
+          "f21ingest": {
+            "candidate": "f21ingest",
+            "dropped": {
+              "gate:require": 1,
+              "action:abort": 1
+            },
+            "added": {
+              "action:read": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f21store": {
+            "candidate": "f21store",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f22": {
+            "candidate": "f22",
+            "dropped": {
+              "action:apply": 2
+            },
+            "added": {
+              "gate:verify": 2,
+              "action:exec": 1,
+              "action:read": 1
+            },
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f23": {
+            "candidate": "f23",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f24": {
+            "candidate": "f24",
+            "dropped": {
+              "gate:require": 1,
+              "action:abort": 1
+            },
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          },
+          "f25": {
+            "candidate": "f25",
+            "dropped": {},
+            "added": {},
+            "missing_flow": false,
+            "extra_flow": false
+          }
+        },
+        "dropped_statements": 6,
+        "added_statements": 5,
+        "reference_statements": 30,
+        "dropped_rules": {},
+        "added_rules": {
+          "ask->verify": 1
+        },
+        "reference_rules": 1,
+        "writes_delta": {}
+      },
+      "facts": {
+        "facts": 15,
+        "recovered": 8,
+        "missed": [
+          "write #record incoming record",
+          "apply service restart",
+          "service reload",
+          "ask operator to approve the note",
+          "write #memo recorded note",
+          "No note",
+          "Shipment refused"
+        ]
+      },
+      "judged": {
+        "dropped": [
+          "f22: health verify step loses its stable ID (#service), so it is advisory-only and can't be guard-enforced",
+          "f21store: record write loses its stable ID (#record), so it can't be guard-enforced",
+          "f23: note write loses its stable ID (#note), so it can't be guard-enforced"
+        ],
+        "added": [],
+        "changed": [
+          "f22: the reference runs restart, then reload, then aborts unconditionally. The candidate checks health again after each step: it skips reload and succeeds if restart fixes the service, and it succeeds instead of aborting if reload fixes it",
+          "f22: the reference gets the state from an exec check before verifying. The candidate verifies without that check result and reads the state only after the health gates"
+        ],
+        "cost_usd": 0.05934400000000001
+      },
+      "draft_cost_usd": 0.0289,
+      "draft_calls": 1
+    }
+  ],
+  "caveat": "Structural and fact counts are deterministic; judged counts come from a model reviewer and are assisted review, not ground truth."
+}

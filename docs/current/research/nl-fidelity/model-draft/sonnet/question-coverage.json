@@ -1,0 +1,279 @@
+{
+  "totals": {
+    "defects": 34,
+    "requirement_defects": 22,
+    "requirement_defects_covered_by_question": 9,
+    "requirement_defects_disclosed_as_assumption": 14,
+    "requirement_defects_silent": 7,
+    "questions_asked": 38
+  },
+  "items": [
+    {
+      "name": "01",
+      "questions": 4,
+      "defects": [
+        {
+          "defect": "dropped: The 'exec config check' step is gone, so the debug-off verification is no longer based on a check result",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "added: Extra 'require config exists' gate with its own abort ('A config is required.'), which the intent doesn't call for",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "changed: The write step has no stable ID, so it is advisory-only: the guard can't bind it and the 'verify before write' rule matches it only by its text.",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        }
+      ],
+      "cost_usd": 0.010876
+    },
+    {
+      "name": "02",
+      "questions": 3,
+      "defects": [
+        {
+          "defect": "Production deploy no longer recorded as a file write; candidate declares no effects so the deploy's effect goes unrecorded",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "Deploy step can't be enforced by the guard: no stable ID, 'exec deploy' is advisory-only and can't be bound",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "Deploy is an untyped 'exec deploy from deploy_tool' rather than a typed write to the production target, so its meaning isn't machine-checked",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "The 'ask before deploy' rule finds the deploy step by prose text instead of a stable ID, so rewording could break the rule",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        }
+      ],
+      "cost_usd": 0.0096859
+    },
+    {
+      "name": "03",
+      "questions": 4,
+      "defects": [
+        {
+          "defect": "dropped: initial table check is never run: CANDIDATE's gate checks the design directly instead of using the result of 'exec table check'",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "dropped: no recheck after applying the screen: REFERENCE runs the table check again and gates on the new result (verify #recheck) before retrying; CANDIDATE goes straight from apply to retry",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0080319
+    },
+    {
+      "name": "04",
+      "questions": 4,
+      "defects": [
+        {
+          "defect": "The no-failures check before publishing has no stable ID and is advisory-only, so the guard can't enforce the check-before-write ordering",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "Extra gate before the tests run requiring release_notes to exist, otherwise stops with 'Release notes are required.' (not in the intent)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0076378999999999996
+    },
+    {
+      "name": "05",
+      "questions": 2,
+      "defects": [
+        {
+          "defect": "Output differs: REFERENCE returns the raw request, while CANDIDATE adds a 'generate summary from request' step and returns that summary (the intent supports summarizing, but the result is no longer the same)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.006155900000000001
+    },
+    {
+      "name": "pairs06",
+      "questions": 5,
+      "defects": [
+        {
+          "defect": "f09: recheck verification gate inside the repair/retry loop is missing (only re-execs the check then retries)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "f09: backup-complete verify steps have no stable IDs, so advisory-only and cannot be guard-enforced",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "f08: 'cache is warm' verify has no stable ID, so advisory-only and cannot be guard-enforced",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "f06: ordering constraint plan approval before budget approval is missing; only both-before-write required",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "f09: check binds result as 'report' but flow returns 'state', which is never produced or updated, so it doesn't return the checked state",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "f09: repair is an exec from checks with no input instead of applying repair to the current state",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0114139
+    },
+    {
+      "name": "pairs11",
+      "questions": 4,
+      "defects": [
+        {
+          "defect": "dropped: f13: abort when source is missing (gate has no otherwise/abort branch)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": true
+        },
+        {
+          "defect": "dropped: f13: abort when destination is missing (gate has no otherwise/abort branch)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": true
+        },
+        {
+          "defect": "added: f12: extra abort branch when the audit check cannot be observed",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "changed: f13: returns the source as the copy instead of the written copy",
+          "covered_by_question": true,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.012809899999999999
+    },
+    {
+      "name": "pairs16",
+      "questions": 6,
+      "defects": [
+        {
+          "defect": "dropped: f20: show report is not directed to the requester (no audience)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": false
+        },
+        {
+          "defect": "dropped: f20: audit check that produces the report is missing; candidate returns nothing instead of the report",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "dropped: f18: write of clean result has no stable ID, so it is advisory-only and the guard cannot bind it (weaker enforcement)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "added: f19: extra 'discard assembly' step before aborting on mismatch",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "changed: f16: fast path changed from writing a fast result to target into an in-memory apply with an early return of fast_result; nothing is written",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "changed: f17: a closed window now aborts the whole flow, where the reference skips the booking and returns the request",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "changed: f17: booking happens unconditionally after a top-level gate instead of inside the window-open branch; returns nothing instead of the request",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0187999
+    },
+    {
+      "name": "pairs21",
+      "questions": 6,
+      "defects": [
+        {
+          "defect": "f22 health verify step loses its stable ID (#service)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "f21store record write loses its stable ID (#record)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "f23 note write loses its stable ID (#note)",
+          "covered_by_question": false,
+          "disclosed_as_assumption": false,
+          "mechanism_only": true
+        },
+        {
+          "defect": "f22 restart/reload: reference runs both then aborts unconditionally; candidate re-checks health after each and may succeed early",
+          "covered_by_question": false,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        },
+        {
+          "defect": "f22 reference gets state from an exec check before verifying; candidate verifies without it and reads state after the health gates",
+          "covered_by_question": true,
+          "disclosed_as_assumption": true,
+          "mechanism_only": false
+        }
+      ],
+      "cost_usd": 0.0150199
+    }
+  ]
+}

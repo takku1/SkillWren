@@ -1,0 +1,8 @@
+{
+  "dropped": [],
+  "added": [],
+  "changed": [
+    "Output differs: REFERENCE returns the raw request, while CANDIDATE adds a 'generate summary from request' step and returns that summary (the intent supports summarizing, but the result is no longer the same)"
+  ],
+  "cost_usd": 0.026355999999999997
+}

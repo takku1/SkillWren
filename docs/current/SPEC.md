@@ -1,7 +1,8 @@
 # SkillWren — Skill Logic Architecture (Contract-Header + Logic-Body)
 
-- Date: 2026-10-01; last revised 2026-11-12
-- Status: format 0.6 (package 0.6.0, 2026-11-12)
+- Date: 2026-10-01; last revised 2026-11-17
+- Status: format 0.9 (package 0.9.0, 2026-11-17); 0.9 adds typed
+  return anchors and declared read-only `exec` (Section 21)
 - Source idea: `brainstorm - to be deleted.md` (theme-factory agent-DSL sketch)
 - Direction: contract-header + logic-body (direction 1 of 3 proposed;
   user-approved). From 0.6 the checked unit is the `logic` block, which can
@@ -292,7 +293,9 @@ is O1. `exec <command> from <resource> as <name>` runs a command in or from
 a declared resource and binds its outcome (exit status, output). It must
 bind with `as` (V1), its source must be covered by `effects.executes`
 (E2), and it counts as a mutation for dismissal safety (M1): a command can
-change anything it reaches. `verify <condition> from <name>` names the
+change anything it reaches. From 0.9, `exec readonly <command> from
+<resource> as <name>` declares an observation that M1 does not count
+(Section 21). `verify <condition> from <name>` names the
 binding that holds the gate's evidence, usually an `exec` result, which
 must be bound (U1).
 
@@ -556,8 +559,9 @@ Errors:
 - O1 block structure: `otherwise:` not directly under a fallible gate;
   statements nested where no block is allowed.
 - B1 budget: header/body token overruns; a declared header ceiling above 400.
-- M1 dismissal: a resource write (or call to a mutating same-skill or
-  resolved cross-file flow) on a path to a dismissible `ask`.
+- M1 dismissal: a resource write, a non-`readonly` `exec`, or a call to a
+  mutating same-skill or resolved cross-file flow, on a path to a
+  dismissible `ask`.
 - P1 order (0.6): a statement matching an order rule's later step is
   reachable on a path where the earlier step has not completed (Section 20).
 - F2 also covers malformed `order:` entries and an `inputs:` section in a
@@ -1049,6 +1053,34 @@ agent actually performs the earlier step is a runtime question for
 hooks, guards, or `conform`. The research review ranks compiling order
 rules into such enforcement as the next step (Section 17).
 
+## 21. Typed exits and declared read-only exec (0.9)
+
+**Typed returns.** `return #id <binding> as <name>` and the block form
+`return #id:` give a flow exit a stable ID, so order rules can anchor
+terminal steps: `verify#final before return#result` requires the final
+verification to complete on every path to every `return #result`. Without
+the ID, pipeline order at a return rested on written sequence alone. Several
+returns may share one return ID when they are the same exit; a return ID
+may not reuse an ID of another verb (P2). The ID changes no binding: the
+returned value and name follow the untyped forms exactly.
+
+**Declared read-only exec.** `exec readonly <command> from <resource> as
+<name>` marks a command as an observation. It keeps every `exec` rule (V1
+binding, E1/E2 source coverage, evidence for `verify ... from`), but M1 no
+longer counts it as a mutation, so an observation may precede a
+dismissible `ask`. The declaration is the author's claim, and
+`explain-workflow` says so. Runtime enforcement is `ledger exec --readonly`,
+which runs the command in a disposable networkless container and fails the
+step on any write. Hosts that cannot run that container should treat the
+declaration as unverified. The word `readonly` directly after `exec` is
+reserved; a command that literally starts with that word must be wrapped
+in a script.
+
+**Ledger step names.** A ledger step named exactly as a typed reference
+(`verify#deps`, optionally followed by a space and detail) matches that
+rule, in addition to statement text (`verify #deps ...`). Required
+milestones still match step names exactly.
+
 ## Experimental runtime interface (unreleased)
 
 `guard` is a trusted-host JSON-lines controller, distinct from the advisory
@@ -1080,7 +1112,8 @@ unfinished intent requires host reconciliation. Run one writer per audit pair.
 Typed order patterns `verify#review before write#output` match statements
 `verify #review ...` and `write #output ...` by exact verb and ID. IDs use
 lowercase letters, digits and hyphens, beginning with a letter. Duplicate
-IDs within a document are P2. Text patterns retain prior prefix semantics.
+IDs within a document are P2, except that returns of one exit may share a
+return ID (Section 21). Text patterns retain prior prefix semantics.
 Typed IDs do not change variable binding, gate success, or branch inference.
 
 `ledger start --require NAME` captures exact required milestones. Its report

@@ -1,0 +1,11 @@
+assumptions:
+  - Flow is named deploy-to-production after its purpose, since the intent names no flow.
+  - The deploy is modeled as `exec deploy from deploy_tool as result`; deploy_tool is an assumed resource name the host skill must declare under effects.executes.
+  - Returning the deploy result as deploy_result is my addition, since flows must end in return or abort. The host skill must list it in produces.
+  - The order rule ties the approval ask to the deploy, so the deploy cannot run on any path without the ask first.
+  - Declining or not confirming runs the otherwise block and aborts before any deploy step, so nothing is deployed.
+unresolved questions:
+  - What command or resource performs the production deploy? I assumed `deploy_tool`.
+  - Should the flow return anything after deploying, or end without a return value?
+  - Should the user's approval name a specific target, such as an environment or version? The intent doesn't say, so I left it out.
+Not approved. Run check, explain-workflow, and approve before use.

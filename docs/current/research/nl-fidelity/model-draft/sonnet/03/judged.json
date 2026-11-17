@@ -1,0 +1,9 @@
+{
+  "dropped": [
+    "initial table check is never run: CANDIDATE's gate checks the design directly instead of using the result of 'exec table check'",
+    "no recheck after applying the screen: REFERENCE runs the table check again and gates on the new result (verify #recheck) before retrying; CANDIDATE goes straight from apply to retry"
+  ],
+  "added": [],
+  "changed": [],
+  "cost_usd": 0.039032
+}

@@ -1,0 +1,14 @@
+assumptions:
+  - The flow is named publish-release-notes after its purpose.
+  - Release notes are supplied as an input named release_notes.
+  - `checks` is the resource the test suite runs from, and `publication` is the target where release notes are published. Neither is declared in a contract resources block, because the template fragment doesn't declare any.
+  - Publishing is modeled as a single write to `publication`.
+  - A missing report and a failing report are two separate verify gates. Both abort without publishing.
+  - The flow returns the published release notes as `published`. This name must be a skill `produces` entry in the full skill.
+  - I couldn't run `skillwren check --fragment`, so the typed-ID syntax on `exec #tests` is untested.
+unresolved questions:
+  - Which command runs the test suite, and what resource should it be declared under?
+  - Where or how are the release notes published (file path, registry, or release API)? The `publication` target is a placeholder.
+  - Should the abort path also report which tests failed, or is the abort message enough?
+  - Should a failing or missing report offer a retry (for example, rerun the tests), or should it simply abort as written?
+Not approved. Run check, explain-workflow, and approve before use.

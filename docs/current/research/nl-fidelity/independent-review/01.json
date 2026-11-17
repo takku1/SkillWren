@@ -1,0 +1,72 @@
+{
+  "name": "01",
+  "facts": 6,
+  "recovered": 6,
+  "missed": [],
+  "uncovered": [
+    "Line 12: 'exec config check from checks as result' runs a config check from `checks` and stores the output as `result`.",
+    "Line 13: 'verify #check candidate has debug off from result' is a gate that checks `candidate` has debug off, using `result`.",
+    "Line 16: 'write #config candidate with target' writes `candidate` to `target`.",
+    "Line 17: 'return candidate as candidate' returns the candidate.",
+    "There are no cross-file runs, so the explanation is complete for calls.",
+    "If the gate passes, the workflow continues to the write (line 16) and then the return (line 17).",
+    "The exec step on line 12 has no failure branch shown.",
+    "The workflow decides by itself through the verify gate.",
+    "Approval of this text is not a guard policy and grants no capabilities.",
+    "The exec step has no stable ID, so it is advisory only and the guard cannot bind it."
+  ],
+  "intent_mismatches": [
+    "Reporting the reason: the intent says to abort and report the reason. The abort only gives the fixed text \"Unverified config.\" It does not pass on the specific reason from `result` or from the verify failure.",
+    "Production config: nothing in the explanation shows that `target` is the production config. The write target is just a variable named `target`.",
+    "\"Never write an unverified config\": this is only partly guaranteed. The ordering rule enforces verify-before-write, but runtime guard enforcement holds only if the guard policy defines these operations, and that is not shown. The verify meaning is prose and is not machine-checked.",
+    "Failing check step: the exec step that produces `result` is advisory only and has no failure branch shown. If it fails or produces stale or empty output, the explanation does not say how the verify gate behaves.",
+    "Same config verified and written: verify and write both name `candidate`, but the explanation cannot prove that `candidate` is unchanged between the two steps, or that `result` actually refers to `candidate`."
+  ],
+  "limitations_recovered": [
+    "The prose meaning of untyped steps is not machine-checked. For example, nothing checks that 'has debug off from result' really tests debug=off, and rewording could silently change the intent.",
+    "Correlated branch conditions are not recognized.",
+    "Guard enforcement depends on a guard policy that the explanation does not show.",
+    "The exec step is matched only by its prose text and cannot be bound by the guard.",
+    "Rule compliance needs a separate `check` run."
+  ],
+  "notes": {
+    "requirements": [
+      "Flow `deploy` (01-flow.md) runs these steps in order:",
+      "Line 12: 'exec config check from checks as result' runs a config check from `checks` and stores the output as `result`.",
+      "Line 13: 'verify #check candidate has debug off from result' is a gate that checks `candidate` has debug off, using `result`.",
+      "Line 16: 'write #config candidate with target' writes `candidate` to `target`.",
+      "Line 17: 'return candidate as candidate' returns the candidate.",
+      "Ordering rule (line 7): 'verify#check' must come before 'write#config' on every path.",
+      "The only effect is that flow `deploy` writes `target`.",
+      "There are no cross-file runs, so the explanation is complete for calls."
+    ],
+    "branches": [
+      "If the verify gate on line 13 fails, the workflow takes its otherwise branch (line 14) and aborts with the fixed message \"Unverified config.\" (line 15). The write never runs.",
+      "If the gate passes, the workflow continues to the write (line 16) and then the return (line 17).",
+      "The exec step on line 12 has no failure branch shown."
+    ],
+    "authority": [
+      "There are no ask steps, so no human makes any decision.",
+      "The workflow decides by itself through the verify gate.",
+      "The only write is `candidate` to `target`.",
+      "Approval of this text is not a guard policy and grants no capabilities.",
+      "The verify step (#check) and the write step (#config) can be enforced by the guard, but only if the guard policy defines those operations.",
+      "The exec step has no stable ID, so it is advisory only and the guard cannot bind it."
+    ],
+    "limitations": [
+      "The prose meaning of untyped steps is not machine-checked. For example, nothing checks that 'has debug off from result' really tests debug=off, and rewording could silently change the intent.",
+      "Correlated branch conditions are not recognized.",
+      "Guard enforcement depends on a guard policy that the explanation does not show.",
+      "The exec step is matched only by its prose text and cannot be bound by the guard.",
+      "Rule compliance needs a separate `check` run."
+    ],
+    "intent_mismatches": [
+      "Reporting the reason: the intent says to abort and report the reason. The abort only gives the fixed text \"Unverified config.\" It does not pass on the specific reason from `result` or from the verify failure.",
+      "Production config: nothing in the explanation shows that `target` is the production config. The write target is just a variable named `target`.",
+      "\"Never write an unverified config\": this is only partly guaranteed. The ordering rule enforces verify-before-write, but runtime guard enforcement holds only if the guard policy defines these operations, and that is not shown. The verify meaning is prose and is not machine-checked.",
+      "Failing check step: the exec step that produces `result` is advisory only and has no failure branch shown. If it fails or produces stale or empty output, the explanation does not say how the verify gate behaves.",
+      "Same config verified and written: verify and write both name `candidate`, but the explanation cannot prove that `candidate` is unchanged between the two steps, or that `result` actually refers to `candidate`."
+    ]
+  },
+  "cost_usd": 0.0892
+}

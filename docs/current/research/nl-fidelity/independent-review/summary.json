@@ -1,0 +1,150 @@
+{
+  "totals": {
+    "reviewer": "fresh headless Claude session (opus), no tools or repo",
+    "items": 9,
+    "facts": 83,
+    "recovered": 82,
+    "intent_mismatches": 59,
+    "uncovered_items": 112,
+    "cost_usd": 0.945
+  },
+  "items": [
+    {
+      "name": "01",
+      "facts": 6,
+      "recovered": 6,
+      "missed": [],
+      "intent_mismatches": [
+        "Reporting the reason: the intent says to abort and report the reason. The abort only gives the fixed text \"Unverified config.\" It does not pass on the specific reason from `result` or from the verify failure.",
+        "Production config: nothing in the explanation shows that `target` is the production config. The write target is just a variable named `target`.",
+        "\"Never write an unverified config\": this is only partly guaranteed. The ordering rule enforces verify-before-write, but runtime guard enforcement holds only if the guard policy defines these operations, and that is not shown. The verify meaning is prose and is not machine-checked.",
+        "Failing check step: the exec step that produces `result` is advisory only and has no failure branch shown. If it fails or produces stale or empty output, the explanation does not say how the verify gate behaves.",
+        "Same config verified and written: verify and write both name `candidate`, but the explanation cannot prove that `candidate` is unchanged between the two steps, or that `result` actually refers to `candidate`."
+      ]
+    },
+    {
+      "name": "02",
+      "facts": 5,
+      "recovered": 5,
+      "missed": [],
+      "intent_mismatches": [
+        "The ordering rule at line 8 only requires the approval *ask* to come before the write. It does not require the *confirmation gate* to come before it. The intent says no deploy without confirmation, but the confirmation-before-deploy guarantee comes only from the step sequence, not from a declared rule, so removing or moving line 14 would not break the line 8 rule.",
+        "Nothing explicitly ties 'require confirmation' to the #approval ask. It is untyped prose, so the explanation cannot show that the confirmation being checked is the user's answer to the line 13 question.",
+        "SkillWren says it does not verify that a human actually decided. The intent's 'needs a human decision' is enforced only structurally.",
+        "The deploy is shown as a file write ('write #release production bundle with target'). Whether writing to `target` actually means deploying to production, and what `target` is, are prose meaning only and are not checked.",
+        "There is no evidence of a guard policy covering the #release write. Without one, nothing outside the flow structure blocks the write when there is no approval; the approval itself grants and restricts no capabilities.",
+        "On a failed confirmation, the flow aborts with 'No approval.' before the write, which matches 'stop and deploy nothing.' Because correlated conditions are not recognized, the explanation cannot rule out other paths, though none are shown."
+      ]
+    },
+    {
+      "name": "03",
+      "facts": 5,
+      "recovered": 5,
+      "missed": [],
+      "intent_mismatches": [
+        "Effect not in the intent: the workflow writes the implementation to `subject` (line 24). The intent only says to generate the implementation and return it.",
+        "Gate not in the intent: 'require design exists' with an abort on failure (lines 13\u201315). The intent does not mention this check.",
+        "'Retry until the table is present' is only partly shown. The retry (line 22) has no stated target, condition or bound, so it may loop forever.",
+        "The retry also comes after verify #recheck in the same block, so it is unclear whether it runs even when the recheck passes.",
+        "verify #recheck says failures follow an otherwise branch, but none is shown. So the explanation does not show that 'repeat until present' actually happens when the recheck fails.",
+        "The ordering rule only requires verify#table before write#implementation. On the repair path verify#table has already failed, and no ordering rule requires verify #recheck to pass before generate or write. Nothing enforceable guarantees the table is present before the implementation is generated or written.",
+        "Nothing orders 'generate implementation' after a passing check. Only the write is constrained.",
+        "The table checks the intent depends on ('exec table check', lines 16 and 20) are advisory-only and cannot be bound by the guard. 'Apply the screen' is also unverified prose."
+      ]
+    },
+    {
+      "name": "04",
+      "facts": 5,
+      "recovered": 5,
+      "missed": [],
+      "intent_mismatches": [
+        "The intent's 'missing report' case is not explicitly handled. The only failure path is the verify gate aborting with \"Failing tests.\" The explanation doesn't say what happens if the exec fails or produces no report, and the abort message only mentions failing tests, not a missing report. Whether verify rejects a missing report depends on unchecked prose.",
+        "There is no explicit ordering rule saying exec must come before verify. The exec step is advisory-only and cannot be bound by the guard, so 'run the tests' cannot be enforced as a precondition. Only verify-before-write is enforced.",
+        "'Publish the release notes' is carried out as 'write #notes release notes with target', a write to `target`. The explanation doesn't show that this actually publishes anything rather than just writing a file.",
+        "Whether the gate really checks for 'no failures' depends on prose meaning that is not machine-checked. This weakens the 'evidence-backed' guarantee.",
+        "Guard enforcement of the verify and write steps applies only if a guard policy defines those operations, and none is shown. So 'do not publish' is not shown to be enforced at runtime beyond the flow's own structure."
+      ]
+    },
+    {
+      "name": "05",
+      "facts": 4,
+      "recovered": 4,
+      "missed": [],
+      "intent_mismatches": [
+        "The intent asks for a summary of the request, but no step summarizes anything. 'return request as request' just returns the request as-is under the same name. There's no summarize or condense step, and only the flow name `summarize` and the abort message hint at summarizing.",
+        "The intent says the summary is 'for the log', but no step logs, records or sends the result. The flow only returns the request. Because no effects are declared, this can't be a hidden write. That fits 'nothing is written', but nothing shows the output reaching a log either.",
+        "The flow has no order rules ('steps may run in any order'). So the explanation doesn't guarantee that the existence gate runs before the return step. The intent expects a missing request to abort the run, which needs the gate to come first.",
+        "The rest matches the intent: a missing request aborts the run, nothing is written (no effects), and no human decision is needed (no ask steps)."
+      ]
+    },
+    {
+      "name": "pairs06",
+      "facts": 16,
+      "recovered": 16,
+      "missed": [],
+      "intent_mismatches": [
+        "f06: The intent says 'two humans', but nothing shows that #first and #second must be different people. The explanation also says it does not verify that a human decided at all.",
+        "f06: The order rules cover only the ask steps (ask#first before ask#second before write#final), not the confirmation gates. 'Only a twice-approved plan is written' depends on the abort structure, not an order rule, and write#final is enforced only if the guard policy defines it.",
+        "f07: The intent says 'three-step', but four steps are listed (exec, verify, write first result, write summary).",
+        "f07: The intent says each step depends on the previous one. No order rule puts the exec (line 33) before verify#a. That link is advisory only, because exec has no stable ID and the guard cannot bind it.",
+        "f08: There is an extra gate the intent doesn't mention, 'require request exists', which aborts with \"No request.\" So even a warm cache does not always return the request.",
+        "f08: The explanation doesn't show that the request is returned 'unchanged'. It only shows 'return request as request'.",
+        "f08: The skipped branch depends on 'cache is warm' being judged the same way in the unless-condition and in verify #cache. Correlated conditions are not recognized, and there are no order rules for f08.",
+        "f09: The retry loop is unclear. Verify #recheck has no otherwise branch shown, and 'retry' (line 67) comes right after it in sequence. That could mean it retries even after a successful recheck, or it doesn't say what is retried. 'Retry until complete' is not clearly shown.",
+        "f09: The retry is unbounded, so a backup that can never be repaired could loop forever (no limit or way out is shown).",
+        "f09: There are no order rules for f09, so 'only then return the state' depends on structure alone, and the exec steps are advisory only.",
+        "f10: No order rule puts the suite exec (line 79) before verify#suite. That exec is advisory only.",
+        "f10: 'Before anything is published' covers only the two listed writes. The explanation doesn't say what counts as publishing, and it doesn't show that nothing else is published."
+      ]
+    },
+    {
+      "name": "pairs11",
+      "facts": 13,
+      "recovered": 13,
+      "missed": [],
+      "intent_mismatches": [
+        "f14: the workflow adds a 'require items exist' gate that aborts with \"No items.\" The intent asks for no such precondition, so a missing (or possibly empty) item collection aborts instead of returning nothing",
+        "f14: the loop writes 'processed item', but no separate processing step is shown. Processing exists only as untyped prose inside the write",
+        "f15: the return block sets 'notes = request', so the request comes back under the key 'notes' rather than plainly as the request. Whether that counts as 'unchanged' is unclear",
+        "f13: the copy is written 'with target', not explicitly to the destination that was checked. Nothing shows that the write target is the destination",
+        "f12: 'nothing is written' holds only at the workflow level (no write effects). The exec step is advisory-only and not guard-bindable, so the explanation cannot rule out side effects from the audit check itself",
+        "f11: 'only after its holder approves' is enforced as structure (ask, then require confirmation, then write), not as a verified human decision. The explainer says so itself"
+      ]
+    },
+    {
+      "name": "pairs16",
+      "facts": 14,
+      "recovered": 13,
+      "missed": [
+        {
+          "fact": "f19: finished assembly",
+          "recovered": false,
+          "note": "The notes say only 'write #assembly to target'. The written content 'finished assembly' is never mentioned."
+        }
+      ],
+      "intent_mismatches": [
+        "f17: The intent says to abort if the window shut. In the explanation, the verify-and-abort sits inside 'when window is open:'. So when the window is shut, the branch is skipped and the flow silently returns request without aborting. Inside the branch, the verify repeats the branch condition, so its abort is effectively unreachable. The explainer says it does not recognize correlated conditions like this.",
+        "f17: No ordering rule requires verify#window before write#slot. Only the order of steps in the sequence puts the booking after the check, and nothing ties the booking to the window still being open.",
+        "f18: 'Redaction happens in memory first' is not enforced. 'apply redaction' is an untyped step with no ID and no ordering rule before write#clean. Nothing shows it happens in memory, or that the written value is the redacted 'clean' rather than the draft.",
+        "f19: The intent asks for a 'fresh check'. The exec assembly check is advisory-only (no stable ID), and no rule requires it to run after the assembly is generated or forbids reusing a stale report. The verify's ID is #parts even though it checks the assembly, which is a confusing name.",
+        "f20: The intent says showing is advisory. The explanation doesn't explicitly mark 'show report to requester' as advisory, and the step has no enforcement entry. Only the exec audit step is labelled advisory.",
+        "f16: The flow returns request on the fast path too, not only when the fast path is skipped. That matches a loose reading of the intent, but it's worth confirming.",
+        "f16, f17, f18 and f19 all write to the same 'target'. The intent doesn't say whether that's acceptable.",
+        "Extra behaviour not in the intent: f16, f17 and f18 add gates that abort when request or draft is missing."
+      ]
+    },
+    {
+      "name": "pairs21",
+      "facts": 15,
+      "recovered": 15,
+      "missed": [],
+      "intent_mismatches": [
+        "f22: the intent says to give up with an error only 'if still unhealthy' after the restart and reload. The explanation shows restart, then reload, then an unconditional abort with \"Still unhealthy.\", with no health re-check between or after them. So the flow fails even when the restart or reload fixes the service.",
+        "f21ingest: the intent says 'Read the request and return it unchanged.' The explanation adds a gate, 'require request exists', that aborts with \"Nothing.\". The intent mentions no such gate or failure path.",
+        "f24: the intent says the flow 'verifies nothing itself'. The explanation shows a 'require note exists' gate that aborts with \"No note.\". It is an existence check rather than a verify step, but it is still a gate the intent doesn't describe.",
+        "f25: the ordering rule covers only verify#final before write#shipment. Approval coming before the write ('ship only approved goods') is enforced only by the written sequence and the require gate, not by an order rule. Also, the 'check' step (exec final check) is advisory-only, so the guard cannot bind it.",
+        "f22: no write is shown (consistent with the intent), but the 'exec service check' step is advisory-only and has no stable ID."
+      ]
+    }
+  ]
+}

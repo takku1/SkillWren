@@ -1,0 +1,18 @@
+assumptions:
+  - f21ingest: `read request` binds the request, then returns it unchanged; no failure handler was stated, so none was added.
+  - Write targets (records, notes, shipments) are placeholder resource names, since the intent names no paths.
+  - Flows that write end with `return <binding>`, because every flow must end in return or abort. The intent does not say what these flows return.
+  - f22: the health check is `verify service is healthy`. Restart and reload are `exec` steps. The state is read with `read service state` before the return.
+  - f22: after a restart or reload brings the service back to healthy, the flow continues to the state return.
+  - f25: the 'check' step is `exec goods check from checks`. Readiness is verified from its result. An unapproved shipment or unready goods abort.
+  - f23 and f25: a declined confirmation aborts with a message.
+  - f24 has no `verify` and no order rule, as stated. f23 has no order rule.
+  - f25 uses order rules for ask, then verify, then write. This follows the stated sequence.
+unresolved questions:
+  - f21store: should the flow return the record after writing it, or end some other way?
+  - Where do the records, notes and shipments get written? Which resource or path should each flow use?
+  - f22: what is the exact health check and what do restart and reload run? Which resource or command should the `exec` steps name?
+  - f22: what does 'its state' mean? Is it the service status or something else?
+  - f25: what is the 'check' step between the confirmation and the readiness verify? Is it a goods check or something else?
+  - Should failed reads or declined approvals do anything besides abort?
+Not approved. Run check, explain-workflow, and approve before use.

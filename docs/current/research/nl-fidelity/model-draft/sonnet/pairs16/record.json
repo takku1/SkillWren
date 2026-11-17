@@ -1,0 +1,127 @@
+{
+  "name": "pairs16",
+  "draft_exit": 0,
+  "valid_first": false,
+  "first_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:25: error R2: flow falls off the end without return or abort -- End every path with a return or abort.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:29: error R2: flow has no reachable return or abort -- End the flow with a return or abort.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:31: error R2: flow falls off the end without return or abort -- End every path with a return or abort.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:43: error R2: flow falls off the end without return or abort -- End every path with a return or abort.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:47: error R2: flow has no reachable return or abort -- End the flow with a return or abort.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:48: error R2: flow falls off the end without return or abort -- End every path with a return or abort.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'verify#window' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:8: warning W15: order rule rests on self-report: every statement matching 'apply redaction' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:9: warning W15: order rule rests on self-report: every statement matching 'generate parts' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:16: warning W5: binding 'fast_result' never referenced -- Use it or drop the `as`."
+  ],
+  "valid_after_repair": false,
+  "final_errors": [
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:27: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:53: error V1: malformed return 'return' -- Use `return <binding> as <name>` or a `return:` block.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:7: warning W15: order rule rests on self-report: every statement matching 'verify#window' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:8: warning W15: order rule rests on self-report: every statement matching 'apply redaction' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+    "Z:\\SkillWren\\docs\\current\\research\\nl-fidelity\\model-draft\\sonnet\\pairs16\\draft.md:9: warning W15: order rule rests on self-report: every statement matching 'generate parts' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision."
+  ],
+  "structural": {
+    "flows": {
+      "f16": {
+        "candidate": "f16",
+        "dropped": {
+          "gate:require": 1,
+          "action:abort": 1,
+          "action:write": 1
+        },
+        "added": {
+          "action:apply": 1,
+          "action:return": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f17": {
+        "candidate": "f17",
+        "dropped": {
+          "gate:require": 1,
+          "action:abort": 1,
+          "branch:when": 1
+        },
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f18": {
+        "candidate": "f18",
+        "dropped": {
+          "gate:require": 1,
+          "action:abort": 1
+        },
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f19": {
+        "candidate": "f19",
+        "dropped": {},
+        "added": {
+          "action:discard": 1
+        },
+        "missing_flow": false,
+        "extra_flow": false
+      },
+      "f20": {
+        "candidate": "f20",
+        "dropped": {
+          "action:exec": 1
+        },
+        "added": {},
+        "missing_flow": false,
+        "extra_flow": false
+      }
+    },
+    "dropped_statements": 9,
+    "added_statements": 3,
+    "reference_statements": 27,
+    "dropped_rules": {},
+    "added_rules": {
+      "verify->write": 1,
+      "apply->write": 1,
+      "generate->generate": 1
+    },
+    "reference_rules": 1,
+    "writes_delta": {
+      "f16": -1
+    }
+  },
+  "facts": {
+    "facts": 14,
+    "recovered": 6,
+    "missed": [
+      "fast result",
+      "when window is open",
+      "booked slot",
+      "redacted draft",
+      "Mismatch",
+      "finished assembly",
+      "show report to requester",
+      "return report as report"
+    ]
+  },
+  "judged": {
+    "dropped": [
+      "f20: show report is not directed to the requester (no audience)",
+      "f20: audit check that produces the report is missing; candidate returns nothing instead of the report",
+      "f18: write of clean result has no stable ID, so it is advisory-only and the guard cannot bind it (weaker enforcement)"
+    ],
+    "added": [
+      "f19: extra 'discard assembly' step before aborting on mismatch"
+    ],
+    "changed": [
+      "f16: fast path changed from writing a fast result to target into an in-memory apply with an early return of fast_result; nothing is written",
+      "f17: a closed window now aborts the whole flow, where the reference skips the booking and returns the request",
+      "f17: booking happens unconditionally after a top-level gate instead of inside the window-open branch; returns nothing instead of the request"
+    ],
+    "cost_usd": 0.066632
+  },
+  "draft_cost_usd": 0.0494,
+  "draft_calls": 2
+}

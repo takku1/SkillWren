@@ -1,0 +1,14 @@
+assumptions:
+  - The flow is named guarded-config-write after its purpose, since the intent names no flow.
+  - `config` is the input binding and `production_config` is the resource path the config is written to. I did not declare a resources block, because the fragment contract only has inputs, order and invariants here.
+  - The abort message states the reason for the failure as a fixed string. The flow has no other way to report the specific reason.
+  - I added `require config exists` as a leading gate so the config is present before it is verified. The intent does not state this gate.
+  - I returned the config as the flow's output, since every flow must end in `return` or `abort`.
+  - The `always:` invariant restates the intent's 'never write an unverified config' rule.
+  - I have not run `skillwren check --fragment` on this fragment.
+unresolved questions:
+  - Should the abort report a specific reason taken from the verification result, rather than the fixed message used here?
+  - What is the exact path or resource for the production config? I used `production_config` as a placeholder.
+  - What should the flow return on success? I used the written config.
+  - Is `never write an unverified config` meant to be a contract invariant? I included it as one, along with the order rule.
+Not approved. Run check, explain-workflow, and approve before use.

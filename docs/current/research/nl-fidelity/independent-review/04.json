@@ -1,0 +1,68 @@
+{
+  "name": "04",
+  "facts": 5,
+  "recovered": 5,
+  "missed": [],
+  "uncovered": [
+    "Line 14: 'verify #report test report shows no failures' is a gate on the report.",
+    "Line 17: 'write #notes release notes with target' writes the release notes to `target`.",
+    "Line 18: the flow returns `notes`.",
+    "Effects: flow `publish` writes `target`. There are no cross-file runs.",
+    "If the verify gate passes, the flow goes on to write the notes (line 17) and return them (line 18).",
+    "The explanation shows no branch for the exec step (line 13) failing or producing no report.",
+    "There are no ask steps, so no human decision is needed at any point.",
+    "The only write is the flow `publish` writing `target`.",
+    "Approving this explanation is not a guard policy and grants no capabilities."
+  ],
+  "intent_mismatches": [
+    "The intent's 'missing report' case is not explicitly handled. The only failure path is the verify gate aborting with \"Failing tests.\" The explanation doesn't say what happens if the exec fails or produces no report, and the abort message only mentions failing tests, not a missing report. Whether verify rejects a missing report depends on unchecked prose.",
+    "There is no explicit ordering rule saying exec must come before verify. The exec step is advisory-only and cannot be bound by the guard, so 'run the tests' cannot be enforced as a precondition. Only verify-before-write is enforced.",
+    "'Publish the release notes' is carried out as 'write #notes release notes with target', a write to `target`. The explanation doesn't show that this actually publishes anything rather than just writing a file.",
+    "Whether the gate really checks for 'no failures' depends on prose meaning that is not machine-checked. This weakens the 'evidence-backed' guarantee.",
+    "Guard enforcement of the verify and write steps applies only if a guard policy defines those operations, and none is shown. So 'do not publish' is not shown to be enforced at runtime beyond the flow's own structure."
+  ],
+  "limitations_recovered": [
+    "The prose meaning of untyped steps is not machine-checked. For example, whether 'test report shows no failures' actually checks for failures is not verified, and rewording a step could silently change what it means.",
+    "Correlated branch conditions are not recognized.",
+    "Approving this explanation does not create a guard policy.",
+    "Rule compliance needs a separate `check` run.",
+    "Guard enforcement of verify and write depends on a guard policy that is not shown."
+  ],
+  "notes": {
+    "requirements": [
+      "Line 13: 'exec test suite from checks as report' runs the test suite and binds its output as `report`.",
+      "Line 14: 'verify #report test report shows no failures' is a gate on the report.",
+      "Line 17: 'write #notes release notes with target' writes the release notes to `target`.",
+      "Line 18: the flow returns `notes`.",
+      "Ordering rule (line 8): 'verify#report' must come before 'write#notes' on every path.",
+      "Effects: flow `publish` writes `target`. There are no cross-file runs."
+    ],
+    "branches": [
+      "If the verify gate (line 14) fails, its otherwise branch (line 15) runs 'abort with \"Failing tests.\"' (line 16), so the write is never reached.",
+      "If the verify gate passes, the flow goes on to write the notes (line 17) and return them (line 18).",
+      "The explanation shows no branch for the exec step (line 13) failing or producing no report."
+    ],
+    "authority": [
+      "There are no ask steps, so no human decision is needed at any point.",
+      "The only write is the flow `publish` writing `target`.",
+      "The verify step (line 14) and the write step (line 17) have stable IDs and can be guarded, but only if the guard policy defines those operations.",
+      "The exec step (line 13) is advisory-only: it has no stable ID, so order rules match it by its prose text and the guard cannot bind it.",
+      "Approving this explanation is not a guard policy and grants no capabilities."
+    ],
+    "limitations": [
+      "The prose meaning of untyped steps is not machine-checked. For example, whether 'test report shows no failures' actually checks for failures is not verified, and rewording a step could silently change what it means.",
+      "Correlated branch conditions are not recognized.",
+      "Approving this explanation does not create a guard policy.",
+      "Rule compliance needs a separate `check` run.",
+      "Guard enforcement of verify and write depends on a guard policy that is not shown."
+    ],
+    "intent_mismatches": [
+      "The intent's 'missing report' case is not explicitly handled. The only failure path is the verify gate aborting with \"Failing tests.\" The explanation doesn't say what happens if the exec fails or produces no report, and the abort message only mentions failing tests, not a missing report. Whether verify rejects a missing report depends on unchecked prose.",
+      "There is no explicit ordering rule saying exec must come before verify. The exec step is advisory-only and cannot be bound by the guard, so 'run the tests' cannot be enforced as a precondition. Only verify-before-write is enforced.",
+      "'Publish the release notes' is carried out as 'write #notes release notes with target', a write to `target`. The explanation doesn't show that this actually publishes anything rather than just writing a file.",
+      "Whether the gate really checks for 'no failures' depends on prose meaning that is not machine-checked. This weakens the 'evidence-backed' guarantee.",
+      "Guard enforcement of the verify and write steps applies only if a guard policy defines those operations, and none is shown. So 'do not publish' is not shown to be enforced at runtime beyond the flow's own structure."
+    ]
+  },
+  "cost_usd": 0.0773
+}

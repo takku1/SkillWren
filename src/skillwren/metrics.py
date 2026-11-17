@@ -54,7 +54,9 @@ def compare(originals, compiled, metric="tokens", tokenizer="cl100k_base", max_r
 
 def main(argv):
     parser = argparse.ArgumentParser(prog="skillwren measure",
-        description="Compare an original skill with the complete expanded candidate prompt.")
+        description="Compare an original skill with the complete expanded candidate prompt. "
+                    "Either side may be a fragment-set directory: every Markdown file in it "
+                    "counts, since a host may load any of them.")
     parser.add_argument("original")
     parser.add_argument("candidate")
     parser.add_argument("--original-context", action="append", default=[], metavar="FILE")
@@ -64,10 +66,19 @@ def main(argv):
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
     try:
-        from .compiler import _compile
+        from pathlib import Path
+        from .compiler import _compile, expanded_text
         from .review import read_originals
-        originals = read_originals(args.original, args.original_context)
-        compiled, _ = _compile(args.candidate)
+        if Path(args.original).is_dir():
+            if args.original_context:
+                raise ValueError("a directory original already includes its context files")
+            originals = {"expanded": expanded_text(args.original)}
+        else:
+            originals = read_originals(args.original, args.original_context)
+        if Path(args.candidate).is_dir():
+            compiled = expanded_text(args.candidate)
+        else:
+            compiled, _ = _compile(args.candidate)
         report = compare(list(originals.values()), compiled, args.metric, args.tokenizer, args.max_ratio)
     except (OSError, ValueError) as error:
         print(f"skillwren measure: {error}", file=sys.stderr)

@@ -1,0 +1,79 @@
+Workflow in draft.md:
+flow `f06`:
+  - 'ask #plan_approval first reviewer to approve plan' (line 18)
+  - 'require confirmation' (line 19) -- gate; failure follows its otherwise branch
+    - otherwise (line 20)
+      - 'abort with "Plan rejected."' (line 21)
+  - 'ask #budget_approval second reviewer to approve budget' (line 22)
+  - 'require confirmation' (line 23) -- gate; failure follows its otherwise branch
+    - otherwise (line 24)
+      - 'abort with "Budget rejected."' (line 25)
+  - 'write #plan_write plan with plan_file' (line 26)
+  - 'return plan as plan' (line 27)
+flow `f07`:
+  - 'exec first check from checks as first_result' (line 32)
+  - 'verify #first_passed first check passed from first_result' (line 33) -- gate; failure follows its otherwise branch
+    - otherwise (line 34)
+      - 'abort with "First check did not pass."' (line 35)
+  - 'write #first_write first_result with first_result_file' (line 36)
+  - 'write #summary_write summary with summary_file' (line 37)
+  - 'return summary as summary' (line 38)
+flow `f08`:
+  - 'unless cache is warm:' (line 43) -- branch
+    - 'exec warm-up check from checks as warmup' (line 44)
+    - 'verify cache is warm from warmup' (line 45) -- gate; failure follows its otherwise branch
+      - otherwise (line 46)
+        - 'abort with "Cache is cold."' (line 47)
+  - 'return request as request' (line 48)
+flow `f09`:
+  - 'exec backup check from checks as report' (line 53)
+  - 'verify backups are complete from report' (line 54) -- gate; failure follows its otherwise branch
+    - otherwise (line 55)
+      - 'exec backup repair from checks' (line 56)
+      - 'exec backup check from checks as report' (line 57)
+      - retry (line 58)
+  - 'return state as state' (line 59)
+flow `f10`:
+  - 'exec test suite from checks as report' (line 64)
+  - 'verify #suite_green suite report is green from report' (line 65) -- gate; failure follows its otherwise branch
+    - otherwise (line 66)
+      - 'abort with "Suite is not green."' (line 67)
+  - 'write #test_log report with test_log_file' (line 68)
+  - 'write #release_notes release_notes with release_notes_file' (line 69)
+  - 'return release_notes as release_notes' (line 70)
+Ordering (must hold on every path):
+  - 'ask#plan_approval' before 'write#plan_write' (line 7)
+  - 'ask#budget_approval' before 'write#plan_write' (line 8)
+  - 'exec first check' before 'verify#first_passed' (line 9)
+  - 'verify#first_passed' before 'write#first_write' (line 10)
+  - 'write#first_write' before 'write#summary_write' (line 11)
+  - 'verify#suite_green' before 'write#test_log' (line 12)
+  - 'write#test_log' before 'write#release_notes' (line 13)
+Authority: human decisions are asked here:
+  - 'ask #plan_approval first reviewer to approve plan' (line 18)
+  - 'ask #budget_approval second reviewer to approve budget' (line 22)
+  SkillWren checks the ask/confirm structure, not that a human actually decided -- approval confirms intended meaning, not formal equivalence.
+Effects (files written or flows run):
+  - flow `f06` writes plan_file
+  - flow `f07` writes first_result_file
+  - flow `f07` writes summary_file
+  - flow `f10` writes release_notes_file
+  - flow `f10` writes test_log_file
+Enforcement:
+  - 'write #plan_write plan with plan_file' (line 26) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #first_passed first check passed from first_result' (line 33) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #first_write first_result with first_result_file' (line 36) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #summary_write summary with summary_file' (line 37) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #suite_green suite report is green from report' (line 65) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #test_log report with test_log_file' (line 68) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #release_notes release_notes with release_notes_file' (line 69) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec first check from checks as first_result' (line 32) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec warm-up check from checks as warmup' (line 44) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'verify cache is warm from warmup' (line 45) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec backup check from checks as report' (line 53) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'verify backups are complete from report' (line 54) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec backup repair from checks' (line 56) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec backup check from checks as report' (line 57) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec test suite from checks as report' (line 64) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

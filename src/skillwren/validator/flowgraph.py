@@ -18,6 +18,9 @@ def classify_flow_line(text):
         return ("else", None)
     if text == "return:":
         return ("returnblock", None)
+    typed_block = re.fullmatch(r"return\s+#([a-z][a-z0-9-]*):", text)
+    if typed_block:
+        return ("returnblock", typed_block.group(1))
     if text == "retry":
         return ("retry", None)
     m = re.fullmatch(r"label\s+([^:]+):", text)

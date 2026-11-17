@@ -1,0 +1,92 @@
+{
+  "name": "pairs16",
+  "facts": 14,
+  "recovered": 13,
+  "missed": [
+    {
+      "fact": "f19: finished assembly",
+      "recovered": false,
+      "note": "The notes say only 'write #assembly to target'. The written content 'finished assembly' is never mentioned."
+    }
+  ],
+  "uncovered": [
+    "f16/f17: gate 'require request exists' aborting with \"No request.\"",
+    "f18: gate 'require draft exists' aborting with \"No draft.\"",
+    "f18: return clean",
+    "f19: generate parts from request, generate assembly from parts, exec assembly check from checks as report",
+    "f20: exec audit check from checks as report",
+    "Branch: the missing-input gates in f16/f17/f18 abort with their message",
+    "Branch: f16 skips the write when the flag isn't set",
+    "Branch: f17 skips the whole branch when the window isn't open and returns without aborting",
+    "Branch: f20 has no branches",
+    "Authority: no ask steps and no human decision",
+    "Authority: f16-f19 each write to 'target'",
+    "Authority: the listed step IDs are guard-enforceable only if the policy defines them",
+    "Authority: exec assembly check is advisory only (no stable ID)",
+    "Authority: 'show' and 'apply redaction' have no enforcement entry",
+    "Authority: approval of the text is not a guard policy",
+    "Limitations: untyped prose isn't machine-checked; correlated conditions aren't recognized; enforcement requires the policy to define the operation; no cross-file runs"
+  ],
+  "intent_mismatches": [
+    "f17: The intent says to abort if the window shut. In the explanation, the verify-and-abort sits inside 'when window is open:'. So when the window is shut, the branch is skipped and the flow silently returns request without aborting. Inside the branch, the verify repeats the branch condition, so its abort is effectively unreachable. The explainer says it does not recognize correlated conditions like this.",
+    "f17: No ordering rule requires verify#window before write#slot. Only the order of steps in the sequence puts the booking after the check, and nothing ties the booking to the window still being open.",
+    "f18: 'Redaction happens in memory first' is not enforced. 'apply redaction' is an untyped step with no ID and no ordering rule before write#clean. Nothing shows it happens in memory, or that the written value is the redacted 'clean' rather than the draft.",
+    "f19: The intent asks for a 'fresh check'. The exec assembly check is advisory-only (no stable ID), and no rule requires it to run after the assembly is generated or forbids reusing a stale report. The verify's ID is #parts even though it checks the assembly, which is a confusing name.",
+    "f20: The intent says showing is advisory. The explanation doesn't explicitly mark 'show report to requester' as advisory, and the step has no enforcement entry. Only the exec audit step is labelled advisory.",
+    "f16: The flow returns request on the fast path too, not only when the fast path is skipped. That matches a loose reading of the intent, but it's worth confirming.",
+    "f16, f17, f18 and f19 all write to the same 'target'. The intent doesn't say whether that's acceptable.",
+    "Extra behaviour not in the intent: f16, f17 and f18 add gates that abort when request or draft is missing."
+  ],
+  "limitations_recovered": [
+    "The prose meaning of untyped steps is not machine-checked, so rewording can silently change intent (this affects 'apply redaction', the generate steps and 'show')",
+    "Correlated branch conditions are not recognized (this matters for f17's 'when window is open' plus 'verify window is open')",
+    "Enforcement only applies if the guard policy defines the operation; run `check` for rule compliance",
+    "No cross-file runs"
+  ],
+  "notes": {
+    "requirements": [
+      "f16: gate 'require request exists' (line 12); if it fails, abort with \"No request.\"",
+      "f16: if the fast flag is set, write #fast fast result to target (line 16); then return request (line 17) on every path",
+      "f17: gate 'require request exists' (line 24); if it fails, abort with \"No request.\"",
+      "f17: inside a 'when window is open' branch (line 27): verify #window window is open (line 28), then write #slot booked slot to target (line 31); then return request (line 32)",
+      "f18: gate 'require draft exists' (line 39); if it fails, abort with \"No draft.\"",
+      "f18: apply redaction with draft as clean (line 42, untyped and with no ID), then write #clean redacted draft to target (line 43), then return clean",
+      "f19: generate parts from request (line 55), then generate assembly from parts (line 56), then exec assembly check from checks as report (line 57)",
+      "f19: verify #parts assembly matches parts from report (line 58); if it fails, abort with \"Mismatch.\"; then write #assembly to target (line 61) and return assembly",
+      "f20: exec audit check from checks as report (line 69), show report to requester (line 70), return report",
+      "Declared ordering rule (only one): 'verify#parts' before 'write#assembly' (line 5) on every path"
+    ],
+    "branches": [
+      "f16/f17/f18: if the missing-input gate fails, the flow aborts with its message",
+      "f16: fast flag set \u2192 write fast result, then return request; flag not set \u2192 skip the write and return request",
+      "f17: window open \u2192 verify #window (its otherwise branch aborts \"Window shut.\") \u2192 write slot \u2192 return request; window not open \u2192 the whole branch is skipped and the flow returns request without aborting",
+      "f19: verify #parts fails \u2192 abort \"Mismatch.\"; passes \u2192 write assembly",
+      "f20: no branches"
+    ],
+    "authority": [
+      "No ask steps; no human decision is needed anywhere",
+      "Writes: f16, f17, f18 and f19 each write to 'target'",
+      "Steps with IDs that guard enforcement could cover, but only if the guard policy defines them: write#fast, verify#window, write#slot, write#clean, verify#parts, write#assembly",
+      "Advisory only (no stable ID, so the guard can't bind them): exec assembly check (line 57) and exec audit check (line 69)",
+      "The 'show report to requester' step and the 'apply redaction' step have no enforcement entry at all",
+      "Approval of this text is not a guard policy and grants no capabilities"
+    ],
+    "limitations": [
+      "The prose meaning of untyped steps is not machine-checked, so rewording can silently change intent (this affects 'apply redaction', the generate steps and 'show')",
+      "Correlated branch conditions are not recognized (this matters for f17's 'when window is open' plus 'verify window is open')",
+      "Enforcement only applies if the guard policy defines the operation; run `check` for rule compliance",
+      "No cross-file runs"
+    ],
+    "intent_mismatches": [
+      "f17: The intent says to abort if the window shut. In the explanation, the verify-and-abort sits inside 'when window is open:'. So when the window is shut, the branch is skipped and the flow silently returns request without aborting. Inside the branch, the verify repeats the branch condition, so its abort is effectively unreachable. The explainer says it does not recognize correlated conditions like this.",
+      "f17: No ordering rule requires verify#window before write#slot. Only the order of steps in the sequence puts the booking after the check, and nothing ties the booking to the window still being open.",
+      "f18: 'Redaction happens in memory first' is not enforced. 'apply redaction' is an untyped step with no ID and no ordering rule before write#clean. Nothing shows it happens in memory, or that the written value is the redacted 'clean' rather than the draft.",
+      "f19: The intent asks for a 'fresh check'. The exec assembly check is advisory-only (no stable ID), and no rule requires it to run after the assembly is generated or forbids reusing a stale report. The verify's ID is #parts even though it checks the assembly, which is a confusing name.",
+      "f20: The intent says showing is advisory. The explanation doesn't explicitly mark 'show report to requester' as advisory, and the step has no enforcement entry. Only the exec audit step is labelled advisory.",
+      "f16: The flow returns request on the fast path too, not only when the fast path is skipped. That matches a loose reading of the intent, but it's worth confirming.",
+      "f16, f17, f18 and f19 all write to the same 'target'. The intent doesn't say whether that's acceptable.",
+      "Extra behaviour not in the intent: f16, f17 and f18 add gates that abort when request or draft is missing."
+    ]
+  },
+  "cost_usd": 0.1293
+}

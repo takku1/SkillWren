@@ -1,0 +1,9 @@
+assumptions:
+  - The summary is returned to the caller for the log rather than written anywhere, since the intent says nothing is written.
+  - The flow is named summarize-request after its purpose because the intent names no flow.
+  - The abort message reuses the template wording, 'A request is required.'
+  - The `inputs:` contract line lists only `request`, the one input the intent mentions.
+unresolved questions:
+  - Should the summary be shown to the user with `show`, or only returned to the caller?
+  - Should the summary follow a particular shape or length for the log? The fragment leaves that to the runner.
+Not approved. Run check, explain-workflow, and approve before use.

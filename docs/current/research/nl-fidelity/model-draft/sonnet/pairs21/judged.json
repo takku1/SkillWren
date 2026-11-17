@@ -1,0 +1,13 @@
+{
+  "dropped": [
+    "f22: health verify step loses its stable ID (#service), so it is advisory-only and can't be guard-enforced",
+    "f21store: record write loses its stable ID (#record), so it can't be guard-enforced",
+    "f23: note write loses its stable ID (#note), so it can't be guard-enforced"
+  ],
+  "added": [],
+  "changed": [
+    "f22: the reference runs restart, then reload, then aborts unconditionally. The candidate checks health again after each step: it skips reload and succeeds if restart fixes the service, and it succeeds instead of aborting if reload fixes it",
+    "f22: the reference gets the state from an exec check before verifying. The candidate verifies without that check result and reads the state only after the health gates"
+  ],
+  "cost_usd": 0.05934400000000001
+}

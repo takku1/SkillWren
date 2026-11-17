@@ -43,7 +43,7 @@ def collect_flow_facts(root, produces):
     returned, calls = set(), []
     for node in walk(root):
         if node.kind == "action" and node.data == "return":
-            m = re.fullmatch(r"return\s+(\S+)\s+as\s+([A-Za-z_][\w-]*)\s*",
+            m = re.fullmatch(r"return\s+(?:#[a-z][a-z0-9-]*\s+)?(\S+)\s+as\s+([A-Za-z_][\w-]*)\s*",
                              node.text)
             if m and declared(m.group(2)):
                 returned.add(m.group(2))
@@ -67,7 +67,18 @@ def direct_mutation(root):
     reach = reachable_nodes(root, succ)
     return any(node in reach and node.kind == "action"
                and node.data in ("write", "save", "exec")
+               and not is_readonly_exec(node)
                for node in walk(root))
+
+
+def is_readonly_exec(node):
+    """`exec readonly ...` declares an observation: not a mutation for M1.
+
+    The declaration is a claim the author makes; runtime enforcement is
+    `ledger exec --readonly` (disposable networkless container, fails on
+    any write)."""
+    return (node.kind == "action" and node.data == "exec"
+            and re.match(r"exec\s+readonly\s", node.text) is not None)
 
 
 def infer_inputs(uses, gen, nodes):
@@ -310,7 +321,8 @@ class FlowAnalysis:
             track_literal(self.info, "literal_reads", name, target)
 
     def _verb_exec(self, node, rest, tgt):
-        self.direct_mutations.append(node)  # a command may change anything it can reach
+        if not is_readonly_exec(node):
+            self.direct_mutations.append(node)  # a command may change anything it can reach
         if not (tgt and VAR_ONLY.fullmatch(tgt)):
             self.error(node.line, "V1", "exec without `as` discards its result",
                        "Bind the outcome with `as <name>` so a gate can cite it.")
@@ -428,7 +440,7 @@ class FlowAnalysis:
             self.run_calls.append((node, target))
 
     def _verb_return(self, node, rest, tgt):
-        m = re.fullmatch(r"return\s+(\S+)\s+as\s+([A-Za-z_][\w-]*)\s*", node.text)
+        m = re.fullmatch(r"return\s+(?:#[a-z][a-z0-9-]*\s+)?(\S+)\s+as\s+([A-Za-z_][\w-]*)\s*", node.text)
         if not m:
             self.error(node.line, "V1", f"malformed return {node.text!r}",
                        "Use `return <binding> as <name>` or a `return:` block.")
