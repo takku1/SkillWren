@@ -28,6 +28,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from repair_eval import PYTHON, ASSETS, check, run_agent, agent_facts, wilson  # noqa: E402
+from sufficiency_audit import execution_error  # noqa: E402
 
 HEADER = '''---
 name: dep-audit
@@ -105,12 +106,15 @@ def run_one(args, variant, units, model, rep):
         outcome = score(subject)
         out = Path(args.out) / 'runs' / name
         if out.exists():
-            shutil.rmtree(out)
+            archive = Path(args.out) / 'archived-attempts'
+            archive.mkdir(parents=True, exist_ok=True)
+            out.rename(archive / f'{name}-{time.time_ns()}')
         out.mkdir(parents=True)
         (out / 'transcript.jsonl').write_text(''.join(json.dumps(e) + '\n' for e in events),
                                               encoding='utf-8')
         (out / 'SKILL.md').write_text(text, encoding='utf-8')
         record = {'run': name, 'variant': variant, 'units': None if isinstance(units, str) else sorted(units), 'model': model,
+                  'execution_error': execution_error(events),
                   'rep': rep, 'seconds': round(seconds, 1), 'outcome': outcome,
                   'agent': {k: v for k, v in facts.items() if k != 'tools'},
                   'tools': facts['tools']}
@@ -133,6 +137,8 @@ def main():
     parser.add_argument('--models', default='haiku,sonnet')
     parser.add_argument('--reps', type=int, default=3)
     parser.add_argument('--jobs', type=int, default=4)
+    parser.add_argument('--resume', action='store_true',
+                        help='reuse completed attempts; retry others serially and stop on an execution error')
     parser.add_argument('--budget', type=float, default=2.0)
     parser.add_argument('--out', default=str(ROOT / 'docs/current/research/semantic-sufficiency'))
     args = parser.parse_args()
@@ -148,8 +154,31 @@ def main():
         variants[name] = Path(path).read_text(encoding='utf-8')
     jobs = [(v, u, m, r) for r in range(args.reps) for v, u in variants.items()
             for m in args.models.split(',')]
-    with ThreadPoolExecutor(max_workers=args.jobs) as pool:
-        records = list(pool.map(lambda job: run_one(args, *job), jobs))
+    if args.resume:
+        records = []
+        for job in jobs:
+            variant, units, model, rep = job
+            out = Path(args.out) / 'runs' / f'{variant}-{model}-{rep}'
+            record_path = out / 'record.json'
+            transcript_path = out / 'transcript.jsonl'
+            text = units if isinstance(units, str) else variant_text(units)
+            if record_path.exists() and transcript_path.exists():
+                events = [json.loads(line) for line in transcript_path.read_text(
+                    encoding='utf-8').splitlines()]
+                if execution_error(events) is None:
+                    if (out / 'SKILL.md').read_text(encoding='utf-8') != text:
+                        raise SystemExit(f'skill changed for {out.name}; use a new output directory')
+                    records.append(json.loads(record_path.read_text(encoding='utf-8')))
+                    continue
+            record = run_one(args, *job)
+            if record['execution_error']:
+                raise SystemExit(f"Stopped: {record['execution_error']}; attempt saved, resume later")
+            records.append(record)
+    else:
+        with ThreadPoolExecutor(max_workers=args.jobs) as pool:
+            records = list(pool.map(lambda job: run_one(args, *job), jobs))
+    if any(r.get('execution_error') for r in records):
+        raise SystemExit('Incomplete execution: attempts saved; no behavioral summary written. Use --resume.')
     table = {}
     for r in records:
         for key in (r['variant'], f"{r['variant']}/{r['model']}"):
