@@ -50,7 +50,7 @@ it; see [Evidence](#evidence).
 
 - `src/skillwren/` — stdlib-only package and `skillwren` CLI (`check`,
   `explain-workflow`, `draft`, `approve`, `policy`, `guard`, `ledger`,
-  `audit`, `sandbox`, `measure`, `build`, `conform`).
+  `audit`, `sandbox`, `measure`, `select`, `build`, `conform`).
   The validator is the `skillwren.validator` package: `syntax`,
   `document`, `schema`, `flowgraph`, `ordering`, `analysis`, `files`,
   `explain`. `guard` is the trusted-host controller, `sandbox` the
@@ -71,6 +71,13 @@ it; see [Evidence](#evidence).
   checking a skill.
 
 ## Quickstart
+
+For fixed-study empirical representation selection, `skillwren select`
+checks supplied structural manifests and simultaneous requirement-risk
+bounds across model-group cells, with an optional CVaR budget. It recommends
+a candidate or abstains; it does not enforce execution or prove semantic
+equivalence. See the [input example](examples/selection/README.md) and
+[working formulation](docs/current/research/semantic-sufficiency/FORMULATION.md).
 
 Install (checking and plain builds use the standard library; exact token
 metrics are optional):

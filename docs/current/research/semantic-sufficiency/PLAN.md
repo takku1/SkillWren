@@ -1,5 +1,10 @@
 # Semantic sufficiency: research plan (2026-11-17)
 
+Follow-up design: [risk-constrained selection formulation](FORMULATION.md)
+and [working notes](NOTES.md). These extend the research program; the
+existing pilot and main-run preregistration retain their original scoring
+and decision rules.
+
 Question: which parts of a skill's text actually carry the behaviour a task
 needs, and what is the smallest representation that keeps that behaviour,
 for a given model and task? This is a research track beside SkillWren's

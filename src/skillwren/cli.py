@@ -13,6 +13,7 @@ COMMANDS = {
     "guard": ("skillwren.guard", "mediate policy-bound verified writes on a trusted host"),
     "policy": ("skillwren.policy", "generate a pinned, workflow-bound guard policy from a flow"),
     "measure": ("skillwren.metrics", "compare measured context sizes"),
+    "select": ("skillwren.selection", "select a fixed candidate under empirical risk bounds"),
     "build": ("skillwren.compiler", "compile and package a reviewed skill"),
     "conform": ("skillwren.conform", "run a skill headless and compare effects"),
     "ledger": ("skillwren.ledger", "record a run's steps and check its order rules"),
