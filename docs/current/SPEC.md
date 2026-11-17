@@ -1081,7 +1081,36 @@ in a script.
 rule, in addition to statement text (`verify #deps ...`). Required
 milestones still match step names exactly.
 
-## Experimental runtime interface (unreleased)
+## 22. Workflow-bound guard (0.10)
+
+A guard policy may carry `workflow: {flow, flow_sha256, approvals}` with
+absolute paths. The controller then refuses to start, and refuses every
+write, unless the flow file's digest equals `flow_sha256` and the latest
+record in the host approval directory approves those exact bytes
+(`approve --check`). Typed order rules of that flow whose earlier and later
+steps are both policy operations become write preconditions: a write to
+operation B is denied until every rule `A before B` has A completed in this
+controller session. A check operation (no `target`) completes when its
+verifier accepts a candidate; a write operation completes when it writes. A
+failed check revokes its earlier completion. Rules with an untyped side, or
+a side that is not a policy operation, are not enforced by the guard;
+`status` lists them as `unenforced_rules`, and they remain static (`check`)
+or recorded (`ledger`) properties. Session state does not survive restart,
+like approvals.
+
+Every operation's executable and every absolute path argument must be
+pinned; relative path arguments are refused. `skillwren policy FLOW
+--approvals DIR --map MAP --out FILE` generates such a policy: it resolves
+and pins verifier commands from MAP, pins the flow, binds the approval
+directory, loads the result into the controller before saving it, and
+reports typed steps with no operation and rules left unenforced.
+
+What this does not do: it does not interpret branches, prose steps, or
+`exec` steps outside the policy, and it does not make an approval grant
+anything beyond starting the controller. The host must still keep policy,
+verifiers, targets, approvals and checkpoint out of the agent's reach.
+
+## Runtime interface (0.7+)
 
 `guard` is a trusted-host JSON-lines controller, distinct from the advisory
 ledger and Claude `conform` observer. See [runtime quickstart](quickstart-runtime.md)

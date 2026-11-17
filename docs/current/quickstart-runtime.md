@@ -53,8 +53,12 @@ targets require new verification. A failed verifier revokes old approval.
 
 Run one controller per protected output set and audit pair. Store policy,
 verifier scripts, their runtime dependencies, protected output and checkpoint
-outside the agent's writable filesystem. Pins cover configured files, not
-all transitive interpreter dependencies. Treat those dependencies as trusted
+outside the agent's writable filesystem. The executable and every absolute
+path argument must be pinned (the guard refuses a policy that leaves a
+script argument unpinned, and relative script paths); pins cover those
+files, not all transitive interpreter dependencies or paths embedded inside
+option values. To bind the guard to an approved flow and its order rules,
+generate the policy with `skillwren policy` (SPEC Section 22). Treat those dependencies as trusted
 host software. Never expose this stdio process through an unauthenticated
 network service. A same-account unrestricted shell can bypass this boundary.
 

@@ -1,18 +1,35 @@
-# SkillWren — checked procedures for agent skills (v0.7)
+# SkillWren — a static checker for agent-skill procedures
 
-Agent skills are prose, and agents skip steps in prose. SkillWren writes a
-skill's control flow (branches, gates, who decides, what is touched, how
-failures recover, and what must happen before what) in a small closed
-vocabulary that a static checker reads — and its runtime controller can
-then enforce. Natural language describes meaning; formal structure
-describes control; the guard denies what the structure forbids.
+SkillWren writes a skill's control flow (branches, gates, who decides,
+what is touched, how failures recover, and what must happen before what)
+in a small closed vocabulary, and **checks it statically**: it builds an
+AST and control-flow graph per flow and proves properties such as "this
+verification completes before that write on every path" or "nothing is
+changed before a question the user may dismiss". That is the part with
+the clearest demonstrated value: on full-stack's real flows it found a
+conditional path that skipped the assurance step and two mutations before
+a dismissible ask that prose review had missed.
 
-Two halves: the **checker** validates the written procedure (it does not
-make a model follow it), and the **guard** is a trusted-host controller
-that binds each protected write to an administrator policy, a pinned
-verifier program, the exact approved bytes, and an unchanged target.
-Approvals are single-use and die with the process; every request is
-appended to an audit log held against an independent checkpoint.
+What it does **not** show yet: that writing a procedure in this syntax
+makes a model follow it better than concise prose. Every controlled
+comparison so far is a tie at the ceiling (see [Evidence](#evidence)).
+
+The runtime pieces are narrower than "procedure enforcement":
+
+- **Guard:** a trusted-host controller for protected writes. Each write
+  needs a pinned verifier's acceptance of the exact bytes and an
+  unchanged target; approvals are single-use. Bound to a workflow
+  (`skillwren policy`), it also refuses to start unless the host approval
+  record matches the flow's exact bytes, and it enforces the flow's typed
+  order rules **between guard operations** as write preconditions. It does
+  not interpret branches, prose steps, or steps outside its operations;
+  those stay static or ledger checks, and `status` lists them.
+- **Ledger and audit:** hash-chained records of a run, checked after the
+  fact. They depend on cooperative recording and on host isolation.
+- **Isolation is the host's job:** a same-account process can bypass the
+  guard. The repository tests the container topology; real deployments
+  must keep policy, verifiers, targets, approvals and checkpoints out of
+  the agent's reach.
 
 Two ways to use it:
 
@@ -32,7 +49,8 @@ it; see [Evidence](#evidence).
 ## Layout
 
 - `src/skillwren/` — stdlib-only package and `skillwren` CLI (`check`,
-  `measure`, `build`, `conform`, `guard`, `sandbox`, `audit`, `ledger`).
+  `explain-workflow`, `draft`, `approve`, `policy`, `guard`, `ledger`,
+  `audit`, `sandbox`, `measure`, `build`, `conform`).
   The validator is the `skillwren.validator` package: `syntax`,
   `document`, `schema`, `flowgraph`, `ordering`, `analysis`, `files`,
   `explain`. `guard` is the trusted-host controller, `sandbox` the
@@ -121,8 +139,10 @@ python3 -m unittest discover -s tests -p 'test_*.py'
 
 ## Evidence
 
-- **Static:** 231 tests; 31 one-break mutants, all killed by their expected
-  rule. The 0.6 refactor was checked by comparing every diagnostic on every
+- **Static:** the offline suite (CI on Linux and Windows, Python 3.9-3.15)
+  plus 31 one-break mutants, all killed by their expected rule; the guard
+  has its own runtime mutation sweep (`tests/runtime_mutation_sweep.py`).
+  The 0.6 refactor was checked by comparing every diagnostic on every
   fixture, example, and mutant before and after.
 - **Enforcement (scripted):** 90 paired A/B/C trials
   (`docs/current/research/runtime-ab-comparison.jsonl`, summary in
@@ -140,13 +160,26 @@ python3 -m unittest discover -s tests -p 'test_*.py'
   `order:` rule flags that path (fixture `build-gap.md`). Checking
   full-stack's real flows found one more possible defect (an
   `integration` binding missing on some paths).
-- **Behavior vs prose: unmeasured at model level.** Two pilot rounds found
-  8/8 seeded issues with both prose and logic skills while loading 5-8x
-  fewer bytes, but content changed too. Full-stack's FS-009 found a
-  312-token prose brief beat its full SkillWren-format skill on small
-  tasks. Model A/B/C arms are pending a provider and usage budget; see
-  [model evaluation plan](docs/current/research/model-evaluation-plan.md).
-  The scripted A/B gap measures enforcement, not syntax.
+- **Real agent:** headless Claude Code loads a packaged skill from a
+  one-line request on a disposable clone and leaves an evidence chain the
+  host verifies; replay and blocked submissions are denied
+  ([host demo](docs/current/research/host-demo/README.md)).
+- **Behaviour vs prose: no difference found.** 72 real-agent runs across
+  prose, logic, both, and inline forms complied 72/72
+  ([skill forms](docs/current/research/skill-forms/README.md)); the model
+  A/B/C runtime comparison is a 90/90 tie once the task states its format
+  ([evaluation](docs/current/research/model-evaluation-plan.md)); the
+  preregistered repair task with a host-hook baseline is in
+  [repair-eval](docs/current/research/repair-eval/README.md): 48/48 supported reports in every arm, including a plain Claude Code hook and the guard, because the honest fix was as cheap as the shortcut. Earlier,
+  full-stack's FS-009 found a 312-token prose brief beat its full
+  SkillWren-format skill on small tasks. The syntax's value shown so far is
+  static checking and machine-readable structure, not better model
+  behaviour.
+- **Drafting:** model drafts lose requirements silently; `draft`/`approve`
+  now flag gates without recorded evidence, and drafter prompt 2 cut
+  requirement defects from 19 to 7 on corpus v2
+  ([results](docs/current/research/nl-fidelity-v2/model-draft/README.md)).
+  Corpus reviews so far are by model sessions, not humans.
 
 Read the [November review](docs/current/research/research-review-2026-11.md)
 and [October review](docs/current/research/research-review-2026-10.md) for
@@ -181,8 +214,16 @@ skillwren approve --fragment proposal.md --by you --policy policy.json
 skillwren approve --check proposal.md
 ```
 
-(Windows shells mangle inline JSON quotes; put the adapter argv in a
-file and pass `--adapter-file` instead of `--adapter`.)
+(The adapter follows `--` as plain words, so no JSON quoting is needed on
+any shell; `--adapter` and `--adapter-file` remain. `draft` and `approve`
+list `verify` gates that cite no recorded evidence.)
+
+Generate a pinned, workflow-bound guard policy from an approved flow and an
+operation map (verifier command and, for writes, the protected target):
+
+```text
+skillwren policy flow.md --approvals approvals/ --map ops.json --out policy.json
+```
 
 The drafter only proposes: assumptions and unresolved questions are
 part of its output, and nothing is approved without a human. Approval
