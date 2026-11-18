@@ -13,7 +13,7 @@ list or, without one, inferred (see `infer_inputs`).
 import re
 
 from .flowgraph import (END, build_cfg, dominators, enclosing_foreach_source,
-                        is_fallible, is_run, is_terminal, must_facts,
+                        is_run, is_terminal, must_facts,
                         predecessors, reachable_nodes, rebound_before, walk)
 from .ordering import check_order, order_facts
 from .syntax import (ASSIGN_RE, INTERP_RE, VAR_ONLY, WITH_RE, Diag, as_target,

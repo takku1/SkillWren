@@ -1,5 +1,79 @@
 # Working notes: DPCC and empirical sufficiency
 
+## 2026-11-17: v23 frozen spec — typed environment, evidence modes, denial
+
+The user froze v23: a typed semantic environment (obs/choice/aux/param
+classes with optimization authorization), config-identity and six-conjunct
+certificate validity, inductive structural safety, rho-indexed deficiency
+and tail bounds, evidence-reuse modes, the certified router family,
+CandidateID deterministic tie-break, refusal/fallback/denial with a
+four-conjunct RefusalVerified, certificate-gated deployment, budget-split
+simultaneous coverage, uniformity complexity, false-certification bounds,
+deployment scope, terminal-cost decomposition, deployment metrics,
+three-valued proof semantics, and the semantic/refinement/rewrite/auditor
+machinery (the Wilderbeast input contract).
+
+Implemented on top of schema 2 without a version bump (all additive):
+study-level `evidence` (`reuse_mode` fresh/split/adaptive; split needs
+`partition_recorded: true`; adaptive needs an `adaptive_coverage`
+procedure + digest certificate; anything else denies the study);
+`refusal_only: true` required on the refusal router; reuse mode recorded
+in scope and certificates. Offline `abstain` with no verified refusal is
+documented as the R_deny counterpart. Tie-break by (fallback_rank, name)
+is the documented CandidateID instantiation. XVIII–XXIII stay entirely
+future; XVII is approximated by exit-2/input-error vs uncertified
+handling.
+
+## 2026-11-17: frozen router-certification spec (schema 2, additive)
+
+The user froze the end-to-end router-certification architecture with four
+structural corrections: (1) action-gating — every consequential task
+action needs ValidCert + MonitorPass + StructOK, not just policy
+selection; (2) an unconditional risk-violation bound over the evaluation
+distribution instead of a conditional implication; (3) candidate-class
+independence — R_0 fixed before data (exactly the `fixed_candidates`
+assumption; adaptive evaluation needs a fresh holdout study);
+(4) rigorous refusal semantics — empty feasible set defaults to a
+verified refusal-only R_bot that is not asserted to satisfy risk
+budgets, with c_bot accounted in evaluation loss.
+
+Implemented: per-candidate `inv_verified` attestation is now a
+feasibility gate (missing/False leaves the candidate uncertified with
+reason `router:unverified`; non-boolean fails closed); optional
+`cfg_sha256` provenance is recorded in certificates; an optional
+study-level `refusal` object selects a verified refusal router with
+action `refuse` (exit 0) when nothing is admissible, carrying an explicit
+no-budget-claim note and costing no multiplicity allocation. The static
+manifest check remains the offline proxy for StructOK; action-specific
+closure, the live permit check, regime classification, and
+coverage-metric measurement stay deployment-side and unimplemented.
+
+## 2026-11-17: regime/tier/admissibility revision (schema 2)
+
+The user's deployment-regime design replaces the v1 single-tier
+min-loss formulation. Regimes $z$ partition the deployment space; each
+study declares one regime and a candidate portfolio ranked by a strict
+fallback preference hierarchy. Feasibility splits into an operational
+tier (structure + risk + tail) and a decision-sufficiency tier (plus an
+evaluator-attested deficiency upper bound). Membership collapses into
+one admissibility predicate per tier; offline compilation emits the
+cost-optimal admissible policy plus a fallback-ordered admissible list
+with per-candidate certificates for a future deployment-side router.
+
+Deliberate limits, unchanged in spirit from v1:
+
+- The deficiency bound is evaluator evidence, checked against a
+  threshold, never estimated or proved by the selector. Under the op
+  tier any deficiency attestation is an input error (fail closed
+  against silently ignored evidence); under DS a missing attestation
+  leaves the candidate uncertified, not invalid.
+- Regime classification, the runtime monitor, the certified router,
+  and the coverage/cost deployment metrics are specified but not
+  implemented. Certificates carry scope and fallback links so a
+  router can traverse them later.
+- The structural checker already enforces the three v2 invariants as
+  declared-set proxies; that mapping is now explicit in FORMULATION.md.
+
 ## 2026-11-17: user's formula and implementation decision
 
 Preserve the central proposal: minimize worst model-group expected loss

@@ -1,0 +1,145 @@
+{
+  "schema_version": 2,
+  "study_id": "fs01-fullstack-representation-DRAFT",
+  "regime": {
+    "task_family": "stack-design-build",
+    "context_band": "medium",
+    "language": "en",
+    "risk_tier": "standard"
+  },
+  "tier": "op",
+  "evidence": {
+    "reuse_mode": "fresh"
+  },
+  "assumptions": {
+    "fixed_candidates": true,
+    "fixed_sample_size": true,
+    "iid_within_cell": true
+  },
+  "delta": 0.05,
+  "loss_max": 500,
+  "loss_unit": "usd_cents",
+  "samples_per_cell": 100,
+  "requirements": {
+    "omission": 0.3,
+    "task": 0.3,
+    "proc": 0.3,
+    "fidelity": 0.3
+  },
+  "cells": {
+    "design-haiku": {
+      "model": "haiku",
+      "group": "design"
+    },
+    "design-sonnet": {
+      "model": "sonnet",
+      "group": "design"
+    },
+    "implement-haiku": {
+      "model": "haiku",
+      "group": "implement"
+    },
+    "implement-sonnet": {
+      "model": "sonnet",
+      "group": "implement"
+    }
+  },
+  "candidates": {
+    "brief": {
+      "artifact_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "fallback_rank": 1,
+      "inv_verified": true,
+      "structure": [
+        {
+          "step": "evaluate",
+          "allowed_privileges": [
+            "read:brief-pool"
+          ],
+          "required_privileges": [
+            "read:brief-pool"
+          ],
+          "retained_privileges": [
+            "read:brief-pool"
+          ],
+          "required_dependencies": [
+            "brief-text"
+          ],
+          "retained_nodes": [
+            "brief-text"
+          ],
+          "resolved_dependencies": []
+        }
+      ],
+      "samples": {
+        "design-haiku": [],
+        "design-sonnet": [],
+        "implement-haiku": [],
+        "implement-sonnet": []
+      }
+    },
+    "concise": {
+      "artifact_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "fallback_rank": 2,
+      "inv_verified": true,
+      "structure": [
+        {
+          "step": "evaluate",
+          "allowed_privileges": [
+            "read:brief-pool"
+          ],
+          "required_privileges": [
+            "read:brief-pool"
+          ],
+          "retained_privileges": [
+            "read:brief-pool"
+          ],
+          "required_dependencies": [
+            "brief-text"
+          ],
+          "retained_nodes": [
+            "brief-text"
+          ],
+          "resolved_dependencies": []
+        }
+      ],
+      "samples": {
+        "design-haiku": [],
+        "design-sonnet": [],
+        "implement-haiku": [],
+        "implement-sonnet": []
+      }
+    },
+    "full": {
+      "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "fallback_rank": 3,
+      "inv_verified": true,
+      "structure": [
+        {
+          "step": "evaluate",
+          "allowed_privileges": [
+            "read:brief-pool"
+          ],
+          "required_privileges": [
+            "read:brief-pool"
+          ],
+          "retained_privileges": [
+            "read:brief-pool"
+          ],
+          "required_dependencies": [
+            "brief-text"
+          ],
+          "retained_nodes": [
+            "brief-text"
+          ],
+          "resolved_dependencies": []
+        }
+      ],
+      "samples": {
+        "design-haiku": [],
+        "design-sonnet": [],
+        "implement-haiku": [],
+        "implement-sonnet": []
+      }
+    }
+  }
+}

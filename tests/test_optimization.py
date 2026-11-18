@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from skillwren.compiler import BuildError, _compile, build
+from skillwren.compiler import BuildError, build
 from skillwren.metrics import MeasurementError, compare
 from skillwren.review import digest, read_originals, validate_review
 

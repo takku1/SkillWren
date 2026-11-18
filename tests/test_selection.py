@@ -26,8 +26,14 @@ def observations(n, loss=0.1):
              'violations': {'safety': False}} for i in range(n)]
 
 
-def study(n=1000):
-    return {'schema_version': 1, 'study_id': 'synthetic-unit-test',
+def regime():
+    return {'task_family': 'audit', 'context_band': 'small', 'language': 'en',
+            'risk_tier': 'standard'}
+
+
+def study(n=1000, tier='op'):
+    return {'schema_version': 2, 'study_id': 'synthetic-unit-test',
+            'regime': regime(), 'tier': tier,
             'assumptions': {'fixed_candidates': True, 'fixed_sample_size': True,
                             'iid_within_cell': True},
             'delta': 0.05, 'loss_max': 1.0, 'loss_unit': 'normalized_operational_cost',
@@ -36,8 +42,10 @@ def study(n=1000):
             'cells': {'h': {'model': 'test-model', 'group': 'test-group'}},
             'candidates': {
                 name: {'artifact_sha256': digest * 64, 'structure': structure(),
+                       'fallback_rank': rank, 'inv_verified': True,
                        'samples': {'h': observations(n, loss)}}
-                for name, digest, loss in [('compact', 'a', 0.1), ('full', 'b', 0.3)]}}
+                for name, digest, loss, rank in
+                [('compact', 'a', 0.1, 1), ('full', 'b', 0.3, 2)]}}
 
 
 class SelectionTests(unittest.TestCase):
@@ -214,12 +222,175 @@ class SelectionTests(unittest.TestCase):
         for key, value in [('delta', 0), ('delta', 1), ('delta', True), ('loss_max', 0),
                            ('loss_max', float('inf')), ('samples_per_cell', True),
                            ('samples_per_cell', 0), ('schema_version', True),
+                           ('schema_version', 1),
+                           ('tier', 'experimental'), ('tier', ''), ('tier', None),
+                           ('regime', {}), ('regime', None),
                            ('candidates', {}), ('cells', {}), ('requirements', {}),
                            ('loss_unit', ''), ('loss_unit', None)]:
             data = study(1)
             data[key] = value
             with self.subTest(key=key, value=value), self.assertRaises(ValueError):
                 select(data)
+
+    def test_invalid_regime_fields_and_ranks_fail_closed(self):
+        data = study(1)
+        data['regime']['language'] = ''
+        with self.assertRaises(ValueError):
+            select(data)
+        for bad in (0, True, 1.5, '1'):
+            data = study(1)
+            data['candidates']['compact']['fallback_rank'] = bad
+            with self.subTest(rank=bad), self.assertRaises(ValueError):
+                select(data)
+        data = study(1)
+        data['candidates']['compact']['fallback_rank'] = 2
+        with self.assertRaisesRegex(ValueError, 'duplicate fallback_rank'):
+            select(data)
+
+    def test_tie_prefers_lower_fallback_rank_over_name(self):
+        data = study()
+        data['candidates']['full']['samples'] = copy.deepcopy(data['candidates']['compact']['samples'])
+        data['candidates']['full']['fallback_rank'] = 1
+        data['candidates']['compact']['fallback_rank'] = 2
+        result = select(data)
+        self.assertEqual(result['selected'], 'full')
+        self.assertEqual(result['deployment_order'], ['full', 'compact'])
+        self.assertEqual(result['candidates']['full']['certificate']['fallback_next'], 'compact')
+        self.assertEqual(result['candidates']['compact']['certificate']['fallback_next'], 'abstain')
+
+    def test_certificate_binds_scope_thresholds_and_confidence(self):
+        result = select(study())
+        self.assertEqual(result['tier'], 'op')
+        self.assertEqual(result['regime'], regime())
+        self.assertEqual(result['deployment_order'], ['compact', 'full'])
+        certificate = result['candidates']['compact']['certificate']
+        self.assertEqual(certificate['candidate'], 'compact')
+        self.assertTrue(certificate['admissible'])
+        self.assertEqual(certificate['regime'], regime())
+        self.assertEqual(certificate['thresholds']['requirements'], {'safety': 0.1})
+        self.assertIn('per_bound_delta', certificate['confidence'])
+        uncertified = select(study(5))['candidates']['compact']
+        self.assertEqual(uncertified['status'], 'uncertified')
+        self.assertNotIn('certificate', uncertified)
+
+    def test_ds_tier_checks_attested_deficiency(self):
+        data = study(tier='ds')
+        self.assertEqual(select(data)['status'], 'no_certified_candidate')
+        self.assertIn('deficiency:unattested',
+                      select(data)['candidates']['compact']['reasons'])
+        compact = data['candidates']['compact']
+        compact['deficiency'] = {'upper': 0.05, 'threshold': 0.1}
+        data['candidates']['full']['deficiency'] = {'upper': 0.05, 'threshold': 0.1}
+        result = select(data)
+        self.assertEqual(result['selected'], 'compact')
+        self.assertEqual(result['confidence']['comparisons'], 6)
+        self.assertEqual(result['scope']['decision_deficiency'],
+                         'evaluator-attested, not independently certified')
+        compact['deficiency'] = {'upper': 0.2, 'threshold': 0.1}
+        result = select(data)
+        self.assertEqual(result['selected'], 'full')
+        self.assertIn('deficiency:upper_exceeds_threshold',
+                      result['candidates']['compact']['reasons'])
+
+    def test_op_tier_rejects_deficiency_attestation(self):
+        data = study()
+        data['candidates']['compact']['deficiency'] = {'upper': 0.0, 'threshold': 0.1}
+        with self.assertRaisesRegex(ValueError, 'requires tier ds'):
+            select(data)
+
+    def test_missing_or_false_invariant_attestation_is_uncertified(self):
+        data = study()
+        del data['candidates']['compact']['inv_verified']
+        result = select(data)
+        self.assertEqual(result['selected'], 'full')
+        self.assertIn('router:unverified',
+                      result['candidates']['compact']['reasons'])
+        data['candidates']['compact']['inv_verified'] = False
+        result = select(data)
+        self.assertIn('router:unverified',
+                      result['candidates']['compact']['reasons'])
+        data['candidates']['compact']['inv_verified'] = 1
+        with self.assertRaises(ValueError):
+            select(data)
+
+    def test_bad_cfg_digest_fails_closed(self):
+        data = study()
+        data['candidates']['compact']['cfg_sha256'] = 'z' * 64
+        with self.assertRaises(ValueError):
+            select(data)
+        data['candidates']['compact']['cfg_sha256'] = 'c' * 64
+        certificate = select(data)['candidates']['compact']['certificate']
+        self.assertEqual(certificate['cfg_sha256'], 'c' * 64)
+
+    def refusal_study(self):
+        data = study(5)
+        data['refusal'] = {'router_id': 'refuse-only', 'artifact_sha256': 'd' * 64,
+                           'inv_verified': True, 'refusal_only': True,
+                           'terminal_cost': 0.5}
+        return data
+
+    def test_verified_refusal_is_selected_when_nothing_is_admissible(self):
+        result = select(self.refusal_study())
+        self.assertEqual(result['status'], 'refusal')
+        self.assertEqual(result['selected'], 'refuse-only')
+        self.assertEqual(result['action'], 'refuse')
+        self.assertEqual(result['deployment_order'], [])
+        self.assertEqual(result['refusal']['terminal_cost'], 0.5)
+        self.assertIn('not asserted', result['refusal']['note'])
+        # No bounds are claimed on the refusal router, so it costs no
+        # multiplicity allocation beyond the ordinary comparisons.
+        self.assertEqual(result['confidence']['comparisons'], 4)
+
+    def test_refusal_without_admissible_set_still_abstains(self):
+        result = select(study(5))
+        self.assertEqual(result['status'], 'no_certified_candidate')
+        self.assertIsNone(result['selected'])
+        self.assertIsNone(result['refusal'])
+
+    def test_evidence_modes_gate_certification(self):
+        result = select(study())
+        self.assertEqual(result['scope']['evidence'], {'reuse_mode': 'fresh'})
+        self.assertEqual(result['candidates']['compact']['certificate']['evidence'],
+                         {'reuse_mode': 'fresh'})
+        data = study()
+        data['evidence'] = {'reuse_mode': 'split'}
+        with self.assertRaisesRegex(ValueError, 'partition_recorded'):
+            select(data)
+        data['evidence'] = {'reuse_mode': 'split', 'partition_recorded': True}
+        self.assertEqual(select(data)['selected'], 'compact')
+        data = study()
+        data['evidence'] = {'reuse_mode': 'adaptive'}
+        with self.assertRaisesRegex(ValueError, 'adaptive_coverage'):
+            select(data)
+        data['evidence'] = {'reuse_mode': 'adaptive',
+                            'adaptive_coverage': {'procedure': 'holdout-b',
+                                                  'certificate_sha256': 'e' * 64}}
+        self.assertEqual(select(data)['selected'], 'compact')
+        for bad in ({'reuse_mode': 'recycled'}, {'reuse_mode': 'fresh', 'extra': 1},
+                    {'partition_recorded': True},
+                    {'reuse_mode': 'adaptive',
+                     'adaptive_coverage': {'procedure': '', 'certificate_sha256': 'e' * 64}},
+                    {'reuse_mode': 'adaptive',
+                     'adaptive_coverage': {'procedure': 'holdout-b',
+                                           'certificate_sha256': 'zz'}}):
+            data = study()
+            data['evidence'] = bad
+            with self.subTest(evidence=bad), self.assertRaises(ValueError):
+                select(data)
+
+    def test_invalid_refusal_fails_closed(self):
+        for key, value in [('router_id', ''), ('artifact_sha256', 'zz'),
+                           ('inv_verified', False), ('inv_verified', 1),
+                           ('refusal_only', False), ('refusal_only', 1),
+                           ('terminal_cost', -1), ('terminal_cost', 1.5)]:
+            data = self.refusal_study()
+            data['refusal'][key] = value
+            with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                select(data)
+        data = self.refusal_study()
+        del data['refusal']['terminal_cost']
+        with self.assertRaises(ValueError):
+            select(data)
 
 
 class SelectionCLITests(unittest.TestCase):
@@ -244,6 +415,17 @@ class SelectionCLITests(unittest.TestCase):
         result, _ = self.invoke(json.dumps(study(5)))
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertEqual(json.loads(result.stdout)['action'], 'abstain')
+
+    def test_verified_refusal_exits_zero_with_refuse_action(self):
+        data = study(5)
+        data['refusal'] = {'router_id': 'refuse-only', 'artifact_sha256': 'd' * 64,
+                           'inv_verified': True, 'refusal_only': True,
+                           'terminal_cost': 0.5}
+        result, _ = self.invoke(json.dumps(data))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report['action'], 'refuse')
+        self.assertEqual(report['selected'], 'refuse-only')
         for text in ('{', '{"schema_version": 1, "schema_version": 2}'):
             result, _ = self.invoke(text)
             self.assertEqual(result.returncode, 2)

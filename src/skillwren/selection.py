@@ -42,6 +42,13 @@ def _atoms(value, label):
     return set(value)
 
 
+def _hex64(value, label):
+    if (not isinstance(value, str) or len(value) != 64
+            or any(c not in '0123456789abcdef' for c in value)):
+        raise ValueError(f'{label} must be 64 lowercase hexadecimal characters')
+    return value
+
+
 def structural_check(steps):
     """Check only declared sets; no claim of extraction accuracy or enforcement."""
     if steps is None:
@@ -128,15 +135,42 @@ def _observations(samples, requirements, maximum, planned):
 
 def select(study):
     """Return an auditable recommendation, never execute a candidate or fallback."""
-    _object(study, {'schema_version', 'study_id', 'assumptions', 'delta', 'loss_max', 'loss_unit',
-                    'samples_per_cell', 'requirements', 'cells', 'candidates'}, {'tail'})
-    if type(study['schema_version']) is not int or study['schema_version'] != 1:
-        raise ValueError('schema_version must be 1')
+    _object(study, {'schema_version', 'study_id', 'regime', 'tier', 'assumptions', 'delta',
+                    'loss_max', 'loss_unit', 'samples_per_cell', 'requirements', 'cells',
+                    'candidates'}, {'tail', 'refusal', 'evidence'})
+    if type(study['schema_version']) is not int or study['schema_version'] != 2:
+        raise ValueError('schema_version must be 2')
     _name(study['study_id'], 'study_id')
+    regime = study['regime']
+    _object(regime, {'task_family', 'context_band', 'language', 'risk_tier'}, label='regime')
+    for field in ('task_family', 'context_band', 'language', 'risk_tier'):
+        _name(regime[field], f'regime.{field}')
+    tier = study['tier']
+    if tier not in ('op', 'ds'):
+        raise ValueError("tier must be 'op' or 'ds'")
+    evidence = study.get('evidence')
+    if evidence is None:
+        evidence = {'reuse_mode': 'fresh'}
+    else:
+        _object(evidence, {'reuse_mode'}, {'partition_recorded', 'adaptive_coverage'},
+                label='evidence')
+    mode = evidence['reuse_mode']
+    if mode not in ('fresh', 'split', 'adaptive'):
+        raise ValueError("evidence.reuse_mode must be 'fresh', 'split' or 'adaptive'")
+    if mode == 'split':
+        if evidence.get('partition_recorded') is not True:
+            raise ValueError('split reuse requires partition_recorded true')
+    if mode == 'adaptive':
+        coverage = evidence.get('adaptive_coverage')
+        if not isinstance(coverage, dict):
+            raise ValueError('adaptive reuse requires an adaptive_coverage certificate')
+        _object(coverage, {'procedure', 'certificate_sha256'}, label='adaptive_coverage')
+        _name(coverage['procedure'], 'adaptive_coverage.procedure')
+        _hex64(coverage['certificate_sha256'], 'adaptive_coverage.certificate_sha256')
     _name(study['loss_unit'], 'loss_unit')
     _object(study['assumptions'], ASSUMPTIONS, label='assumptions')
     if any(v is not True for v in study['assumptions'].values()):
-        raise ValueError('version 1 requires fixed candidates, fixed sample size and IID within cells')
+        raise ValueError('schema 2 requires fixed candidates, fixed sample size and IID within cells')
     delta = _number(study['delta'], 0, 1, 'delta')
     if not 0 < delta < 1:
         raise ValueError('delta must be strictly between 0 and 1')
@@ -172,10 +206,22 @@ def select(study):
         if not 0 < tail['nu'] < 1:
             raise ValueError('tail.nu must be strictly between 0 and 1')
         _number(tail['budget'], 0, maximum, 'tail.budget')
+    refusal = study.get('refusal')
+    if refusal is not None:
+        _object(refusal, {'router_id', 'artifact_sha256', 'inv_verified', 'refusal_only',
+                          'terminal_cost'}, label='refusal')
+        _name(refusal['router_id'], 'refusal.router_id')
+        _hex64(refusal['artifact_sha256'], 'refusal.artifact_sha256')
+        if refusal['inv_verified'] is not True:
+            raise ValueError('refusal.inv_verified must be true')
+        if refusal['refusal_only'] is not True:
+            raise ValueError('refusal.refusal_only must be true')
+        _number(refusal['terminal_cost'], 0, maximum, 'refusal.terminal_cost')
     candidates = study['candidates']
     if not isinstance(candidates, dict) or not candidates:
         raise ValueError('candidates must be a nonempty object')
-    comparisons = len(candidates) * len(cells) * (len(requirements) + 1 + (tail is not None))
+    comparisons = (len(candidates) * len(cells)
+                   * (len(requirements) + 1 + (tail is not None) + (tier == 'ds')))
     eta = delta / comparisons
     if eta == 0:
         raise ValueError('delta is too small for this comparison count')
@@ -184,13 +230,18 @@ def select(study):
     tail_radius = (maximum * min(1.0, gamma / (1 - tail['nu']))
                    if tail is not None else None)
     reports, feasible = {}, []
+    seen_ranks = {}
     for name, candidate in sorted(candidates.items()):
         _name(name, 'candidate id')
-        _object(candidate, {'artifact_sha256', 'samples'}, {'structure'}, label='candidate')
-        digest = candidate['artifact_sha256']
-        if (not isinstance(digest, str) or len(digest) != 64
-                or any(c not in '0123456789abcdef' for c in digest)):
-            raise ValueError('artifact_sha256 must be 64 lowercase hexadecimal characters')
+        _object(candidate, {'artifact_sha256', 'samples', 'fallback_rank'},
+                {'structure', 'deficiency', 'inv_verified', 'cfg_sha256'}, label='candidate')
+        rank = candidate['fallback_rank']
+        if type(rank) is not int or rank < 1:
+            raise ValueError('fallback_rank must be a positive integer')
+        if rank in seen_ranks:
+            raise ValueError(f'duplicate fallback_rank {rank}: {seen_ranks[rank]} and {name}')
+        seen_ranks[rank] = name
+        digest = _hex64(candidate['artifact_sha256'], 'artifact_sha256')
         structure = structural_check(candidate.get('structure'))
         samples = candidate['samples']
         if not isinstance(samples, dict) or samples.keys() - cells.keys():
@@ -198,6 +249,27 @@ def select(study):
         reasons, cell_reports = [], {}
         if structure['status'] != 'passed_declared_sets':
             reasons.append('structural_' + structure['status'])
+        verified = candidate.get('inv_verified')
+        if verified is None or verified is False:
+            reasons.append('router:unverified')
+        elif verified is not True:
+            raise ValueError('inv_verified must be true')
+        cfg_digest = candidate.get('cfg_sha256')
+        if cfg_digest is not None:
+            _hex64(cfg_digest, 'cfg_sha256')
+        attestation = candidate.get('deficiency')
+        if tier == 'op':
+            if attestation is not None:
+                raise ValueError('deficiency attestation requires tier ds')
+        elif attestation is None:
+            reasons.append('deficiency:unattested')
+        else:
+            _object(attestation, {'upper', 'threshold'}, label='deficiency')
+            upper = _number(attestation['upper'], 0, float('inf'), 'deficiency.upper')
+            threshold = _number(attestation['threshold'], 0, float('inf'),
+                               'deficiency.threshold')
+            if upper > threshold:
+                reasons.append('deficiency:upper_exceeds_threshold')
         for cell_id in sorted(cells):
             completed, errors = _observations(samples.get(cell_id, []), requirements, maximum, planned)
             row = {'completed': len(completed), 'execution_errors': errors,
@@ -226,21 +298,57 @@ def select(study):
         status = 'certified' if not reasons else (
             'structurally_rejected' if structure['status'] == 'rejected' else 'uncertified')
         reports[name] = {'artifact_sha256': digest, 'status': status, 'structure': structure,
-                         'reasons': reasons, 'cells': cell_reports, 'objective_upper': objective}
+                         'reasons': reasons, 'cells': cell_reports, 'objective_upper': objective,
+                         'fallback_rank': rank}
         if not reasons:
             feasible.append(name)
-    chosen = min(feasible, key=lambda name: (reports[name]['objective_upper'], name)) if feasible else None
-    return {'schema_version': 1, 'study_id': study['study_id'],
-            'status': 'selected' if chosen is not None else 'no_certified_candidate',
-            'selected': chosen, 'action': 'recommend' if chosen is not None else 'abstain',
+    if feasible:
+        chosen = min(feasible, key=lambda name: (reports[name]['objective_upper'],
+                                                 reports[name]['fallback_rank'], name))
+        status, action = 'selected', 'recommend'
+    elif refusal is not None:
+        chosen = refusal['router_id']
+        status, action = 'refusal', 'refuse'
+    else:
+        chosen = None
+        status, action = 'no_certified_candidate', 'abstain'
+    order = sorted(feasible, key=lambda name: (reports[name]['fallback_rank'], name))
+    for position, name in enumerate(order):
+        nxt = order[position + 1] if position + 1 < len(order) else 'abstain'
+        reports[name]['certificate'] = {
+            'study_id': study['study_id'], 'regime': regime, 'tier': tier,
+            'candidate': name, 'artifact_sha256': reports[name]['artifact_sha256'],
+            'admissible': True, 'fallback_next': nxt,
+            'inv_verified': True,
+            'cfg_sha256': candidates[name].get('cfg_sha256'),
+            'evidence': {'reuse_mode': mode},
+            'thresholds': {'requirements': dict(sorted(requirements.items())), 'tail': tail,
+                           'deficiency': candidates[name].get('deficiency')},
+            'confidence': {'delta': delta, 'comparisons': comparisons,
+                           'per_bound_delta': eta},
+            'scope': 'declared regime, cells, and evaluator evidence only; '
+                     'not authenticated or enforced'}
+    refusal_report = None
+    if refusal is not None:
+        refusal_report = {
+            'router_id': refusal['router_id'], 'artifact_sha256': refusal['artifact_sha256'],
+            'terminal_cost': refusal['terminal_cost'],
+            'note': 'verified to refuse deployment safely; not asserted to satisfy '
+                    'task-risk or omission-risk budgets'}
+    return {'schema_version': 2, 'study_id': study['study_id'],
+            'status': status, 'selected': chosen, 'action': action,
+            'tier': tier, 'regime': regime, 'deployment_order': order,
+            'refusal': refusal_report,
             'confidence': {'delta': delta, 'comparisons': comparisons, 'per_bound_delta': eta,
                            'unit_radius': gamma, 'method': 'Hoeffding; DKW-Massart for optional CVaR'},
             'scope': {'requirements': dict(sorted(requirements.items())), 'cells': cells,
                       'loss_max': maximum, 'loss_unit': study['loss_unit'],
                       'samples_per_cell': planned, 'tail': tail,
-                      'assumptions': study['assumptions'],
+                      'assumptions': study['assumptions'], 'evidence': evidence,
                       'structural_evidence': 'declared sets only; not authenticated or enforced',
-                      'decision_deficiency': 'not certified', 'regret': 'not certified',
+                      'decision_deficiency': ('evaluator-attested, not independently certified'
+                                              if tier == 'ds' else 'not certified'),
+                      'regret': 'not certified',
                       'distribution_shift': 'not certified'},
             'candidates': reports}
 

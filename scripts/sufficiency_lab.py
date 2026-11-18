@@ -27,7 +27,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from repair_eval import PYTHON, ASSETS, check, run_agent, agent_facts, wilson  # noqa: E402
+from repair_eval import ASSETS, check, run_agent, agent_facts, wilson  # noqa: E402
 from sufficiency_audit import execution_error  # noqa: E402
 
 HEADER = '''---

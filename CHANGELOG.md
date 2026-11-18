@@ -24,6 +24,14 @@
   `host_demo.py --forms` defaults to `inline`.
 - `.gitattributes` pins digest-bound files (frozen corpora, approved
   flows, lifecycle evidence) byte-exact on every checkout.
+- Empirical DPCC selector (`skillwren select`, schema 2): per-regime
+  studies with operational and decision-sufficiency tiers, fallback-ranked
+  portfolios, per-candidate certificates with fallback links, an
+  evaluator-attested (not proved) deficiency bound, invariant-verification
+  gating, evidence-reuse modes (fresh/split/adaptive), and a verified
+  refusal-only router when nothing is admissible. Regime classification,
+  the runtime monitor, and the certified router remain deployment-side
+  work.
 
 ## 0.9.0 (2026-11-17)
 

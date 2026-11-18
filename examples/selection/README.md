@@ -15,15 +15,17 @@ model results. Candidate hashes identify the committed concise and
 contrastive form files; the selector does not independently load or verify
 those artifacts.
 
-## Schema 1
+## Schema 2
 
 The example is a complete input. Unknown fields and duplicate JSON keys
 are rejected rather than silently ignored.
 
 | Field | Meaning |
 |---|---|
-| `schema_version` | Integer 1 |
+| `schema_version` | Integer 2 |
 | `study_id` | Nonempty identifier for the predeclared certification study |
+| `regime` | Deployment regime: `task_family`, `context_band`, `language`, `risk_tier`, all nonempty strings |
+| `tier` | `op` (structure + risk + tail) or `ds` (additionally an evaluator-attested deficiency bound) |
 | `assumptions` | All three booleans must be true: `fixed_candidates`, `fixed_sample_size`, `iid_within_cell` |
 | `delta` | Joint confidence failure budget, strictly between 0 and 1 |
 | `loss_max` | Known finite positive upper bound for trajectory loss, fixed before sampling |
@@ -31,7 +33,9 @@ are rejected rather than silently ignored.
 | `samples_per_cell` | Fixed positive number of observations per candidate/cell |
 | `requirements` | Nonempty map of measured violation types to tolerances in [0,1] |
 | `cells` | Named objects with `model` and `group`; must form the complete declared Cartesian product |
-| `candidates` | Map of fixed candidate IDs to artifact hash, optional structure and cell samples |
+| `candidates` | Map of fixed candidate IDs to artifact hash, required `fallback_rank` (positive, unique), required `inv_verified` attestation (missing/False leaves the candidate uncertified), optional `cfg_sha256` config provenance, optional structure, optional `deficiency` attestation, and cell samples |
+| `refusal` | Optional verified refusal-only router (`router_id`, `artifact_sha256`, `inv_verified: true`, `refusal_only: true`, `terminal_cost`): selected with action `refuse` when nothing is admissible; never a risk-budget claim |
+| `evidence` | Optional reuse-mode declaration (default `fresh`): `split` needs `partition_recorded: true`; `adaptive` needs an `adaptive_coverage` procedure + certificate digest; anything else denies the study |
 | `tail` | Optional object: `nu` strictly between 0 and 1 and `budget` between 0 and `loss_max` |
 
 Requirement types: `safety`, `omission`, `task`, `proc`, `sem`, `anchor`,
@@ -60,11 +64,19 @@ behavioral outcomes, not automatically infrastructure errors.
 ## Interpreting output
 
 - Exit 0: `selected` names the candidate minimizing the maximum cell loss
-  upper bound among those passing all configured tests. Ties use candidate
-  ID order. `action: recommend` has no execution or permission effects.
-- Exit 1: no candidate is certified; `action: abstain`. Per-candidate
-  reasons distinguish incomplete observations, missing structure, failed
-  structural inclusions and upper bounds exceeding limits. This does not
+  upper bound among those passing all configured tests. Ties prefer the
+  lower `fallback_rank`, then candidate ID order. `action: recommend` has
+  no execution or permission effects.
+- `deployment_order` lists admissible candidates in fallback-preference
+  order for a deployment-side router; each carries a `certificate` with
+  its scope, bounds, thresholds, and `fallback_next` link (`abstain` for
+  the last). Under tier `ds` each candidate needs a `deficiency`
+  attestation (`upper` at or under `threshold`); the selector checks the
+  evaluator's bound, it does not prove it.
+- Exit 1: no candidate is certified and no verified refusal is configured;
+  `action: abstain`. Per-candidate reasons distinguish incomplete
+  observations, missing structure, failed structural inclusions, missing
+  invariant verification, and upper bounds exceeding limits. This does not
   prove population infeasibility.
 - Exit 2: invalid input or unreadable file; diagnostic on stderr, no JSON
   recommendation on stdout.

@@ -74,10 +74,15 @@ it; see [Evidence](#evidence).
 
 For fixed-study empirical representation selection, `skillwren select`
 checks supplied structural manifests and simultaneous requirement-risk
-bounds across model-group cells, with an optional CVaR budget. It recommends
-a candidate or abstains; it does not enforce execution or prove semantic
-equivalence. See the [input example](examples/selection/README.md) and
-[working formulation](docs/current/research/semantic-sufficiency/FORMULATION.md).
+bounds across model-group cells of one deployment regime, with an optional
+CVaR budget and an optional decision-sufficiency tier. It recommends the
+cheapest admissible candidate, falls back to a configured verified refusal
+router, or abstains; it ranks admissible policies in fallback-preference
+order and emits per-candidate certificates for a deployment-side router.
+It does not classify live inputs, monitor execution, or prove semantic
+equivalence. See the [input
+example](examples/selection/README.md) and [working
+formulation](docs/current/research/semantic-sufficiency/FORMULATION.md).
 
 Install (checking and plain builds use the standard library; exact token
 metrics are optional):

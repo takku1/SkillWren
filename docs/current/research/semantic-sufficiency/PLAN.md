@@ -5,6 +5,13 @@ and [working notes](NOTES.md). These extend the research program; the
 existing pilot and main-run preregistration retain their original scoring
 and decision rules.
 
+First real certification study (draft, unexecuted): [FS-01 full-stack
+representation preregistration](select-fs01/PREREGISTRATION.md) with a
+[schema-2 study skeleton](select-fs01/study.json). It tests the new
+inline-logic form against the original skill content and the FS-009
+brief; placeholder hashes and empty samples must be replaced with frozen
+artifacts and collected observations before the single `select` call.
+
 Question: which parts of a skill's text actually carry the behaviour a task
 needs, and what is the smallest representation that keeps that behaviour,
 for a given model and task? This is a research track beside SkillWren's

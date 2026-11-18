@@ -1,6 +1,13 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "study_id": "synthetic-example-not-certification-evidence",
+  "regime": {
+    "task_family": "audit",
+    "context_band": "small",
+    "language": "en",
+    "risk_tier": "standard"
+  },
+  "tier": "op",
   "assumptions": {
     "fixed_candidates": true,
     "fixed_sample_size": true,
@@ -26,6 +33,8 @@
   "candidates": {
     "concise": {
       "artifact_sha256": "b3cecd94980b7a0721926bac878e4be46682ee516188fa0e06ec19f0f51b4eed",
+      "fallback_rank": 1,
+      "inv_verified": true,
       "structure": [
         {
           "step": "audit",
@@ -102,6 +111,8 @@
     },
     "contrastive": {
       "artifact_sha256": "422ae0f47ae9f499493cb9988a1a81e94c8542a579e36c6d5fe97e87c400ef9b",
+      "fallback_rank": 2,
+      "inv_verified": true,
       "structure": [
         {
           "step": "audit",
