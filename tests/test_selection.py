@@ -49,9 +49,10 @@ def study(n=1000, tier='op'):
 
 
 class SelectionTests(unittest.TestCase):
-    def test_cheapest_certified_candidate_and_uniform_allocation(self):
+    def test_cheapest_admissible_candidate_and_uniform_allocation(self):
         result = select(study())
         self.assertEqual(result['selected'], 'compact')
+        self.assertEqual(result['scope']['cell_weights'], {'h': 1.0})
         self.assertEqual(result['confidence']['comparisons'], 4)
         self.assertEqual(result['confidence']['per_bound_delta'], 0.05 / 4)
         self.assertAlmostEqual(confidence_radius(1000, 0.0125), math.sqrt(math.log(160)/2000))
@@ -61,8 +62,8 @@ class SelectionTests(unittest.TestCase):
         result = select(study(5))
         self.assertIsNone(result['selected'])
         self.assertEqual(result['action'], 'abstain')
-        self.assertEqual(result['status'], 'no_certified_candidate')
-        self.assertEqual(result['candidates']['compact']['status'], 'uncertified')
+        self.assertEqual(result['status'], 'no_admissible_candidate')
+        self.assertEqual(result['candidates']['compact']['status'], 'inadmissible')
 
     def test_requirement_failure_excludes_cheap_candidate(self):
         data = study()
@@ -103,10 +104,10 @@ class SelectionTests(unittest.TestCase):
                 self.assertIn(invariant, [f['invariant'] for f in report['structure']['failures']])
                 self.assertEqual(result['confidence']['comparisons'], 4)
 
-    def test_missing_structural_evidence_is_uncertified(self):
+    def test_missing_structural_evidence_is_inadmissible(self):
         data = study()
         del data['candidates']['compact']['structure']
-        self.assertEqual(select(data)['candidates']['compact']['status'], 'uncertified')
+        self.assertEqual(select(data)['candidates']['compact']['status'], 'inadmissible')
 
     def test_dependency_may_be_retained_instead_of_resolved(self):
         steps = structure()
@@ -197,7 +198,7 @@ class SelectionTests(unittest.TestCase):
         data['requirements']['safety'] = confidence_radius(1000, .05/4)
         self.assertEqual(select(data)['selected'], 'compact')
 
-    def test_invalid_sampling_assumptions_are_not_certificates(self):
+    def test_invalid_sampling_assumptions_are_not_admissible(self):
         for assumption in ('fixed_candidates', 'fixed_sample_size', 'iid_within_cell'):
             data = study(1)
             data['assumptions'][assumption] = False
@@ -288,13 +289,13 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(certificate['regime'], regime())
         self.assertEqual(certificate['thresholds']['requirements'], {'safety': 0.1})
         self.assertIn('per_bound_delta', certificate['confidence'])
-        uncertified = select(study(5))['candidates']['compact']
-        self.assertEqual(uncertified['status'], 'uncertified')
-        self.assertNotIn('certificate', uncertified)
+        inadmissible = select(study(5))['candidates']['compact']
+        self.assertEqual(inadmissible['status'], 'inadmissible')
+        self.assertNotIn('certificate', inadmissible)
 
     def test_ds_tier_checks_attested_deficiency(self):
         data = study(tier='ds')
-        self.assertEqual(select(data)['status'], 'no_certified_candidate')
+        self.assertEqual(select(data)['status'], 'no_admissible_candidate')
         self.assertIn('deficiency:unattested',
                       select(data)['candidates']['compact']['reasons'])
         compact = data['candidates']['compact']
@@ -317,7 +318,7 @@ class SelectionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'requires tier ds'):
             select(data)
 
-    def test_missing_or_false_invariant_attestation_is_uncertified(self):
+    def test_missing_or_false_invariant_attestation_is_inadmissible(self):
         data = study()
         del data['candidates']['compact']['inv_verified']
         result = select(data)
@@ -362,7 +363,7 @@ class SelectionTests(unittest.TestCase):
 
     def test_refusal_without_admissible_set_still_abstains(self):
         result = select(study(5))
-        self.assertEqual(result['status'], 'no_certified_candidate')
+        self.assertEqual(result['status'], 'no_admissible_candidate')
         self.assertIsNone(result['selected'])
         self.assertIsNone(result['refusal'])
 
@@ -397,6 +398,42 @@ class SelectionTests(unittest.TestCase):
             with self.subTest(evidence=bad), self.assertRaises(ValueError):
                 select(data)
 
+    def test_cell_weights_map_objective_to_deployment_distribution(self):
+        data = study()
+        data['cells']['other'] = {'model': 'other-model', 'group': 'test-group'}
+        for sample in data['candidates']['compact']['samples']['h']:
+            sample['loss'] = 0.5
+        data['candidates']['compact']['samples']['other'] = observations(1000, 0.1)
+        for sample in data['candidates']['full']['samples']['h']:
+            sample['loss'] = 0.1
+        data['candidates']['full']['samples']['other'] = observations(1000, 0.5)
+        # Uniform weights tie at 0.3; fallback rank decides for compact.
+        result = select(data)
+        self.assertEqual(result['selected'], 'compact')
+        self.assertEqual(result['scope']['cell_weights'], {'h': 0.5, 'other': 0.5})
+        # Weighting the cell where full is cheap flips the optimum:
+        # full 0.14 < compact 0.46, although compact wins the tie unweighted.
+        data['cell_weights'] = {'h': 0.9, 'other': 0.1}
+        result = select(data)
+        self.assertEqual(result['selected'], 'full')
+        self.assertAlmostEqual(result['candidates']['full']['objective_mean'], 0.14)
+        self.assertAlmostEqual(result['candidates']['compact']['objective_mean'], 0.46)
+        weights = result['candidates']['full']['certificate']['thresholds']['cell_weights']
+        self.assertEqual(weights, {'h': 0.9, 'other': 0.1})
+
+    def test_invalid_cell_weights_fail_closed(self):
+        for weights in ('uniform', {'other': 1.0},
+                        {'h': 0.5}, {'h': 0.9, 'other': 0.2}, {'h': -0.1, 'other': 1.1},
+                        {'h': True, 'other': 0.0}, {'h': 1.1, 'other': 0.0}):
+            data = study()
+            data['cells']['other'] = {'model': 'other-model', 'group': 'test-group'}
+            data['cell_weights'] = weights
+            with self.subTest(weights=weights), self.assertRaises(ValueError):
+                select(data)
+        data = study()
+        data['cell_weights'] = {'h': 1.0}
+        self.assertEqual(select(data)['selected'], 'compact')
+
     def test_invalid_refusal_fails_closed(self):
         for key, value in [('router_id', ''), ('artifact_sha256', 'zz'),
                            ('inv_verified', False), ('inv_verified', 1),
@@ -430,7 +467,7 @@ class SelectionCLITests(unittest.TestCase):
         self.assertEqual(report['selected'], 'compact')
         self.assertEqual(report['input_sha256'], digest)
 
-    def test_uncertified_exit_is_distinct_from_invalid_input(self):
+    def test_inadmissible_exit_is_distinct_from_invalid_input(self):
         result, _ = self.invoke(json.dumps(study(5)))
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertEqual(json.loads(result.stdout)['action'], 'abstain')

@@ -17,8 +17,10 @@ runtime comparison. Current verification results are recorded in CI.
   candidate-router set under the frozen v23 router-certification spec:
   declared authority/dependency sets, simultaneous risk bounds, worst-cell
   loss, optional CVaR and DS tiers, invariant-verification and evidence-reuse
-  gates, fallback-ranked certificates, and a verified refusal router when
-  nothing is admissible (otherwise it abstains). [Formulation](current/research/semantic-sufficiency/FORMULATION.md)
+  gates, fallback-ranked certificates, a verified refusal router when
+  nothing is admissible (otherwise it abstains), and optional cell weights
+  mapping the objective to the deployment distribution. Verdicts are
+  study-admissible, never deployment-certified. [Formulation](current/research/semantic-sufficiency/FORMULATION.md)
   and [notes](current/research/semantic-sufficiency/NOTES.md) preserve the
   user's broader model; deficiency estimation, adaptive search and regret
   guarantees remain research work. The historical main run and its

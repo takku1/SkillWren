@@ -1,5 +1,21 @@
 # Working notes: DPCC and empirical sufficiency
 
+## 2026-11-17: re-audit P1s — admissible verdicts, deployment-weighted objective
+
+External re-audit accepted with two corrections. (1) Terminology:
+candidate verdicts are study-`admissible` / `inadmissible`, and the empty
+outcome is `no_admissible_candidate`. The report no longer says
+`certified` about anything the selector itself establishes; only the
+normative spec's deployment predicates (`ValidCert`, `RefusalVerified`)
+and explicit denials (`not certified`) keep the word. (2) Objective:
+optional study-level `cell_weights` (every cell exactly once, sum to 1,
+default uniform) weight the mean cost estimate toward the intended
+deployment distribution, answering the uniform-weighting caveat. Weights
+change only the objective aggregation — per-cell bounds and their
+multiplicity cost are untouched — and are recorded in scope and
+certificates. Covered by a flip test (weights reverse the uniform
+optimum) and fail-closed validation.
+
 ## 2026-11-17: objective corrected to mean estimate (audit finding)
 
 External audit confirmed by construction: the selector minimized worst-cell

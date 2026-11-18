@@ -29,9 +29,11 @@
   portfolios, per-candidate certificates with fallback links, an
   evaluator-attested (not proved) deficiency bound, invariant-verification
   gating, evidence-reuse modes (fresh/split/adaptive), and a verified
-  refusal-only router when nothing is admissible. Regime classification,
-  the runtime monitor, and the certified router remain deployment-side
-  work.
+  refusal-only router when nothing is admissible. Verdicts are
+  study-admissible, never deployment-certified; optional cell weights map
+  the objective mean to the deployment distribution. Regime
+  classification, the runtime monitor, and the certified router remain
+  deployment-side work.
 
 ## 0.9.0 (2026-11-17)
 

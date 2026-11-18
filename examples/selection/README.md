@@ -7,7 +7,7 @@ py -3 scripts/skillwren.py select examples/selection/study.json
 ```
 
 This synthetic example has five planned observations per candidate. It
-returns **exit 1**, `status: no_certified_candidate`, and `action: abstain`:
+returns **exit 1**, `status: no_admissible_candidate`, and `action: abstain`:
 five successes cannot establish a 5% risk bound at the configured joint
 confidence. One candidate also has an execution error; its cell receives
 no statistical bounds. The observations are illustrative, not measured
@@ -23,7 +23,7 @@ are rejected rather than silently ignored.
 | Field | Meaning |
 |---|---|
 | `schema_version` | Integer 2 |
-| `study_id` | Nonempty identifier for the predeclared certification study |
+| `study_id` | Nonempty identifier for the predeclared admissibility study |
 | `regime` | Deployment regime: `task_family`, `context_band`, `language`, `risk_tier`, all nonempty strings |
 | `tier` | `op` (structure + risk + tail) or `ds` (additionally an evaluator-attested deficiency bound) |
 | `assumptions` | All three booleans must be true: `fixed_candidates`, `fixed_sample_size`, `iid_within_cell` |
@@ -33,19 +33,20 @@ are rejected rather than silently ignored.
 | `samples_per_cell` | Fixed positive number of observations per candidate/cell |
 | `requirements` | Nonempty map of measured violation types to tolerances in [0,1] |
 | `cells` | Named objects with `model` and `group`; must form the complete declared Cartesian product |
-| `candidates` | Map of fixed candidate IDs to artifact hash, required `fallback_rank` (positive, unique), required `inv_verified` attestation (missing/False leaves the candidate uncertified), optional `cfg_sha256` config provenance, optional structure, optional `deficiency` attestation, and cell samples |
+| `candidates` | Map of fixed candidate IDs to artifact hash, required `fallback_rank` (positive, unique), required `inv_verified` attestation (missing/False leaves the candidate inadmissible), optional `cfg_sha256` config provenance, optional structure, optional `deficiency` attestation, and cell samples |
 | `refusal` | Optional verified refusal-only router (`router_id`, `artifact_sha256`, `inv_verified: true`, `refusal_only: true`, `terminal_cost`): selected with action `refuse` when nothing is admissible; never a risk-budget claim |
 | `evidence` | Optional reuse-mode declaration (default `fresh`): `split` needs `partition_recorded: true`; `adaptive` needs an `adaptive_coverage` procedure + certificate digest; anything else denies the study |
+| `cell_weights` | Optional map from every cell ID to a nonnegative weight summing to 1 (default uniform): weights the objective mean toward the intended deployment distribution; bounds and multiplicity are unaffected |
 | `tail` | Optional object: `nu` strictly between 0 and 1 and `budget` between 0 and `loss_max` |
 
 Requirement types: `safety`, `omission`, `task`, `proc`, `sem`, `anchor`,
-`fidelity`. Only configured types are certified. Define their host-scored
+`fidelity`. Only configured types are bounded. Define their host-scored
 violation predicates before collecting data; these labels do not supply
 semantic evaluators by themselves.
 
 Each candidate has a lowercase 64-character `artifact_sha256`, a
 `structure` list, and a `samples` object keyed by cell ID. Missing or null
-`structure` makes the candidate uncertified. An empty or malformed list
+`structure` makes the candidate inadmissible. An empty or malformed list
 is an input error. Each structural step names allowed, required and
 retained privileges plus required dependencies, retained nodes and
 already-resolved dependencies. Scope privileges to actual resources and
@@ -56,7 +57,7 @@ Each observation has a unique `id` within its candidate/cell. A
 `completed` observation supplies a finite bounded `loss` and a
 `violations` object with exactly one boolean for every configured type.
 An `execution_error` supplies a nonempty `reason` instead of metrics.
-Missing observations are permitted but cannot establish certification;
+Missing observations are permitted but cannot establish admissibility;
 extra observations, undeclared cells, and duplicate IDs are input errors.
 Tool denials or bad reports in an otherwise completed agent execution are
 behavioral outcomes, not automatically infrastructure errors.
@@ -75,7 +76,7 @@ behavioral outcomes, not automatically infrastructure errors.
   the last). Under tier `ds` each candidate needs a `deficiency`
   attestation (`upper` at or under `threshold`); the selector checks the
   evaluator's bound, it does not prove it.
-- Exit 1: no candidate is certified and no verified refusal is configured;
+- Exit 1: no candidate is admissible and no verified refusal is configured;
   `action: abstain`. Per-candidate reasons distinguish incomplete
   observations, missing structure, failed structural inclusions, missing
   invariant verification, and upper bounds exceeding limits. This does not

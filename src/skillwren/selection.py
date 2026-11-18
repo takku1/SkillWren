@@ -137,7 +137,7 @@ def select(study):
     """Return an auditable recommendation, never execute a candidate or fallback."""
     _object(study, {'schema_version', 'study_id', 'regime', 'tier', 'assumptions', 'delta',
                     'loss_max', 'loss_unit', 'samples_per_cell', 'requirements', 'cells',
-                    'candidates'}, {'tail', 'refusal', 'evidence'})
+                    'candidates'}, {'tail', 'refusal', 'evidence', 'cell_weights'})
     if type(study['schema_version']) is not int or study['schema_version'] != 2:
         raise ValueError('schema_version must be 2')
     _name(study['study_id'], 'study_id')
@@ -199,6 +199,20 @@ def select(study):
     # H is explicitly a Cartesian product, not a list that silently omits hard groups.
     if len(pairs) != len({m for m, _ in pairs}) * len({g for _, g in pairs}):
         raise ValueError('cells must contain the complete declared model-group Cartesian product')
+    # Cell weights map the study objective onto the intended deployment
+    # distribution. Uniform by default; an explicit map must name every
+    # cell exactly once and sum to one. Weights change only the objective
+    # aggregation, never the per-cell bounds or their multiplicity cost.
+    raw_weights = study.get('cell_weights')
+    if raw_weights is None:
+        weights = {name: 1 / len(cells) for name in sorted(cells)}
+    else:
+        _object(raw_weights, set(cells), label='cell_weights')
+        weights = {}
+        for name in sorted(raw_weights):
+            weights[name] = _number(raw_weights[name], 0, 1, f'cell_weights.{name}')
+        if abs(math.fsum(weights.values()) - 1) > 1e-9:
+            raise ValueError('cell_weights must sum to 1')
     tail = study.get('tail')
     if tail is not None:
         _object(tail, {'nu', 'budget'}, label='tail')
@@ -295,15 +309,16 @@ def select(study):
             row['bounds'] = bounds
         complete = all(row['bounds'] is not None for row in cell_reports.values())
         # Worst-cell upper loss is reported for audit; the selection objective
-        # is the mean cost estimate (v23 Section VIII: argmin J-hat over the
-        # feasible set). Safety stays in the per-cell bounds, not the objective.
+        # is the weighted mean cost estimate (v23 Section VIII: argmin J-hat
+        # over the feasible set, weighted by the deployment distribution).
+        # Safety stays in the per-cell bounds, not the objective.
         objective_upper = (max(row['bounds']['loss']['upper'] for row in cell_reports.values())
                            if complete else None)
-        objective_mean = (math.fsum(row['bounds']['loss']['estimate']
-                                    for row in cell_reports.values())
-                          / len(cell_reports) if complete else None)
-        status = 'certified' if not reasons else (
-            'structurally_rejected' if structure['status'] == 'rejected' else 'uncertified')
+        objective_mean = (math.fsum(cell_reports[cid]['bounds']['loss']['estimate']
+                                    * weights[cid] for cid in cell_reports)
+                          if complete else None)
+        status = 'admissible' if not reasons else (
+            'structurally_rejected' if structure['status'] == 'rejected' else 'inadmissible')
         reports[name] = {'artifact_sha256': digest, 'status': status, 'structure': structure,
                          'reasons': reasons, 'cells': cell_reports,
                          'objective_upper': objective_upper,
@@ -320,7 +335,7 @@ def select(study):
         status, action = 'refusal', 'refuse'
     else:
         chosen = None
-        status, action = 'no_certified_candidate', 'abstain'
+        status, action = 'no_admissible_candidate', 'abstain'
     order = sorted(feasible, key=lambda name: (reports[name]['fallback_rank'], name))
     for position, name in enumerate(order):
         nxt = order[position + 1] if position + 1 < len(order) else 'abstain'
@@ -332,7 +347,8 @@ def select(study):
             'cfg_sha256': candidates[name].get('cfg_sha256'),
             'evidence': {'reuse_mode': mode},
             'thresholds': {'requirements': dict(sorted(requirements.items())), 'tail': tail,
-                           'deficiency': candidates[name].get('deficiency')},
+                           'deficiency': candidates[name].get('deficiency'),
+                           'cell_weights': dict(weights)},
             'confidence': {'delta': delta, 'comparisons': comparisons,
                            'per_bound_delta': eta},
             'scope': 'declared regime, cells, and evaluator evidence only; '
@@ -354,6 +370,7 @@ def select(study):
                       'loss_max': maximum, 'loss_unit': study['loss_unit'],
                       'samples_per_cell': planned, 'tail': tail,
                       'assumptions': study['assumptions'], 'evidence': evidence,
+                      'cell_weights': dict(weights),
                       'structural_evidence': 'declared sets only; not authenticated or enforced',
                       'decision_deficiency': ('evaluator-attested, not independently certified'
                                               if tier == 'ds' else 'not certified'),
