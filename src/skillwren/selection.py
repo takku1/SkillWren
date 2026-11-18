@@ -293,17 +293,26 @@ def select(study):
                 if bounds['tail']['upper'] > tail['budget']:
                     reasons.append(f'{cell_id}:tail:upper_exceeds_budget')
             row['bounds'] = bounds
-        objective = (max(row['bounds']['loss']['upper'] for row in cell_reports.values())
-                     if all(row['bounds'] is not None for row in cell_reports.values()) else None)
+        complete = all(row['bounds'] is not None for row in cell_reports.values())
+        # Worst-cell upper loss is reported for audit; the selection objective
+        # is the mean cost estimate (v23 Section VIII: argmin J-hat over the
+        # feasible set). Safety stays in the per-cell bounds, not the objective.
+        objective_upper = (max(row['bounds']['loss']['upper'] for row in cell_reports.values())
+                           if complete else None)
+        objective_mean = (math.fsum(row['bounds']['loss']['estimate']
+                                    for row in cell_reports.values())
+                          / len(cell_reports) if complete else None)
         status = 'certified' if not reasons else (
             'structurally_rejected' if structure['status'] == 'rejected' else 'uncertified')
         reports[name] = {'artifact_sha256': digest, 'status': status, 'structure': structure,
-                         'reasons': reasons, 'cells': cell_reports, 'objective_upper': objective,
+                         'reasons': reasons, 'cells': cell_reports,
+                         'objective_upper': objective_upper,
+                         'objective_mean': objective_mean,
                          'fallback_rank': rank}
         if not reasons:
             feasible.append(name)
     if feasible:
-        chosen = min(feasible, key=lambda name: (reports[name]['objective_upper'],
+        chosen = min(feasible, key=lambda name: (reports[name]['objective_mean'],
                                                  reports[name]['fallback_rank'], name))
         status, action = 'selected', 'recommend'
     elif refusal is not None:

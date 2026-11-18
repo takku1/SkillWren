@@ -1,5 +1,18 @@
 # Working notes: DPCC and empirical sufficiency
 
+## 2026-11-17: objective corrected to mean estimate (audit finding)
+
+External audit confirmed by construction: the selector minimized worst-cell
+upper loss while v23 Section VIII specifies argmin J-hat (mean cost
+estimate) over the feasible set. Reproduced with flat-0.4 vs split-0.0/0.7
+candidates (old rule picks the flat one, J-hat picks the split one).
+Fixed: `objective_mean` (uniform mean of cell loss estimates) now drives
+selection with (fallback_rank, name) tie-breaks; `objective_upper`
+(worst-cell upper) is retained in the report for audit. Safety is
+unchanged — it lives in the per-cell requirement, tail, and deficiency
+bounds, never in the objective. Covered by a divergence test asserting
+both directions (lower mean wins despite a higher worst-cell upper).
+
 ## 2026-11-17: v23 frozen spec — typed environment, evidence modes, denial
 
 The user froze v23: a typed semantic environment (obs/choice/aux/param

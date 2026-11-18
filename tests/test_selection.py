@@ -114,12 +114,31 @@ class SelectionTests(unittest.TestCase):
         steps[0]['resolved_dependencies'] = []
         self.assertEqual(structural_check(steps)['status'], 'passed_declared_sets')
 
-    def test_worst_cell_objective_not_pooled_average(self):
+    def test_worst_cell_bounds_still_gate(self):
         data = study()
         data['cells']['other'] = {'model': 'other-model', 'group': 'test-group'}
         data['candidates']['compact']['samples']['other'] = observations(1000, 0.9)
         data['candidates']['full']['samples']['other'] = observations(1000, 0.3)
         self.assertEqual(select(data)['selected'], 'full')
+
+    def test_objective_is_mean_estimate_not_worst_cell_upper(self):
+        # compact is flat at 0.4/0.4 (mean 0.4, worst-cell upper ~0.45);
+        # full is 0.0/0.7 (mean 0.35, worst-cell upper ~0.75). The v23
+        # objective (argmin J-hat) selects full; worst-cell-upper would
+        # select compact. Safety stays in the per-cell bounds.
+        data = study()
+        data['cells']['other'] = {'model': 'other-model', 'group': 'test-group'}
+        for sample in data['candidates']['compact']['samples']['h']:
+            sample['loss'] = 0.4
+        data['candidates']['compact']['samples']['other'] = observations(1000, 0.4)
+        for sample in data['candidates']['full']['samples']['h']:
+            sample['loss'] = 0.0
+        data['candidates']['full']['samples']['other'] = observations(1000, 0.7)
+        result = select(data)
+        self.assertEqual(result['selected'], 'full')
+        compact, full = (result['candidates'][name] for name in ('compact', 'full'))
+        self.assertLess(full['objective_mean'], compact['objective_mean'])
+        self.assertGreater(full['objective_upper'], compact['objective_upper'])
 
     def test_requirement_in_one_cell_is_enough_to_block(self):
         data = study()

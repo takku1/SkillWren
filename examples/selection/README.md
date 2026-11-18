@@ -63,10 +63,12 @@ behavioral outcomes, not automatically infrastructure errors.
 
 ## Interpreting output
 
-- Exit 0: `selected` names the candidate minimizing the maximum cell loss
-  upper bound among those passing all configured tests. Ties prefer the
-  lower `fallback_rank`, then candidate ID order. `action: recommend` has
-  no execution or permission effects.
+- Exit 0: `selected` names the candidate minimizing the mean
+  trajectory-loss estimate across cells among those passing all configured
+  tests (worst-cell upper loss is still reported for audit, and all safety
+  stays in the per-cell bounds, not the objective). Ties prefer the lower
+  `fallback_rank`, then candidate ID order. `action: recommend` has no
+  execution or permission effects.
 - `deployment_order` lists admissible candidates in fallback-preference
   order for a deployment-side router; each carries a `certificate` with
   its scope, bounds, thresholds, and `fallback_next` link (`abstain` for
