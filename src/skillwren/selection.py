@@ -357,6 +357,7 @@ def select(study):
     if refusal is not None:
         refusal_report = {
             'router_id': refusal['router_id'], 'artifact_sha256': refusal['artifact_sha256'],
+            'inv_verified': True, 'refusal_only': True,
             'terminal_cost': refusal['terminal_cost'],
             'note': 'verified to refuse deployment safely; not asserted to satisfy '
                     'task-risk or omission-risk budgets'}
