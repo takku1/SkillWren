@@ -34,6 +34,11 @@
   the objective mean to the deployment distribution. Regime
   classification, the runtime monitor, and the certified router remain
   deployment-side work.
+- Deployment bridge (`skillwren certgate`): binds selection certificates
+  to artifact bytes, regime, and config; walks the fallback chain;
+  denies tampered reports, altered artifacts, and context mismatches. A
+  verified refusal router yields `refuse`; monitor and policy are
+  caller-asserted inputs.
 
 ## 0.9.0 (2026-11-17)
 

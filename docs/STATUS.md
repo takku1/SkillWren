@@ -20,7 +20,10 @@ runtime comparison. Current verification results are recorded in CI.
   gates, fallback-ranked certificates, a verified refusal router when
   nothing is admissible (otherwise it abstains), and optional cell weights
   mapping the objective to the deployment distribution. Verdicts are
-  study-admissible, never deployment-certified. [Formulation](current/research/semantic-sufficiency/FORMULATION.md)
+  study-admissible, never deployment-certified. The deployment bridge
+  (`skillwren certgate`) binds those certificates to artifact bytes,
+  regime, and config before a trusted host authorizes execution.
+  [Formulation](current/research/semantic-sufficiency/FORMULATION.md)
   and [notes](current/research/semantic-sufficiency/NOTES.md) preserve the
   user's broader model; deficiency estimation, adaptive search and regret
   guarantees remain research work. The historical main run and its

@@ -50,12 +50,13 @@ it; see [Evidence](#evidence).
 
 - `src/skillwren/` — stdlib-only package and `skillwren` CLI (`check`,
   `explain-workflow`, `draft`, `approve`, `policy`, `guard`, `ledger`,
-  `audit`, `sandbox`, `measure`, `select`, `build`, `conform`).
+  `audit`, `sandbox`, `measure`, `select`, `certgate`, `build`, `conform`).
   The validator is the `skillwren.validator` package: `syntax`,
   `document`, `schema`, `flowgraph`, `ordering`, `analysis`, `files`,
   `explain`. `guard` is the trusted-host controller, `sandbox` the
-  isolated effect observer, `audit` the checkpointed event log, and
-  `ledger` the offline run checker.
+  isolated effect observer, `audit` the checkpointed event log,
+  `ledger` the offline run checker, and `certgate` the deployment gate
+  that binds selection certificates to artifact bytes and live context.
 - `docs/STATUS.md` — current state. `docs/current/` — `SPEC.md` (normative),
   `authoring-guide.md`, `skill-template.md`, `fragment-template.md`,
   `compiler.md`, `language-design.md`, `design/`, `research/`.
@@ -304,6 +305,22 @@ The ledger checks recorded steps after execution; it does not block actions
 or detect omitted events. Rules are captured at start. Hash chaining detects
 edits within the retained chain, but cannot detect a fully rewritten chain
 or truncation of its tail without an independently retained checkpoint.
+
+## Deployment gate
+
+`skillwren certgate` binds a `select` report to artifact bytes and the
+live deployment context before a trusted host authorizes execution:
+
+```text
+skillwren certgate report.json --artifacts ./artifacts --regime '{"task_family":"audit",...}' --cfg <sha256> --monitor-pass --policy-allows
+```
+
+It verifies the winner against its own reported bounds, artifact digests,
+regime and config binding, the full fallback chain, and invariant
+attestation; `--monitor-pass` and `--policy-allows` are caller-asserted
+runtime inputs. Verdicts: `allow` (exit 0), `refuse` for a verified
+refusal router (exit 0), `deny` (exit 1), invalid input (exit 2).
+Per-action structural checks stay with the runtime monitor.
 
 ## Codex
 

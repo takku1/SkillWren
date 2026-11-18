@@ -1,5 +1,20 @@
 # Working notes: DPCC and empirical sufficiency
 
+## 2026-11-18: deployment bridge — `skillwren certgate`
+
+Broader audit asked for the authenticated deployment pipeline (build →
+measure → admit → verify → check context → authorize). Implemented the
+offline-verifiable core as `src/skillwren/certgate.py` + `tests/test_certgate.py`:
+winner recomputed from reported evidence (tampered reports denied),
+artifact-byte binding for the selected router and its whole fallback
+chain, regime and config binding, invariant attestation, refusal routers
+verified but never allowed. `--monitor-pass` and `--policy-allows` are
+caller-asserted runtime inputs; per-action `StructOK`, live scope
+invalidation, and guard wiring stay deployment-side. Negative tests cover
+altered/missing artifacts, revoked evidence, regime and config mismatch,
+unbound configs, broken fallback links, and failing monitor/policy.
+Verdicts: `allow`/`refuse` exit 0, `deny` exit 1, invalid input exit 2.
+
 ## 2026-11-17: re-audit P1s — admissible verdicts, deployment-weighted objective
 
 External re-audit accepted with two corrections. (1) Terminology:
@@ -50,7 +65,7 @@ procedure + digest certificate; anything else denies the study);
 in scope and certificates. Offline `abstain` with no verified refusal is
 documented as the R_deny counterpart. Tie-break by (fallback_rank, name)
 is the documented CandidateID instantiation. XVIII–XXIII stay entirely
-future; XVII is approximated by exit-2/input-error vs uncertified
+future; XVII is approximated by exit-2/input-error vs inadmissible
 handling.
 
 ## 2026-11-17: frozen router-certification spec (schema 2, additive)
@@ -67,7 +82,7 @@ verified refusal-only R_bot that is not asserted to satisfy risk
 budgets, with c_bot accounted in evaluation loss.
 
 Implemented: per-candidate `inv_verified` attestation is now a
-feasibility gate (missing/False leaves the candidate uncertified with
+feasibility gate (missing/False leaves the candidate inadmissible with
 reason `router:unverified`; non-boolean fails closed); optional
 `cfg_sha256` provenance is recorded in certificates; an optional
 study-level `refusal` object selects a verified refusal router with

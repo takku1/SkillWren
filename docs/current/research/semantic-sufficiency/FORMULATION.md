@@ -349,19 +349,19 @@ Each row names the section, what the code does, and what stays outside.
 |---|---|---|
 | I (typed environment) | One regime per study; `fixed_candidates` is the R_0 independence claim; study-level `tier` and `reuse_mode` recorded. Joint minimization over $(\sigma,z)$ is impossible by construction; the CVaR $\inf_\eta$ is realized by finite evaluation over loss values. Regime classification $\phi$ is not run. | $\phi(X,T)$ classification; cross-regime optimization is rejected, not supported. |
 | II (config/certificates) | Per-candidate `cfg_sha256` provenance recorded in certificates; per-candidate certificate carries regime, tier, bounds, thresholds, input hash, fallback link. | `ConfigValid` conjuncts, freshness checks, bundle verification, monitor/router versions. |
-| III (inductive safety) | Declared-manifest proxy for `StructOK`; `inv_verified` attestation gates feasibility (missing/False leaves the candidate uncertified). | Transition-system proofs, live permit check, `PolicyAllows`, action-specific closure at runtime. |
+| III (inductive safety) | Declared-manifest proxy for `StructOK`; `inv_verified` attestation gates feasibility (missing/False leaves the candidate inadmissible). | Transition-system proofs, live permit check, `PolicyAllows`, action-specific closure at runtime. |
 | IV (deficiency) | DS tier checks the evaluator's $U_z^{\Delta,\rho}$ against $\delta_{\mathcal D}$; LB-never-proves-sufficiency is documented. | `UpperBoundProcedureVerified`; deficiency estimation. |
 | V (evidence reuse) | `reuse_mode` fresh/split/adaptive recorded; split requires recorded partition; adaptive requires a coverage certificate; otherwise the study is denied. | The underlying data hygiene itself; independent holdout collection. |
 | VI (CVaR) | Fractional-mass empirical CVaR with DKW-Massart radius; $\Gamma\vdash\mathrm{Optimize}(\eta)$ realized by the finite infimum. | Tighter tail estimators. |
 | VII (feasible family) | Evidence, invariant, risk, tail, and DS gates; `ConfigValid` and bundle verification recorded as unevaluated (certificates say what they bind, not that the binding was verified). | Config and bundle verification. |
 | VIII (selection) | Cost-optimal admissible router: deployment-weighted mean of cell loss estimates (`objective_mean`, uniform by default, optional `cell_weights`); worst-cell upper retained for audit. `CandidateID` is instantiated as (fallback_rank, candidate id), injective by unique names and ranks. Candidate status is `admissible`, never deployment-`certified`: study-admissible and deployment-certified are distinct predicates. | Nothing; complete offline. |
 | IX (refusal/fallback/denial) | Verified refusal router selected with `refuse` when the feasible set is empty; `abstain` without one is the offline R_deny counterpart (permits nothing, claims nothing). Refusal requires `refusal_only` and invariant verification. | `FallbackSelect` traversal, `PolicyFree` proof, live fallback reachability. |
-| X (certificate gate) | Certificates expose scope and fallback links for the gate to consume. | The gate itself, scope invalidation at runtime. |
+| X (certificate gate) | `skillwren certgate` verifies the offline-checkable bundle: winner recomputed from reported bounds, artifact digests, regime and config binding, full fallback-chain walk, invariant attestation. Monitor/policy are caller-asserted flags. | Live gate invocation, per-action `StructOK`, scope invalidation at runtime. |
 | XI–XII (coverage) | Finite-family equal allocation $\eta=\delta/Q$ with conservative two-sided Hoeffding intervals (the one-sided spec bound holds a fortiori from the two-sided radius). | Budget-split bookkeeping across heterogeneous estimators; infinite-family uniform bounds. |
 | XIII (false cert) | The unconditional bound is exactly what the union allocation targets; no vacuous conditional is emitted. | Nothing; complete as stated. |
 | XIV (scope) | Assumptions and regime recorded as the certified scope; deployment distribution is declared out of scope. | Scope-membership verification at runtime. |
 | XV–XVI (cost/metrics) | Terminal costs enter through the evaluator's bounded loss samples; $c_\bot$ is recorded on the refusal object. Coverage metrics are not estimated. | Live measurement. |
-| XVII (proof states) | Schema violations are REFUTED-style hard failures (exit 2); unattested evidence leaves candidates uncertified (UNKNOWN-like abstention), never silently certified. | A general proof-state tracker. |
+| XVII (proof states) | Schema violations are REFUTED-style hard failures (exit 2); unattested evidence leaves candidates inadmissible (UNKNOWN-like abstention), never silently admitted. | A general proof-state tracker. |
 | XVIII–XXIII (semantics/rewrites) | Not implemented; declared future Wilderbeast interface. Schema keys are disjoint by construction (no capture across requirement/observation namespaces). | Entirely future. |
 | XXIV (obligations) | Covered now: `TailBoundValid`, `TieBreakDeterministic`, `RefusalSafetyVerified` (attestation-gated), `DeficiencyUpperBoundValid` (check, not proof), `EvidenceReuseValid`, `SimultaneousCoverageValid` (finite case). Remainder deferred. | As listed in Ready/Deferred below. |
 
@@ -371,7 +371,7 @@ Keep Python 3.9+ and the standard library. A JSON manifest plus
 deterministic JSON output fits the existing CLI. Use simple, conservative
 concentration bounds before adding tighter estimators. Structural and
 empirical reports have separate fields. Input errors return exit 2; a
-valid study with no certified candidate and no verified refusal returns
+valid study with no admissible candidate and no verified refusal returns
 exit 1 and abstains; selection of an admissible router or of the verified
 refusal router returns exit 0.
 
