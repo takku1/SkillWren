@@ -113,6 +113,18 @@ class CertgateTests(unittest.TestCase):
         self.assertEqual(result['verdict'], 'deny')
         self.assertIn('fallback:unknown:ghost', result['reasons'])
 
+    def test_stale_fallback_certificate_denies(self):
+        report = select(study())
+        report['candidates']['full']['certificate']['regime'] = dict(regime(), language='fr')
+        result = gate(report)
+        self.assertEqual(result['verdict'], 'deny')
+        self.assertIn('fallback:regime:full', result['reasons'])
+        report = select(study())
+        report['candidates']['full']['certificate']['cfg_sha256'] = 'd' * 64
+        result = gate(report)
+        self.assertEqual(result['verdict'], 'deny')
+        self.assertIn('fallback:cfg:full', result['reasons'])
+
     def test_monitor_and_policy_gates_deny(self):
         result = gate(select(study()), monitor=False)
         self.assertEqual(result['verdict'], 'deny')
@@ -174,7 +186,7 @@ class CertgateCLITests(unittest.TestCase):
                            'inv_verified': True, 'refusal_only': True, 'terminal_cost': 0.5}
         refused = self.invoke(select(data), {'refuse-only': b'refuse'},
                               ['--monitor-pass', '--policy-allows'])
-        self.assertEqual(refused.returncode, 0, refused.stderr)
+        self.assertEqual(refused.returncode, 3, refused.stderr)
         self.assertEqual(json.loads(refused.stdout)['verdict'], 'refuse')
 
     def test_cli_invalid_input_is_exit_2(self):

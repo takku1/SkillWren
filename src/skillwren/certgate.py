@@ -11,7 +11,16 @@ consequential execution:
 `MonitorPass` and `PolicyAllows` are runtime inputs asserted by the
 caller through flags; per-action `StructOK` stays with the runtime
 monitor. Anything the gate cannot verify is a denial, never a pass.
-A verified refusal router yields `refuse` (exit 0): safe, never `allow`.
+The two success-shaped outcomes are different contracts:
+
+  Allow  ==> full deployment validation (bundle, context, monitor, policy).
+  Refuse ==> verified refusal only; safe terminal outcome, never an
+             authorization to execute. It stays available exactly when
+             monitor or policy fail, so it shares none of allow's checks
+             beyond refusal identity, flags, and artifact bytes.
+
+Callers must not treat exit 0 alone as permission: only `allow` (exit 0
+with verdict `allow`) authorizes; `refuse` exits 3.
 """
 import argparse
 import hashlib
@@ -39,8 +48,13 @@ def _report(report):
     return report
 
 
-def _check_chain(candidates, selected, artifacts, reasons):
-    """Walk fallback links; every link must resolve to bound evidence."""
+def _check_chain(candidates, selected, artifacts, regime, cfg_sha256, reasons):
+    """Walk fallback links; every link must resolve to bound evidence.
+
+    Each member carries the same regime, config, and tier binding as the
+    selected router: a stale fallback certificate denies the chain even
+    when its artifact bytes still match.
+    """
     seen, name, chain = set(), selected, []
     while name != 'abstain':
         if name in seen:
@@ -57,6 +71,12 @@ def _check_chain(candidates, selected, artifacts, reasons):
             return []
         if not certificate.get('inv_verified'):
             reasons.append(f'fallback:unverified:{name}')
+            return []
+        if certificate.get('regime') != regime:
+            reasons.append(f'fallback:regime:{name}')
+            return []
+        if certificate.get('cfg_sha256') != cfg_sha256:
+            reasons.append(f'fallback:cfg:{name}')
             return []
         blob = artifacts.get(name)
         if blob is None:
@@ -100,7 +120,10 @@ def verify(report, artifacts, regime, cfg_sha256, monitor_pass, policy_allows):
             reasons.append(f'artifact:missing:{selected}')
         elif _digest(blob, selected) != refusal.get('artifact_sha256'):
             reasons.append(f'artifact:mismatch:{selected}')
-        checked = {'route': 'refusal'}
+        checked = {'route': 'refusal',
+                   'inputs': {'regime': regime, 'cfg_sha256': cfg_sha256,
+                              'artifacts': sorted(artifacts),
+                              'monitor_pass': monitor_pass, 'policy_allows': policy_allows}}
         verdict = 'refuse' if not reasons else 'deny'
         return {'gate_schema_version': 1, 'verdict': verdict, 'selected': selected,
                 'action': 'refuse' if verdict == 'refuse' else 'deny',
@@ -143,7 +166,11 @@ def verify(report, artifacts, regime, cfg_sha256, monitor_pass, policy_allows):
         reasons.append('cfg:unbound-or-mismatch')
     if certificate.get('tier') != report.get('tier'):
         reasons.append('tier:mismatch')
-    checked['chain'] = _check_chain(candidates, selected, artifacts, reasons)
+    checked['chain'] = _check_chain(candidates, selected, artifacts, regime,
+                                      cfg_sha256, reasons)
+    checked['inputs'] = {'regime': regime, 'cfg_sha256': cfg_sha256,
+                         'artifacts': sorted(artifacts),
+                         'monitor_pass': monitor_pass, 'policy_allows': policy_allows}
     if not monitor_pass:
         reasons.append('monitor:not-passing')
     if not policy_allows:
@@ -186,4 +213,6 @@ def main(argv):
     print(json.dumps(verdict, indent=2, allow_nan=False))
     if verdict['verdict'] == 'deny':
         return 1
+    if verdict['verdict'] == 'refuse':
+        return 3
     return 0

@@ -1,5 +1,20 @@
 # Working notes: DPCC and empirical sufficiency
 
+## 2026-11-18: re-audit follow-up — refuse/allow separation, per-fallback binding
+
+Threat-model of the bridge (spoofing/tampering/elevation/repudiation):
+(1) `refuse` now exits 3, so only `allow` (exit 0) can be mistaken for
+authorization — elevation by exit-code misuse is closed; refusal stays
+available when monitor/policy fail, sharing none of allow's checks
+beyond identity, flags, and artifact bytes. (2) Every fallback-chain
+member's regime and config binding is verified, closing stale-fallback
+certificates. (3) Residual accepted risks with owner (maintainer):
+coordinated whole-report rewrites need signatures or a trusted
+generation boundary (offline consistency checks cannot detect them);
+monitor/policy flags are host attestations spoofable only by a
+compromised host, which is outside the gate's boundary. Verdicts echo
+their inputs for audit.
+
 ## 2026-11-18: deployment bridge — `skillwren certgate`
 
 Broader audit asked for the authenticated deployment pipeline (build →

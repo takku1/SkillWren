@@ -316,11 +316,15 @@ skillwren certgate report.json --artifacts ./artifacts --regime '{"task_family":
 ```
 
 It verifies the winner against its own reported bounds, artifact digests,
-regime and config binding, the full fallback chain, and invariant
-attestation; `--monitor-pass` and `--policy-allows` are caller-asserted
-runtime inputs. Verdicts: `allow` (exit 0), `refuse` for a verified
-refusal router (exit 0), `deny` (exit 1), invalid input (exit 2).
-Per-action structural checks stay with the runtime monitor.
+regime and config binding, the full fallback chain (each member's regime
+and config binding, not just its hash), and invariant attestation;
+`--monitor-pass` and `--policy-allows` are caller-asserted runtime
+inputs. Verdicts: `allow` (exit 0, the only authorization), `refuse`
+for a verified refusal router (exit 3: safe terminal outcome, never
+permission to execute), `deny` (exit 1), invalid input (exit 2).
+Per-action structural checks stay with the runtime monitor. Coordinated
+rewrites of a whole report cannot be detected offline; report
+authenticity needs a trusted generation boundary or signatures.
 
 ## Codex
 

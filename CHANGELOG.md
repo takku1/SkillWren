@@ -35,10 +35,11 @@
   classification, the runtime monitor, and the certified router remain
   deployment-side work.
 - Deployment bridge (`skillwren certgate`): binds selection certificates
-  to artifact bytes, regime, and config; walks the fallback chain;
+  to artifact bytes, regime, and config, including every fallback member;
   denies tampered reports, altered artifacts, and context mismatches. A
-  verified refusal router yields `refuse`; monitor and policy are
-  caller-asserted inputs.
+  verified refusal router yields `refuse` (exit 3), never authorization;
+  monitor and policy are caller-asserted inputs. Coordinated whole-report
+  rewrites remain out of scope without signatures.
 
 ## 0.9.0 (2026-11-17)
 
