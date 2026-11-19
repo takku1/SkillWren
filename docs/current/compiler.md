@@ -1,7 +1,10 @@
 # Compile and review a compact skill
 
-The primary workflow is original skill → authored logic conversion → check,
-measure, review, build. No model is invoked and prose is not rewritten automatically.
+Two workflows produce a checked skill. `build` packages a skill that an
+author (or agent) has already converted: check, measure, review, build; no
+model is invoked and prose is not rewritten automatically. `compile` runs
+the natural-language compiler: a model adapter writes the conversion, and
+the tool accounts for every source requirement (see the last section).
 
 ## Optimized builds
 
@@ -124,9 +127,11 @@ automatic summary, semantic compression, network retrieval, or hidden selection.
 This is an initial compiler using the existing grammar and its documented
 analysis limits. Stronger types, named verifier implementations, scoped approval
 tokens, automatic requirement mapping, and richer source-mapped diagnostics
-remain future work. `build` compiles complete skills only; flow-file
-fragments (SPEC Section 20) are checked with `check --fragment` and are not
-built or measured as a unit yet. Warnings are retained in the manifest and counted in the
+remain future work. `build` packages a fragment-set directory (a
+`SKILL.md` plus flow files, SPEC Section 20) after checking every logic
+fragment with cross-file runs resolved inside the set, and `measure`
+accepts such directories; optimized builds (`--original`/`--review`)
+still take a single-file skill only. Warnings are retained in the manifest and counted in the
 CLI result. Error locations currently refer to the generated `SKILL.md`;
 context spans identify originating files, but general location remapping is
 not yet built.
@@ -134,3 +139,36 @@ not yet built.
 Tests cover source recovery, exact payload spans, Unicode/CRLF, embedded code
 fences, unresolved imports, duplicate IDs, path escape, unknown roles, invalid
 control flow, output protection, and unclosed contexts.
+
+## Natural-language compilation (`compile`, `inventory`)
+
+```sh
+skillwren compile prose/SKILL.md --context prose/references/a.md --out compiled   [--layout inline|fragments] [--rounds 3] [--no-judge] [--keep-failed DIR]   -- py -3 scripts/adapters/claude_compile.py
+```
+
+Design and rationale: [design/nl-compiler.md](design/nl-compiler.md).
+The adapter protocol is one JSON request per call on stdin with a `phase`:
+
+| Phase | Request | Reply |
+|---|---|---|
+| `inventory` | numbered `sources`, `entry`; on retry `previous`, `findings` | `inventory` (`requirements`, `non_requirements`), `questions`, `assumptions` |
+| `lower` | `sources`, checked `inventory`, `layout` | `files` (path to text, including `SKILL.md`), `lands` (requirement ID to literal anchors) |
+| `repair` | as `lower`, plus previous `files`/`lands`, `diagnostics` (`check --json` shape), `findings`, `unbacked_verifies` | as `lower` |
+| `judge` | landed `inventory`, `explanations` (deterministic `explain-workflow` text) | `dropped`, `added`, `changed` |
+
+Inventory requirements carry `id`, `kind` (order, gate, branch, decision,
+effect, recovery, invariant, input, output, step-meaning, context,
+unrepresentable), `text`, `evidence` (exec, user, effect, self, none), and
+`source` spans. Findings: I1 malformed, I3 source lines not accounted for,
+I4 no landing, I5 anchor not found, I6 wrong placement for the kind (order
+on an `order:` rule; gate, branch, decision, effect, recovery on a logic
+statement), I7 demanded evidence missing, I8 kept as prose (warning), J1
+judge drop. `skillwren inventory check` and `inventory review` run the same
+checks on any inventory and emit the review map for a single-file
+candidate.
+
+Output: the skill files plus `audit/inventory.json`, `audit/review.json`
+(single-file output; it validates under `build --original --review`, which
+additionally requires the candidate to be smaller), per-file explanations,
+and `audit/compile-manifest.json`. The compiler never approves and never
+claims equivalence.

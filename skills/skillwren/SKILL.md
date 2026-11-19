@@ -44,11 +44,23 @@ token deletion or an expanded copy of the original for a semantic conversion.
    `--original-context FILE` for each selected original reference. Measure the
    complete expanded prompt using the same tokenizer on both sides. Character
    counts require an explicit metric and must not be called token savings.
-7. Complete skills only (flow-file sets are not built yet): run `skillwren build candidate.md --original original.md --review review.json
-   --out compiled-skill` with the same context selection. It must validate the
-   flow, pass the review checks, and be strictly smaller before publication.
-   Preserve required behavior if the size target is difficult; report the
-   tradeoff instead of silently dropping content or hiding it in deferred files.
+7. Complete skills: run `skillwren build candidate.md --original original.md
+   --review review.json --out compiled-skill` with the same context selection.
+   This optimized build validates the flow, passes the review checks, and
+   publishes only a strictly smaller candidate. Flow-file sets: `skillwren
+   build skill-dir --out compiled-skill` checks every logic file and packages
+   the set; compare sizes with `skillwren measure`. If the candidate cannot
+   be made smaller without losing required behavior, keep the behavior: do
+   not publish it as an optimized build, package it plainly (without
+   `--original`/`--review`), and report the tradeoff. Never silently drop
+   content or hide it in deferred files.
+
+To have a model do steps 1-5 with mechanical accounting, run `skillwren
+compile original.md --context ref.md ... --out candidate -- <adapter>`
+(`docs/current/compiler.md`, last section). It inventories every source
+line, lowers, checks, repairs, and writes `audit/inventory.json` and
+`audit/review.json`; review its open findings, questions, and judge results
+exactly as you would review your own conversion.
 
 Return the compiled skill, retained-source manifest, requirement map, exact
 comparison metric and counts, and material limits. Structural validation and

@@ -1,6 +1,6 @@
 # Status
 
-**Last Updated**: 2026-11-17 (0.10 work in progress)
+**Last Updated**: 2026-11-18 (0.10 work on `main`, unreleased)
 
 ## Current Phase
 
@@ -29,10 +29,22 @@ runtime comparison. Current verification results are recorded in CI.
   guarantees remain research work. The historical main run and its
   preregistered decision rule are unchanged.
 
-- 0.10 in progress on branch `next-0.10`: corpus v2 (frozen), drafter
-  evidence check and prompt 2 (requirement defects 19 -> 7 on v2), runtime
-  benchmark protocol 2, inline-form example. Release after the protocol-2
-  A/B/C result is written up.
+- NL compiler ([design](current/design/nl-compiler.md)): `skillwren compile`
+  turns full-context prose into checked SkillWren via a requirement
+  inventory (every source line accounted for), anchored lowering, bounded
+  check/repair, and an explain-and-judge pass, emitting a generated review
+  map. Built with `check --json`, `skillwren inventory`, a stub-driven
+  offline suite, and a Claude adapter. First runs
+  ([results](current/research/nl-compiler/README.md)): full-stack's last
+  prose package compiles valid with every line accounted for; judge drops
+  3 -> 0 after prompt rules; remaining issue is over-asking; inline output
+  is ~5x the prose entry per activation. Dogfood compile of the SkillWren
+  skill found two real ambiguities in its source (fixed).
+- 0.10 work merged to `main` (PR #2; `next-0.10` is behind `main`): corpus
+  v2 (frozen), drafter evidence check and prompt 2 (requirement defects
+  19 -> 7 on v2), runtime benchmark protocol 2 (written up in
+  `model-evaluation-plan.md`), inline-form example. Package version is
+  still 0.9.0; the 0.10 release has not been cut.
 - Still open, needs a decision or resources: a task hard enough to
   separate skill forms; an OS-isolated host run (the agent needs
   credentials inside the isolated account or container); a human review
@@ -51,10 +63,17 @@ exact bytes, and `draft` proposes through an adapter that cannot approve.
 `guard` binds each write to an administrator policy, pinned verifiers and
 exact verified bytes; `sandbox`, `audit` and `ledger` observe, checkpoint
 and check recorded runs. `build` packages single-file skills or fragment
-sets; `scripts/` holds the real-host harness and model-measurement tools.
+sets; `compile` and `inventory` turn prose into checked skills through a
+model adapter with per-requirement accounting; `scripts/` holds the
+real-host harness, adapters, and model-measurement tools.
 
 ## Key Decisions
 
+- 2026-11-18: NL-to-SkillWren compilation is organized around a
+  per-requirement inventory checked mechanically (every source line
+  covered, every requirement landed), because measured draft loss is
+  silent requirement drops, not invented permissions. No new syntax;
+  approval stays human.
 - 2026-11-17, 0.9: one source of truth for the agent. Real agents followed
   logic-only, prose-only and both forms equally (72/72); with both, they
   executed the prose and never read the flow. Recommended form: logic and
@@ -91,6 +110,8 @@ sets; `scripts/` holds the real-host harness and model-measurement tools.
 
 ## Known Gaps
 
+- NL compiler: one run per arm, model judge only, no human review of
+  compiled output; over-asking persists; fragment layout unmeasured.
 - Every real-agent run complied, so the form comparison hit a ceiling;
   it shows no harm from either form, not a benefit.
 - Model drafts silently drop about a third of the requirements they lose;

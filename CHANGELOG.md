@@ -2,6 +2,29 @@
 
 ## Unreleased (0.10)
 
+- NL compiler: `skillwren compile` turns a full-context prose source into
+  a checked skill through a phased model adapter (inventory, lower,
+  repair, judge), with a bounded repair loop and no publication on
+  failure (`nlcompile.py`, design in `design/nl-compiler.md`).
+  `scripts/adapters/claude_compile.py` is the Claude adapter; a scripted
+  stub drives the offline tests.
+- `skillwren inventory`: requirement inventories with source spans,
+  line-coverage, landing (placement by kind, demanded evidence) and a
+  generated `review.json`. Review maps accept `non_requirements` with a
+  reason.
+- `check --json`: machine-readable diagnostics plus unbacked verify gates.
+- `build DIR` now checks an inline-form `SKILL.md` that holds logic
+  blocks (it was skipped, so an inline skill with errors built).
+- Benchmark corpus `research/nl-compiler/full-stack-0.2/`: full-stack's
+  last prose package and its hand conversion, frozen. First runs and a
+  dogfood compile of `skills/skillwren/SKILL.md` in
+  `research/nl-compiler/README.md` (valid output, every source line
+  accounted for, judge drops 3 -> 0 after lowering-prompt rules).
+- `compile` re-judges a candidate after a judge-driven repair, so the
+  manifest verdict is for the published bytes.
+- `skills/skillwren/SKILL.md`: fragment sets are built; an unshrinkable
+  candidate is packaged plainly with the tradeoff reported (both found by
+  compiling the skill with itself).
 - NL fidelity corpus v2 (`docs/current/research/nl-fidelity-v2/`), derived
   from frozen v1 by `scripts/make_corpus_v2.py`: fixes the four defects
   the independent review found (pairs16 f17, pairs21 f22, 05, unrequested
