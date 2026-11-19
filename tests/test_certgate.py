@@ -148,6 +148,14 @@ class CertgateTests(unittest.TestCase):
         self.assertEqual(result['verdict'], 'deny')
         self.assertIn('policy:not-allowing', result['reasons'])
 
+    def test_unrecorded_hash_with_supplied_bytes_denies(self):
+        data = study()
+        report = select(data)
+        self.assertNotIn('input_sha256', report)
+        result = gate(report, data, study_sha256='c' * 64)
+        self.assertEqual(result['verdict'], 'deny')
+        self.assertIn('study:unbound', result['reasons'])
+
     def test_invalid_inputs_fail_closed(self):
         data = study()
         report = select(data)
@@ -209,13 +217,18 @@ class CertgateTests(unittest.TestCase):
 
 
 class CertgateCLITests(unittest.TestCase):
-    def invoke(self, report, study_data, artifacts, args):
+    def invoke(self, report, study_data, artifacts, args, tamper_study=False):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            rep = root / 'report.json'
-            rep.write_text(json.dumps(report), encoding='utf-8')
             std = root / 'study.json'
             std.write_bytes(json.dumps(study_data, sort_keys=True).encode())
+            report = dict(report)
+            report['input_sha256'] = hashlib.sha256(std.read_bytes()).hexdigest()
+            if tamper_study:
+                with open(std, 'ab') as handle:
+                    handle.write(b' ')
+            rep = root / 'report.json'
+            rep.write_text(json.dumps(report), encoding='utf-8')
             adir = root / 'artifacts'
             adir.mkdir()
             for name, blob in artifacts.items():
@@ -246,9 +259,9 @@ class CertgateCLITests(unittest.TestCase):
     def test_cli_tampered_study_file_denies(self):
         data = study()
         report = select(data)
-        report['input_sha256'] = '0' * 64
         mismatched = self.invoke(report, data, ARTIFACTS,
-                                 ['--monitor-pass', '--policy-allows'])
+                                 ['--monitor-pass', '--policy-allows'],
+                                 tamper_study=True)
         self.assertEqual(mismatched.returncode, 1)
         self.assertIn('study:unbound', json.loads(mismatched.stdout)['reasons'])
 
@@ -287,6 +300,8 @@ class GuardDpccTests(unittest.TestCase):
         self.report = select(self.study_data)
         self.study_file = self.root / 'study.json'
         self.study_file.write_bytes(json.dumps(self.study_data, sort_keys=True).encode())
+        self.report['input_sha256'] = hashlib.sha256(
+            self.study_file.read_bytes()).hexdigest()
         self.report_file = self.root / 'report.json'
         self.report_file.write_text(json.dumps(self.report), encoding='utf-8')
         self.adir = self.root / 'artifacts'
@@ -294,7 +309,9 @@ class GuardDpccTests(unittest.TestCase):
         for name, blob in self.artifacts.items():
             (self.adir / name).write_bytes(blob)
         self.target = self.root / 'deployed.json'
-        self.monitor_script = str(ROOT / 'examples/guard/verify_monitor.py')
+        self.monitor_script = str(self.root / 'verify_monitor.py')
+        Path(self.monitor_script).write_bytes(
+            (ROOT / 'examples/guard/verify_monitor.py').read_bytes())
         self.write_script = str(ROOT / 'examples/guard/verify_config.py')
         self.policy = self.make_policy()
         self.guard = Controller(self.policy)
@@ -364,7 +381,7 @@ class GuardDpccTests(unittest.TestCase):
 
     def test_monitor_must_pass_first(self):
         self.verify_write()
-        with self.assertRaisesRegex(Denied, 'dpcc gate denied'):
+        with self.assertRaisesRegex(Denied, 'dpcc monitor has not passed'):
             self.write()
 
     def test_tampered_report_denies_write(self):
@@ -428,6 +445,23 @@ class GuardDpccTests(unittest.TestCase):
         self.verify_write()
         with self.assertRaisesRegex(Denied, 'dpcc gate denied'):
             self.write()
+
+    def test_tampered_monitor_denies_write(self):
+        self.run_monitor()
+        self.verify_write()
+        (self.root / 'verify_monitor.py').write_bytes(b'import sys; sys.exit(1)\n')
+        with self.assertRaisesRegex(Denied, 'verifier'):
+            self.write()
+
+    def test_snapshot_confirmation_denies_changed_evidence(self):
+        self.run_monitor()
+        self.verify_write()
+        op = self.guard.operations['deploy#artifact']
+        snapshot = self.guard._enforce_dpcc(op, self.COMPACT)
+        self.guard._confirm_dpcc_snapshot(op, self.COMPACT, snapshot)
+        (self.adir / 'full').write_bytes(b'{"debug": false, "skill": "CHANGED"}')
+        with self.assertRaisesRegex(Denied, 'changed before commit'):
+            self.guard._confirm_dpcc_snapshot(op, self.COMPACT, snapshot)
 
     def test_dpcc_binding_validated_at_policy_load(self):
         for mutate in (lambda d: d.pop('cfg'), lambda d: d.update(monitor='deploy#artifact'),

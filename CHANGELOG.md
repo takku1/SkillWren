@@ -43,7 +43,10 @@
 - Guard DPCC enforcement: a write operation's `dpcc` section re-verifies
   a fresh gate allow on every write (report recomputed from the hosted
   study, no verdict files) and only writes the selected artifact bytes;
-  monitor completion, altered evidence, refusal, or abstention deny.
+  monitor completion, altered evidence, refusal, or abstention deny. The
+  monitor re-runs against the deployed bytes; evidence digests are
+  snapshotted at verification and confirmed at commit; hashed reports
+  require bound study bytes.
 
 ## 0.9.0 (2026-11-17)
 

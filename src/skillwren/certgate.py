@@ -127,8 +127,14 @@ def verify(report, artifacts, regime, cfg_sha256, monitor_pass, policy_allows,
     if _canonical(fresh) != _canonical(presented):
         reasons.append('report:inauthentic')
     if 'input_sha256' in report:
+        # The CLI always binds raw study bytes; the API must too whenever
+        # the report carries the hash. An unbound input hash proves nothing.
         if study_sha256 is None or report['input_sha256'] != study_sha256:
             reasons.append('study:unbound')
+    elif study_sha256 is not None:
+        # Caller supplied study bytes but the report carries nothing to
+        # bind them to. Deployment paths must use hashed reports.
+        reasons.append('study:unbound')
     if not isinstance(regime, dict) or not regime:
         raise ValueError('regime must be a nonempty object')
     if (not isinstance(cfg_sha256, str) or len(cfg_sha256) != 64

@@ -171,11 +171,15 @@ class Controller:
         Re-reads the report, study, and artifacts on every write, so no
         verdict file can go stale or be replayed. The written bytes must
         equal the selected router's bound artifact: this operation
-        deploys the certified artifact, nothing else.
+        deploys the certified artifact, nothing else. Returns a snapshot
+        of the evidence digests for confirmation immediately before the
+        write commits, narrowing concurrent modification to a negligible
+        window (host file ownership remains the real boundary).
         """
         spec = op['dpcc']
         try:
-            report = json.loads(Path(spec['report']).read_bytes().decode('utf-8-sig'))
+            raw_report = Path(spec['report']).read_bytes()
+            report = json.loads(raw_report.decode('utf-8-sig'))
             raw_study = Path(spec['study']).read_bytes()
             study = json.loads(raw_study.decode('utf-8-sig'))
             artifacts = {path.name: path.read_bytes()
@@ -185,14 +189,44 @@ class Controller:
             raise Denied('dpcc evidence unreadable')
         except ValueError:
             raise Denied('dpcc evidence invalid')
+        if spec['monitor'] not in self.completed:
+            raise Denied('dpcc monitor has not passed')
+        # Bind the monitor to the exact bytes being deployed: the check
+        # re-runs now, against the current artifact, not an earlier state.
+        self._run_verifier(self.operations[spec['monitor']], data)
         verdict = certgate_verify(report, artifacts, spec['regime'], spec['cfg'],
-                                  spec['monitor'] in self.completed, True,
+                                  True, True,
                                   study=study, study_sha256=digest(raw_study))
         if verdict['verdict'] != 'allow':
             raise Denied('dpcc gate denied: ' + '; '.join(verdict['reasons']))
         bound = artifacts.get(verdict['selected'])
         if bound is None or digest(data) != digest(bound):
             raise Denied('content is not the certified artifact')
+        return {'report': digest(raw_report), 'study': digest(raw_study),
+                'artifacts': {name: digest(blob) for name, blob in artifacts.items()},
+                'selected': verdict['selected']}
+
+    def _confirm_dpcc_snapshot(self, op, data, snapshot):
+        """Re-hash evidence immediately before the write commits.
+
+        Denies when anything changed since verification: report, study,
+        artifacts, selection, or the content itself.
+        """
+        spec = op['dpcc']
+        try:
+            raw_report = Path(spec['report']).read_bytes()
+            raw_study = Path(spec['study']).read_bytes()
+            artifacts = {path.name: path.read_bytes()
+                         for path in sorted(Path(spec['artifacts']).iterdir())
+                         if path.is_file()}
+        except OSError:
+            raise Denied('dpcc evidence unreadable at commit')
+        if (digest(raw_report) != snapshot['report']
+                or digest(raw_study) != snapshot['study']
+                or {name: digest(blob) for name, blob in artifacts.items()}
+                != snapshot['artifacts']
+                or digest(data) != digest(artifacts.get(snapshot['selected'], b'\0'))):
+            raise Denied('dpcc evidence changed before commit')
 
     def handle(self, request):
         with self.lock:
@@ -232,8 +266,7 @@ class Controller:
             approval = self.approvals.pop(name, None)
             if approval != binding:
                 raise Denied('missing, stale or consumed verification')
-            if 'dpcc' in op:
-                self._enforce_dpcc(op, data)
+            snapshot = self._enforce_dpcc(op, data) if 'dpcc' in op else None
             if self.workflow is not None:
                 self._check_workflow()
                 missing = [first for first, then in self.rules
@@ -241,6 +274,8 @@ class Controller:
                 if missing:
                     raise Denied('order rule not satisfied: ' + ', '.join(
                         f'{first} before {name}' for first in missing))
+            if snapshot is not None:
+                self._confirm_dpcc_snapshot(op, data, snapshot)
             fd, temporary = tempfile.mkstemp(prefix='.skillwren-', dir=target.parent)
             try:
                 with os.fdopen(fd, 'wb') as stream:

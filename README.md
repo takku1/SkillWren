@@ -333,6 +333,10 @@ monitor check operation. The guard re-verifies fresh on every write and
 only writes the selected router's exact artifact bytes: monitor check
 not completed, altered evidence, or anything but `allow` denies the
 write. A verified refusal (or abstention) therefore always denies.
+The monitor check re-runs against the exact bytes being deployed, and
+evidence digests are snapshotted at verification and confirmed again
+immediately before the write commits, narrowing concurrent modification
+to a negligible window (host file ownership remains the real boundary).
 
 ## Codex
 

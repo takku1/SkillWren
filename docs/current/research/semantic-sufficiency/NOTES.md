@@ -1,5 +1,20 @@
 # Working notes: DPCC and empirical sufficiency
 
+## 2026-11-18: monitor binding, snapshot confirmation, strict input hash
+
+Re-audit follow-ups, second round. (1) MonitorPass is now bound to the
+deployment: the gate still requires a completed monitor check in the
+session, and the guard additionally re-runs the monitor verifier
+against the exact artifact bytes at write time — a check that passed
+for other bytes cannot authorize this write. (2) TOCTOU narrowed:
+evidence digests are snapshotted at verification and confirmed again
+immediately before the write commits; residual risk is host file
+ownership, stated as the boundary. (3) `verify()` denies hashed reports
+presented without the raw study bytes, and denies caller-supplied bytes
+with nothing to bind them to; byte-level provenance requires the CLI
+(or equivalent caller-supplied binding). 12 adversarial guard tests +
+18 gate tests; full suite 339 passed, CI green.
+
 ## 2026-11-18: trust boundary closed — study-bound gate, guard wiring
 
 Re-audit P0s implemented. (1) Report authentication: `certgate` takes
