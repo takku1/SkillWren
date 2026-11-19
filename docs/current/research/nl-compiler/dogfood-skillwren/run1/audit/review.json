@@ -1,0 +1,384 @@
+{
+  "original_sha256": "856c059b07d4c0ae2c3475823b583eaf352f18faa7d314e0828353b95f55df01",
+  "logic_sha256": "f333640b1503220ed665469a397f7b2a63ea28180fec1fbd49aff83c46fedb93",
+  "review": "Generated from a compiler inventory; anchors are bookkeeping, not an equivalence proof.",
+  "requirements": [
+    {
+      "id": "R1",
+      "original_lines": [
+        2,
+        4
+      ],
+      "logic_contains": [
+        "Produce a smaller, logically structured skill from an existing skill."
+      ]
+    },
+    {
+      "id": "R2",
+      "original_lines": [
+        8,
+        8
+      ],
+      "logic_contains": [
+        "write #candidate candidate with output"
+      ]
+    },
+    {
+      "id": "R3",
+      "original_lines": [
+        8,
+        9
+      ],
+      "logic_contains": [
+        "modify the original skill"
+      ]
+    },
+    {
+      "id": "R4",
+      "original_lines": [
+        9,
+        10
+      ],
+      "logic_contains": [
+        "substitute token deletion or an expanded copy of the original for a semantic conversion"
+      ]
+    },
+    {
+      "id": "R5",
+      "original_lines": [
+        12,
+        13
+      ],
+      "logic_contains": [
+        "establish which files belong to the comparison (the original and its relevant local references)"
+      ]
+    },
+    {
+      "id": "R6",
+      "original_lines": [
+        13,
+        15
+      ],
+      "logic_contains": [
+        "write #inventory inventory with review"
+      ]
+    },
+    {
+      "id": "R7",
+      "original_lines": [
+        15,
+        15
+      ],
+      "logic_contains": [
+        "apply inventory before apply rewrite"
+      ]
+    },
+    {
+      "id": "R8",
+      "original_lines": [
+        16,
+        20
+      ],
+      "logic_contains": [
+        "if a tool you run reads the SkillWren header:"
+      ]
+    },
+    {
+      "id": "R9",
+      "original_lines": [
+        21,
+        23
+      ],
+      "logic_contains": [
+        "write #candidate candidate with output",
+        "apply repair with candidate as candidate"
+      ]
+    },
+    {
+      "id": "R10",
+      "original_lines": [
+        23,
+        24
+      ],
+      "logic_contains": [
+        "put repeated cross-cutting rules once in the contract"
+      ]
+    },
+    {
+      "id": "R11",
+      "original_lines": [
+        24,
+        25
+      ],
+      "logic_contains": [
+        "a second procedural glossary must not repeat the flow"
+      ]
+    },
+    {
+      "id": "R12",
+      "original_lines": [
+        26,
+        27
+      ],
+      "logic_contains": [
+        "write#candidate before exec#checkrun",
+        "gate the earlier step on every path"
+      ]
+    },
+    {
+      "id": "R13",
+      "original_lines": [
+        28,
+        31
+      ],
+      "logic_contains": [
+        "preserve authority and failure behavior",
+        "turn review into editing, optional advice into a requirement"
+      ]
+    },
+    {
+      "id": "R14",
+      "original_lines": [
+        30,
+        31
+      ],
+      "logic_contains": [
+        "retain concrete values, scope boundaries, and exceptions"
+      ]
+    },
+    {
+      "id": "R15",
+      "original_lines": [
+        32,
+        33
+      ],
+      "logic_contains": [
+        "exec #checkrun skillwren check from checks as checked"
+      ]
+    },
+    {
+      "id": "R16",
+      "original_lines": [
+        33,
+        34
+      ],
+      "logic_contains": [
+        "verify #inputs the inferred inputs in the summary have no typos from checked"
+      ]
+    },
+    {
+      "id": "R17",
+      "original_lines": [
+        34,
+        36
+      ],
+      "logic_contains": [
+        "verify #interp the interpreter that works is python3, python, or py -3 from probe"
+      ]
+    },
+    {
+      "id": "R18",
+      "original_lines": [
+        36,
+        37
+      ],
+      "logic_contains": [
+        "verify #check the check reports no findings from checked"
+      ]
+    },
+    {
+      "id": "R19",
+      "original_lines": [
+        37,
+        37
+      ],
+      "logic_contains": [
+        "Consult `docs/current/authoring-guide.md`"
+      ]
+    },
+    {
+      "id": "R20",
+      "original_lines": [
+        38,
+        40
+      ],
+      "logic_contains": [
+        "write #map map with review"
+      ]
+    },
+    {
+      "id": "R21",
+      "original_lines": [
+        40,
+        41
+      ],
+      "logic_contains": [
+        "write #map map with review"
+      ]
+    },
+    {
+      "id": "R22",
+      "original_lines": [
+        41,
+        42
+      ],
+      "logic_contains": [
+        "verify #parity every original nonblank line and relevant reference file is mapped and the mapping is reviewed semantically from mapchecked"
+      ]
+    },
+    {
+      "id": "R23",
+      "original_lines": [
+        42,
+        42
+      ],
+      "logic_contains": [
+        "apply rewrite update with map as candidate"
+      ]
+    },
+    {
+      "id": "R24",
+      "original_lines": [
+        43,
+        45
+      ],
+      "logic_contains": [
+        "exec #measure skillwren measure from checks as measured"
+      ]
+    },
+    {
+      "id": "R25",
+      "original_lines": [
+        45,
+        46
+      ],
+      "logic_contains": [
+        "verify #metric the measure counts the complete expanded prompt with the same tokenizer on both sides and names an explicit metric for every count from measured",
+        "character counts require an explicit metric name stated with every count",
+        "call character counts token savings"
+      ]
+    },
+    {
+      "id": "R26",
+      "original_lines": [
+        47,
+        48
+      ],
+      "logic_contains": [
+        "exec #buildrun skillwren build from checks as built",
+        "if layout is complete skill:"
+      ]
+    },
+    {
+      "id": "R27",
+      "original_lines": [
+        48,
+        49
+      ],
+      "logic_contains": [
+        "verify #build the build validates the flow and passes the review checks from built",
+        "if the build is not strictly smaller than the original:",
+        "publish a build that failed validation, failed the review checks, or is not strictly smaller"
+      ]
+    },
+    {
+      "id": "R28",
+      "original_lines": [
+        49,
+        51
+      ],
+      "logic_contains": [
+        "apply tradeoff record with built as limits",
+        "apply tradeoff record with measured as limits",
+        "silently drop content or hide it in deferred files"
+      ]
+    },
+    {
+      "id": "R29",
+      "original_lines": [
+        53,
+        57
+      ],
+      "logic_contains": [
+        "exec #compile skillwren compile from checks as compiled"
+      ]
+    },
+    {
+      "id": "R30",
+      "original_lines": [
+        57,
+        58
+      ],
+      "logic_contains": [
+        "verify #creview open findings, questions, and judge results of the compile are reviewed from compiled"
+      ]
+    },
+    {
+      "id": "R31",
+      "original_lines": [
+        60,
+        61
+      ],
+      "logic_contains": [
+        "write #reportfile report with output",
+        "return #result report as report"
+      ]
+    },
+    {
+      "id": "R32",
+      "original_lines": [
+        61,
+        62
+      ],
+      "logic_contains": [
+        "verify #final report lists the compiled skill"
+      ]
+    },
+    {
+      "id": "R33",
+      "original_lines": [
+        62,
+        63
+      ],
+      "logic_contains": [
+        "ask user to confirm paid model evaluation or installation of the result",
+        "require confirmation"
+      ]
+    },
+    {
+      "id": "R34",
+      "original_lines": [
+        12,
+        49
+      ],
+      "logic_contains": [
+        "verify#check before write#map",
+        "verify#parity before exec#measure",
+        "exec#measure before exec#buildrun"
+      ]
+    }
+  ],
+  "non_requirements": [
+    {
+      "original_lines": [
+        1,
+        1
+      ],
+      "reason": "frontmatter delimiter"
+    },
+    {
+      "original_lines": [
+        5,
+        5
+      ],
+      "reason": "frontmatter delimiter"
+    },
+    {
+      "original_lines": [
+        6,
+        6
+      ],
+      "reason": "heading"
+    }
+  ]
+}

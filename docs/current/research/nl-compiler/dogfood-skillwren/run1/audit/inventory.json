@@ -1,0 +1,660 @@
+{
+  "requirements": [
+    {
+      "id": "R1",
+      "kind": "context",
+      "text": "Skill purpose: convert an existing SKILL.md into checked SkillWren logic (complete skill, or flow files with logic blocks) preserving its requirements; validate flow and ordering, review parity, measure the complete loaded prompt.",
+      "evidence": "none",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            2,
+            4
+          ]
+        }
+      ],
+      "lands": [
+        "Produce a smaller, logically structured skill from an existing skill."
+      ]
+    },
+    {
+      "id": "R2",
+      "kind": "output",
+      "text": "Produce a smaller, logically structured skill from an existing skill.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            8,
+            8
+          ]
+        }
+      ],
+      "lands": [
+        "write #candidate candidate with output"
+      ]
+    },
+    {
+      "id": "R3",
+      "kind": "invariant",
+      "text": "Keep the original skill intact (do not modify it).",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            8,
+            9
+          ]
+        }
+      ],
+      "lands": [
+        "modify the original skill"
+      ]
+    },
+    {
+      "id": "R4",
+      "kind": "invariant",
+      "text": "Use this repository's compiler and validator; do not substitute token deletion or an expanded copy of the original for a semantic conversion.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            9,
+            10
+          ]
+        }
+      ],
+      "lands": [
+        "substitute token deletion or an expanded copy of the original for a semantic conversion"
+      ]
+    },
+    {
+      "id": "R5",
+      "kind": "step-meaning",
+      "text": "Step 1: read the original and its relevant local references; establish which files belong to the comparison.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            12,
+            13
+          ]
+        }
+      ],
+      "lands": [
+        "establish which files belong to the comparison (the original and its relevant local references)"
+      ]
+    },
+    {
+      "id": "R6",
+      "kind": "step-meaning",
+      "text": "Inventory obligations, prohibitions, conditions, exceptions, examples that affect decisions, evidence standards, and outputs.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            13,
+            15
+          ]
+        }
+      ],
+      "lands": [
+        "write #inventory inventory with review"
+      ]
+    },
+    {
+      "id": "R7",
+      "kind": "order",
+      "text": "Mark every 'do X before Y' ordering the original states or implies.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            15,
+            15
+          ]
+        }
+      ],
+      "lands": [
+        "apply inventory before apply rewrite"
+      ]
+    },
+    {
+      "id": "R8",
+      "kind": "branch",
+      "text": "Choose target layout: flow files (small SKILL.md with only name, description, and a core, plus logic blocks in flows/*.md; start from docs/current/fragment-template.md) by default, UNLESS a tool you run reads the SkillWren header, in which case a complete skill (docs/current/skill-template.md).",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            16,
+            20
+          ]
+        }
+      ],
+      "lands": [
+        "if a tool you run reads the SkillWren header:"
+      ]
+    },
+    {
+      "id": "R9",
+      "kind": "step-meaning",
+      "text": "Step 2: rewrite the procedure using the grammar in docs/current/SPEC.md: explicit branches, require/verify gates, bindings, effects, and bounded repairs.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            21,
+            23
+          ]
+        }
+      ],
+      "lands": [
+        "write #candidate candidate with output",
+        "apply repair with candidate as candidate"
+      ]
+    },
+    {
+      "id": "R10",
+      "kind": "invariant",
+      "text": "Put repeated cross-cutting rules once in the contract; keep specialized facts/examples only where they change decisions.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            23,
+            24
+          ]
+        }
+      ],
+      "lands": [
+        "put repeated cross-cutting rules once in the contract"
+      ]
+    },
+    {
+      "id": "R11",
+      "kind": "invariant",
+      "text": "Report appendix may define output shape; a second procedural glossary must not repeat the flow.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            24,
+            25
+          ]
+        }
+      ],
+      "lands": [
+        "a second procedural glossary must not repeat the flow"
+      ]
+    },
+    {
+      "id": "R12",
+      "kind": "order",
+      "text": "Write each marked ordering as an `order:` rule, and gate the earlier step on every path rather than only inside a conditionally called flow.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            26,
+            27
+          ]
+        }
+      ],
+      "lands": [
+        "write#candidate before exec#checkrun",
+        "gate the earlier step on every path"
+      ]
+    },
+    {
+      "id": "R13",
+      "kind": "invariant",
+      "text": "Step 3: preserve authority and failure behavior: do not turn review into editing, optional advice into a requirement, a conditional task into unconditional work, or an unavailable check into a passing result.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            28,
+            31
+          ]
+        }
+      ],
+      "lands": [
+        "preserve authority and failure behavior",
+        "turn review into editing, optional advice into a requirement"
+      ]
+    },
+    {
+      "id": "R14",
+      "kind": "invariant",
+      "text": "Retain concrete values, scope boundaries, and exceptions; a new name alone does not preserve a rule.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            30,
+            31
+          ]
+        }
+      ],
+      "lands": [
+        "retain concrete values, scope boundaries, and exceptions"
+      ]
+    },
+    {
+      "id": "R15",
+      "kind": "effect",
+      "text": "Step 4: run `skillwren check candidate.md` for complete skills; for flow files run `skillwren check --fragment --summary flows/*.md`.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            32,
+            33
+          ]
+        }
+      ],
+      "lands": [
+        "exec #checkrun skillwren check from checks as checked"
+      ]
+    },
+    {
+      "id": "R16",
+      "kind": "gate",
+      "text": "For flow files, review the inferred inputs for typos.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            33,
+            34
+          ]
+        }
+      ],
+      "lands": [
+        "verify #inputs the inferred inputs in the summary have no typos from checked"
+      ]
+    },
+    {
+      "id": "R17",
+      "kind": "branch",
+      "text": "Without installing, use PYTHONPATH=src and the interpreter that works: python3, python, or py -3 on Windows.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            34,
+            36
+          ]
+        }
+      ],
+      "lands": [
+        "verify #interp the interpreter that works is python3, python, or py -3 from probe"
+      ]
+    },
+    {
+      "id": "R18",
+      "kind": "recovery",
+      "text": "On check findings, repair the represented control flow rather than weakening requirements just to silence a rule.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            36,
+            37
+          ]
+        }
+      ],
+      "lands": [
+        "verify #check the check reports no findings from checked"
+      ]
+    },
+    {
+      "id": "R19",
+      "kind": "context",
+      "text": "Consult docs/current/authoring-guide.md for conversion workflow and current limits.",
+      "evidence": "none",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            37,
+            37
+          ]
+        }
+      ],
+      "lands": [
+        "Consult `docs/current/authoring-guide.md`"
+      ]
+    },
+    {
+      "id": "R20",
+      "kind": "effect",
+      "text": "Step 5: create a reviewed map in the format documented in docs/current/compiler.md, binding original and candidate hashes.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            38,
+            40
+          ]
+        }
+      ],
+      "lands": [
+        "write #map map with review"
+      ]
+    },
+    {
+      "id": "R21",
+      "kind": "invariant",
+      "text": "Map every original nonblank line to instructions that preserve its intent; explicitly include relevant original reference files.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            40,
+            41
+          ]
+        }
+      ],
+      "lands": [
+        "write #map map with review"
+      ]
+    },
+    {
+      "id": "R22",
+      "kind": "gate",
+      "text": "Review the mapping semantically (anchor matching only checks bookkeeping).",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            41,
+            42
+          ]
+        }
+      ],
+      "lands": [
+        "verify #parity every original nonblank line and relevant reference file is mapped and the mapping is reviewed semantically from mapchecked"
+      ]
+    },
+    {
+      "id": "R23",
+      "kind": "recovery",
+      "text": "Update the rewrite if anything is lost or invented.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            42,
+            42
+          ]
+        }
+      ],
+      "lands": [
+        "apply rewrite update with map as candidate"
+      ]
+    },
+    {
+      "id": "R24",
+      "kind": "effect",
+      "text": "Step 6: run `skillwren measure original.md candidate.md --json`, adding one `--original-context FILE` per selected original reference.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            43,
+            45
+          ]
+        }
+      ],
+      "lands": [
+        "exec #measure skillwren measure from checks as measured"
+      ]
+    },
+    {
+      "id": "R25",
+      "kind": "invariant",
+      "text": "Measure the complete expanded prompt using the same tokenizer on both sides; character counts require an explicit metric and must not be called token savings.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            45,
+            46
+          ]
+        }
+      ],
+      "lands": [
+        "verify #metric the measure counts the complete expanded prompt with the same tokenizer on both sides and names an explicit metric for every count from measured",
+        "character counts require an explicit metric name stated with every count",
+        "call character counts token savings"
+      ]
+    },
+    {
+      "id": "R26",
+      "kind": "branch",
+      "text": "Step 7 applies to complete skills only (flow-file sets are not built yet): run `skillwren build candidate.md --original original.md --review review.json --out compiled-skill` with the same context selection.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            47,
+            48
+          ]
+        }
+      ],
+      "lands": [
+        "exec #buildrun skillwren build from checks as built",
+        "if layout is complete skill:"
+      ]
+    },
+    {
+      "id": "R27",
+      "kind": "gate",
+      "text": "Build must validate the flow, pass the review checks, and be strictly smaller before publication.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            48,
+            49
+          ]
+        }
+      ],
+      "lands": [
+        "verify #build the build validates the flow and passes the review checks from built",
+        "if the build is not strictly smaller than the original:",
+        "publish a build that failed validation, failed the review checks, or is not strictly smaller"
+      ]
+    },
+    {
+      "id": "R28",
+      "kind": "recovery",
+      "text": "If size target is difficult, preserve required behavior and report the tradeoff; do not silently drop content or hide it in deferred files.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            49,
+            51
+          ]
+        }
+      ],
+      "lands": [
+        "apply tradeoff record with built as limits",
+        "apply tradeoff record with measured as limits",
+        "silently drop content or hide it in deferred files"
+      ]
+    },
+    {
+      "id": "R29",
+      "kind": "branch",
+      "text": "Optionally, to have a model do steps 1-5 with mechanical accounting, run `skillwren compile original.md --context ref.md ... --out candidate -- <adapter>`; it inventories every source line, lowers, checks, repairs, writes audit/inventory.json and audit/review.json.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            53,
+            57
+          ]
+        }
+      ],
+      "lands": [
+        "exec #compile skillwren compile from checks as compiled"
+      ]
+    },
+    {
+      "id": "R30",
+      "kind": "gate",
+      "text": "Review compile's open findings, questions, and judge results exactly as for your own conversion.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            57,
+            58
+          ]
+        }
+      ],
+      "lands": [
+        "verify #creview open findings, questions, and judge results of the compile are reviewed from compiled"
+      ]
+    },
+    {
+      "id": "R31",
+      "kind": "output",
+      "text": "Return the compiled skill, retained-source manifest, requirement map, exact comparison metric and counts, and material limits.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            60,
+            61
+          ]
+        }
+      ],
+      "lands": [
+        "write #reportfile report with output",
+        "return #result report as report"
+      ]
+    },
+    {
+      "id": "R32",
+      "kind": "invariant",
+      "text": "State that structural validation and source retention do not prove semantic equivalence or model adherence.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            61,
+            62
+          ]
+        }
+      ],
+      "lands": [
+        "verify #final report lists the compiled skill"
+      ]
+    },
+    {
+      "id": "R33",
+      "kind": "invariant",
+      "text": "Do not run paid model evaluations or install the result unless requested.",
+      "evidence": "user",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            62,
+            63
+          ]
+        }
+      ],
+      "lands": [
+        "ask user to confirm paid model evaluation or installation of the result",
+        "require confirmation"
+      ]
+    },
+    {
+      "id": "R34",
+      "kind": "order",
+      "text": "Implied step order: inventory (1) \u2192 rewrite (2) \u2192 check (4) \u2192 map/review (5) \u2192 measure (6) \u2192 build (7, complete skills only).",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            12,
+            49
+          ]
+        }
+      ],
+      "lands": [
+        "verify#check before write#map",
+        "verify#parity before exec#measure",
+        "exec#measure before exec#buildrun"
+      ]
+    }
+  ],
+  "non_requirements": [
+    {
+      "file": "SKILL.md",
+      "lines": [
+        1,
+        1
+      ],
+      "reason": "frontmatter delimiter"
+    },
+    {
+      "file": "SKILL.md",
+      "lines": [
+        5,
+        5
+      ],
+      "reason": "frontmatter delimiter"
+    },
+    {
+      "file": "SKILL.md",
+      "lines": [
+        6,
+        6
+      ],
+      "reason": "heading"
+    }
+  ],
+  "format": "skillwren-inventory-1",
+  "sources": {
+    "SKILL.md": "856c059b07d4c0ae2c3475823b583eaf352f18faa7d314e0828353b95f55df01"
+  }
+}

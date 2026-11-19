@@ -1,0 +1,405 @@
+{
+  "format": "skillwren-compile-1",
+  "layout": "inline",
+  "sources": {
+    "SKILL.md": "359499366e2bd4e3a4c0223cd7d4c144d158cdf5ac5562d8f08b16267f90095c",
+    "references/artifacts.md": "0161439f82fc4d8ff7cb02f3acf97a51d458f7c40eb28cef3d6479ed7170a211",
+    "references/design-method.md": "e6db97d3bff48c91cec724bac1deb789a03a0311ee484a54b394cfe58cb70261",
+    "references/existing-projects.md": "4cca5ae4b198c4e689b8583ac1c8b489a849fd8f774ceb5ce464772b0dd55e26",
+    "references/implementation.md": "18e631f5cfd294e8059bfce59f1e4e2bb966b0e951b9dab80ec46c1496285a57",
+    "references/research.md": "9066217c6a9926bf0188416e77e7c7f4401df10327ba918f8f769ab7f57f5720",
+    "references/terminology.md": "070df18b9f85f4f0432bfc8bad341afac45df85025211cca6a31482fa19f1b0f"
+  },
+  "outputs": {
+    "SKILL.md": "c1d5e775eb949d8b280e46e76a3a328ef692d7a92f53877321285d77ac37b81d"
+  },
+  "adapter": [
+    "py",
+    "-3",
+    "scripts/adapters/claude_compile.py"
+  ],
+  "calls": [
+    {
+      "phase": "inventory",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.1381264,
+        "output_tokens": 13524,
+        "seconds": 66.387,
+        "phase": "inventory"
+      }
+    },
+    {
+      "phase": "lower",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.3194916,
+        "output_tokens": 21182,
+        "seconds": 128.148,
+        "phase": "lower"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.3970021,
+        "output_tokens": 21894,
+        "seconds": 121.594,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.3242461,
+        "output_tokens": 15346,
+        "seconds": 71.189,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "opus",
+        "cost_usd": 0.20539980000000002,
+        "output_tokens": 2490,
+        "seconds": 26.054,
+        "phase": "judge"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.3290941,
+        "output_tokens": 15784,
+        "seconds": 73.04,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "opus",
+        "cost_usd": 0.20369179999999998,
+        "output_tokens": 2351,
+        "seconds": 23.849,
+        "phase": "judge"
+      }
+    }
+  ],
+  "requirements": 90,
+  "non_requirements": 46,
+  "check_warnings": [
+    {
+      "line": 44,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply explore architecture' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 45,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply state research question' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 46,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply connect contracts' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 47,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply investigate unresolved semantics' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 48,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply connect real path' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 60,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 61,
+      "rule": "W5",
+      "message": "binding 'design_only' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 66,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 67,
+      "rule": "W5",
+      "message": "binding 'conditional_work' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 71,
+      "rule": "W5",
+      "message": "binding 'dispositions' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 79,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 85,
+      "rule": "W5",
+      "message": "binding 'authorization' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 93,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 98,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 104,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 106,
+      "rule": "W5",
+      "message": "binding 'delta' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 111,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 124,
+      "rule": "W5",
+      "message": "binding 'commitment' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 140,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 147,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 189,
+      "rule": "W5",
+      "message": "binding 'readiness' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 195,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 204,
+      "rule": "W5",
+      "message": "binding 'brief' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 207,
+      "rule": "W5",
+      "message": "binding 'component_spec' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 210,
+      "rule": "W5",
+      "message": "binding 'interaction_spec' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 213,
+      "rule": "W5",
+      "message": "binding 'decision_record' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 216,
+      "rule": "W5",
+      "message": "binding 'traceability' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 219,
+      "rule": "W5",
+      "message": "binding 'work_package' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 231,
+      "rule": "W5",
+      "message": "binding 'double_record' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 238,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 254,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 257,
+      "rule": "W5",
+      "message": "binding 'assessment' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 261,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    }
+  ],
+  "unbacked_verifies": [],
+  "open_findings": [
+    {
+      "rule": "I8",
+      "severity": "warning",
+      "message": "kept as prose, not checkable: Judgments of cohesion, boundary quality, adequacy of design depth, and 'consequential' vs private decisions are taste-based and cannot be mechanically checked.",
+      "id": "R90"
+    }
+  ],
+  "judge": {
+    "dropped": [],
+    "added": [
+      "none: asks the user whether to build or implement when the request is silent (line 58); R3 says to default to design-only, and R66 says authorized work needs no extra approval",
+      "none: aborts when there is no software request, roadmap slice, or prototype (line 53); R1 is only context and asks for no abort",
+      "none: writes the implementation report into the work registry (line 265); no requirement asks for this write"
+    ],
+    "changed": [
+      "R3: when the request doesn't say whether to build, the flow asks the user instead of defaulting to design-only planning",
+      "R4: always asks the user for deployment, publication, tool installation, or delegation permission instead of following permissions that already apply; this can mean asking for approval again",
+      "R58: if the relevant runtime check runs and fails, the flow records 'inspected code and absent execution evidence' instead of reporting the failed check",
+      "R65: if the project has no design structure and implementation is authorized, the flow writes a new roadmap without checking whether one already exists, while R65 says to use an existing roadmap or create one only when tracking is needed"
+    ],
+    "usage": {
+      "model": "opus",
+      "cost_usd": 0.20369179999999998,
+      "output_tokens": 2351,
+      "seconds": 23.849,
+      "phase": "judge"
+    }
+  },
+  "questions": [
+    "Does 'follow existing task authorization' mean a build/implement request in the prompt is sufficient, or must it be confirmed with the user in some cases?",
+    "What counts as 'costly-to-reverse' and 'consequential'? These thresholds are undefined.",
+    "Where should the work registry live when none exists in the subject project (existing-projects says create a roadmap; location unspecified)?",
+    "Is there a required order among the design activities, given that they are iterated and must not be frozen?",
+    "R3 and R4 conflict mildly: the source says a build request authorizes implementation without repeated approval, so I branched on the request text instead of adding an ask plus require confirmation. Is that the intended reading?",
+    "Should a Recurspec CLI be a declared input (`cli`), or detected another way?"
+  ],
+  "assumptions": [
+    "Table rows in terminology.md are grouped into context requirements (R87) rather than one requirement per term.",
+    "Evidence 'self' is assigned to judgment-based design steps; 'exec' to inspection, running checks, or verifying compatibility.",
+    "Frontmatter description line 3 is treated as applicability context (R1).",
+    "Line 18 of terminology.md is a table separator row, listed as a non-requirement.",
+    "I did not run `skillwren check --fragment`. Unverified syntax guesses: the `exec readonly` form without an ID, the `inputs:` list holding resource-like names (registry, checks, design_docs, cli), and unprefixed `apply` patterns in `order:` rules.",
+    "The contract has no `resources:` block. Writes target `registry`, `design_docs`, and `subject`, which I declared as inputs.",
+    "Several `verify ... otherwise:` blocks fall through after recording a gap, because the source says to record gaps and continue. They might draw W9 warnings.",
+    "Only the implementation acceptance verify has a `retry` loop. Its exit is a branch on the same failure or a blocker, which records the blocker and returns.",
+    "The source names no commands, so I did not write a step-to-command table.",
+    "Reference-file reads are conditional and have otherwise blocks that record a gap, because a missing optional reference is a gap.",
+    "I did not run skillwren check, so I haven't confirmed that the five errors are gone. I changed the contract section order, kebab-cased the flow name, and bound the apply targets on the otherwise paths. I also backed the #gaps and #readiness verifies with exec results.",
+    "The authorization and permission asks only fire when the request is unclear or the work needs deployment, publication, tool installation, or delegation. A decline marks dependent work conditional and does not abort.",
+    "I removed the unconditional `write #design artifacts` write. Artifact writes are now conditional per artifact type, so empty sections are not written. `write #design` is now the design brief write, and the `explore architecture before write#design` order rule applies to it.",
+    "Order rules still rest on apply steps, so W15 self-report warnings remain. I accepted this because the source gives no exec signal for those orderings.",
+    "The W9 warnings (otherwise blocks that fall through) and a few unused-binding warnings remain. The source says to record gaps and continue in those places, so I did not add abort or retry.",
+    "Remaining W5, W9 and W15 warnings are accepted: gap-recording otherwise blocks intentionally continue rather than abort, per the source, and the order rules cover apply steps that have no observable signal.",
+    "Non-readonly exec checks (source review, gap review, project checks) are placed after all dismissible asks, which now come first.",
+    "Fixed only the three J1 errors (R72, R79, R12); the remaining W5, W9 and W15 warnings are left as they were.",
+    "'Settled user decisions' is handled with an always rule and by guarding the clarification ask with 'the user has not already settled it'.",
+    "The restart-persistence and unavailable-environment reporting are folded into the acceptance verify line and a new apply step that runs after each check run."
+  ],
+  "review_map": {
+    "kind": "manual-requirement-review",
+    "requirements": 97,
+    "non_requirements": 46,
+    "original_files": [
+      "SKILL.md",
+      "references/artifacts.md",
+      "references/design-method.md",
+      "references/existing-projects.md",
+      "references/implementation.md",
+      "references/research.md",
+      "references/terminology.md"
+    ],
+    "semantic_equivalence_proven": false
+  },
+  "approved": false,
+  "semantic_equivalence_proven": false
+}

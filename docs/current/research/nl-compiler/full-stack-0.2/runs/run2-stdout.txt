@@ -1,0 +1,72 @@
+compiled docs/current/research/nl-compiler/full-stack-0.2/runs/run2: 90 requirements, 1 files, 7 adapter calls
+questions:
+  - Does 'follow existing task authorization' mean a build/implement request in the prompt is sufficient, or must it be confirmed with the user in some cases?
+  - What counts as 'costly-to-reverse' and 'consequential'? These thresholds are undefined.
+  - Where should the work registry live when none exists in the subject project (existing-projects says create a roadmap; location unspecified)?
+  - Is there a required order among the design activities, given that they are iterated and must not be frozen?
+  - R3 and R4 conflict mildly: the source says a build request authorizes implementation without repeated approval, so I branched on the request text instead of adding an ask plus require confirmation. Is that the intended reading?
+  - Should a Recurspec CLI be a declared input (`cli`), or detected another way?
+assumptions:
+  - Table rows in terminology.md are grouped into context requirements (R87) rather than one requirement per term.
+  - Evidence 'self' is assigned to judgment-based design steps; 'exec' to inspection, running checks, or verifying compatibility.
+  - Frontmatter description line 3 is treated as applicability context (R1).
+  - Line 18 of terminology.md is a table separator row, listed as a non-requirement.
+  - I did not run `skillwren check --fragment`. Unverified syntax guesses: the `exec readonly` form without an ID, the `inputs:` list holding resource-like names (registry, checks, design_docs, cli), and unprefixed `apply` patterns in `order:` rules.
+  - The contract has no `resources:` block. Writes target `registry`, `design_docs`, and `subject`, which I declared as inputs.
+  - Several `verify ... otherwise:` blocks fall through after recording a gap, because the source says to record gaps and continue. They might draw W9 warnings.
+  - Only the implementation acceptance verify has a `retry` loop. Its exit is a branch on the same failure or a blocker, which records the blocker and returns.
+  - The source names no commands, so I did not write a step-to-command table.
+  - Reference-file reads are conditional and have otherwise blocks that record a gap, because a missing optional reference is a gap.
+  - I did not run skillwren check, so I haven't confirmed that the five errors are gone. I changed the contract section order, kebab-cased the flow name, and bound the apply targets on the otherwise paths. I also backed the #gaps and #readiness verifies with exec results.
+  - The authorization and permission asks only fire when the request is unclear or the work needs deployment, publication, tool installation, or delegation. A decline marks dependent work conditional and does not abort.
+  - I removed the unconditional `write #design artifacts` write. Artifact writes are now conditional per artifact type, so empty sections are not written. `write #design` is now the design brief write, and the `explore architecture before write#design` order rule applies to it.
+  - Order rules still rest on apply steps, so W15 self-report warnings remain. I accepted this because the source gives no exec signal for those orderings.
+  - The W9 warnings (otherwise blocks that fall through) and a few unused-binding warnings remain. The source says to record gaps and continue in those places, so I did not add abort or retry.
+  - Remaining W5, W9 and W15 warnings are accepted: gap-recording otherwise blocks intentionally continue rather than abort, per the source, and the order rules cover apply steps that have no observable signal.
+  - Non-readonly exec checks (source review, gap review, project checks) are placed after all dismissible asks, which now come first.
+  - Fixed only the three J1 errors (R72, R79, R12); the remaining W5, W9 and W15 warnings are left as they were.
+  - 'Settled user decisions' is handled with an always rule and by guarding the clarification ask with 'the user has not already settled it'.
+  - The restart-persistence and unavailable-environment reporting are folded into the acceptance verify line and a new apply step that runs after each check run.
+open I8 R90: kept as prose, not checkable: Judgments of cohesion, boundary quality, adequacy of design depth, and 'consequential' vs private decisions are taste-based and cannot be mechanically checked.
+warning SKILL.md:44 W15: order rule rests on self-report: every statement matching 'apply explore architecture' is the model's own judgment
+warning SKILL.md:45 W15: order rule rests on self-report: every statement matching 'apply state research question' is the model's own judgment
+warning SKILL.md:46 W15: order rule rests on self-report: every statement matching 'apply connect contracts' is the model's own judgment
+warning SKILL.md:47 W15: order rule rests on self-report: every statement matching 'apply investigate unresolved semantics' is the model's own judgment
+warning SKILL.md:48 W15: order rule rests on self-report: every statement matching 'apply connect real path' is the model's own judgment
+warning SKILL.md:60 W9: otherwise: block falls through
+warning SKILL.md:61 W5: binding 'design_only' never referenced
+warning SKILL.md:66 W9: otherwise: block falls through
+warning SKILL.md:67 W5: binding 'conditional_work' never referenced
+warning SKILL.md:71 W5: binding 'dispositions' never referenced
+warning SKILL.md:79 W9: otherwise: block falls through
+warning SKILL.md:85 W5: binding 'authorization' never referenced
+warning SKILL.md:93 W9: otherwise: block falls through
+warning SKILL.md:98 W9: otherwise: block falls through
+warning SKILL.md:104 W9: otherwise: block falls through
+warning SKILL.md:106 W5: binding 'delta' never referenced
+warning SKILL.md:111 W9: otherwise: block falls through
+warning SKILL.md:124 W5: binding 'commitment' never referenced
+warning SKILL.md:140 W9: otherwise: block falls through
+warning SKILL.md:147 W9: otherwise: block falls through
+warning SKILL.md:189 W5: binding 'readiness' never referenced
+warning SKILL.md:195 W9: otherwise: block falls through
+warning SKILL.md:204 W5: binding 'brief' never referenced
+warning SKILL.md:207 W5: binding 'component_spec' never referenced
+warning SKILL.md:210 W5: binding 'interaction_spec' never referenced
+warning SKILL.md:213 W5: binding 'decision_record' never referenced
+warning SKILL.md:216 W5: binding 'traceability' never referenced
+warning SKILL.md:219 W5: binding 'work_package' never referenced
+warning SKILL.md:231 W5: binding 'double_record' never referenced
+warning SKILL.md:238 W9: otherwise: block falls through
+warning SKILL.md:254 W9: otherwise: block falls through
+warning SKILL.md:257 W5: binding 'assessment' never referenced
+warning SKILL.md:261 W9: otherwise: block falls through
+judge added: none: asks the user whether to build or implement when the request is silent (line 58); R3 says to default to design-only, and R66 says authorized work needs no extra approval
+judge added: none: aborts when there is no software request, roadmap slice, or prototype (line 53); R1 is only context and asks for no abort
+judge added: none: writes the implementation report into the work registry (line 265); no requirement asks for this write
+judge changed: R3: when the request doesn't say whether to build, the flow asks the user instead of defaulting to design-only planning
+judge changed: R4: always asks the user for deployment, publication, tool installation, or delegation permission instead of following permissions that already apply; this can mean asking for approval again
+judge changed: R58: if the relevant runtime check runs and fails, the flow records 'inspected code and absent execution evidence' instead of reporting the failed check
+judge changed: R65: if the project has no design structure and implementation is authorized, the flow writes a new roadmap without checking whether one already exists, while R65 says to use an existing roadmap or create one only when tracking is needed
+Not approved. Review audit/, run explain-workflow, and approve before use.
+exit 1

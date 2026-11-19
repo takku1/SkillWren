@@ -1,0 +1,141 @@
+Workflow in SKILL.md:
+flow `convert`:
+  - 'if paid model evaluation or installing the result is wanted:' (line 44) -- branch
+    - 'ask user to confirm paid model evaluation or installation of the result' (line 45)
+    - 'require confirmation' (line 46) -- gate; failure follows its otherwise branch
+      - otherwise (line 47)
+        - 'apply decline note with references as declined' (line 48)
+  - 'read relevant local references of the original skill as references' (line 50)
+    - otherwise (line 51)
+      - 'apply gap note with references as gaps' (line 52)
+  - 'if a tool you run reads the SkillWren header:' (line 54) -- branch
+    - 'apply complete skill layout with references as layout' (line 55)
+  - 'else:' (line 56) [else]
+    - 'apply flow files layout with references as layout' (line 57)
+  - 'if a model-run mechanical accounting compile is wanted:' (line 59) -- branch
+    - 'exec #compile skillwren compile from checks as compiled' (line 60)
+    - 'verify #creview open findings, questions, and judge results of the compile are reviewed from compiled' (line 61) -- gate; failure follows its otherwise branch
+      - otherwise (line 62)
+        - 'apply inventory review with compiled as inventory' (line 63)
+        - retry (line 64) -- re-runs the failed gate 'verify #creview open findings, questions, and judge results of the compile are reviewed from compiled' (line 61) after the repair steps above; no retry limit is stated
+    - 'apply inventory review with compiled as inventory' (line 65)
+    - 'apply rewrite review with compiled as candidate' (line 66)
+  - 'else:' (line 67) [else]
+    - 'apply inventory with references as inventory' (line 68)
+    - 'write #inventory inventory with review' (line 69)
+    - 'apply rewrite with layout as candidate' (line 70)
+  - 'write #candidate candidate with output' (line 72)
+  - 'unless skillwren is installed:' (line 74) -- branch
+    - 'exec #probe interpreter probe from checks as probe' (line 75)
+    - 'verify #interp the interpreter that works is python3, python, or py -3 from probe' (line 76) -- gate; failure follows its otherwise branch
+      - otherwise (line 77)
+        - 'if no interpreter works and the failure persists with the same evidence:' (line 78) -- branch
+          - 'apply blocker record with probe as report' (line 79)
+          - 'return #blocked report as report' (line 80)
+        - 'apply local invocation with layout as invocation' (line 81)
+        - 'exec interpreter probe from checks as probe' (line 82)
+        - retry (line 83) -- re-runs the failed gate 'verify #interp the interpreter that works is python3, python, or py -3 from probe' (line 76) after the repair steps above; no retry limit is stated
+  - 'exec #checkrun skillwren check from checks as checked' (line 85)
+  - 'verify #check the check reports no findings from checked' (line 86) -- gate; failure follows its otherwise branch
+    - otherwise (line 87)
+      - 'if the same finding persists with the same evidence after a repair:' (line 88) -- branch
+        - 'apply blocker record with checked as report' (line 89)
+        - 'return #blocked report as report' (line 90)
+      - 'apply repair with candidate as candidate' (line 91)
+      - 'write candidate with output' (line 92)
+      - 'exec skillwren check from checks as checked' (line 93)
+      - retry (line 94) -- re-runs the failed gate 'verify #check the check reports no findings from checked' (line 86) after the repair steps above; no retry limit is stated
+  - 'if layout is flow files:' (line 96) -- branch
+    - 'verify #inputs the inferred inputs in the summary have no typos from checked' (line 97) -- gate; failure follows its otherwise branch
+      - otherwise (line 98)
+        - 'if the same input typo persists with the same evidence after a repair:' (line 99) -- branch
+          - 'apply blocker record with checked as report' (line 100)
+          - 'return #blocked report as report' (line 101)
+        - 'apply input typo repair with candidate as candidate' (line 102)
+        - 'write candidate with output' (line 103)
+        - 'exec skillwren check from checks as checked' (line 104)
+        - retry (line 105) -- re-runs the failed gate 'verify #inputs the inferred inputs in the summary have no typos from checked' (line 97) after the repair steps above; no retry limit is stated
+  - 'apply map with candidate as map' (line 107)
+  - 'write #map map with review' (line 108)
+  - 'exec #mapcheck mapping bookkeeping check from checks as mapchecked' (line 109)
+  - 'verify #parity every original nonblank line and relevant reference file is mapped and the mapping is reviewed semantically from mapchecked' (line 110) -- gate; failure follows its otherwise branch
+    - otherwise (line 111)
+      - 'if the same lost or invented content persists with the same evidence after an update:' (line 112) -- branch
+        - 'apply blocker record with mapchecked as report' (line 113)
+        - 'return #blocked report as report' (line 114)
+      - 'apply rewrite update with map as candidate' (line 115)
+      - 'write candidate with output' (line 116)
+      - 'apply map with candidate as map' (line 117)
+      - 'write map with review' (line 118)
+      - 'exec mapping bookkeeping check from checks as mapchecked' (line 119)
+      - retry (line 120) -- re-runs the failed gate 'verify #parity every original nonblank line and relevant reference file is mapped and the mapping is reviewed semantically from mapchecked' (line 110) after the repair steps above; no retry limit is stated
+  - 'exec #measure skillwren measure from checks as measured' (line 122)
+  - 'verify #metric the measure counts the complete expanded prompt with the same tokenizer on both sides and names an explicit metric for every count from measured' (line 123) -- gate; failure follows its otherwise branch
+    - otherwise (line 124)
+      - 'if the same metric failure persists with the same evidence:' (line 125) -- branch
+        - 'apply blocker record with measured as report' (line 126)
+        - 'return #blocked report as report' (line 127)
+      - 'apply metric repair with measured as measured' (line 128)
+      - 'exec skillwren measure from checks as measured' (line 129)
+      - retry (line 130) -- re-runs the failed gate 'verify #metric the measure counts the complete expanded prompt with the same tokenizer on both sides and names an explicit metric for every count from measured' (line 123) after the repair steps above; no retry limit is stated
+  - 'if layout is complete skill:' (line 132) -- branch
+    - 'exec #buildrun skillwren build from checks as built' (line 133)
+    - 'verify #build the build validates the flow and passes the review checks from built' (line 134) -- gate; failure follows its otherwise branch
+      - otherwise (line 135)
+        - 'abort with "Build failed validation or review checks; nothing is published."' (line 136)
+    - 'if the build is not strictly smaller than the original:' (line 137) -- branch
+      - 'apply tradeoff record with built as limits' (line 138)
+    - 'else:' (line 139) [else]
+      - 'apply size note with built as limits' (line 140)
+  - 'else:' (line 141) [else]
+    - 'if the measured candidate is not strictly smaller than the original:' (line 142) -- branch
+      - 'apply tradeoff record with measured as limits' (line 143)
+    - 'else:' (line 144) [else]
+      - 'apply size note with measured as limits' (line 145)
+  - 'apply result report with limits as report' (line 147)
+  - 'write #reportfile report with output' (line 148)
+  - 'verify #final report lists the compiled skill, retained-source manifest, requirement map, exact comparison metric and counts, and material limits, and states that structural validation and source retention do not prove semantic equivalence or model adherence from measured' (line 149) -- gate with no otherwise; failure discards derived artifacts, reports, leaves sources unchanged, and aborts the flow
+  - 'return #result report as report' (line 150)
+Ordering (must hold on every path):
+  - 'apply inventory' before 'apply rewrite' (line 34)
+  - 'write#candidate' before 'exec#checkrun' (line 35)
+  - 'verify#check' before 'write#map' (line 36)
+  - 'verify#parity' before 'exec#measure' (line 37)
+  - 'exec#measure' before 'exec#buildrun' (line 38)
+  - 'verify#final' before 'return#result' (line 39)
+Authority: human decisions are asked here:
+  - 'ask user to confirm paid model evaluation or installation of the result' (line 45)
+  SkillWren checks the ask/confirm structure, not that a human actually decided -- approval confirms intended meaning, not formal equivalence.
+Effects (files written or flows run):
+  - flow `convert` writes output
+  - flow `convert` writes review
+Enforcement:
+  - 'exec #compile skillwren compile from checks as compiled' (line 60) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #creview open findings, questions, and judge results of the compile are reviewed from compiled' (line 61) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #inventory inventory with review' (line 69) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #candidate candidate with output' (line 72) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec #probe interpreter probe from checks as probe' (line 75) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #interp the interpreter that works is python3, python, or py -3 from probe' (line 76) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec #checkrun skillwren check from checks as checked' (line 85) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #check the check reports no findings from checked' (line 86) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #inputs the inferred inputs in the summary have no typos from checked' (line 97) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #map map with review' (line 108) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec #mapcheck mapping bookkeeping check from checks as mapchecked' (line 109) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #parity every original nonblank line and relevant reference file is mapped and the mapping is reviewed semantically from mapchecked' (line 110) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec #measure skillwren measure from checks as measured' (line 122) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #metric the measure counts the complete expanded prompt with the same tokenizer on both sides and names an explicit metric for every count from measured' (line 123) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec #buildrun skillwren build from checks as built' (line 133) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #build the build validates the flow and passes the review checks from built' (line 134) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #reportfile report with output' (line 148) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #final report lists the compiled skill, retained-source manifest, requirement map, exact comparison metric and counts, and material limits, and states that structural validation and source retention do not prove semantic equivalence or model adherence from measured' (line 149) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec interpreter probe from checks as probe' (line 82) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'write candidate with output' (line 92) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec skillwren check from checks as checked' (line 93) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'write candidate with output' (line 103) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec skillwren check from checks as checked' (line 104) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'write candidate with output' (line 116) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'write map with review' (line 118) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec mapping bookkeeping check from checks as mapchecked' (line 119) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec skillwren measure from checks as measured' (line 129) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

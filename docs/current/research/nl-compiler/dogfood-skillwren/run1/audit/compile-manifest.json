@@ -1,0 +1,186 @@
+{
+  "format": "skillwren-compile-1",
+  "layout": "inline",
+  "sources": {
+    "SKILL.md": "856c059b07d4c0ae2c3475823b583eaf352f18faa7d314e0828353b95f55df01"
+  },
+  "outputs": {
+    "SKILL.md": "f333640b1503220ed665469a397f7b2a63ea28180fec1fbd49aff83c46fedb93"
+  },
+  "adapter": [
+    "py",
+    "-3",
+    "scripts/adapters/claude_compile.py"
+  ],
+  "calls": [
+    {
+      "phase": "inventory",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.04504269999999999,
+        "output_tokens": 3562,
+        "seconds": 17.99,
+        "phase": "inventory"
+      }
+    },
+    {
+      "phase": "lower",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.1727169,
+        "output_tokens": 10206,
+        "seconds": 71.572,
+        "phase": "lower"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.1620109,
+        "output_tokens": 6595,
+        "seconds": 38.903,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "opus",
+        "cost_usd": 0.1082598,
+        "output_tokens": 2271,
+        "seconds": 22.333,
+        "phase": "judge"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.1252821,
+        "output_tokens": 7618,
+        "seconds": 44.01,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "opus",
+        "cost_usd": 0.0942798,
+        "output_tokens": 1288,
+        "seconds": 13.005,
+        "phase": "judge"
+      }
+    }
+  ],
+  "requirements": 34,
+  "non_requirements": 3,
+  "check_warnings": [
+    {
+      "line": 34,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply inventory' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 47,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 48,
+      "rule": "W5",
+      "message": "binding 'declined' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 51,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 52,
+      "rule": "W5",
+      "message": "binding 'gaps' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 63,
+      "rule": "W5",
+      "message": "binding 'inventory' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 81,
+      "rule": "W5",
+      "message": "binding 'invocation' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    }
+  ],
+  "unbacked_verifies": [],
+  "open_findings": [],
+  "judge": {
+    "dropped": [
+      "R27: the build gate checks only flow validation and review checks. If the build is not strictly smaller, the flow records a tradeoff and still returns the result, so 'strictly smaller before publication' is no longer a gate."
+    ],
+    "added": [
+      "none: R33 says not to run paid model evaluations or install unless requested, but the flow adds an extra ask and requires confirmation even when the user already requested it. The flow also never runs the evaluation or installation."
+    ],
+    "changed": [],
+    "usage": {
+      "model": "opus",
+      "cost_usd": 0.0942798,
+      "output_tokens": 1288,
+      "seconds": 13.005,
+      "phase": "judge"
+    }
+  },
+  "questions": [
+    "Is the build gate 'strictly smaller' measured by the same token metric as step 6?",
+    "Does the optional compile path replace only steps 1-5, with steps 6-7 still required?",
+    "Which tools 'read the SkillWren header' is not enumerated; how is that determined?",
+    "R33 has evidence 'user', which would normally become a decision ask plus require confirmation. The source only forbids paid evaluations or installation unless requested, and the skill has no step that performs either. I recorded it as a `never:` invariant. Should an explicit ask and confirmation be added for requested evaluations or installs?",
+    "Should `exec #mapcheck` name a specific command? The source only says anchor matching checks bookkeeping, so I left it as the review-map anchor check."
+  ],
+  "assumptions": [
+    "Line 2-4 description treated as context, not extra obligations.",
+    "Ordering of steps 1-7 is implied by numbering; step 3 is a standing constraint on step 2.",
+    "Tokenizer choice is unspecified beyond 'same on both sides'.",
+    "I did not run `skillwren check --fragment` on SKILL.md. I had no checker access here.",
+    "The source does not name a blocker exit for the repair retry loops, so I added none, following the 'invent nothing' rule. The check, input-typo, parity and metric loops therefore have no bounded exit.",
+    "The `build` verify's `otherwise:` records the tradeoff and falls through instead of aborting, because the source says to report the tradeoff. This may produce a W9 warning.",
+    "The `gap note` otherwise on the reference read also falls through, because a missing optional reference is a gap, not a failure.",
+    "I used `write` and `exec` on abstract resources (`output`, `review`, `checks`) and did not declare a resources block, following the inline example. Under `--fragment` these should be accepted.",
+    "In the compile arm, `apply rewrite review` is the step that precedes the write, so the inventory-before-rewrite order rule holds on both paths.",
+    "The user-evidence requirement (R33) lands as an ask plus `require confirmation` placed first, before any write or exec. Declining continues the conversion without paid evaluation or installation. This adds a W9 fall-through warning, which I accepted.",
+    "`exec #mapcheck` is added so `verify #parity` has exec evidence. This is not a step the source names.",
+    "`verify #final` cites the measure result because it is the last exec result available to cite.",
+    "I added `exec #probe` and `verify #interp` to give the interpreter requirement (R17) exec evidence.",
+    "IDs are now unique: `#checkrun` and `#buildrun` for the execs, and `#check` and `#build` for the verifies.",
+    "The contract sections are reordered to always, never, inputs, order.",
+    "Build validation or review-check failure aborts (nothing published); a build that is only not strictly smaller records a tradeoff in the limits and still returns a report.",
+    "Each repair loop is bounded by a same-evidence branch that returns a recorded blocker report via return #blocked.",
+    "Order rule 'apply inventory before apply rewrite' keeps a W15 self-report warning because the source gives no observable artifact for it on the compile path."
+  ],
+  "review_map": {
+    "kind": "manual-requirement-review",
+    "requirements": 34,
+    "non_requirements": 3,
+    "original_files": [
+      "SKILL.md"
+    ],
+    "semantic_equivalence_proven": false
+  },
+  "approved": false,
+  "semantic_equivalence_proven": false
+}

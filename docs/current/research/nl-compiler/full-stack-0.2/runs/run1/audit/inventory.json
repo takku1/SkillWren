@@ -1,0 +1,2045 @@
+{
+  "requirements": [
+    {
+      "id": "R1",
+      "kind": "context",
+      "text": "Skill applies to turning a software request, roadmap slice, or prototype into a scoped design (ownership, contracts, ordered work), carrying through implementation when requested; use for changes crossing meaningful component boundaries, not isolated routine edits.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            3,
+            3
+          ]
+        }
+      ],
+      "lands": [
+        "Use it for changes crossing meaningful component boundaries, not isolated routine edits."
+      ]
+    },
+    {
+      "id": "R2",
+      "kind": "output",
+      "text": "Deliver a connected design across all layers needed for the requested outcome, including native/platform systems.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            10,
+            10
+          ]
+        }
+      ],
+      "lands": [
+        "write #design design with design_docs"
+      ]
+    },
+    {
+      "id": "R3",
+      "kind": "decision",
+      "text": "Planning (design only) is the default mode; a request to build/implement authorizes the implementation path within that scope. Follow existing task authorization without repeated approval.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            10,
+            10
+          ]
+        }
+      ],
+      "lands": [
+        "if request asks to build or implement:",
+        "require repeated approval for already authorized work"
+      ]
+    },
+    {
+      "id": "R4",
+      "kind": "gate",
+      "text": "Deployment, publication, tool installation, and delegation are not covered by implementation authorization; they follow their own applicable permissions.",
+      "evidence": "user",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            10,
+            10
+          ]
+        }
+      ],
+      "lands": [
+        "ask user to grant permission for deployment, publication, tool installation, or delegation",
+        "if work involves deployment, publication, tool installation, or delegation:"
+      ]
+    },
+    {
+      "id": "R5",
+      "kind": "step-meaning",
+      "text": "Ground the scope: identify subject repository, outcome, selected work IDs, constraints, exclusions; inspect applicable instructions and representative code, contracts, tests, prototypes.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            14,
+            14
+          ]
+        }
+      ],
+      "lands": [
+        "verify #grounded scope names repository, outcome, work IDs, constraints, and exclusions from inspection",
+        "- **ground scope**"
+      ]
+    },
+    {
+      "id": "R6",
+      "kind": "invariant",
+      "text": "Preserve authoritative documents, IDs, and project vocabulary; keep current state, target state, and migration distinct; documentation and mock data do not establish working behavior.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            14,
+            14
+          ]
+        }
+      ],
+      "lands": [
+        "preserve authoritative documents, IDs, and project vocabulary",
+        "keep current state, target state, and migration distinct",
+        "treat documentation or mock data as establishing working behavior"
+      ]
+    },
+    {
+      "id": "R7",
+      "kind": "decision",
+      "text": "Classify discoveries and proposed mechanisms as required now, existing dependency, unresolved prerequisite, or deferred enhancement; scope disposition, evidence, and completion are separate axes.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            16,
+            16
+          ]
+        },
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            91,
+            98
+          ]
+        }
+      ],
+      "lands": [
+        "apply classify dispositions with inspection as dispositions",
+        "keep scope disposition, evidence, and completion as separate axes"
+      ]
+    },
+    {
+      "id": "R8",
+      "kind": "invariant",
+      "text": "Explain necessary prerequisites; discovery does not authorize scope expansion or replacement.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            16,
+            16
+          ]
+        }
+      ],
+      "lands": [
+        "let discovery alone authorize scope expansion or replacement",
+        "- **classify dispositions**"
+      ]
+    },
+    {
+      "id": "R9",
+      "kind": "branch",
+      "text": "Ambiguity: resolve from available evidence; state consequential assumptions; use reversible ordinary choices to continue.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            18,
+            18
+          ]
+        }
+      ],
+      "lands": [
+        "apply resolve ambiguity with inspection as assumptions",
+        "show assumptions"
+      ]
+    },
+    {
+      "id": "R10",
+      "kind": "gate",
+      "text": "For costly-to-reverse commitments, record consequences, migration/reversal options, and affected work before committing; seek clarification only when a missing answer changes outcome or authority. Preserve settled user decisions.",
+      "evidence": "user",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            18,
+            18
+          ]
+        }
+      ],
+      "lands": [
+        "if a missing answer changes the outcome or authority and the user has not already settled it:",
+        "ask user to decide the open question that changes outcome or authority",
+        "apply record consequences with sequence as consequences",
+        "preserve settled user decisions"
+      ]
+    },
+    {
+      "id": "R11",
+      "kind": "branch",
+      "text": "Load references only as needed: terminology for ambiguous concepts/relations; existing-projects for design deltas or Recurspec integration; design-method for substantial decomposition. Research documents outside the package are not runtime requirements.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            20,
+            20
+          ]
+        }
+      ],
+      "lands": [
+        "read references/terminology.md as terminology",
+        "if the request needs design deltas or Recurspec integration:",
+        "read references/existing-projects.md as existing_projects",
+        "read references/design-method.md as design_method"
+      ]
+    },
+    {
+      "id": "R12",
+      "kind": "order",
+      "text": "Design activities are iterated as evidence changes; requirements are not frozen before exploring architecture.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            24,
+            24
+          ]
+        }
+      ],
+      "lands": [
+        "apply trace behavior before apply sequence work",
+        "label iterate:"
+      ]
+    },
+    {
+      "id": "R13",
+      "kind": "step-meaning",
+      "text": "Trace behavior: define ambiguous terms and observable acceptance criteria; follow trigger, state transitions, result, including relevant failure, retry, cancellation, recovery; separate prototype appearance/interaction requirements from simulated behavior.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            26,
+            26
+          ]
+        }
+      ],
+      "lands": [
+        "- **trace behavior**",
+        "apply trace behavior with inspection as behavior"
+      ]
+    },
+    {
+      "id": "R14",
+      "kind": "step-meaning",
+      "text": "Allocate authority: assign cohesive responsibilities, authoritative state, policy, invariants, readers/writers, derived views; one authority per state set or explicit coordination protocol; architectural authority, resource ownership, team responsibility differ.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            28,
+            28
+          ]
+        }
+      ],
+      "lands": [
+        "- **allocate authority**",
+        "apply allocate authority with behavior as allocation"
+      ]
+    },
+    {
+      "id": "R15",
+      "kind": "step-meaning",
+      "text": "Resolve choices: research uncertainty that could change the design per research.md; preserve valid existing choices; resolve consequential reuse before custom internals; stop at adopted providers' public boundaries and allocate required fit gaps.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            29,
+            29
+          ]
+        }
+      ],
+      "lands": [
+        "- **resolve choices**",
+        "apply resolve choices with allocation as choices"
+      ]
+    },
+    {
+      "id": "R16",
+      "kind": "step-meaning",
+      "text": "Connect contracts: use relevant artifact patterns for consumers/providers, interface semantics, lifecycle, source mappings, checks; match consumer assumptions to provider guarantees or explicit unresolved conditions; describe shared providers once.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            30,
+            30
+          ]
+        }
+      ],
+      "lands": [
+        "- **connect contracts**",
+        "apply connect contracts with boundaries as contracts"
+      ]
+    },
+    {
+      "id": "R17",
+      "kind": "step-meaning",
+      "text": "Sequence work: link selected requirements, affected responsibilities/paths, prerequisite decisions/contracts, real integration path, checks, closure evidence; prefer bounded end-to-end increments; resolve shared interface work before claiming independence; label doubles with simulated guarantees, limits, replacement conditions; doubles do not establish operational integration.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            31,
+            31
+          ]
+        }
+      ],
+      "lands": [
+        "- **sequence work**",
+        "apply sequence work with contracts as sequence"
+      ]
+    },
+    {
+      "id": "R18",
+      "kind": "decision",
+      "text": "Split components only where different decisions need hiding, authority changes hands, protection/lifecycle differs, or coupling prevents a coherent increment; screens, nouns, directories, workflow steps do not dictate components; components do not dictate files, packages, services, processes, teams.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            34,
+            34
+          ]
+        }
+      ],
+      "lands": [
+        "apply split components with choices as components"
+      ]
+    },
+    {
+      "id": "R19",
+      "kind": "gate",
+      "text": "A next increment is design-ready when outcome, contracts, prerequisites, checks are usable and consequential decisions resolved; private implementation choices may remain; keep unavailable prerequisites explicit; no target depth or artifact count.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            36,
+            36
+          ]
+        }
+      ],
+      "lands": [
+        "verify #ready the next increment has usable outcome, contracts, prerequisites, checks, and resolved consequential decisions from review"
+      ]
+    },
+    {
+      "id": "R20",
+      "kind": "gate",
+      "text": "Check gaps within responsibilities (states, errors, resources, lifecycle), across contracts (identity, authority, ordering, failures), and across the outcome (complete task and observable result).",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            38,
+            38
+          ]
+        }
+      ],
+      "lands": [
+        "verify #gaps no gaps remain within responsibilities, across contracts, or across the outcome from review"
+      ]
+    },
+    {
+      "id": "R21",
+      "kind": "branch",
+      "text": "Apply quality concerns when triggered: changed trust/permissions, shared mutable state, durable data, user interaction, platform constraints, deployment/recovery, migration, resource/latency demands. Missing benchmarks call for explicit targets or investigation, not exclusion; explain excluding a material concern without adding unrelated scope.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            38,
+            38
+          ]
+        }
+      ],
+      "lands": [
+        "if a quality concern is triggered by the scenario:",
+        "apply quality concerns with sequence as quality"
+      ]
+    },
+    {
+      "id": "R22",
+      "kind": "invariant",
+      "text": "Keep requirements, invariants, assumptions, source inspection, executed tests, measurements, and proof distinct; mark unexecuted checks; prose contracts do not enforce themselves.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            42,
+            42
+          ]
+        }
+      ],
+      "lands": [
+        "keep requirements, invariants, assumptions, source inspection, executed tests, measurements, and proof distinct, and mark unexecuted checks"
+      ]
+    },
+    {
+      "id": "R23",
+      "kind": "effect",
+      "text": "Maintain one authoritative work registry in the subject project; specifications define behavior and link work IDs; record unresolved decisions, evidence needed, affected work there.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            44,
+            44
+          ]
+        }
+      ],
+      "lands": [
+        "write #registry unresolved decisions, evidence needed, and affected work IDs with registry"
+      ]
+    },
+    {
+      "id": "R24",
+      "kind": "output",
+      "text": "Design-only deliverable: scope, linked design, ownership/contracts, research-backed choices, ordered increments, blockers; identify what is ready versus conditional.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            46,
+            46
+          ]
+        },
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            43,
+            43
+          ]
+        }
+      ],
+      "lands": [
+        "- **Design-only deliverable**",
+        "write #design design with design_docs",
+        "else:\n    return design as design"
+      ]
+    },
+    {
+      "id": "R25",
+      "kind": "branch",
+      "text": "For authorized implementation, follow implementation.md and continue through selected acceptance criteria; design readiness and a first working increment do not mean milestone complete.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            48,
+            48
+          ]
+        }
+      ],
+      "lands": [
+        "if request asks to build or implement:",
+        "write #resume unfinished work, blockers, and next resumption step with registry"
+      ]
+    },
+    {
+      "id": "R26",
+      "kind": "decision",
+      "text": "Choose the smallest set of artifacts that answers the task; reuse project formats and file names; small scope may fit one document; separate component/flow files when independently consumed or maintained; field names are prompts, not a schema requiring empty sections.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            3,
+            3
+          ]
+        }
+      ],
+      "lands": [
+        "apply select artifacts with sequence as artifact_set"
+      ]
+    },
+    {
+      "id": "R27",
+      "kind": "output",
+      "text": "Design brief content: selected outcome and roadmap IDs, explicit exclusions, actors/environment, existing constraints, relevant evidence, scope dispositions, consequential vocabulary, current/target/migration distinctions, and which increment the design prepares.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            7,
+            7
+          ]
+        }
+      ],
+      "lands": [
+        "- **Design brief**",
+        "generate design artifacts from artifact_set as design",
+        "write #design design with design_docs"
+      ]
+    },
+    {
+      "id": "R28",
+      "kind": "output",
+      "text": "Component specification includes: purpose and allocation (requirement IDs, responsibility, non-responsibilities, contract location); state and authority; consumers and providers; behavior (triggers, outcomes, errors, temporal obligations, invariants distinguished); lifecycle and resources where consequential; boundary mapping only where relevant; implementation mapping (inspected paths/symbols and proposed changes, never invent existing files); decisions and evidence; acceptance with planned vs executed checks clearly separated.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            11,
+            21
+          ]
+        }
+      ],
+      "lands": [
+        "- **Component specification**",
+        "write #design design with design_docs"
+      ]
+    },
+    {
+      "id": "R29",
+      "kind": "invariant",
+      "text": "State resource borrowing, transfer, synchronization, unsafe obligations when relevant to Rust/native implementation; do not require a new crate merely because a spec exists.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            23,
+            23
+          ]
+        }
+      ],
+      "lands": [
+        "state resource borrowing, transfer, synchronization, and unsafe obligations when relevant to Rust or native implementation",
+        "require a new crate merely because a specification exists"
+      ]
+    },
+    {
+      "id": "R30",
+      "kind": "output",
+      "text": "Interaction specification: name task/requirement, trigger, actor, participating contracts, starting state, observable success; messages/calls in order with mutation authority and ack semantics; alternate/error paths and final trustworthy state.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            27,
+            27
+          ]
+        }
+      ],
+      "lands": [
+        "- **Interaction specification**",
+        "write #design design with design_docs"
+      ]
+    },
+    {
+      "id": "R31",
+      "kind": "branch",
+      "text": "Include identity/correlation, retries/duplicates, cancellation, timeouts, event ordering, reconnect/resynchronization when the flow requires; clarify where user/operator observes failure; sequence diagram supplements, not replaces, semantics.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            29,
+            29
+          ]
+        }
+      ],
+      "lands": [
+        "if a flow requires retries, cancellation, timeouts, event ordering, or resynchronization:",
+        "apply interaction concerns with sequence as interactions"
+      ]
+    },
+    {
+      "id": "R32",
+      "kind": "output",
+      "text": "Decision record: question, constraints, evidence, viable alternatives, choice, sacrificed qualities, fit gap, revisit condition; unresolved decisions stay visibly unresolved; user-fixed choices record origin and investigate integration constraints rather than reopen selection.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            33,
+            33
+          ]
+        }
+      ],
+      "lands": [
+        "- **Decision record**",
+        "write #design design with design_docs"
+      ]
+    },
+    {
+      "id": "R33",
+      "kind": "output",
+      "text": "Traceability table columns: requirement ID, origin, responsible component, interaction/contract, implementation location, acceptance check, evidence; rows may link several components/checks; distinguish proposed from existing.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            37,
+            37
+          ]
+        }
+      ],
+      "lands": [
+        "- **Traceability table**",
+        "write #design design with design_docs"
+      ]
+    },
+    {
+      "id": "R34",
+      "kind": "invariant",
+      "text": "Traceability table is a navigational projection only: requirement meaning lives in the spec, work status in the work registry; no independent status fields in derived views.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            39,
+            39
+          ]
+        }
+      ],
+      "lands": [
+        "keep traceability tables as navigational projections of the specification and the work registry",
+        "keep independent status fields in derived views"
+      ]
+    },
+    {
+      "id": "R35",
+      "kind": "output",
+      "text": "Work package records: outcome and selected requirement/contract IDs, responsible modules and inspected/proposed paths, dependency availability, real integration path, delivery prerequisites, acceptance checks, closure evidence, migration/reversal considerations when consequential, work owner only if known, unresolved choices blocking implementation.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            43,
+            43
+          ]
+        },
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            57,
+            57
+          ]
+        }
+      ],
+      "lands": [
+        "- **Work package**",
+        "write #handoff work package with registry"
+      ]
+    },
+    {
+      "id": "R36",
+      "kind": "invariant",
+      "text": "Temporary double: name simulated contract and guarantees, unsupported behavior, real provider, replacement/check condition; link remaining integration work in same registry; a passing double-based test cannot close a requirement for real integration.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            45,
+            45
+          ]
+        },
+        {
+          "file": "references/implementation.md",
+          "lines": [
+            13,
+            13
+          ]
+        }
+      ],
+      "lands": [
+        "for a temporary double, name the simulated contract and guarantees, unsupported behavior, real provider, and replacement condition, and link the remaining integration work in the same registry",
+        "close a requirement for real integration on a passing double-based test",
+        "apply double record with contracts as contracts",
+        "write #doubles temporary double records with registry"
+      ]
+    },
+    {
+      "id": "R37",
+      "kind": "invariant",
+      "text": "Investigation package names question, evidence/experiment, and decision it unlocks; implementation package must not quietly require implementer to decide unresolved product semantics; private choices may remain open.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            47,
+            47
+          ]
+        }
+      ],
+      "lands": [
+        "let an implementation package require the implementer to decide unresolved product semantics",
+        "An investigation package names the question"
+      ]
+    },
+    {
+      "id": "R38",
+      "kind": "context",
+      "text": "Design-method reference is for substantial decomposition; entrypoint owns scope, authorization, evidence, readiness rules; scale depth to uncertainty and risk.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            3,
+            3
+          ]
+        }
+      ],
+      "lands": [
+        "This entrypoint owns scope, authorization, evidence, and readiness rules; scale depth to uncertainty and risk."
+      ]
+    },
+    {
+      "id": "R39",
+      "kind": "step-meaning",
+      "text": "Ground representative tasks: trace consequential terms to request/artifacts; define identity, lifetime, transitions, cardinality, authority, observable completion where ambiguity changes behavior; map aliases without merging distinct entities (process vs app instance vs window).",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            7,
+            7
+          ]
+        }
+      ],
+      "lands": [
+        "- **trace behavior**"
+      ]
+    },
+    {
+      "id": "R40",
+      "kind": "step-meaning",
+      "text": "For each selected task identify actor, needed information, authorized mutations, observer of completion; explore absent/stale data, duplicates, cancellation, partial success, crash, restart; resolve conflicting current/target claims affecting next increment.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            9,
+            9
+          ]
+        }
+      ],
+      "lands": [
+        "for each task identify actor, needed information, authorized mutations, and observer of completion"
+      ]
+    },
+    {
+      "id": "R41",
+      "kind": "branch",
+      "text": "Prototypes: distinguish appearance, demonstrated interactions, simulated behavior; link salient visual requirements; include accessibility/keyboard behavior. Nonvisual tasks use returned values, records, events, device actions, or operational signals. Mock array establishes neither persistence nor lifecycle service.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            11,
+            11
+          ]
+        }
+      ],
+      "lands": [
+        "if the request includes a prototype:",
+        "apply prototype split with inspection as prototype"
+      ]
+    },
+    {
+      "id": "R42",
+      "kind": "gate",
+      "text": "For each candidate responsibility ask: (1) which requirement/dependency justifies it; (2) what state/policy/resource/private decision it owns; (3) what consumers must know vs private; (4) whether lifetime, authority, change pressure, failure behavior justify separation; (5) cost of split and whether an existing component can stay cohesive.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            15,
+            21
+          ]
+        }
+      ],
+      "lands": [
+        "verify #boundaries each candidate responsibility answers the five boundary questions from review"
+      ]
+    },
+    {
+      "id": "R43",
+      "kind": "decision",
+      "text": "Challenge consequential boundaries with a competing quality (e.g. information hiding vs latency/transaction colocation); record tradeoffs; map source/build, runtime, protection, deployment independently; source module gives no fault containment; Rust borrowing doesn't replace architectural authority.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            23,
+            23
+          ]
+        }
+      ],
+      "lands": [
+        "apply challenge boundaries with components as boundaries"
+      ]
+    },
+    {
+      "id": "R44",
+      "kind": "decision",
+      "text": "Investigate choices that could invalidate boundaries or substantial custom work; compare feasible reuse/adaptation/build under actual constraints; keep adopted providers opaque beyond contracts; assign fit gaps to owned work.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            27,
+            27
+          ]
+        }
+      ],
+      "lands": [
+        "apply compare alternatives with question as alternatives",
+        "- **resolve choices**"
+      ]
+    },
+    {
+      "id": "R45",
+      "kind": "recovery",
+      "text": "Revisit interpretation and architecture when evidence changes; when a dependency lacks a feature, preserve the explicit requirement and expose incompatibility and alternatives; remove invented subcomponents when an existing owner supplies the behavior; recheck generated concepts against original evidence before deriving further artifacts.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            29,
+            29
+          ]
+        }
+      ],
+      "lands": [
+        "apply revisit design with sequence as revision",
+        "- **revisit design**"
+      ]
+    },
+    {
+      "id": "R46",
+      "kind": "step-meaning",
+      "text": "Compose contracts: match consumer assumptions to provider guarantees; check identity, schema/versioning, errors, ordering/delivery, authorization, cancellation, backpressure, recovery; exactly-once and lossless streams require supporting mechanisms.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            33,
+            33
+          ]
+        }
+      ],
+      "lands": [
+        "check identity, schema and versioning, errors, ordering and delivery, authorization, cancellation, backpressure, and recovery"
+      ]
+    },
+    {
+      "id": "R47",
+      "kind": "step-meaning",
+      "text": "Trace complete task and actor feedback (transport ack is not completion); inspect bootstrap, shutdown, reconnection, stale derived state (consumers resume, resynchronize, or report unknown view); choose polling vs subscriptions from requirements and provider behavior.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            35,
+            35
+          ]
+        }
+      ],
+      "lands": [
+        "treat a transport acknowledgment as not completion, and inspect bootstrap, shutdown, reconnection, and stale derived state"
+      ]
+    },
+    {
+      "id": "R48",
+      "kind": "order",
+      "text": "Sequence delivery with work packages; mark proposed paths and unavailable prerequisites; order interface agreements before dependent integration; different files do not establish independence.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            39,
+            39
+          ]
+        }
+      ],
+      "lands": [
+        "apply connect contracts before apply sequence work"
+      ]
+    },
+    {
+      "id": "R49",
+      "kind": "recovery",
+      "text": "Resolve delivery cycles via stable interface, coordinated increment, or investigation; prefer a real vertical slice with explicit retirement path for temporary adapters.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            41,
+            41
+          ]
+        }
+      ],
+      "lands": [
+        "apply break cycle with sequence as sequence"
+      ]
+    },
+    {
+      "id": "R50",
+      "kind": "gate",
+      "text": "Readiness review across responsibilities, interactions, selected outcome: confirm origins/owners/checks, dependency availability, compatible authority/contracts, observable failure paths, resolved consequential decisions, links to existing registry; deliver conditional work as conditional; sampled scenarios do not establish whole-system completeness.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/design-method.md",
+          "lines": [
+            43,
+            43
+          ]
+        }
+      ],
+      "lands": [
+        "verify #readiness origins, owners, checks, dependency availability, compatible authority and contracts, observable failure paths, and registry links are confirmed from review"
+      ]
+    },
+    {
+      "id": "R51",
+      "kind": "step-meaning",
+      "text": "Establish authority in existing projects: identify governing architecture, work registry, glossary, conventions, relevant code/tests; follow actual flows not directory names; preserve IDs and rationale; on document disagreement investigate the claim and record target design vs observed implementation.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "references/existing-projects.md",
+          "lines": [
+            5,
+            5
+          ]
+        }
+      ],
+      "lands": [
+        "verify #authority governing documents are identified and disagreements are recorded as target design versus observed implementation from authority",
+        "- **establish authority**"
+      ]
+    },
+    {
+      "id": "R52",
+      "kind": "invariant",
+      "text": "Work at requested scope; reuse existing providers via contracts; replacing an owner needs evidence the outcome requires it; do not create a parallel architecture tree.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/existing-projects.md",
+          "lines": [
+            7,
+            7
+          ]
+        }
+      ],
+      "lands": [
+        "work at the requested scope and reuse existing providers through their contracts",
+        "replace an owner only with evidence that the selected outcome requires it",
+        "create a parallel architecture tree"
+      ]
+    },
+    {
+      "id": "R53",
+      "kind": "branch",
+      "text": "For uncertain runtime claims, run a relevant check when feasible and useful; otherwise state code inspected and execution evidence absent; avoid expensive whole-project testing for documentation-only comparison.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "references/existing-projects.md",
+          "lines": [
+            9,
+            9
+          ]
+        }
+      ],
+      "lands": [
+        "run expensive whole-project testing for a documentation-only comparison",
+        "if a runtime claim is uncertain:",
+        "verify #runtime the claim rests on an executed check from runtime"
+      ]
+    },
+    {
+      "id": "R54",
+      "kind": "output",
+      "text": "Design delta: describe current behavior, desired behavior, affected boundaries, incremental migration; preserve valuable existing behavior; specify removal conditions for temporary adapters; label current vs target diagrams.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/existing-projects.md",
+          "lines": [
+            13,
+            13
+          ]
+        }
+      ],
+      "lands": [
+        "- **Design delta**",
+        "write #design design with design_docs"
+      ]
+    },
+    {
+      "id": "R55",
+      "kind": "invariant",
+      "text": "A roadmap row marked done is a recorded claim, not independent verification; do not mark implemented behavior missing merely because an old brainstorm omitted it; check governing architecture and current code before issuing a finding.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "references/existing-projects.md",
+          "lines": [
+            15,
+            15
+          ]
+        }
+      ],
+      "lands": [
+        "verify #claims done roadmap rows are checked against the governing architecture and current code from authority",
+        "treat a roadmap row marked done as independent verification"
+      ]
+    },
+    {
+      "id": "R56",
+      "kind": "branch",
+      "text": "If subject repo uses Recurspec: read local rules and contracts; if CLI available use read-only status to orient; if unavailable inspect artifacts and report CLI validation not performed; do not install tools or modify a whole tree to enable planning.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "references/existing-projects.md",
+          "lines": [
+            19,
+            19
+          ]
+        }
+      ],
+      "lands": [
+        "if subject uses Recurspec:",
+        "read Recurspec local rules and contracts from subject as recurspec_rules",
+        "verify #recurspec read-only status oriented the relevant tree from recurspec",
+        "install tools or modify a whole tree merely to enable planning"
+      ]
+    },
+    {
+      "id": "R57",
+      "kind": "invariant",
+      "text": "In Recurspec projects preserve SYSTEM.md contracts, contract markers/schema, ROADMAP.md as work registry; link concept docs to owning contract without duplicating normative definitions; coverage suggestions remain proposals.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/existing-projects.md",
+          "lines": [
+            21,
+            21
+          ]
+        }
+      ],
+      "lands": [
+        "preserve SYSTEM.md contracts, contract markers and schema, and ROADMAP.md as the work registry in Recurspec projects",
+        "treat coverage suggestions as anything but proposals"
+      ]
+    },
+    {
+      "id": "R58",
+      "kind": "decision",
+      "text": "Map components/requirements to existing Contract Nodes where appropriate; work packages need not map one-to-one; use Recurspec evidence labels and decision classes without changing meaning.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/existing-projects.md",
+          "lines": [
+            23,
+            23
+          ]
+        }
+      ],
+      "lands": [
+        "apply map contract nodes with recurspec_rules as contract_map"
+      ]
+    },
+    {
+      "id": "R59",
+      "kind": "gate",
+      "text": "For accepted contract edits follow the repository's required validation; do not manufacture probe files, metric values, or formal-proof tags; candidate execution, checker separation, evaluation, merge authority belong to Recurspec when invoked.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "references/existing-projects.md",
+          "lines": [
+            25,
+            25
+          ]
+        }
+      ],
+      "lands": [
+        "verify #validation the repository's required validation passed from validation",
+        "manufacture probe files, metric values, or formal-proof tags"
+      ]
+    },
+    {
+      "id": "R60",
+      "kind": "branch",
+      "text": "Standalone use: no Recurspec/Architectural Reasoning dependency; preserve other project's conventions; if no structure, place design brief plus necessary component/flow specs under docs/design/ and use existing roadmap or create one when implementation tracking is needed; no per-component readiness checklist.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/existing-projects.md",
+          "lines": [
+            29,
+            29
+          ]
+        }
+      ],
+      "lands": [
+        "if subject has no established design structure:",
+        "apply standalone placement with artifact_set as artifact_set",
+        "if implementation work needs tracking and subject has no existing roadmap:",
+        "write #roadmap new roadmap with registry",
+        "- **standalone placement**"
+      ]
+    },
+    {
+      "id": "R61",
+      "kind": "gate",
+      "text": "Implementation applies only when task requests building/implementing; consume scoped design and existing execution workflow; no companion plan or extra approval for authorized work; host must provide repo access, tools, runtime; missing capabilities are concrete blockers, not completion.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/implementation.md",
+          "lines": [
+            3,
+            3
+          ]
+        }
+      ],
+      "lands": [
+        "require host provides repository access, execution tools, and runtime",
+        "write #blocker concrete blocker with registry"
+      ]
+    },
+    {
+      "id": "R62",
+      "kind": "input",
+      "text": "Per bounded increment establish handoff: selected requirements and acceptance criteria, modules and source paths, dependency contracts/availability, integration order, checks, closure evidence, in a work package in existing registry; investigate unresolved product/contract semantics before dependent implementation while continuing independent work.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/implementation.md",
+          "lines": [
+            7,
+            7
+          ]
+        }
+      ],
+      "lands": [
+        "inputs:\n  request, subject, selected_work",
+        "apply handoff with selected_work as handoff",
+        "write #handoff work package with registry",
+        "if unresolved product or contract semantics block dependent implementation:",
+        "apply investigate semantics with handoff as investigation",
+        "- **investigate semantics**"
+      ]
+    },
+    {
+      "id": "R63",
+      "kind": "order",
+      "text": "Connect one real path through required boundaries first, then finish all selected transitions, failures, lifecycle obligations; reuse existing facilities.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "references/implementation.md",
+          "lines": [
+            11,
+            11
+          ]
+        }
+      ],
+      "lands": [
+        "write#slice before write#rest",
+        "verify #path one real path connects the required boundaries from path"
+      ]
+    },
+    {
+      "id": "R64",
+      "kind": "invariant",
+      "text": "Separate modules where responsibilities/hidden decisions justify; file count and line limits aren't architecture criteria; composition/presentation must not own domain policy; add packages/services only when dependencies, reuse, isolation, delivery justify.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/implementation.md",
+          "lines": [
+            11,
+            11
+          ]
+        }
+      ],
+      "lands": [
+        "let composition or presentation own domain policy",
+        "use source-file count or line limits as architecture criteria"
+      ]
+    },
+    {
+      "id": "R65",
+      "kind": "gate",
+      "text": "Never substitute a double, empty method, placeholder, or visual demonstration for required behavior; first vertical slice is not permission to omit remaining requirements. Doubles may exercise a contract early but record simulation, unsupported guarantees, real provider, replacement condition.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/implementation.md",
+          "lines": [
+            13,
+            13
+          ]
+        }
+      ],
+      "lands": [
+        "verify #nosub no double, empty method, placeholder, or visual demonstration stands in for required behavior from results",
+        "treat a first vertical slice as permission to omit remaining requirements"
+      ]
+    },
+    {
+      "id": "R66",
+      "kind": "gate",
+      "text": "Verify: run project's applicable checks and exercise real user/system path; match evidence to acceptance criteria (relevant failures, independent state, cleanup, persistence across restart when required); build/type checks and isolated tests don't alone establish integrated behavior; report unavailable environments or unexecuted checks precisely.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "references/implementation.md",
+          "lines": [
+            17,
+            17
+          ]
+        }
+      ],
+      "lands": [
+        "verify #acceptance every selected acceptance criterion passed on the project checks and the real path from results",
+        "exec project checks from checks as results"
+      ]
+    },
+    {
+      "id": "R67",
+      "kind": "decision",
+      "text": "For material boundary changes, optionally use a focused later policy change or adapter replacement to assess information hiding; inspect which responsibilities change and whether behavior survives; no arbitrary file-count thresholds; diagnostic, not mandatory.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/implementation.md",
+          "lines": [
+            19,
+            19
+          ]
+        }
+      ],
+      "lands": [
+        "apply boundary diagnostic with rest as diagnostic",
+        "if a material boundary change makes a focused diagnostic useful:"
+      ]
+    },
+    {
+      "id": "R68",
+      "kind": "recovery",
+      "text": "Continue until selected requirements are satisfied or concrete blockers prevent progress; record unfinished required work, blockers, next resumption step in the authoritative registry; report implemented behavior, actual checks and limits, remaining obligations; keep design assessment, runtime evidence, maintainability observations separate.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/implementation.md",
+          "lines": [
+            21,
+            21
+          ]
+        }
+      ],
+      "lands": [
+        "return to build",
+        "write #resume unfinished work, blockers, and next resumption step with registry"
+      ]
+    },
+    {
+      "id": "R69",
+      "kind": "gate",
+      "text": "Research only to resolve uncertainty that could change design; ordinary runs need only decision-relevant investigation; explicit academic/deep-research request broadens corpus and yields a separate cited synthesis.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/research.md",
+          "lines": [
+            3,
+            3
+          ]
+        }
+      ],
+      "lands": [
+        "if uncertainty could change the design:"
+      ]
+    },
+    {
+      "id": "R70",
+      "kind": "step-meaning",
+      "text": "State the question first: record affected requirement, decision, platform constraints, and what finding would change the choice; separate conceptual precedent, technology candidate, compatibility evidence (supported interface or executed integration check, with limits).",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/research.md",
+          "lines": [
+            7,
+            11
+          ]
+        }
+      ],
+      "lands": [
+        "- **research question**",
+        "apply research question with dispositions as question"
+      ]
+    },
+    {
+      "id": "R71",
+      "kind": "gate",
+      "text": "Before recommending adoption verify runtime, target architecture, standard-library/allocator requirements, kernel interfaces, graphics/network dependencies, license; conceptual precedent (e.g. Linux compositor) is not a compatible dependency.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "references/research.md",
+          "lines": [
+            13,
+            13
+          ]
+        }
+      ],
+      "lands": [
+        "verify #compat runtime, target architecture, allocator, kernel interfaces, graphics and network dependencies, and license are verified from compatibility"
+      ]
+    },
+    {
+      "id": "R72",
+      "kind": "order",
+      "text": "Start research from supplied sources and existing repository decisions; use current primary documentation for unstable versions, APIs, maintenance, licensing, support, pricing; original/author-hosted papers for research claims; snippets are leads\u2014read source for material claims and record inaccessible full text.",
+      "evidence": "exec",
+      "source": [
+        {
+          "file": "references/research.md",
+          "lines": [
+            17,
+            17
+          ]
+        }
+      ],
+      "lands": [
+        "apply supplied sources before exec readonly primary sources",
+        "verify #sources material claims rest on primary sources that were read from evidence"
+      ]
+    },
+    {
+      "id": "R73",
+      "kind": "decision",
+      "text": "Compare credible alternatives including existing approach; no minimum option count for settled/trivial decisions; do not fabricate alternatives; for consequential choices seek a counterexample or opposing tradeoff.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/research.md",
+          "lines": [
+            19,
+            19
+          ]
+        }
+      ],
+      "lands": [
+        "apply compare alternatives with question as alternatives",
+        "- **compare alternatives**"
+      ]
+    },
+    {
+      "id": "R74",
+      "kind": "output",
+      "text": "Record per source: title, authors/publisher, publication/version date, URL, access date, relevant section, supported claim, applicability limit; distinguish peer-reviewed, technical reports, preprints, method descriptions, vendor docs; a standard's public abstract is insufficient for conformance claims.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/research.md",
+          "lines": [
+            21,
+            21
+          ]
+        }
+      ],
+      "lands": [
+        "- **Source record**",
+        "write #design design with design_docs"
+      ]
+    },
+    {
+      "id": "R75",
+      "kind": "output",
+      "text": "Record selection, alternatives, fit gap, reason, reconsideration conditions; use project's classes if present, else reuse/adapt/build/unresolved; classifications don't replace rationale.",
+      "evidence": "effect",
+      "source": [
+        {
+          "file": "references/research.md",
+          "lines": [
+            25,
+            25
+          ]
+        }
+      ],
+      "lands": [
+        "- **Research resolution**",
+        "write #design design with design_docs"
+      ]
+    },
+    {
+      "id": "R76",
+      "kind": "recovery",
+      "text": "For unavailable evidence, identify unresolved assumption and affected work and continue independent design; a proposed compatibility test is a plan not evidence; source benchmarks don't transfer automatically.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/research.md",
+          "lines": [
+            27,
+            27
+          ]
+        }
+      ],
+      "lands": [
+        "apply record inaccessible sources with evidence as evidence",
+        "apply mark adoption unresolved with alternatives as alternatives"
+      ]
+    },
+    {
+      "id": "R77",
+      "kind": "gate",
+      "text": "Stop research when the consequential claim is supported, conflicts have bounded implications, and further searching is unlikely to change the decision; do not grow milestone by collecting optional features.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/research.md",
+          "lines": [
+            29,
+            29
+          ]
+        }
+      ],
+      "lands": [
+        "verify #stop the consequential claim is supported, conflicts have bounded implications, and further searching is unlikely to change the decision from evidence"
+      ]
+    },
+    {
+      "id": "R78",
+      "kind": "invariant",
+      "text": "Maintain provenance: model-generated suggestions begin as inference; code inspection, tests, measurements, formal proof each establish only their limited claims, distinct from overall product correctness.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/research.md",
+          "lines": [
+            33,
+            33
+          ]
+        }
+      ],
+      "lands": [
+        "treat model-generated suggestions as inference until evidence supports them"
+      ]
+    },
+    {
+      "id": "R79",
+      "kind": "invariant",
+      "text": "Use terminology vocabulary to avoid ambiguity; preserve equivalent subject-project terms and make mapping explicit.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            3,
+            3
+          ]
+        }
+      ],
+      "lands": [
+        "preserve equivalent subject-project terms and make the mapping explicit"
+      ]
+    },
+    {
+      "id": "R80",
+      "kind": "context",
+      "text": "Operational definitions and distinctions for design activities (elicitation, elaboration, refinement, synthesis, decomposition, allocation, specification, verification, validation).",
+      "evidence": "none",
+      "source": [
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            9,
+            17
+          ]
+        }
+      ],
+      "lands": [
+        "- Design activities: elicitation obtains needs"
+      ]
+    },
+    {
+      "id": "R81",
+      "kind": "context",
+      "text": "Operational definitions for problem/behavior terms (outcome, capability, requirement, domain property, assumption incl. record consequence if false, constraint, scenario, concept, goal refinement, obstacle, quality scenario).",
+      "evidence": "none",
+      "source": [
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            23,
+            33
+          ]
+        }
+      ],
+      "lands": [
+        "- Problem and behavior: outcome (an observable result)"
+      ]
+    },
+    {
+      "id": "R82",
+      "kind": "context",
+      "text": "Operational definitions for structure/authority terms (responsibility, component, subsystem, module, bounded context, state authority, resource ownership, work owner\u2014do not invent people/teams, policy, interface contract, invariant, view, decision).",
+      "evidence": "none",
+      "source": [
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            39,
+            51
+          ]
+        }
+      ],
+      "lands": [
+        "- Structure and authority: responsibility, component, subsystem"
+      ]
+    },
+    {
+      "id": "R83",
+      "kind": "context",
+      "text": "Operational definitions for delivery/evidence terms (vertical slice, acceptance criterion\u2014label proposed targets, do not invent measured performance; traceability, current/target state, migration with adapter removal conditions, fit gap).",
+      "evidence": "none",
+      "source": [
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            58,
+            64
+          ]
+        }
+      ],
+      "lands": [
+        "- Delivery and evidence: work package, vertical slice"
+      ]
+    },
+    {
+      "id": "R84",
+      "kind": "context",
+      "text": "Relation vocabulary (originates-from, refines, alternative-to, allocated-to, owns, provides/consumes, depends-on, realized-by, verified-by, supersedes); use only useful distinctions, stable IDs once several artifacts refer to an element.",
+      "evidence": "none",
+      "source": [
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            68,
+            68
+          ]
+        },
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            72,
+            81
+          ]
+        }
+      ],
+      "lands": [
+        "- Relations: originates-from, refines, alternative-to"
+      ]
+    },
+    {
+      "id": "R85",
+      "kind": "invariant",
+      "text": "Containment, runtime communication, model refinement, delivery precedence are different relations; shared providers have one canonical description with incoming references; do not flatten relations into a tree.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            83,
+            83
+          ]
+        }
+      ],
+      "lands": [
+        "flatten containment, runtime communication, model refinement, and delivery precedence into one tree"
+      ]
+    },
+    {
+      "id": "R86",
+      "kind": "decision",
+      "text": "Requirement wording: prefer defined actor/component, trigger/condition, action, observable result; EARS patterns optional (WHEN, WHILE, IF/THEN, WHERE), not evidence levels; do not replace concrete behavior with vague 'handles errors appropriately'.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "references/terminology.md",
+          "lines": [
+            87,
+            89
+          ]
+        }
+      ],
+      "lands": [
+        "apply requirement wording with artifact_set as artifact_set",
+        "- **requirement wording**"
+      ]
+    },
+    {
+      "id": "R87",
+      "kind": "unrepresentable",
+      "text": "Judgment-based sufficiency criteria with no mechanical check: cohesive responsibilities, valid boundary tradeoffs, 'smallest set' of artifacts, 'relevant' failure paths.",
+      "evidence": "self",
+      "source": [
+        {
+          "file": "SKILL.md",
+          "lines": [
+            26,
+            38
+          ]
+        },
+        {
+          "file": "references/artifacts.md",
+          "lines": [
+            3,
+            3
+          ]
+        }
+      ],
+      "lands": [
+        "## Judgment calls",
+        "No mechanical check exists for cohesive responsibilities"
+      ]
+    }
+  ],
+  "non_requirements": [
+    {
+      "file": "SKILL.md",
+      "lines": [
+        1,
+        2
+      ],
+      "reason": "frontmatter name"
+    },
+    {
+      "file": "SKILL.md",
+      "lines": [
+        4,
+        6
+      ],
+      "reason": "frontmatter metadata/delimiter"
+    },
+    {
+      "file": "SKILL.md",
+      "lines": [
+        8,
+        8
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "SKILL.md",
+      "lines": [
+        12,
+        12
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "SKILL.md",
+      "lines": [
+        22,
+        22
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "SKILL.md",
+      "lines": [
+        32,
+        32
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "SKILL.md",
+      "lines": [
+        40,
+        40
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/artifacts.md",
+      "lines": [
+        1,
+        1
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/artifacts.md",
+      "lines": [
+        5,
+        5
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/artifacts.md",
+      "lines": [
+        9,
+        9
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/artifacts.md",
+      "lines": [
+        25,
+        25
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/artifacts.md",
+      "lines": [
+        31,
+        31
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/artifacts.md",
+      "lines": [
+        35,
+        35
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/artifacts.md",
+      "lines": [
+        41,
+        41
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/design-method.md",
+      "lines": [
+        1,
+        1
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/design-method.md",
+      "lines": [
+        5,
+        5
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/design-method.md",
+      "lines": [
+        13,
+        13
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/design-method.md",
+      "lines": [
+        25,
+        25
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/design-method.md",
+      "lines": [
+        31,
+        31
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/design-method.md",
+      "lines": [
+        37,
+        37
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/existing-projects.md",
+      "lines": [
+        1,
+        1
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/existing-projects.md",
+      "lines": [
+        3,
+        3
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/existing-projects.md",
+      "lines": [
+        11,
+        11
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/existing-projects.md",
+      "lines": [
+        17,
+        17
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/existing-projects.md",
+      "lines": [
+        27,
+        27
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/implementation.md",
+      "lines": [
+        1,
+        1
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/implementation.md",
+      "lines": [
+        5,
+        5
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/implementation.md",
+      "lines": [
+        9,
+        9
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/implementation.md",
+      "lines": [
+        15,
+        15
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/research.md",
+      "lines": [
+        1,
+        1
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/research.md",
+      "lines": [
+        5,
+        5
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/research.md",
+      "lines": [
+        15,
+        15
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/research.md",
+      "lines": [
+        23,
+        23
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/research.md",
+      "lines": [
+        31,
+        31
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/terminology.md",
+      "lines": [
+        1,
+        1
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/terminology.md",
+      "lines": [
+        5,
+        8
+      ],
+      "reason": "heading and table header/separator"
+    },
+    {
+      "file": "references/terminology.md",
+      "lines": [
+        19,
+        22
+      ],
+      "reason": "heading and table header/separator"
+    },
+    {
+      "file": "references/terminology.md",
+      "lines": [
+        35,
+        38
+      ],
+      "reason": "heading and table header/separator"
+    },
+    {
+      "file": "references/terminology.md",
+      "lines": [
+        53,
+        56
+      ],
+      "reason": "heading and table header/separator"
+    },
+    {
+      "file": "references/terminology.md",
+      "lines": [
+        66,
+        67
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/terminology.md",
+      "lines": [
+        69,
+        71
+      ],
+      "reason": "table header/separator"
+    },
+    {
+      "file": "references/terminology.md",
+      "lines": [
+        85,
+        86
+      ],
+      "reason": "heading"
+    },
+    {
+      "file": "references/terminology.md",
+      "lines": [
+        91,
+        92
+      ],
+      "reason": "heading"
+    }
+  ],
+  "format": "skillwren-inventory-1",
+  "sources": {
+    "SKILL.md": "359499366e2bd4e3a4c0223cd7d4c144d158cdf5ac5562d8f08b16267f90095c",
+    "references/artifacts.md": "0161439f82fc4d8ff7cb02f3acf97a51d458f7c40eb28cef3d6479ed7170a211",
+    "references/design-method.md": "e6db97d3bff48c91cec724bac1deb789a03a0311ee484a54b394cfe58cb70261",
+    "references/existing-projects.md": "4cca5ae4b198c4e689b8583ac1c8b489a849fd8f774ceb5ce464772b0dd55e26",
+    "references/implementation.md": "18e631f5cfd294e8059bfce59f1e4e2bb966b0e951b9dab80ec46c1496285a57",
+    "references/research.md": "9066217c6a9926bf0188416e77e7c7f4401df10327ba918f8f769ab7f57f5720",
+    "references/terminology.md": "070df18b9f85f4f0432bfc8bad341afac45df85025211cca6a31482fa19f1b0f"
+  }
+}

@@ -1,0 +1,315 @@
+{
+  "format": "skillwren-compile-1",
+  "layout": "inline",
+  "sources": {
+    "SKILL.md": "359499366e2bd4e3a4c0223cd7d4c144d158cdf5ac5562d8f08b16267f90095c",
+    "references/artifacts.md": "0161439f82fc4d8ff7cb02f3acf97a51d458f7c40eb28cef3d6479ed7170a211",
+    "references/design-method.md": "e6db97d3bff48c91cec724bac1deb789a03a0311ee484a54b394cfe58cb70261",
+    "references/existing-projects.md": "4cca5ae4b198c4e689b8583ac1c8b489a849fd8f774ceb5ce464772b0dd55e26",
+    "references/implementation.md": "18e631f5cfd294e8059bfce59f1e4e2bb966b0e951b9dab80ec46c1496285a57",
+    "references/research.md": "9066217c6a9926bf0188416e77e7c7f4401df10327ba918f8f769ab7f57f5720",
+    "references/terminology.md": "070df18b9f85f4f0432bfc8bad341afac45df85025211cca6a31482fa19f1b0f"
+  },
+  "outputs": {
+    "SKILL.md": "b2303a3550f04482a527d8263ff7d90c936ac2844966fccbd4c4ee56e3184061"
+  },
+  "adapter": [
+    "py",
+    "-3",
+    "scripts/adapters/claude_compile.py"
+  ],
+  "calls": [
+    {
+      "phase": "inventory",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.196,
+        "output_tokens": 14138,
+        "seconds": 71.672,
+        "phase": "inventory"
+      }
+    },
+    {
+      "phase": "lower",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.433148,
+        "output_tokens": 28242,
+        "seconds": 175.25,
+        "phase": "lower"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.36331290000000005,
+        "output_tokens": 15046,
+        "seconds": 73.689,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "opus",
+        "cost_usd": 0.225056,
+        "output_tokens": 2958,
+        "seconds": 29.905,
+        "phase": "judge"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.3097559,
+        "output_tokens": 14633,
+        "seconds": 67.82,
+        "phase": "repair"
+      }
+    }
+  ],
+  "requirements": 87,
+  "non_requirements": 43,
+  "check_warnings": [
+    {
+      "line": 52,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply trace behavior' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 53,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply connect contracts' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 54,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply supplied sources' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 65,
+      "rule": "W5",
+      "message": "binding 'scope' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 70,
+      "rule": "W5",
+      "message": "binding 'terminology' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 74,
+      "rule": "W5",
+      "message": "binding 'existing_projects' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 78,
+      "rule": "W5",
+      "message": "binding 'design_method' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 102,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 106,
+      "rule": "W5",
+      "message": "binding 'contract_map' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 116,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 122,
+      "rule": "W5",
+      "message": "binding 'research' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 126,
+      "rule": "W5",
+      "message": "binding 'sources' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 129,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 135,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 145,
+      "rule": "W5",
+      "message": "binding 'prototype' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 158,
+      "rule": "W5",
+      "message": "binding 'quality' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 160,
+      "rule": "W5",
+      "message": "binding 'interactions' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 165,
+      "rule": "W5",
+      "message": "binding 'revision' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 181,
+      "rule": "W5",
+      "message": "binding 'consequences' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 190,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 223,
+      "rule": "W5",
+      "message": "binding 'investigation' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 250,
+      "rule": "W5",
+      "message": "binding 'diagnostic' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    }
+  ],
+  "unbacked_verifies": [],
+  "open_findings": [
+    {
+      "rule": "I8",
+      "severity": "warning",
+      "message": "kept as prose, not checkable: Judgment-based sufficiency criteria with no mechanical check: cohesive responsibilities, valid boundary tradeoffs, 'smallest set' of artifacts, 'relevant' failure paths.",
+      "id": "R87"
+    }
+  ],
+  "judge": {
+    "dropped": [
+      "R11: existing-projects reference is loaded only for design deltas; loading it for Recurspec integration is missing",
+      "R62: the handoff lacks 'investigate unresolved product/contract semantics before dependent implementation while continuing independent work'",
+      "R60: the standalone branch is missing (placing files under docs/design/ when there is no structure; using an existing roadmap or creating one when implementation tracking is needed)",
+      "R56: no step reads the local Recurspec rules and contracts; only the CLI status step and the 'validation not performed' report are present",
+      "R53: no rule to avoid expensive whole-project testing for a documentation-only comparison",
+      "R10: nothing preserves settled user decisions; the ask is not limited to decisions the user has not already settled"
+    ],
+    "added": [
+      "none: aborts the whole run if terminology.md, existing-projects.md, design-method.md or research.md is unavailable (R11/R69 only say to load references as needed)",
+      "none: aborts with 'Open decision not confirmed; nothing was written' when the user doesn't confirm (R10/R32/R37/R76 say to keep the decision visibly unresolved and continue independent work)"
+    ],
+    "changed": [
+      "R19/R50/R24: the readiness gates (#ready, #readiness) loop back to iterate with no limit and block all writes, so conditional work can't be delivered as conditional and unavailable prerequisites can't be kept explicit in the output",
+      "R20: '#gaps no gaps remain' is a hard pass/fail gate with an unbounded loop back to iterate; the requirement is to check for gaps across three scopes, not to require that none remain",
+      "R10/R19: recording costly-to-reverse consequences and asking the user happen after the readiness gates have already passed, though readiness requires consequential decisions to be resolved first",
+      "R68/R61: the #acceptance and #nosub gates retry with no limit and no exit for a concrete blocker, so the step that writes unfinished work, blockers and the next resumption step can't run when blocked; the 'requirements remain unsatisfied' return to build also follows a gate that requires every criterion to have passed",
+      "R4: deployment, publication, installation and delegation always get a direct user ask, even on the design-only path, rather than following their own applicable permissions"
+    ],
+    "usage": {
+      "model": "opus",
+      "cost_usd": 0.225056,
+      "output_tokens": 2958,
+      "seconds": 29.905,
+      "phase": "judge"
+    }
+  },
+  "questions": [
+    "Does 'implementation' in SKILL.md require the user to explicitly say build/implement, or can it be inferred from context?",
+    "Are the terminology.md Scope dispositions (lines 93-96) intended to be a closed enum for classification?",
+    "Which permissions govern delegation (e.g. subagents) \u2014 are they defined elsewhere?",
+    "Does 'one authoritative work registry' mean creating one if none exists in all cases, or only when implementation tracking is needed (existing-projects.md line 29)?",
+    "Does `skillwren check --fragment` accept `always:`/`never:` after `inputs:` and `order:` in one contract block, with no `resources:` section?",
+    "Should the ask lines (open decision, deployment/publication/install/delegation permission) be mapped to `user-decides` entries? Inline layout has no authority header, so none was written.",
+    "Several `otherwise:` repairs fall through without retry/return (adoption unresolved, inaccessible sources, runtime evidence, declined permission, Recurspec status). They are meant to continue after marking the gap, but the checker may report W9 for them."
+  ],
+  "assumptions": [
+    "Table rows in terminology.md are treated as context requirements grouped by table, since they decide how terms are used.",
+    "Line 98 and 93-96 of terminology.md are covered under R7 (scope dispositions); line 98 evidence-labels guidance is folded into R7 by span 91-98.",
+    "Evidence 'self' used where agent judgment suffices; 'exec' where inspection/commands are expected.",
+    "Lines 57 of terminology.md (work package definition) and 58-64 grouped as in R35/R83.",
+    "terminology.md line 98 rule 'use project's evidence labels where present' is treated as part of R7 and R58.",
+    "The source names no commands, so there is no step-to-command table.",
+    "Referenced files (terminology, existing-projects, design-method, research) are loaded with `read` and abort if missing. The artifacts and implementation references are folded into the Artifact contents and Step meanings sections and are not loaded at run time.",
+    "Read-only exec steps (`exec readonly ...`) come before the dismissible asks so M1 holds. All plain `exec` and `write` steps come after the asks.",
+    "Design activities are iterated with `label iterate:` and `return to iterate` from the readiness verifies, which is how the 'iterate as evidence changes' order requirement is encoded.",
+    "The `design_docs`, `registry`, `subject`, and `checks` resource names are used undeclared, as in the inline example and fragment template. `design_docs` means the subject's existing design location, else `docs/design/`.",
+    "The `return:` block names `design` and `report`, which are assumed to be allowed produces entries in fragment mode.",
+    "Reordered contract sections to always, never, inputs, order, per the F2 diagnostic.",
+    "Backed the five unbacked verifies with a readonly exec and `from <binding>` evidence.",
+    "Effect-evidence output requirements (R24, R27, R30, R32, R33, R54, R74, R75) land on `write #design`, because that write records the design artifacts.",
+    "Added `write #doubles` (after the confirmations, so M1 holds) for R36, and `verify #nosub` for R65.",
+    "Left the W5 and W9 warnings in place. The fall-through `otherwise:` blocks deliberately continue the flow, and the unused bindings are warnings only.",
+    "Reading Recurspec local rules uses the subject input as the source.",
+    "Investigation packages and a new roadmap are written to the registry resource, as the source describes.",
+    "W9 fall-through and W5 unused-binding warnings were left as-is to avoid changing the source's behavior."
+  ],
+  "review_map": {
+    "kind": "manual-requirement-review",
+    "requirements": 93,
+    "non_requirements": 43,
+    "original_files": [
+      "SKILL.md",
+      "references/artifacts.md",
+      "references/design-method.md",
+      "references/existing-projects.md",
+      "references/implementation.md",
+      "references/research.md",
+      "references/terminology.md"
+    ],
+    "semantic_equivalence_proven": false
+  },
+  "approved": false,
+  "semantic_equivalence_proven": false
+}

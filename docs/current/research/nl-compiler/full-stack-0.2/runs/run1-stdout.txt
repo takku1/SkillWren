@@ -1,0 +1,67 @@
+compiled docs/current/research/nl-compiler/full-stack-0.2/runs/run1: 87 requirements, 1 files, 5 adapter calls
+questions:
+  - Does 'implementation' in SKILL.md require the user to explicitly say build/implement, or can it be inferred from context?
+  - Are the terminology.md Scope dispositions (lines 93-96) intended to be a closed enum for classification?
+  - Which permissions govern delegation (e.g. subagents) — are they defined elsewhere?
+  - Does 'one authoritative work registry' mean creating one if none exists in all cases, or only when implementation tracking is needed (existing-projects.md line 29)?
+  - Does `skillwren check --fragment` accept `always:`/`never:` after `inputs:` and `order:` in one contract block, with no `resources:` section?
+  - Should the ask lines (open decision, deployment/publication/install/delegation permission) be mapped to `user-decides` entries? Inline layout has no authority header, so none was written.
+  - Several `otherwise:` repairs fall through without retry/return (adoption unresolved, inaccessible sources, runtime evidence, declined permission, Recurspec status). They are meant to continue after marking the gap, but the checker may report W9 for them.
+assumptions:
+  - Table rows in terminology.md are treated as context requirements grouped by table, since they decide how terms are used.
+  - Line 98 and 93-96 of terminology.md are covered under R7 (scope dispositions); line 98 evidence-labels guidance is folded into R7 by span 91-98.
+  - Evidence 'self' used where agent judgment suffices; 'exec' where inspection/commands are expected.
+  - Lines 57 of terminology.md (work package definition) and 58-64 grouped as in R35/R83.
+  - terminology.md line 98 rule 'use project's evidence labels where present' is treated as part of R7 and R58.
+  - The source names no commands, so there is no step-to-command table.
+  - Referenced files (terminology, existing-projects, design-method, research) are loaded with `read` and abort if missing. The artifacts and implementation references are folded into the Artifact contents and Step meanings sections and are not loaded at run time.
+  - Read-only exec steps (`exec readonly ...`) come before the dismissible asks so M1 holds. All plain `exec` and `write` steps come after the asks.
+  - Design activities are iterated with `label iterate:` and `return to iterate` from the readiness verifies, which is how the 'iterate as evidence changes' order requirement is encoded.
+  - The `design_docs`, `registry`, `subject`, and `checks` resource names are used undeclared, as in the inline example and fragment template. `design_docs` means the subject's existing design location, else `docs/design/`.
+  - The `return:` block names `design` and `report`, which are assumed to be allowed produces entries in fragment mode.
+  - Reordered contract sections to always, never, inputs, order, per the F2 diagnostic.
+  - Backed the five unbacked verifies with a readonly exec and `from <binding>` evidence.
+  - Effect-evidence output requirements (R24, R27, R30, R32, R33, R54, R74, R75) land on `write #design`, because that write records the design artifacts.
+  - Added `write #doubles` (after the confirmations, so M1 holds) for R36, and `verify #nosub` for R65.
+  - Left the W5 and W9 warnings in place. The fall-through `otherwise:` blocks deliberately continue the flow, and the unused bindings are warnings only.
+  - Reading Recurspec local rules uses the subject input as the source.
+  - Investigation packages and a new roadmap are written to the registry resource, as the source describes.
+  - W9 fall-through and W5 unused-binding warnings were left as-is to avoid changing the source's behavior.
+open I8 R87: kept as prose, not checkable: Judgment-based sufficiency criteria with no mechanical check: cohesive responsibilities, valid boundary tradeoffs, 'smallest set' of artifacts, 'relevant' failure paths.
+warning SKILL.md:52 W15: order rule rests on self-report: every statement matching 'apply trace behavior' is the model's own judgment
+warning SKILL.md:53 W15: order rule rests on self-report: every statement matching 'apply connect contracts' is the model's own judgment
+warning SKILL.md:54 W15: order rule rests on self-report: every statement matching 'apply supplied sources' is the model's own judgment
+warning SKILL.md:65 W5: binding 'scope' never referenced
+warning SKILL.md:70 W5: binding 'terminology' never referenced
+warning SKILL.md:74 W5: binding 'existing_projects' never referenced
+warning SKILL.md:78 W5: binding 'design_method' never referenced
+warning SKILL.md:102 W9: otherwise: block falls through
+warning SKILL.md:106 W5: binding 'contract_map' never referenced
+warning SKILL.md:116 W9: otherwise: block falls through
+warning SKILL.md:122 W5: binding 'research' never referenced
+warning SKILL.md:126 W5: binding 'sources' never referenced
+warning SKILL.md:129 W9: otherwise: block falls through
+warning SKILL.md:135 W9: otherwise: block falls through
+warning SKILL.md:145 W5: binding 'prototype' never referenced
+warning SKILL.md:158 W5: binding 'quality' never referenced
+warning SKILL.md:160 W5: binding 'interactions' never referenced
+warning SKILL.md:165 W5: binding 'revision' never referenced
+warning SKILL.md:181 W5: binding 'consequences' never referenced
+warning SKILL.md:190 W9: otherwise: block falls through
+warning SKILL.md:223 W5: binding 'investigation' never referenced
+warning SKILL.md:250 W5: binding 'diagnostic' never referenced
+judge dropped: R11: existing-projects reference is loaded only for design deltas; loading it for Recurspec integration is missing
+judge dropped: R62: the handoff lacks 'investigate unresolved product/contract semantics before dependent implementation while continuing independent work'
+judge dropped: R60: the standalone branch is missing (placing files under docs/design/ when there is no structure; using an existing roadmap or creating one when implementation tracking is needed)
+judge dropped: R56: no step reads the local Recurspec rules and contracts; only the CLI status step and the 'validation not performed' report are present
+judge dropped: R53: no rule to avoid expensive whole-project testing for a documentation-only comparison
+judge dropped: R10: nothing preserves settled user decisions; the ask is not limited to decisions the user has not already settled
+judge added: none: aborts the whole run if terminology.md, existing-projects.md, design-method.md or research.md is unavailable (R11/R69 only say to load references as needed)
+judge added: none: aborts with 'Open decision not confirmed; nothing was written' when the user doesn't confirm (R10/R32/R37/R76 say to keep the decision visibly unresolved and continue independent work)
+judge changed: R19/R50/R24: the readiness gates (#ready, #readiness) loop back to iterate with no limit and block all writes, so conditional work can't be delivered as conditional and unavailable prerequisites can't be kept explicit in the output
+judge changed: R20: '#gaps no gaps remain' is a hard pass/fail gate with an unbounded loop back to iterate; the requirement is to check for gaps across three scopes, not to require that none remain
+judge changed: R10/R19: recording costly-to-reverse consequences and asking the user happen after the readiness gates have already passed, though readiness requires consequential decisions to be resolved first
+judge changed: R68/R61: the #acceptance and #nosub gates retry with no limit and no exit for a concrete blocker, so the step that writes unfinished work, blockers and the next resumption step can't run when blocked; the 'requirements remain unsatisfied' return to build also follows a gate that requires every criterion to have passed
+judge changed: R4: deployment, publication, installation and delegation always get a direct user ask, even on the design-only path, rather than following their own applicable permissions
+Not approved. Review audit/, run explain-workflow, and approve before use.
+exit 1

@@ -1,0 +1,253 @@
+Workflow in SKILL.md:
+flow `full-stack`:
+  - 'exec readonly inspect subject instructions code contracts tests from checks as inspection' (line 62) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+  - 'verify #grounded scope names repository, outcome, work IDs, constraints, and exclusions from inspection' (line 63) -- gate; failure follows its otherwise branch
+    - otherwise (line 64)
+      - 'apply ground scope with inspection as scope' (line 65)
+      - 'exec readonly inspect subject instructions code contracts tests from checks as inspection' (line 66) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+      - retry (line 67) -- re-runs the failed gate 'verify #grounded scope names repository, outcome, work IDs, constraints, and exclusions from inspection' (line 63) after the repair steps above; no retry limit is stated
+  - 'if concepts or relations are ambiguous:' (line 69) -- branch
+    - 'read references/terminology.md as terminology' (line 70)
+      - otherwise (line 71)
+        - 'abort with "Terminology reference unavailable."' (line 72)
+  - 'if the request needs design deltas or Recurspec integration:' (line 73) -- branch
+    - 'read references/existing-projects.md as existing_projects' (line 74)
+      - otherwise (line 75)
+        - 'abort with "Existing-projects reference unavailable."' (line 76)
+  - 'if the request needs substantial decomposition:' (line 77) -- branch
+    - 'read references/design-method.md as design_method' (line 78)
+      - otherwise (line 79)
+        - 'abort with "Design-method reference unavailable."' (line 80)
+  - 'if subject is an existing project:' (line 82) -- branch
+    - 'exec readonly inspect governing architecture, work registry, glossary, conventions, and relevant code from checks as authority' (line 83) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+    - 'verify #authority governing documents are identified and disagreements are recorded as target design versus observed implementation from authority' (line 84) -- gate; failure follows its otherwise branch
+      - otherwise (line 85)
+        - 'apply establish authority with authority as authority' (line 86)
+        - 'exec readonly inspect governing architecture, work registry, glossary, conventions, and relevant code from checks as authority' (line 87) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+        - retry (line 88) -- re-runs the failed gate 'verify #authority governing documents are identified and disagreements are recorded as target design versus observed implementation from authority' (line 84) after the repair steps above; no retry limit is stated
+    - 'verify #claims done roadmap rows are checked against the governing architecture and current code from authority' (line 89) -- gate; failure follows its otherwise branch
+      - otherwise (line 90)
+        - 'apply establish authority with authority as authority' (line 91)
+        - 'exec readonly inspect governing architecture, work registry, glossary, conventions, and relevant code from checks as authority' (line 92) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+        - retry (line 93) -- re-runs the failed gate 'verify #claims done roadmap rows are checked against the governing architecture and current code from authority' (line 89) after the repair steps above; no retry limit is stated
+  - 'if subject uses Recurspec:' (line 95) -- branch
+    - 'read Recurspec local rules and contracts from subject as recurspec_rules' (line 96)
+      - otherwise (line 97)
+        - 'abort with "Recurspec local rules and contracts unreadable."' (line 98)
+    - 'if the Recurspec CLI is available:' (line 99) -- branch
+      - 'exec readonly recurspec status from checks as recurspec' (line 100) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+      - 'verify #recurspec read-only status oriented the relevant tree from recurspec' (line 101) -- gate; failure follows its otherwise branch
+        - otherwise (line 102)
+          - 'apply report validation not performed with recurspec_rules as recurspec_rules' (line 103)
+    - 'else:' (line 104) [else]
+      - 'apply report validation not performed with recurspec_rules as recurspec_rules' (line 105)
+    - 'apply map contract nodes with recurspec_rules as contract_map' (line 106)
+  - 'apply classify dispositions with inspection as dispositions' (line 108)
+  - 'apply resolve ambiguity with inspection as assumptions' (line 109)
+  - 'show assumptions' (line 110)
+  - 'if a runtime claim is uncertain:' (line 112) -- branch
+    - 'if a relevant check is feasible and useful:' (line 113) -- branch
+      - 'exec readonly relevant runtime check from checks as runtime' (line 114) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+      - 'verify #runtime the claim rests on an executed check from runtime' (line 115) -- gate; failure follows its otherwise branch
+        - otherwise (line 116)
+          - 'apply state absent execution evidence with inspection as runtime' (line 117)
+    - 'else:' (line 118) [else]
+      - 'apply state absent execution evidence with inspection as runtime' (line 119)
+  - 'if uncertainty could change the design:' (line 121) -- branch
+    - 'read references/research.md as research' (line 122)
+      - otherwise (line 123)
+        - 'abort with "Research reference unavailable."' (line 124)
+    - 'apply research question with dispositions as question' (line 125)
+    - 'apply supplied sources with question as sources' (line 126)
+    - 'exec readonly primary sources fetch from checks as evidence' (line 127) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+    - 'verify #sources material claims rest on primary sources that were read from evidence' (line 128) -- gate; failure follows its otherwise branch
+      - otherwise (line 129)
+        - 'apply record inaccessible sources with evidence as evidence' (line 130)
+    - 'apply compare alternatives with question as alternatives' (line 131)
+    - 'if a technology candidate is proposed for adoption:' (line 132) -- branch
+      - 'exec readonly adoption compatibility check from checks as compatibility' (line 133) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+      - 'verify #compat runtime, target architecture, allocator, kernel interfaces, graphics and network dependencies, and license are verified from compatibility' (line 134) -- gate; failure follows its otherwise branch
+        - otherwise (line 135)
+          - 'apply mark adoption unresolved with alternatives as alternatives' (line 136)
+    - 'verify #stop the consequential claim is supported, conflicts have bounded implications, and further searching is unlikely to change the decision from evidence' (line 137) -- gate; failure follows its otherwise branch
+      - otherwise (line 138)
+        - 'apply further research with evidence as evidence' (line 139)
+        - 'exec readonly primary sources fetch from checks as evidence' (line 140) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+        - retry (line 141) -- re-runs the failed gate 'verify #stop the consequential claim is supported, conflicts have bounded implications, and further searching is unlikely to change the decision from evidence' (line 137) after the repair steps above; no retry limit is stated
+  - label 'label iterate:' (line 143)
+  - 'if the request includes a prototype:' (line 144) -- branch
+    - 'apply prototype split with inspection as prototype' (line 145)
+  - 'apply trace behavior with inspection as behavior' (line 146)
+  - 'apply allocate authority with behavior as allocation' (line 147)
+  - 'apply resolve choices with allocation as choices' (line 148)
+  - 'apply split components with choices as components' (line 149)
+  - 'apply challenge boundaries with components as boundaries' (line 150)
+  - 'apply connect contracts with boundaries as contracts' (line 151)
+  - 'if a temporary double is used:' (line 152) -- branch
+    - 'apply double record with contracts as contracts' (line 153)
+  - 'apply sequence work with contracts as sequence' (line 154)
+  - 'if the delivery order has a cycle:' (line 155) -- branch
+    - 'apply break cycle with sequence as sequence' (line 156)
+  - 'if a quality concern is triggered by the scenario:' (line 157) -- branch
+    - 'apply quality concerns with sequence as quality' (line 158)
+  - 'if a flow requires retries, cancellation, timeouts, event ordering, or resynchronization:' (line 159) -- branch
+    - 'apply interaction concerns with sequence as interactions' (line 160)
+  - 'exec readonly design review checks from checks as review' (line 162) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+  - 'verify #boundaries each candidate responsibility answers the five boundary questions from review' (line 163) -- gate; failure follows its otherwise branch
+    - otherwise (line 164)
+      - 'apply revisit design with sequence as revision' (line 165)
+      - return to 'return to iterate' (line 166)
+  - 'verify #gaps no gaps remain within responsibilities, across contracts, or across the outcome from review' (line 167) -- gate; failure follows its otherwise branch
+    - otherwise (line 168)
+      - 'apply revisit design with sequence as revision' (line 169)
+      - return to 'return to iterate' (line 170)
+  - 'verify #ready the next increment has usable outcome, contracts, prerequisites, checks, and resolved consequential decisions from review' (line 171) -- gate; failure follows its otherwise branch
+    - otherwise (line 172)
+      - 'apply revisit design with sequence as revision' (line 173)
+      - return to 'return to iterate' (line 174)
+  - 'verify #readiness origins, owners, checks, dependency availability, compatible authority and contracts, observable failure paths, and registry links are confirmed from review' (line 175) -- gate; failure follows its otherwise branch
+    - otherwise (line 176)
+      - 'apply revisit design with sequence as revision' (line 177)
+      - return to 'return to iterate' (line 178)
+  - 'if a commitment is costly to reverse:' (line 180) -- branch
+    - 'apply record consequences with sequence as consequences' (line 181)
+    - 'if a missing answer changes the outcome or authority and the user has not already settled it:' (line 182) -- branch
+      - 'ask user to decide the open question that changes outcome or authority' (line 183)
+      - 'require confirmation' (line 184) -- gate; failure follows its otherwise branch
+        - otherwise (line 185)
+          - 'abort with "Open decision not confirmed; nothing was written."' (line 186)
+  - 'if work involves deployment, publication, tool installation, or delegation:' (line 187) -- branch
+    - 'ask user to grant permission for deployment, publication, tool installation, or delegation' (line 188)
+    - 'require confirmation' (line 189) -- gate; failure follows its otherwise branch
+      - otherwise (line 190)
+        - 'apply mark gated work with sequence as sequence' (line 191)
+  - 'apply select artifacts with sequence as artifact_set' (line 193)
+  - 'apply requirement wording with artifact_set as artifact_set' (line 194)
+  - 'if subject has no established design structure:' (line 195) -- branch
+    - 'apply standalone placement with artifact_set as artifact_set' (line 196)
+  - 'generate design artifacts from artifact_set as design' (line 197)
+  - 'write #design design with design_docs' (line 198)
+  - 'if implementation work needs tracking and subject has no existing roadmap:' (line 199) -- branch
+    - 'write #roadmap new roadmap with registry' (line 200)
+  - 'write #registry unresolved decisions, evidence needed, and affected work IDs with registry' (line 201)
+  - 'if a temporary double is used:' (line 202) -- branch
+    - 'write #doubles temporary double records with registry' (line 203)
+  - 'if contract edits are accepted:' (line 205) -- branch
+    - 'exec repository required validation from checks as validation' (line 206)
+    - "verify #validation the repository's required validation passed from validation" (line 207) -- gate; failure follows its otherwise branch
+      - otherwise (line 208)
+        - 'apply correction with design as design' (line 209)
+        - 'write #designfix design with design_docs' (line 210)
+        - 'exec repository required validation from checks as validation' (line 211)
+        - retry (line 212) -- re-runs the failed gate "verify #validation the repository's required validation passed from validation" (line 207) after the repair steps above; no retry limit is stated
+  - label 'label build:' (line 214)
+  - 'if request asks to build or implement:' (line 215) -- branch
+    - 'require host provides repository access, execution tools, and runtime' (line 216) -- gate; failure follows its otherwise branch
+      - otherwise (line 217)
+        - 'write #blocker concrete blocker with registry' (line 218)
+        - 'abort with "Concrete blocker: host lacks repository access, execution tools, or runtime."' (line 219)
+    - 'apply handoff with selected_work as handoff' (line 220)
+    - 'write #handoff work package with registry' (line 221)
+    - 'if unresolved product or contract semantics block dependent implementation:' (line 222) -- branch
+      - 'apply investigate semantics with handoff as investigation' (line 223)
+      - 'write #investigation investigation package with registry' (line 224)
+    - 'generate one real path through the required boundaries from handoff as slice' (line 225)
+    - 'write #slice slice with subject' (line 226)
+    - 'exec path check from checks as path' (line 227)
+    - 'verify #path one real path connects the required boundaries from path' (line 228) -- gate; failure follows its otherwise branch
+      - otherwise (line 229)
+        - 'apply correction with slice as slice' (line 230)
+        - 'write #slicefix slice with subject' (line 231)
+        - 'exec path check from checks as path' (line 232)
+        - retry (line 233) -- re-runs the failed gate 'verify #path one real path connects the required boundaries from path' (line 228) after the repair steps above; no retry limit is stated
+    - 'generate remaining transitions, failures, and lifecycle obligations from handoff as rest' (line 234)
+    - 'write #rest rest with subject' (line 235)
+    - 'exec project checks from checks as results' (line 236)
+    - 'verify #acceptance every selected acceptance criterion passed on the project checks and the real path from results' (line 237) -- gate; failure follows its otherwise branch
+      - otherwise (line 238)
+        - 'apply correction with rest as rest' (line 239)
+        - 'write #restfix rest with subject' (line 240)
+        - 'exec project checks from checks as results' (line 241)
+        - retry (line 242) -- re-runs the failed gate 'verify #acceptance every selected acceptance criterion passed on the project checks and the real path from results' (line 237) after the repair steps above; no retry limit is stated
+    - 'verify #nosub no double, empty method, placeholder, or visual demonstration stands in for required behavior from results' (line 243) -- gate; failure follows its otherwise branch
+      - otherwise (line 244)
+        - 'apply correction with rest as rest' (line 245)
+        - 'write #nosubfix rest with subject' (line 246)
+        - 'exec project checks from checks as results' (line 247)
+        - retry (line 248) -- re-runs the failed gate 'verify #nosub no double, empty method, placeholder, or visual demonstration stands in for required behavior from results' (line 243) after the repair steps above; no retry limit is stated
+    - 'if a material boundary change makes a focused diagnostic useful:' (line 249) -- branch
+      - 'apply boundary diagnostic with rest as diagnostic' (line 250)
+    - 'if selected requirements remain unsatisfied and no concrete blocker prevents progress:' (line 251) -- branch
+      - return to 'return to build' (line 252)
+    - 'write #resume unfinished work, blockers, and next resumption step with registry' (line 253)
+    - return (line 254)
+      - 'design' (line 255) [bareword]
+      - set 'report = results' (line 256)
+  - 'else:' (line 257) [else]
+    - 'return design as design' (line 258)
+Ordering (must hold on every path):
+  - 'apply trace behavior' before 'apply sequence work' (line 52)
+  - 'apply connect contracts' before 'apply sequence work' (line 53)
+  - 'apply supplied sources' before 'exec readonly primary sources' (line 54)
+  - 'verify#readiness' before 'write#design' (line 55)
+  - 'verify#readiness' before 'write#registry' (line 56)
+  - 'write#slice' before 'write#rest' (line 57)
+Authority: human decisions are asked here:
+  - 'ask user to decide the open question that changes outcome or authority' (line 183)
+  - 'ask user to grant permission for deployment, publication, tool installation, or delegation' (line 188)
+  SkillWren checks the ask/confirm structure, not that a human actually decided -- approval confirms intended meaning, not formal equivalence.
+Effects (files written or flows run):
+  - flow `full-stack` writes design_docs
+  - flow `full-stack` writes registry
+  - flow `full-stack` writes subject
+Enforcement:
+  - 'verify #grounded scope names repository, outcome, work IDs, constraints, and exclusions from inspection' (line 63) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #authority governing documents are identified and disagreements are recorded as target design versus observed implementation from authority' (line 84) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #claims done roadmap rows are checked against the governing architecture and current code from authority' (line 89) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #recurspec read-only status oriented the relevant tree from recurspec' (line 101) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #runtime the claim rests on an executed check from runtime' (line 115) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #sources material claims rest on primary sources that were read from evidence' (line 128) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #compat runtime, target architecture, allocator, kernel interfaces, graphics and network dependencies, and license are verified from compatibility' (line 134) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #stop the consequential claim is supported, conflicts have bounded implications, and further searching is unlikely to change the decision from evidence' (line 137) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #boundaries each candidate responsibility answers the five boundary questions from review' (line 163) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #gaps no gaps remain within responsibilities, across contracts, or across the outcome from review' (line 167) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #ready the next increment has usable outcome, contracts, prerequisites, checks, and resolved consequential decisions from review' (line 171) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #readiness origins, owners, checks, dependency availability, compatible authority and contracts, observable failure paths, and registry links are confirmed from review' (line 175) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #design design with design_docs' (line 198) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #roadmap new roadmap with registry' (line 200) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #registry unresolved decisions, evidence needed, and affected work IDs with registry' (line 201) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #doubles temporary double records with registry' (line 203) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - "verify #validation the repository's required validation passed from validation" (line 207) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #designfix design with design_docs' (line 210) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #blocker concrete blocker with registry' (line 218) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #handoff work package with registry' (line 221) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #investigation investigation package with registry' (line 224) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #slice slice with subject' (line 226) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #path one real path connects the required boundaries from path' (line 228) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #slicefix slice with subject' (line 231) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #rest rest with subject' (line 235) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #acceptance every selected acceptance criterion passed on the project checks and the real path from results' (line 237) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #restfix rest with subject' (line 240) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #nosub no double, empty method, placeholder, or visual demonstration stands in for required behavior from results' (line 243) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #nosubfix rest with subject' (line 246) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #resume unfinished work, blockers, and next resumption step with registry' (line 253) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec readonly inspect subject instructions code contracts tests from checks as inspection' (line 62) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly inspect subject instructions code contracts tests from checks as inspection' (line 66) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly inspect governing architecture, work registry, glossary, conventions, and relevant code from checks as authority' (line 83) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly inspect governing architecture, work registry, glossary, conventions, and relevant code from checks as authority' (line 87) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly inspect governing architecture, work registry, glossary, conventions, and relevant code from checks as authority' (line 92) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly recurspec status from checks as recurspec' (line 100) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly relevant runtime check from checks as runtime' (line 114) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly primary sources fetch from checks as evidence' (line 127) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly adoption compatibility check from checks as compatibility' (line 133) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly primary sources fetch from checks as evidence' (line 140) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly design review checks from checks as review' (line 162) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec repository required validation from checks as validation' (line 206) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec repository required validation from checks as validation' (line 211) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec path check from checks as path' (line 227) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec path check from checks as path' (line 232) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec project checks from checks as results' (line 236) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec project checks from checks as results' (line 241) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec project checks from checks as results' (line 247) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

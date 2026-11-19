@@ -1,0 +1,37 @@
+compiled docs/current/research/nl-compiler/dogfood-skillwren/run1: 34 requirements, 1 files, 6 adapter calls
+questions:
+  - Is the build gate 'strictly smaller' measured by the same token metric as step 6?
+  - Does the optional compile path replace only steps 1-5, with steps 6-7 still required?
+  - Which tools 'read the SkillWren header' is not enumerated; how is that determined?
+  - R33 has evidence 'user', which would normally become a decision ask plus require confirmation. The source only forbids paid evaluations or installation unless requested, and the skill has no step that performs either. I recorded it as a `never:` invariant. Should an explicit ask and confirmation be added for requested evaluations or installs?
+  - Should `exec #mapcheck` name a specific command? The source only says anchor matching checks bookkeeping, so I left it as the review-map anchor check.
+assumptions:
+  - Line 2-4 description treated as context, not extra obligations.
+  - Ordering of steps 1-7 is implied by numbering; step 3 is a standing constraint on step 2.
+  - Tokenizer choice is unspecified beyond 'same on both sides'.
+  - I did not run `skillwren check --fragment` on SKILL.md. I had no checker access here.
+  - The source does not name a blocker exit for the repair retry loops, so I added none, following the 'invent nothing' rule. The check, input-typo, parity and metric loops therefore have no bounded exit.
+  - The `build` verify's `otherwise:` records the tradeoff and falls through instead of aborting, because the source says to report the tradeoff. This may produce a W9 warning.
+  - The `gap note` otherwise on the reference read also falls through, because a missing optional reference is a gap, not a failure.
+  - I used `write` and `exec` on abstract resources (`output`, `review`, `checks`) and did not declare a resources block, following the inline example. Under `--fragment` these should be accepted.
+  - In the compile arm, `apply rewrite review` is the step that precedes the write, so the inventory-before-rewrite order rule holds on both paths.
+  - The user-evidence requirement (R33) lands as an ask plus `require confirmation` placed first, before any write or exec. Declining continues the conversion without paid evaluation or installation. This adds a W9 fall-through warning, which I accepted.
+  - `exec #mapcheck` is added so `verify #parity` has exec evidence. This is not a step the source names.
+  - `verify #final` cites the measure result because it is the last exec result available to cite.
+  - I added `exec #probe` and `verify #interp` to give the interpreter requirement (R17) exec evidence.
+  - IDs are now unique: `#checkrun` and `#buildrun` for the execs, and `#check` and `#build` for the verifies.
+  - The contract sections are reordered to always, never, inputs, order.
+  - Build validation or review-check failure aborts (nothing published); a build that is only not strictly smaller records a tradeoff in the limits and still returns a report.
+  - Each repair loop is bounded by a same-evidence branch that returns a recorded blocker report via return #blocked.
+  - Order rule 'apply inventory before apply rewrite' keeps a W15 self-report warning because the source gives no observable artifact for it on the compile path.
+warning SKILL.md:34 W15: order rule rests on self-report: every statement matching 'apply inventory' is the model's own judgment
+warning SKILL.md:47 W9: otherwise: block falls through
+warning SKILL.md:48 W5: binding 'declined' never referenced
+warning SKILL.md:51 W9: otherwise: block falls through
+warning SKILL.md:52 W5: binding 'gaps' never referenced
+warning SKILL.md:63 W5: binding 'inventory' never referenced
+warning SKILL.md:81 W5: binding 'invocation' never referenced
+judge dropped: R27: the build gate checks only flow validation and review checks. If the build is not strictly smaller, the flow records a tradeoff and still returns the result, so 'strictly smaller before publication' is no longer a gate.
+judge added: none: R33 says not to run paid model evaluations or install unless requested, but the flow adds an extra ask and requires confirmation even when the user already requested it. The flow also never runs the evaluation or installation.
+Not approved. Review audit/, run explain-workflow, and approve before use.
+exit 1

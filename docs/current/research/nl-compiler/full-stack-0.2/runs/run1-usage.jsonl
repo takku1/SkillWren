@@ -1,0 +1,6 @@
+{"model": "sonnet", "cost_usd": 0.196, "output_tokens": 14138, "seconds": 71.672, "phase": "inventory"}
+{"model": "sonnet", "cost_usd": 0.433148, "output_tokens": 28242, "seconds": 175.25, "phase": "lower"}
+{"model": "sonnet", "cost_usd": 0.36331290000000005, "output_tokens": 15046, "seconds": 73.689, "phase": "repair"}
+{"model": "opus", "cost_usd": 0.225056, "output_tokens": 2958, "seconds": 29.905, "phase": "judge"}
+{"model": "sonnet", "cost_usd": 0.3097559, "output_tokens": 14633, "seconds": 67.82, "phase": "repair"}
+{"model": "opus", "cost_usd": 0.2218598, "output_tokens": 2953, "seconds": 29.252, "phase": "judge"}

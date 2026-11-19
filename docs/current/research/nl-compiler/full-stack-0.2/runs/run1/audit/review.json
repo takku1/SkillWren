@@ -1,0 +1,1436 @@
+{
+  "original_sha256": "359499366e2bd4e3a4c0223cd7d4c144d158cdf5ac5562d8f08b16267f90095c",
+  "logic_sha256": "b2303a3550f04482a527d8263ff7d90c936ac2844966fccbd4c4ee56e3184061",
+  "review": "Generated from a compiler inventory; anchors are bookkeeping, not an equivalence proof.",
+  "requirements": [
+    {
+      "id": "R1",
+      "original_lines": [
+        3,
+        3
+      ],
+      "logic_contains": [
+        "Use it for changes crossing meaningful component boundaries, not isolated routine edits."
+      ]
+    },
+    {
+      "id": "R2",
+      "original_lines": [
+        10,
+        10
+      ],
+      "logic_contains": [
+        "write #design design with design_docs"
+      ]
+    },
+    {
+      "id": "R3",
+      "original_lines": [
+        10,
+        10
+      ],
+      "logic_contains": [
+        "if request asks to build or implement:",
+        "require repeated approval for already authorized work"
+      ]
+    },
+    {
+      "id": "R4",
+      "original_lines": [
+        10,
+        10
+      ],
+      "logic_contains": [
+        "ask user to grant permission for deployment, publication, tool installation, or delegation",
+        "if work involves deployment, publication, tool installation, or delegation:"
+      ]
+    },
+    {
+      "id": "R5",
+      "original_lines": [
+        14,
+        14
+      ],
+      "logic_contains": [
+        "verify #grounded scope names repository, outcome, work IDs, constraints, and exclusions from inspection",
+        "- **ground scope**"
+      ]
+    },
+    {
+      "id": "R6",
+      "original_lines": [
+        14,
+        14
+      ],
+      "logic_contains": [
+        "preserve authoritative documents, IDs, and project vocabulary",
+        "keep current state, target state, and migration distinct",
+        "treat documentation or mock data as establishing working behavior"
+      ]
+    },
+    {
+      "id": "R7.1",
+      "original_lines": [
+        16,
+        16
+      ],
+      "logic_contains": [
+        "apply classify dispositions with inspection as dispositions",
+        "keep scope disposition, evidence, and completion as separate axes"
+      ]
+    },
+    {
+      "id": "R7.2",
+      "original_lines": [
+        91,
+        98
+      ],
+      "logic_contains": [
+        "apply classify dispositions with inspection as dispositions",
+        "keep scope disposition, evidence, and completion as separate axes"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R8",
+      "original_lines": [
+        16,
+        16
+      ],
+      "logic_contains": [
+        "let discovery alone authorize scope expansion or replacement",
+        "- **classify dispositions**"
+      ]
+    },
+    {
+      "id": "R9",
+      "original_lines": [
+        18,
+        18
+      ],
+      "logic_contains": [
+        "apply resolve ambiguity with inspection as assumptions",
+        "show assumptions"
+      ]
+    },
+    {
+      "id": "R10",
+      "original_lines": [
+        18,
+        18
+      ],
+      "logic_contains": [
+        "if a missing answer changes the outcome or authority and the user has not already settled it:",
+        "ask user to decide the open question that changes outcome or authority",
+        "apply record consequences with sequence as consequences",
+        "preserve settled user decisions"
+      ]
+    },
+    {
+      "id": "R11",
+      "original_lines": [
+        20,
+        20
+      ],
+      "logic_contains": [
+        "read references/terminology.md as terminology",
+        "if the request needs design deltas or Recurspec integration:",
+        "read references/existing-projects.md as existing_projects",
+        "read references/design-method.md as design_method"
+      ]
+    },
+    {
+      "id": "R12",
+      "original_lines": [
+        24,
+        24
+      ],
+      "logic_contains": [
+        "apply trace behavior before apply sequence work",
+        "label iterate:"
+      ]
+    },
+    {
+      "id": "R13",
+      "original_lines": [
+        26,
+        26
+      ],
+      "logic_contains": [
+        "- **trace behavior**",
+        "apply trace behavior with inspection as behavior"
+      ]
+    },
+    {
+      "id": "R14",
+      "original_lines": [
+        28,
+        28
+      ],
+      "logic_contains": [
+        "- **allocate authority**",
+        "apply allocate authority with behavior as allocation"
+      ]
+    },
+    {
+      "id": "R15",
+      "original_lines": [
+        29,
+        29
+      ],
+      "logic_contains": [
+        "- **resolve choices**",
+        "apply resolve choices with allocation as choices"
+      ]
+    },
+    {
+      "id": "R16",
+      "original_lines": [
+        30,
+        30
+      ],
+      "logic_contains": [
+        "- **connect contracts**",
+        "apply connect contracts with boundaries as contracts"
+      ]
+    },
+    {
+      "id": "R17",
+      "original_lines": [
+        31,
+        31
+      ],
+      "logic_contains": [
+        "- **sequence work**",
+        "apply sequence work with contracts as sequence"
+      ]
+    },
+    {
+      "id": "R18",
+      "original_lines": [
+        34,
+        34
+      ],
+      "logic_contains": [
+        "apply split components with choices as components"
+      ]
+    },
+    {
+      "id": "R19",
+      "original_lines": [
+        36,
+        36
+      ],
+      "logic_contains": [
+        "verify #ready the next increment has usable outcome, contracts, prerequisites, checks, and resolved consequential decisions from review"
+      ]
+    },
+    {
+      "id": "R20",
+      "original_lines": [
+        38,
+        38
+      ],
+      "logic_contains": [
+        "verify #gaps no gaps remain within responsibilities, across contracts, or across the outcome from review"
+      ]
+    },
+    {
+      "id": "R21",
+      "original_lines": [
+        38,
+        38
+      ],
+      "logic_contains": [
+        "if a quality concern is triggered by the scenario:",
+        "apply quality concerns with sequence as quality"
+      ]
+    },
+    {
+      "id": "R22",
+      "original_lines": [
+        42,
+        42
+      ],
+      "logic_contains": [
+        "keep requirements, invariants, assumptions, source inspection, executed tests, measurements, and proof distinct, and mark unexecuted checks"
+      ]
+    },
+    {
+      "id": "R23",
+      "original_lines": [
+        44,
+        44
+      ],
+      "logic_contains": [
+        "write #registry unresolved decisions, evidence needed, and affected work IDs with registry"
+      ]
+    },
+    {
+      "id": "R24.1",
+      "original_lines": [
+        46,
+        46
+      ],
+      "logic_contains": [
+        "- **Design-only deliverable**",
+        "write #design design with design_docs",
+        "else:\n    return design as design"
+      ]
+    },
+    {
+      "id": "R24.2",
+      "original_lines": [
+        43,
+        43
+      ],
+      "logic_contains": [
+        "- **Design-only deliverable**",
+        "write #design design with design_docs",
+        "else:\n    return design as design"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R25",
+      "original_lines": [
+        48,
+        48
+      ],
+      "logic_contains": [
+        "if request asks to build or implement:",
+        "write #resume unfinished work, blockers, and next resumption step with registry"
+      ]
+    },
+    {
+      "id": "R26",
+      "original_lines": [
+        3,
+        3
+      ],
+      "logic_contains": [
+        "apply select artifacts with sequence as artifact_set"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R27",
+      "original_lines": [
+        7,
+        7
+      ],
+      "logic_contains": [
+        "- **Design brief**",
+        "generate design artifacts from artifact_set as design",
+        "write #design design with design_docs"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R28",
+      "original_lines": [
+        11,
+        21
+      ],
+      "logic_contains": [
+        "- **Component specification**",
+        "write #design design with design_docs"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R29",
+      "original_lines": [
+        23,
+        23
+      ],
+      "logic_contains": [
+        "state resource borrowing, transfer, synchronization, and unsafe obligations when relevant to Rust or native implementation",
+        "require a new crate merely because a specification exists"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R30",
+      "original_lines": [
+        27,
+        27
+      ],
+      "logic_contains": [
+        "- **Interaction specification**",
+        "write #design design with design_docs"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R31",
+      "original_lines": [
+        29,
+        29
+      ],
+      "logic_contains": [
+        "if a flow requires retries, cancellation, timeouts, event ordering, or resynchronization:",
+        "apply interaction concerns with sequence as interactions"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R32",
+      "original_lines": [
+        33,
+        33
+      ],
+      "logic_contains": [
+        "- **Decision record**",
+        "write #design design with design_docs"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R33",
+      "original_lines": [
+        37,
+        37
+      ],
+      "logic_contains": [
+        "- **Traceability table**",
+        "write #design design with design_docs"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R34",
+      "original_lines": [
+        39,
+        39
+      ],
+      "logic_contains": [
+        "keep traceability tables as navigational projections of the specification and the work registry",
+        "keep independent status fields in derived views"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R35.1",
+      "original_lines": [
+        43,
+        43
+      ],
+      "logic_contains": [
+        "- **Work package**",
+        "write #handoff work package with registry"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R35.2",
+      "original_lines": [
+        57,
+        57
+      ],
+      "logic_contains": [
+        "- **Work package**",
+        "write #handoff work package with registry"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R36.1",
+      "original_lines": [
+        45,
+        45
+      ],
+      "logic_contains": [
+        "for a temporary double, name the simulated contract and guarantees, unsupported behavior, real provider, and replacement condition, and link the remaining integration work in the same registry",
+        "close a requirement for real integration on a passing double-based test",
+        "apply double record with contracts as contracts",
+        "write #doubles temporary double records with registry"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R36.2",
+      "original_lines": [
+        13,
+        13
+      ],
+      "logic_contains": [
+        "for a temporary double, name the simulated contract and guarantees, unsupported behavior, real provider, and replacement condition, and link the remaining integration work in the same registry",
+        "close a requirement for real integration on a passing double-based test",
+        "apply double record with contracts as contracts",
+        "write #doubles temporary double records with registry"
+      ],
+      "original_file": "references/implementation.md"
+    },
+    {
+      "id": "R37",
+      "original_lines": [
+        47,
+        47
+      ],
+      "logic_contains": [
+        "let an implementation package require the implementer to decide unresolved product semantics",
+        "An investigation package names the question"
+      ],
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "id": "R38",
+      "original_lines": [
+        3,
+        3
+      ],
+      "logic_contains": [
+        "This entrypoint owns scope, authorization, evidence, and readiness rules; scale depth to uncertainty and risk."
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R39",
+      "original_lines": [
+        7,
+        7
+      ],
+      "logic_contains": [
+        "- **trace behavior**"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R40",
+      "original_lines": [
+        9,
+        9
+      ],
+      "logic_contains": [
+        "for each task identify actor, needed information, authorized mutations, and observer of completion"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R41",
+      "original_lines": [
+        11,
+        11
+      ],
+      "logic_contains": [
+        "if the request includes a prototype:",
+        "apply prototype split with inspection as prototype"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R42",
+      "original_lines": [
+        15,
+        21
+      ],
+      "logic_contains": [
+        "verify #boundaries each candidate responsibility answers the five boundary questions from review"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R43",
+      "original_lines": [
+        23,
+        23
+      ],
+      "logic_contains": [
+        "apply challenge boundaries with components as boundaries"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R44",
+      "original_lines": [
+        27,
+        27
+      ],
+      "logic_contains": [
+        "apply compare alternatives with question as alternatives",
+        "- **resolve choices**"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R45",
+      "original_lines": [
+        29,
+        29
+      ],
+      "logic_contains": [
+        "apply revisit design with sequence as revision",
+        "- **revisit design**"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R46",
+      "original_lines": [
+        33,
+        33
+      ],
+      "logic_contains": [
+        "check identity, schema and versioning, errors, ordering and delivery, authorization, cancellation, backpressure, and recovery"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R47",
+      "original_lines": [
+        35,
+        35
+      ],
+      "logic_contains": [
+        "treat a transport acknowledgment as not completion, and inspect bootstrap, shutdown, reconnection, and stale derived state"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R48",
+      "original_lines": [
+        39,
+        39
+      ],
+      "logic_contains": [
+        "apply connect contracts before apply sequence work"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R49",
+      "original_lines": [
+        41,
+        41
+      ],
+      "logic_contains": [
+        "apply break cycle with sequence as sequence"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R50",
+      "original_lines": [
+        43,
+        43
+      ],
+      "logic_contains": [
+        "verify #readiness origins, owners, checks, dependency availability, compatible authority and contracts, observable failure paths, and registry links are confirmed from review"
+      ],
+      "original_file": "references/design-method.md"
+    },
+    {
+      "id": "R51",
+      "original_lines": [
+        5,
+        5
+      ],
+      "logic_contains": [
+        "verify #authority governing documents are identified and disagreements are recorded as target design versus observed implementation from authority",
+        "- **establish authority**"
+      ],
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "id": "R52",
+      "original_lines": [
+        7,
+        7
+      ],
+      "logic_contains": [
+        "work at the requested scope and reuse existing providers through their contracts",
+        "replace an owner only with evidence that the selected outcome requires it",
+        "create a parallel architecture tree"
+      ],
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "id": "R53",
+      "original_lines": [
+        9,
+        9
+      ],
+      "logic_contains": [
+        "run expensive whole-project testing for a documentation-only comparison",
+        "if a runtime claim is uncertain:",
+        "verify #runtime the claim rests on an executed check from runtime"
+      ],
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "id": "R54",
+      "original_lines": [
+        13,
+        13
+      ],
+      "logic_contains": [
+        "- **Design delta**",
+        "write #design design with design_docs"
+      ],
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "id": "R55",
+      "original_lines": [
+        15,
+        15
+      ],
+      "logic_contains": [
+        "verify #claims done roadmap rows are checked against the governing architecture and current code from authority",
+        "treat a roadmap row marked done as independent verification"
+      ],
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "id": "R56",
+      "original_lines": [
+        19,
+        19
+      ],
+      "logic_contains": [
+        "if subject uses Recurspec:",
+        "read Recurspec local rules and contracts from subject as recurspec_rules",
+        "verify #recurspec read-only status oriented the relevant tree from recurspec",
+        "install tools or modify a whole tree merely to enable planning"
+      ],
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "id": "R57",
+      "original_lines": [
+        21,
+        21
+      ],
+      "logic_contains": [
+        "preserve SYSTEM.md contracts, contract markers and schema, and ROADMAP.md as the work registry in Recurspec projects",
+        "treat coverage suggestions as anything but proposals"
+      ],
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "id": "R58",
+      "original_lines": [
+        23,
+        23
+      ],
+      "logic_contains": [
+        "apply map contract nodes with recurspec_rules as contract_map"
+      ],
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "id": "R59",
+      "original_lines": [
+        25,
+        25
+      ],
+      "logic_contains": [
+        "verify #validation the repository's required validation passed from validation",
+        "manufacture probe files, metric values, or formal-proof tags"
+      ],
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "id": "R60",
+      "original_lines": [
+        29,
+        29
+      ],
+      "logic_contains": [
+        "if subject has no established design structure:",
+        "apply standalone placement with artifact_set as artifact_set",
+        "if implementation work needs tracking and subject has no existing roadmap:",
+        "write #roadmap new roadmap with registry",
+        "- **standalone placement**"
+      ],
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "id": "R61",
+      "original_lines": [
+        3,
+        3
+      ],
+      "logic_contains": [
+        "require host provides repository access, execution tools, and runtime",
+        "write #blocker concrete blocker with registry"
+      ],
+      "original_file": "references/implementation.md"
+    },
+    {
+      "id": "R62",
+      "original_lines": [
+        7,
+        7
+      ],
+      "logic_contains": [
+        "inputs:\n  request, subject, selected_work",
+        "apply handoff with selected_work as handoff",
+        "write #handoff work package with registry",
+        "if unresolved product or contract semantics block dependent implementation:",
+        "apply investigate semantics with handoff as investigation",
+        "- **investigate semantics**"
+      ],
+      "original_file": "references/implementation.md"
+    },
+    {
+      "id": "R63",
+      "original_lines": [
+        11,
+        11
+      ],
+      "logic_contains": [
+        "write#slice before write#rest",
+        "verify #path one real path connects the required boundaries from path"
+      ],
+      "original_file": "references/implementation.md"
+    },
+    {
+      "id": "R64",
+      "original_lines": [
+        11,
+        11
+      ],
+      "logic_contains": [
+        "let composition or presentation own domain policy",
+        "use source-file count or line limits as architecture criteria"
+      ],
+      "original_file": "references/implementation.md"
+    },
+    {
+      "id": "R65",
+      "original_lines": [
+        13,
+        13
+      ],
+      "logic_contains": [
+        "verify #nosub no double, empty method, placeholder, or visual demonstration stands in for required behavior from results",
+        "treat a first vertical slice as permission to omit remaining requirements"
+      ],
+      "original_file": "references/implementation.md"
+    },
+    {
+      "id": "R66",
+      "original_lines": [
+        17,
+        17
+      ],
+      "logic_contains": [
+        "verify #acceptance every selected acceptance criterion passed on the project checks and the real path from results",
+        "exec project checks from checks as results"
+      ],
+      "original_file": "references/implementation.md"
+    },
+    {
+      "id": "R67",
+      "original_lines": [
+        19,
+        19
+      ],
+      "logic_contains": [
+        "apply boundary diagnostic with rest as diagnostic",
+        "if a material boundary change makes a focused diagnostic useful:"
+      ],
+      "original_file": "references/implementation.md"
+    },
+    {
+      "id": "R68",
+      "original_lines": [
+        21,
+        21
+      ],
+      "logic_contains": [
+        "return to build",
+        "write #resume unfinished work, blockers, and next resumption step with registry"
+      ],
+      "original_file": "references/implementation.md"
+    },
+    {
+      "id": "R69",
+      "original_lines": [
+        3,
+        3
+      ],
+      "logic_contains": [
+        "if uncertainty could change the design:"
+      ],
+      "original_file": "references/research.md"
+    },
+    {
+      "id": "R70",
+      "original_lines": [
+        7,
+        11
+      ],
+      "logic_contains": [
+        "- **research question**",
+        "apply research question with dispositions as question"
+      ],
+      "original_file": "references/research.md"
+    },
+    {
+      "id": "R71",
+      "original_lines": [
+        13,
+        13
+      ],
+      "logic_contains": [
+        "verify #compat runtime, target architecture, allocator, kernel interfaces, graphics and network dependencies, and license are verified from compatibility"
+      ],
+      "original_file": "references/research.md"
+    },
+    {
+      "id": "R72",
+      "original_lines": [
+        17,
+        17
+      ],
+      "logic_contains": [
+        "apply supplied sources before exec readonly primary sources",
+        "verify #sources material claims rest on primary sources that were read from evidence"
+      ],
+      "original_file": "references/research.md"
+    },
+    {
+      "id": "R73",
+      "original_lines": [
+        19,
+        19
+      ],
+      "logic_contains": [
+        "apply compare alternatives with question as alternatives",
+        "- **compare alternatives**"
+      ],
+      "original_file": "references/research.md"
+    },
+    {
+      "id": "R74",
+      "original_lines": [
+        21,
+        21
+      ],
+      "logic_contains": [
+        "- **Source record**",
+        "write #design design with design_docs"
+      ],
+      "original_file": "references/research.md"
+    },
+    {
+      "id": "R75",
+      "original_lines": [
+        25,
+        25
+      ],
+      "logic_contains": [
+        "- **Research resolution**",
+        "write #design design with design_docs"
+      ],
+      "original_file": "references/research.md"
+    },
+    {
+      "id": "R76",
+      "original_lines": [
+        27,
+        27
+      ],
+      "logic_contains": [
+        "apply record inaccessible sources with evidence as evidence",
+        "apply mark adoption unresolved with alternatives as alternatives"
+      ],
+      "original_file": "references/research.md"
+    },
+    {
+      "id": "R77",
+      "original_lines": [
+        29,
+        29
+      ],
+      "logic_contains": [
+        "verify #stop the consequential claim is supported, conflicts have bounded implications, and further searching is unlikely to change the decision from evidence"
+      ],
+      "original_file": "references/research.md"
+    },
+    {
+      "id": "R78",
+      "original_lines": [
+        33,
+        33
+      ],
+      "logic_contains": [
+        "treat model-generated suggestions as inference until evidence supports them"
+      ],
+      "original_file": "references/research.md"
+    },
+    {
+      "id": "R79",
+      "original_lines": [
+        3,
+        3
+      ],
+      "logic_contains": [
+        "preserve equivalent subject-project terms and make the mapping explicit"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R80",
+      "original_lines": [
+        9,
+        17
+      ],
+      "logic_contains": [
+        "- Design activities: elicitation obtains needs"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R81",
+      "original_lines": [
+        23,
+        33
+      ],
+      "logic_contains": [
+        "- Problem and behavior: outcome (an observable result)"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R82",
+      "original_lines": [
+        39,
+        51
+      ],
+      "logic_contains": [
+        "- Structure and authority: responsibility, component, subsystem"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R83",
+      "original_lines": [
+        58,
+        64
+      ],
+      "logic_contains": [
+        "- Delivery and evidence: work package, vertical slice"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R84.1",
+      "original_lines": [
+        68,
+        68
+      ],
+      "logic_contains": [
+        "- Relations: originates-from, refines, alternative-to"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R84.2",
+      "original_lines": [
+        72,
+        81
+      ],
+      "logic_contains": [
+        "- Relations: originates-from, refines, alternative-to"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R85",
+      "original_lines": [
+        83,
+        83
+      ],
+      "logic_contains": [
+        "flatten containment, runtime communication, model refinement, and delivery precedence into one tree"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R86",
+      "original_lines": [
+        87,
+        89
+      ],
+      "logic_contains": [
+        "apply requirement wording with artifact_set as artifact_set",
+        "- **requirement wording**"
+      ],
+      "original_file": "references/terminology.md"
+    },
+    {
+      "id": "R87.1",
+      "original_lines": [
+        26,
+        38
+      ],
+      "logic_contains": [
+        "## Judgment calls",
+        "No mechanical check exists for cohesive responsibilities"
+      ]
+    },
+    {
+      "id": "R87.2",
+      "original_lines": [
+        3,
+        3
+      ],
+      "logic_contains": [
+        "## Judgment calls",
+        "No mechanical check exists for cohesive responsibilities"
+      ],
+      "original_file": "references/artifacts.md"
+    }
+  ],
+  "non_requirements": [
+    {
+      "original_lines": [
+        1,
+        2
+      ],
+      "reason": "frontmatter name"
+    },
+    {
+      "original_lines": [
+        4,
+        6
+      ],
+      "reason": "frontmatter metadata/delimiter"
+    },
+    {
+      "original_lines": [
+        8,
+        8
+      ],
+      "reason": "heading"
+    },
+    {
+      "original_lines": [
+        12,
+        12
+      ],
+      "reason": "heading"
+    },
+    {
+      "original_lines": [
+        22,
+        22
+      ],
+      "reason": "heading"
+    },
+    {
+      "original_lines": [
+        32,
+        32
+      ],
+      "reason": "heading"
+    },
+    {
+      "original_lines": [
+        40,
+        40
+      ],
+      "reason": "heading"
+    },
+    {
+      "original_lines": [
+        1,
+        1
+      ],
+      "reason": "heading",
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "original_lines": [
+        5,
+        5
+      ],
+      "reason": "heading",
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "original_lines": [
+        9,
+        9
+      ],
+      "reason": "heading",
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "original_lines": [
+        25,
+        25
+      ],
+      "reason": "heading",
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "original_lines": [
+        31,
+        31
+      ],
+      "reason": "heading",
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "original_lines": [
+        35,
+        35
+      ],
+      "reason": "heading",
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "original_lines": [
+        41,
+        41
+      ],
+      "reason": "heading",
+      "original_file": "references/artifacts.md"
+    },
+    {
+      "original_lines": [
+        1,
+        1
+      ],
+      "reason": "heading",
+      "original_file": "references/design-method.md"
+    },
+    {
+      "original_lines": [
+        5,
+        5
+      ],
+      "reason": "heading",
+      "original_file": "references/design-method.md"
+    },
+    {
+      "original_lines": [
+        13,
+        13
+      ],
+      "reason": "heading",
+      "original_file": "references/design-method.md"
+    },
+    {
+      "original_lines": [
+        25,
+        25
+      ],
+      "reason": "heading",
+      "original_file": "references/design-method.md"
+    },
+    {
+      "original_lines": [
+        31,
+        31
+      ],
+      "reason": "heading",
+      "original_file": "references/design-method.md"
+    },
+    {
+      "original_lines": [
+        37,
+        37
+      ],
+      "reason": "heading",
+      "original_file": "references/design-method.md"
+    },
+    {
+      "original_lines": [
+        1,
+        1
+      ],
+      "reason": "heading",
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "original_lines": [
+        3,
+        3
+      ],
+      "reason": "heading",
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "original_lines": [
+        11,
+        11
+      ],
+      "reason": "heading",
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "original_lines": [
+        17,
+        17
+      ],
+      "reason": "heading",
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "original_lines": [
+        27,
+        27
+      ],
+      "reason": "heading",
+      "original_file": "references/existing-projects.md"
+    },
+    {
+      "original_lines": [
+        1,
+        1
+      ],
+      "reason": "heading",
+      "original_file": "references/implementation.md"
+    },
+    {
+      "original_lines": [
+        5,
+        5
+      ],
+      "reason": "heading",
+      "original_file": "references/implementation.md"
+    },
+    {
+      "original_lines": [
+        9,
+        9
+      ],
+      "reason": "heading",
+      "original_file": "references/implementation.md"
+    },
+    {
+      "original_lines": [
+        15,
+        15
+      ],
+      "reason": "heading",
+      "original_file": "references/implementation.md"
+    },
+    {
+      "original_lines": [
+        1,
+        1
+      ],
+      "reason": "heading",
+      "original_file": "references/research.md"
+    },
+    {
+      "original_lines": [
+        5,
+        5
+      ],
+      "reason": "heading",
+      "original_file": "references/research.md"
+    },
+    {
+      "original_lines": [
+        15,
+        15
+      ],
+      "reason": "heading",
+      "original_file": "references/research.md"
+    },
+    {
+      "original_lines": [
+        23,
+        23
+      ],
+      "reason": "heading",
+      "original_file": "references/research.md"
+    },
+    {
+      "original_lines": [
+        31,
+        31
+      ],
+      "reason": "heading",
+      "original_file": "references/research.md"
+    },
+    {
+      "original_lines": [
+        1,
+        1
+      ],
+      "reason": "heading",
+      "original_file": "references/terminology.md"
+    },
+    {
+      "original_lines": [
+        5,
+        8
+      ],
+      "reason": "heading and table header/separator",
+      "original_file": "references/terminology.md"
+    },
+    {
+      "original_lines": [
+        19,
+        22
+      ],
+      "reason": "heading and table header/separator",
+      "original_file": "references/terminology.md"
+    },
+    {
+      "original_lines": [
+        35,
+        38
+      ],
+      "reason": "heading and table header/separator",
+      "original_file": "references/terminology.md"
+    },
+    {
+      "original_lines": [
+        53,
+        56
+      ],
+      "reason": "heading and table header/separator",
+      "original_file": "references/terminology.md"
+    },
+    {
+      "original_lines": [
+        66,
+        67
+      ],
+      "reason": "heading",
+      "original_file": "references/terminology.md"
+    },
+    {
+      "original_lines": [
+        69,
+        71
+      ],
+      "reason": "table header/separator",
+      "original_file": "references/terminology.md"
+    },
+    {
+      "original_lines": [
+        85,
+        86
+      ],
+      "reason": "heading",
+      "original_file": "references/terminology.md"
+    },
+    {
+      "original_lines": [
+        91,
+        92
+      ],
+      "reason": "heading",
+      "original_file": "references/terminology.md"
+    }
+  ],
+  "original_context_sha256": {
+    "references/artifacts.md": "0161439f82fc4d8ff7cb02f3acf97a51d458f7c40eb28cef3d6479ed7170a211",
+    "references/design-method.md": "e6db97d3bff48c91cec724bac1deb789a03a0311ee484a54b394cfe58cb70261",
+    "references/existing-projects.md": "4cca5ae4b198c4e689b8583ac1c8b489a849fd8f774ceb5ce464772b0dd55e26",
+    "references/implementation.md": "18e631f5cfd294e8059bfce59f1e4e2bb966b0e951b9dab80ec46c1496285a57",
+    "references/research.md": "9066217c6a9926bf0188416e77e7c7f4401df10327ba918f8f769ab7f57f5720",
+    "references/terminology.md": "070df18b9f85f4f0432bfc8bad341afac45df85025211cca6a31482fa19f1b0f"
+  }
+}
