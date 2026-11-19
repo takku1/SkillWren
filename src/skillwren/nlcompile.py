@@ -169,12 +169,13 @@ def explanations(root, files):
 
 
 class Compilation:
-    def __init__(self, source, contexts, adapter, layout, rounds, judge):
+    def __init__(self, source, contexts, adapter, layout, rounds, judge, reverse=True):
         self.originals = read_originals(source, contexts)
         self.adapter = adapter
         self.layout = layout
         self.rounds = rounds
         self.judge = judge
+        self.reverse = reverse
         self.log = []
         self.questions, self.assumptions = [], []
         self.sources = {name: raw.decode("utf-8-sig") for name, raw in self.originals.items()}
@@ -214,7 +215,7 @@ class Compilation:
     # phases 3-5
     def lower(self, inventory, staging):
         request = {"phase": "lower", "sources": self.numbered, "inventory": inventory,
-                   "layout": self.layout}
+                   "layout": self.layout, "reverse": self.reverse}
         judged, rounds_used = None, 0
         # Judge each clean candidate, at most twice: a judged drop earns one
         # repair, and the repaired candidate is judged again so the manifest
@@ -230,7 +231,9 @@ class Compilation:
             staging.mkdir(parents=True)
             write_files(staging, files)
             diagnostics = diagnose(staging, files)
-            findings = inv.check_candidate(landed, inv.Candidate(staging))
+            candidate = inv.Candidate(staging)
+            findings = (inv.check_candidate(landed, candidate) if self.reverse
+                        else inv.check_landing(landed, candidate))
             unbacked = [dict(u, file=name) for name, entry in diagnostics.items()
                         for u in entry["unbacked_verifies"]]
             clean = not _errors(diagnostics) and not any(
@@ -252,7 +255,8 @@ class Compilation:
                 raise CompileError(_failure(diagnostics, findings), files)
             rounds_used += 1
             request = {"phase": "repair", "sources": self.numbered, "inventory": inventory,
-                       "layout": self.layout, "files": files, "lands": reply.get("lands", {}),
+                       "layout": self.layout, "reverse": self.reverse,
+                       "files": files, "lands": reply.get("lands", {}),
                        "scaffolding": reply.get("scaffolding", []),
                        "diagnostics": diagnostics, "findings": findings,
                        "unbacked_verifies": unbacked}
@@ -267,13 +271,13 @@ def _failure(diagnostics, findings):
 
 
 def compile_skill(source, out, adapter, contexts=(), layout="inline", rounds=3,
-                  judge=True, keep_failed=None):
+                  judge=True, keep_failed=None, reverse=True):
     out = Path(out).resolve()
     if out.exists():
         raise CompileError(f"output already exists: {out}")
     if not out.parent.is_dir():
         raise CompileError(f"output parent does not exist: {out.parent}")
-    job = Compilation(source, contexts, adapter, layout, rounds, judge)
+    job = Compilation(source, contexts, adapter, layout, rounds, judge, reverse)
     inventory, coverage = job.build_inventory()
     with tempfile.TemporaryDirectory(prefix="skillwren-compile-", dir=out.parent) as temp:
         staging = Path(temp) / "artifact"
@@ -313,6 +317,10 @@ def compile_skill(source, out, adapter, contexts=(), layout="inline", rounds=3,
             "open_findings": open_items, "judge": judged,
             "questions": job.questions, "assumptions": job.assumptions,
             "review_map": review_status,
+            "reverse_enforced": reverse,
+            # Always measured, enforced only when reverse_enforced: lets an
+            # ablation run report the traceability it was not held to.
+            "traceability": inv.check_reverse(landed, inv.Candidate(staging)),
             "approved": False, "semantic_equivalence_proven": False}
         (audit / "compile-manifest.json").write_text(
             json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
@@ -345,6 +353,8 @@ def main(argv):
     parser.add_argument("--rounds", type=int, default=3,
                         help="repair rounds per phase (default 3)")
     parser.add_argument("--no-judge", action="store_true")
+    parser.add_argument("--no-reverse", action="store_true",
+                        help="ablation: do not enforce reverse traceability (still measured)")
     parser.add_argument("--keep-failed", help="on failure, write the last attempt here")
     parser.add_argument("--json", action="store_true", help="print the manifest as JSON")
     adapter = []
@@ -358,7 +368,8 @@ def main(argv):
         parser.error("--rounds must be zero or more")
     try:
         manifest = compile_skill(args.source, args.out, adapter, args.context, args.layout,
-                                 args.rounds, not args.no_judge, args.keep_failed)
+                                 args.rounds, not args.no_judge, args.keep_failed,
+                                 not args.no_reverse)
     except (OSError, ValueError, subprocess.TimeoutExpired) as error:
         print(f"skillwren compile: {error}", file=sys.stderr)
         return 2

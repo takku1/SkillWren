@@ -157,20 +157,7 @@ Rules:
   (`flows/x.md#L42` in other files) naming one logic statement. Use line
   references for statements whose text repeats (`retry`, `require
   confirmation`, a repeated `exec`).
-- Reverse traceability is checked: every ask, `require confirmation` or
-  `require user`, `abort`, `retry`, `return to`, `write`, `save`, `exec`,
-  and `run` must be named by some requirement's anchor, alone (a literal
-  that matches several statements justifies none of them). A statement no
-  requirement justifies is an invention: an ask is over-asking, a write
-  or exec a permission expansion, an abort or retry invented control. The
-  fix is to remove it, or to land the requirement that really needs it.
-- `scaffolding` lists compiler plumbing the source does not state, each
-  {{anchor, reason}}: only an `exec` that supplies evidence for a verify, or
-  a branch, may be scaffolding, and it is reported. Never use it to cover
-  an ask, confirmation, abort, retry, write, or run.
-- Do not paraphrase the procedure in prose outside the fenced blocks; prose
-  is for meanings, context, and commands.
-{repair}
+{reverse}{repair}
 === AUTHORING GUIDE ===
 {guide}
 
@@ -179,6 +166,21 @@ Rules:
 
 === INLINE EXAMPLE ===
 {inline}
+"""
+
+REVERSE_RULES = """- Reverse traceability is checked: every ask, `require confirmation` or
+  `require user`, `abort`, `retry`, `return to`, `write`, `save`, `exec`,
+  and `run` must be named by some requirement's anchor, alone (a literal
+  that matches several statements justifies none of them). A statement no
+  requirement justifies is an invention: an ask is over-asking, a write
+  or exec a permission expansion, an abort or retry invented control. The
+  fix is to remove it, or to land the requirement that really needs it.
+- `scaffolding` lists compiler plumbing the source does not state, each
+  {anchor, reason}: only an `exec` that supplies evidence for a verify, or
+  a branch, may be scaffolding, and it is reported. Never use it to cover
+  an ask, confirmation, abort, retry, write, or run.
+- Do not paraphrase the procedure in prose outside the fenced blocks; prose
+  is for meanings, context, and commands.
 """
 
 REPAIR_RULES = """
@@ -260,6 +262,7 @@ def build(request):
     if phase in ("lower", "repair"):
         system = LOWER_PROMPT.format(
             layout=request["layout"], repair=REPAIR_RULES if phase == "repair" else "",
+            reverse=REVERSE_RULES if request.get("reverse", True) else "",
             guide=(ROOT / "docs/current/authoring-guide.md").read_text(encoding="utf-8"),
             template=(ROOT / "docs/current/fragment-template.md").read_text(encoding="utf-8"),
             inline=(ROOT / "examples/host-demo/dep-audit/forms/inline.md").read_text(

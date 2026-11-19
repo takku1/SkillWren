@@ -346,6 +346,19 @@ class CompileTests(unittest.TestCase):
         manifest = compile_skill(SOURCE, self.dir / "out", self.adapter(script))
         self.assertEqual(manifest["judge"], JUDGE_CLEAN)
 
+    def test_reverse_ablation_measures_without_enforcing(self):
+        extra = GOOD_SKILL.replace("  return candidate as candidate",
+                                   "  write candidate with backup\n  return candidate as candidate")
+        script = self.script(lower=[{"files": {"SKILL.md": extra}, "lands": LANDS}])
+        manifest = compile_skill(SOURCE, self.dir / "off", self.adapter(script), reverse=False)
+        self.assertFalse(manifest["reverse_enforced"])
+        self.assertEqual([(f["rule"], f["failure"]) for f in manifest["traceability"]],
+                         [("I9", "permission expansion")])
+        self.assertFalse(self.requests("lower")[0]["reverse"])
+        self.state.unlink()
+        with self.assertRaises(CompileError):
+            compile_skill(SOURCE, self.dir / "on", self.adapter(script), rounds=0)
+
     def test_unsafe_adapter_paths_are_refused(self):
         for name in ("../escape.md", "/abs.md", "audit/x.md", "C:evil.md"):
             script = self.script(lower=[{"files": {"SKILL.md": GOOD_SKILL, name: "x"},
