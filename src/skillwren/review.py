@@ -63,9 +63,25 @@ def validate_review(originals, candidate, compiled, review):
                        for anchor in anchors):
             raise ValueError(f"missing compiled instruction anchor for requirement {name!r}")
         covered[source].update(range(span[0], span[1] + 1))
+    skipped = review.get("non_requirements", [])
+    if not isinstance(skipped, list):
+        raise ValueError("non_requirements must be a list")
+    for index, item in enumerate(skipped):
+        source = item.get("original_file", first) if isinstance(item, dict) else None
+        if source not in originals:
+            raise ValueError(f"unknown original file for non-requirement {index}")
+        span = item.get("original_lines")
+        if not isinstance(span, list) or len(span) != 2 \
+                or any(type(number) is not int for number in span) \
+                or not 1 <= span[0] <= span[1] <= len(lines[source]):
+            raise ValueError(f"invalid original line span for non-requirement {index}")
+        if not isinstance(item.get("reason"), str) or not item["reason"].strip():
+            raise ValueError(f"non-requirement {index} needs a reason")
+        covered[source].update(range(span[0], span[1] + 1))
     for source, source_lines in lines.items():
         missing = [i for i, line in enumerate(source_lines, 1) if line.strip() and i not in covered[source]]
         if missing:
             raise ValueError(f"unmapped original lines in {source}: {missing}")
     return {"kind": "manual-requirement-review", "requirements": len(seen),
+            "non_requirements": len(skipped),
             "original_files": list(originals), "semantic_equivalence_proven": False}

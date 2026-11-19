@@ -131,9 +131,10 @@ def expanded_text(source):
 def build_fragments(source, output):
     """Validate every logic fragment of a skill directory and package the set.
 
-    The entry `SKILL.md` stays ordinary (name, description, a short core);
-    each other Markdown file holding a `logic` block must pass `check
-    --fragment` with cross-file runs resolved inside the set."""
+    Every Markdown file holding a `logic` block must pass `check
+    --fragment` with cross-file runs resolved inside the set, including an
+    inline-form `SKILL.md` (contract and logic beside name and description,
+    the 0.9 recommended form). A `SKILL.md` without logic stays ordinary."""
     root = Path(source).resolve()
     output = Path(output).resolve()
     if output.exists():
@@ -142,9 +143,7 @@ def build_fragments(source, output):
     workspace = Workspace()
     checked, warnings, problems = [], [], []
     for name in files:
-        if not name.endswith(".md") or name == "SKILL.md":
-            continue
-        if b"```logic" not in files[name]:
+        if not name.endswith(".md") or b"```logic" not in files[name]:
             continue
         errors, warns = validate_fragment(root / name, workspace=workspace)
         checked.append(name)

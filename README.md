@@ -50,7 +50,9 @@ it; see [Evidence](#evidence).
 
 - `src/skillwren/` — stdlib-only package and `skillwren` CLI (`check`,
   `explain-workflow`, `draft`, `approve`, `policy`, `guard`, `ledger`,
-  `audit`, `sandbox`, `measure`, `select`, `certgate`, `build`, `conform`).
+  `audit`, `sandbox`, `measure`, `select`, `certgate`, `build`, `conform`,
+  `compile`, `inventory`). `compile` runs the natural-language compiler
+  (`nlcompile`) and `inventory` its requirement accounting.
   The validator is the `skillwren.validator` package: `syntax`,
   `document`, `schema`, `flowgraph`, `ordering`, `analysis`, `files`,
   `explain`. `guard` is the trusted-host controller, `sandbox` the
@@ -245,6 +247,29 @@ policy covers; any edit invalidates it. The
 [NL fidelity corpus](docs/current/research/nl-fidelity/) holds 26
 hand-authored intent-to-flow pairs whose key facts the explainer must
 state, so reviewers can judge meaning without reading the logic.
+
+## Compile natural language to a checked skill
+
+`skillwren compile` takes a full-context prose source (a `SKILL.md` and its
+references, or a long intent document) and produces a checked SkillWren
+skill through a model adapter, in phases: requirement inventory with source
+line spans (every nonblank line accounted for), lowering with per-requirement
+landing anchors, bounded check-and-repair (`check` diagnostics, unbacked
+verifies, landing findings), and an optional judge pass over the
+deterministic `explain-workflow` text.
+
+```text
+skillwren compile prose/SKILL.md --context prose/references/a.md --out compiled   -- py -3 scripts/adapters/claude_compile.py
+skillwren inventory check compiled/audit/inventory.json --source prose/SKILL.md   --context prose/references/a.md --candidate compiled/SKILL.md
+```
+
+The output has the skill files and `audit/` (inventory, a generated
+`review.json` for `build --original --review`, explanations, and a manifest
+with questions, assumptions, open findings, and judge results). Exit 0 is
+clean, 1 compiled with open items, 2 failed (nothing published). It proposes
+only: approval stays human, and the manifest records
+`semantic_equivalence_proven: false`. `check --json` gives the same
+diagnostics to any other tool. Design: [NL compiler](docs/current/design/nl-compiler.md).
 
 ## Guarded write end to end
 

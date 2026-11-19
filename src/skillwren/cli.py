@@ -21,6 +21,8 @@ COMMANDS = {
     "explain-workflow": ("skillwren.validator.workflow", "describe a workflow's meaning deterministically"),
     "approve": ("skillwren.validator.approval", "record or check human approval of a workflow"),
     "draft": ("skillwren.validator.draft", "propose a workflow from intent via a model adapter"),
+    "compile": ("skillwren.nlcompile", "compile natural language to a checked skill via a model adapter"),
+    "inventory": ("skillwren.inventory", "check a requirement inventory's coverage and landing"),
 }
 
 
