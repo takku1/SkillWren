@@ -46,11 +46,14 @@ Cells are model-group pairs, complete Cartesian product:
 - groups: `design`, `implement`
 - 4 cells, `samples_per_cell: 100`, 1,200 runs total
 
-Per group, a pool of 25 frozen briefs; each brief runs 4 times in
-randomized order with fresh sessions (100 runs per cell). Models run at
-fixed versions and decoding settings. Brief pools are fixed before
-sampling and published with the results. The pool is not the deployment
-distribution; claims are scoped to it.
+Per group, a pool of 25 frozen holdout briefs; each brief runs 4 times in
+randomized order with fresh sessions (100 runs per cell). A separate set
+of 5 development briefs per group exists for harness debugging and never
+enters certification evidence. Models run at fixed versions and decoding
+settings. Brief pools are fixed before sampling and published with the
+results (see `pools/SPLIT.json` for the frozen dev/holdout assignment).
+The pool is not the deployment distribution; claims are scoped to it.
+Statistical parameters ($n$, $\delta$, $Q$, tolerances) are unchanged.
 
 Evidence mode is `fresh`: candidates and briefs were fixed before
 certification data were observed. Tier is `op` (no deficiency procedure

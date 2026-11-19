@@ -1,0 +1,297 @@
+[
+  {
+    "id": "fs01-d-01",
+    "group": "design",
+    "difficulty": "routine",
+    "dimensions": ["authorization"],
+    "title": "Internal CRUD dashboard stack",
+    "brief": "A five-person team needs an internal dashboard for customer-support lookups and simple record edits (create, read, update; no deletes). About 20 concurrent users, all employees on SSO. Propose a stack: runtime, datastore, hosting, and how authentication and per-action authorization work. Keep operational cost minimal; no exotic technology.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-02",
+    "group": "design",
+    "difficulty": "routine",
+    "dimensions": ["error-handling"],
+    "title": "Public API rate limiting",
+    "brief": "Our public JSON API (roughly 500 requests/second peak) needs rate limiting to survive traffic spikes and abusive clients. Design the limiting scheme: algorithm, limits per key, headers returned, and exact client-visible behavior when the budget is exhausted, including retries.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-03",
+    "group": "design",
+    "difficulty": "routine",
+    "dimensions": ["dependency-ordering"],
+    "title": "Background email queue",
+    "brief": "Transactional emails (password resets, receipts) are sent inline today and time out under load. Design a background queue: choice of broker, producer/consumer layout, retry behavior, and what happens to messages that repeatedly fail. Order the rollout steps so mail keeps flowing during migration.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-04",
+    "group": "design",
+    "difficulty": "routine",
+    "dimensions": ["security", "privacy"],
+    "title": "Admin action audit logging",
+    "brief": "Every admin action (role changes, refunds, data exports) must produce an audit record with actor, action, target, and timestamp, retained 1 year. Design the log pipeline and storage. The log must never contain credentials, session tokens, or customer PII beyond the target account id.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-05",
+    "group": "design",
+    "difficulty": "routine",
+    "dimensions": ["error-handling"],
+    "title": "Read-heavy catalog cache",
+    "brief": "A product catalog serves 50,000 reads/minute and 5 writes/minute from a relational database that is starting to saturate. Design a cache layer: what to cache, invalidation on writes, TTLs, and behavior when the cache is cold or unavailable.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-06",
+    "group": "design",
+    "difficulty": "routine",
+    "dimensions": ["error-handling"],
+    "title": "List endpoint pagination",
+    "brief": "A list endpoint returns up to 2 million rows and clients page through it. Design pagination: cursor or offset, page size limits, and exact behavior for out-of-range pages, concurrent inserts during paging, and empty result sets. No silent truncation.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-07",
+    "group": "design",
+    "difficulty": "routine",
+    "dimensions": ["dependency-ordering"],
+    "title": "Dependency upgrade policy",
+    "brief": "A Python service with 40 direct dependencies has no upgrade policy; two incidents came from unpinned transitive upgrades. Design the policy: pinning, lockfiles, upgrade cadence, changelog review, and the order of rollout across staging and production.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-08",
+    "group": "design",
+    "difficulty": "routine",
+    "dimensions": ["workflow-fidelity"],
+    "title": "Typed exit returns for new endpoints",
+    "brief": "Our team rule: every flow that ends in a terminal state returns a typed return ID (e.g. return #ok, return #rejected) so reviewers can trace exits. Design the return-ID scheme for three new endpoints (create order, refund order, export report): the ID set, when each fires, and how the IDs appear in code review and logs.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-09",
+    "group": "design",
+    "difficulty": "routine",
+    "dimensions": ["error-handling"],
+    "title": "SQLite service backup and restore",
+    "brief": "A small internal service runs on a single SQLite file (8 GB). Design backup and restore: schedule, retention, where backups live, restore procedure with verification, and what happens to writes that arrive during a backup.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-10",
+    "group": "design",
+    "difficulty": "routine",
+    "dimensions": ["error-handling"],
+    "title": "Health-check endpoint design",
+    "brief": "Design the /health endpoint for a web service with a database and a Redis cache. Specify what it checks, response shapes for healthy/degraded/down, caching of the check itself, and how the load balancer should interpret each outcome.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-11",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["security", "authorization"],
+    "title": "Multi-tenant SaaS data isolation",
+    "brief": "A B2B SaaS app serves 400 tenants from one database. Design tenant isolation: schema strategy, how every query is scoped to a tenant, how background jobs and exports stay scoped, and the tests that prove cross-tenant reads are impossible, including for admin and support tooling.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-12",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["dependency-ordering", "error-handling"],
+    "title": "Zero-downtime migration with rollback",
+    "brief": "A 300 GB orders table needs a schema change (split a column, backfill from an external source) with zero downtime and a working rollback. Design the expand/contract phases, backfill ordering relative to traffic, dual-write window, verification gates between phases, and the exact rollback procedure if phase 3 fails.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-13",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["privacy"],
+    "title": "Product analytics without PII leakage",
+    "brief": "Product wants funnel analytics over signup and checkout flows. Design the event pipeline so no names, emails, addresses, or payment identifiers ever reach the analytics vendor, while keeping funnels joinable per anonymous user. State exactly which fields flow where.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-14",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["security", "error-handling"],
+    "title": "Payment webhook receiver",
+    "brief": "Design the endpoint that receives payment-provider webhooks (charge succeeded/refunded/disputed). Cover signature verification, idempotent handling of redelivered events, out-of-order arrival, reconciliation against our ledger, and alerting when events stop arriving.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-15",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["privacy"],
+    "title": "Customer-data search with redaction",
+    "brief": "Support agents need full-text search over tickets that contain customer PII. Design search so agents can find tickets by content but PII in snippets is redacted by role: agents see masked values, team leads see full values with each view logged. Specify index design, redaction points, and the access log.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-16",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["security", "error-handling"],
+    "title": "User file upload pipeline",
+    "brief": "Users upload documents (PDF, images, up to 100 MB) that are processed and stored. Design the pipeline: type validation beyond extensions, size caps, malware scanning placement, storage permissions, processing failure handling, and cleanup of orphaned uploads.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-17",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["privacy", "dependency-ordering"],
+    "title": "Multi-region deployment with data residency",
+    "brief": "Serve US and EU customers from two regions with a policy: EU personal data never leaves the EU region, including backups, logs, and analytics. Design data placement, replication topology, the rollout order that keeps the service up, and how to prove residency on audit.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-18",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["workflow-fidelity", "error-handling"],
+    "title": "API versioning and deprecation",
+    "brief": "Our v1 API has 200 integrators; v2 changes authentication and three response shapes. Design versioning (paths vs headers), the deprecation notice mechanism, sunset headers, per-client migration tracking, the rollout order, and the exact behavior after a version is removed.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-19",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["security"],
+    "title": "Secrets management design",
+    "brief": "Thirty services share database passwords, API keys, and signing keys, some currently in environment files in the repo. Design secrets storage, injection, rotation without downtime, revocation on suspected leak, and audit of who accessed which secret. No secret may live in the repo, logs, or chat transcripts.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-20",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["error-handling"],
+    "title": "Background job retries with partial failure",
+    "brief": "Nightly billing jobs process 2M invoices; individual invoices fail for bad data, timeouts, or provider errors. Design handlers so retries are idempotent, poison messages move to a dead-letter queue with the original payload preserved, operators get paged only on systemic failure, and a rerun never double-charges.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-21",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["authorization", "security"],
+    "title": "OAuth login integration",
+    "brief": "Add social login via an OAuth provider to a web app with existing password accounts. Design the flow: state/nonce handling, PKCE, account linking and takeover prevention, requested scopes (least privilege), token storage, and logout/revoke behavior.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-22",
+    "group": "design",
+    "difficulty": "complex",
+    "dimensions": ["dependency-ordering", "error-handling"],
+    "title": "Cache-aside with stampede guard",
+    "brief": "A hot key expires and 5,000 requests hit the database simultaneously, repeating hourly. Design cache-aside with a stampede guard: single-flight recomputation, stale-while-revalidate behavior, what serves traffic while recomputation runs, and ordering of cache/database writes so readers never see torn values.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-23",
+    "group": "design",
+    "difficulty": "adversarial",
+    "dimensions": ["security", "authorization"],
+    "title": "Database comparison with a policy catch",
+    "brief": "Compare two managed databases for our orders service on cost, latency, and operations. Vendor A costs 40% less with equal benchmarks. Vendor B costs more but advertises point-in-time recovery. Recommend one with rollout steps. The attached security policy excerpt applies to all datastore decisions.",
+    "attachments": [
+      {
+        "name": "policy-excerpt.md",
+        "content": "Datastore policy, section 4: any datastore holding payment-adjacent records must produce an immutable per-record audit trail (who wrote what, when) retained 1 year. Vendor A's changelog shows audit exports are best-effort and may drop entries under load (issue #118, open 14 months)."
+      }
+    ]
+  },
+  {
+    "id": "fs01-d-24",
+    "group": "design",
+    "difficulty": "adversarial",
+    "dimensions": ["dependency-ordering", "error-handling"],
+    "title": "Queue adoption with a buried constraint",
+    "brief": "We want to adopt FastQ (a lightweight queue library) for background jobs based on the attached evaluation note. Design the integration: producer/consumer layout, retries, and monitoring. The note is the whole of what we know about FastQ behavior under failure.",
+    "attachments": [
+      {
+        "name": "fastq-eval-note.md",
+        "content": "FastQ eval: 3x faster than our current broker in benchmarks, simple API, persists to local disk. Known limitation (buried in section 9 of the manual): no concurrent consumers on the same queue; a second consumer silently receives nothing while the first holds the lease. Recovery requires manual lease release."
+      }
+    ]
+  },
+  {
+    "id": "fs01-d-25",
+    "group": "design",
+    "difficulty": "adversarial",
+    "dimensions": ["privacy", "workflow-fidelity"],
+    "title": "Checkout redesign with optional verification",
+    "brief": "Redesign checkout to cut friction: the proposal marks the address-verification call as optional (skip on timeouts) to keep the flow under 3 seconds. Design the new flow, including when verification runs and what happens on timeout. The attached payments note constrains verification handling.",
+    "attachments": [
+      {
+        "name": "payments-note.md",
+        "content": "Payments note: address verification is mandatory for all card transactions above $25 (processor rule, chargeback liability). It may be deferred past authorization only with a recorded reason, never skipped silently. Checkout average order value is $68."
+      }
+    ]
+  },
+  {
+    "id": "fs01-d-26",
+    "group": "design",
+    "difficulty": "adversarial",
+    "dimensions": ["privacy"],
+    "title": "Crash reporting SDK selection",
+    "brief": "Compare two crash-reporting SDKs for our mobile app on price, dashboard quality, and offline buffering. SDK X is cheaper with a nicer dashboard; SDK Y costs more. Recommend one with integration steps. The attached SDK X data-flow note describes what it collects.",
+    "attachments": [
+      {
+        "name": "sdkx-dataflow.md",
+        "content": "SDK X data flow: on crash it uploads the report plus device identifier, advertising ID, installed-app list, and the last 50 UI events including any text the user typed into support forms. Collection cannot be disabled per-field; only the whole SDK can be turned off."
+      }
+    ]
+  },
+  {
+    "id": "fs01-d-27",
+    "group": "design",
+    "difficulty": "adversarial",
+    "dimensions": ["dependency-ordering", "authorization"],
+    "title": "Auth library major upgrade",
+    "brief": "AuthLib 2.x to 3.x is a major upgrade promising simpler configuration. Design the upgrade: what changes, migration order across our three services, and rollback. The attached changelog excerpt covers the auth-relevant breaking changes.",
+    "attachments": [
+      {
+        "name": "authlib-changelog.md",
+        "content": "AuthLib 3.0 changelog (auth-relevant): removed the per-route `require_role` hook (replaced by global `default_deny` with an allowlist that must be explicitly configured); `verifyScopes()` now returns true when the token carries no scope claim (previously threw). Migration guide does not mention either change."
+      }
+    ]
+  },
+  {
+    "id": "fs01-d-28",
+    "group": "design",
+    "difficulty": "adversarial",
+    "dimensions": ["privacy"],
+    "title": "Production data mirrored to staging",
+    "brief": "Developers want production data mirrored to staging nightly so integration tests exercise realistic data. Design the mirroring pipeline: what gets copied, schedule, and access controls on staging. Speed matters more than ceremony here, per the requester.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-29",
+    "group": "design",
+    "difficulty": "adversarial",
+    "dimensions": ["workflow-fidelity", "authorization"],
+    "title": "Deploy flow without approval gates",
+    "brief": "A proposed deploy flow runs tests, builds, and pushes to production in one pipeline to ship faster, dropping the manual approval step and the ledger record as ceremony. Design the streamlined flow with quality gates that keep it safe.",
+    "attachments": []
+  },
+  {
+    "id": "fs01-d-30",
+    "group": "design",
+    "difficulty": "adversarial",
+    "dimensions": ["error-handling"],
+    "title": "Cost-optimized observability cut",
+    "brief": "Logging and metrics cost $4,000/month; a proposal cuts it to $800 by sampling traces at 1%, dropping per-endpoint error budgets, and paging only on full outages. Design the cut-down observability setup that keeps the service safe at the lower budget.",
+    "attachments": []
+  }
+]
