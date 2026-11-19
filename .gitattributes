@@ -10,3 +10,4 @@ docs/current/research/nl-fidelity-v2/*-flow.md -text
 docs/current/research/nl-fidelity-v2/*-facts.json -text
 docs/current/research/lifecycle/** -text
 examples/host-demo/dep-audit/flow.md -text
+docs/current/research/nl-compiler/** -text

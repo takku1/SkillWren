@@ -298,6 +298,32 @@ class CompileTests(unittest.TestCase):
         self.assertEqual(code, 2)
 
 
+class FrozenBenchmarkTests(unittest.TestCase):
+    CORPUS = ROOT / "docs/current/research/nl-compiler/full-stack-0.2"
+
+    def test_manifest_digests_match_the_frozen_bytes(self):
+        import hashlib
+        import re
+        text = (self.CORPUS / "FROZEN.md").read_text(encoding="utf-8")
+        pinned = re.findall(r"^([0-9a-f]{64})  (\S+)$", text, re.M)
+        self.assertEqual(len(pinned), 9)
+        for expected, name in pinned:
+            actual = hashlib.sha256((self.CORPUS / name).read_bytes()).hexdigest()
+            self.assertEqual(actual, expected, name)
+
+    def test_published_runs_still_validate_against_their_inventories(self):
+        source = self.CORPUS / "source"
+        contexts = sorted((source / "references").glob("*.md"))
+        originals = read_originals(source / "SKILL.md", contexts)
+        for run in ("run1", "run2"):
+            inventory = json.loads((self.CORPUS / "runs" / run / "audit/inventory.json")
+                                   .read_text(encoding="utf-8"))
+            # Reordered contexts change nothing but the digest-map order.
+            inventory["sources"] = {k: inventory["sources"][k] for k in originals}
+            findings = inv.check(inventory, originals, self.CORPUS / "runs" / run / "SKILL.md")
+            self.assertFalse([f for f in findings if f["severity"] == "error"], run)
+
+
 class CheckJsonTests(unittest.TestCase):
     def test_check_json_reports_errors_and_unbacked_verifies(self):
         with tempfile.TemporaryDirectory() as directory:
