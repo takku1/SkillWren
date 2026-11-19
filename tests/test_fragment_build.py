@@ -39,6 +39,23 @@ class FragmentBuildTests(unittest.TestCase):
         self.assertIn('build-gap.md', str(caught.exception))
         self.assertFalse(out.exists())
 
+    def test_inline_skill_entry_with_logic_is_checked(self):
+        # The 0.9 recommended form keeps logic in SKILL.md itself; a set
+        # whose only logic is an invalid inline SKILL.md must not build.
+        inline = (GOOD / 'forms/inline.md').read_text(encoding='utf-8')
+        skill = self.root / 'inline'
+        skill.mkdir()
+        (skill / 'SKILL.md').write_text(inline, encoding='utf-8')
+        manifest = build(skill, self.root / 'ok')
+        self.assertEqual(manifest['checked_fragments'], ['SKILL.md'])
+        broken = self.root / 'broken'
+        broken.mkdir()
+        (broken / 'SKILL.md').write_text(
+            inline.replace('return report as report', 'return'), encoding='utf-8')
+        with self.assertRaises(BuildError) as caught:
+            build(broken, self.root / 'bad')
+        self.assertIn('SKILL.md', str(caught.exception))
+
     def test_set_without_skill_entry_or_fragments_is_rejected(self):
         bare = self.root / 'bare'
         bare.mkdir()
