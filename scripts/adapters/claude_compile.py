@@ -19,6 +19,7 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
+JUDGE_CATEGORIES = ['omission', 'invention', 'over_asking', 'permission_expansion', 'permission_restriction', 'control_flow_distortion', 'ordering_distortion']
 STRINGS = {"type": "array", "items": {"type": "string"}}
 SPAN = {"type": "object", "required": ["file", "lines"],
         "properties": {"file": {"type": "string"},
@@ -47,7 +48,8 @@ SCHEMAS = {
                                             "properties": dict(SPAN["properties"],
                                                                reason={"type": "string"})}}}},
                       "questions": STRINGS, "assumptions": STRINGS}},
-    "lower": {"type": "object", "required": ["files", "lands", "questions", "assumptions"],
+    "lower": {"type": "object",
+              "required": ["files", "lands", "scaffolding", "questions", "assumptions"],
               "properties": {
                   "files": {"type": "array", "items": {
                       "type": "object", "required": ["path", "content"],
@@ -55,9 +57,13 @@ SCHEMAS = {
                   "lands": {"type": "array", "items": {
                       "type": "object", "required": ["id", "anchors"],
                       "properties": {"id": {"type": "string"}, "anchors": STRINGS}}},
+                  "scaffolding": {"type": "array", "items": {
+                      "type": "object", "required": ["anchor", "reason"],
+                      "properties": {"anchor": {"type": "string"},
+                                     "reason": {"type": "string"}}}},
                   "questions": STRINGS, "assumptions": STRINGS}},
-    "judge": {"type": "object", "required": ["dropped", "added", "changed"],
-              "properties": {"dropped": STRINGS, "added": STRINGS, "changed": STRINGS}},
+    "judge": {"type": "object", "required": JUDGE_CATEGORIES,
+              "properties": {key: STRINGS for key in JUDGE_CATEGORIES}},
 }
 SCHEMAS["repair"] = SCHEMAS["lower"]
 
@@ -145,9 +151,23 @@ Rules:
 - Invent nothing: no steps, permissions, writes, or gates the inventory
   lacks. Do not add `require X exists` gates the source does not ask for;
   declare inputs instead.
-- `lands` gives, per requirement ID, one or more short literal substrings
-  copied exactly from your output (a full statement line is best; for an
-  order rule, the rule text). They are checked verbatim.
+- `lands` gives, per requirement ID, the anchors where it landed: a
+  literal substring copied exactly from your output (a full statement line
+  is best; for an order rule, the rule text), or a line reference `L42`
+  (`flows/x.md#L42` in other files) naming one logic statement. Use line
+  references for statements whose text repeats (`retry`, `require
+  confirmation`, a repeated `exec`).
+- Reverse traceability is checked: every ask, `require confirmation` or
+  `require user`, `abort`, `retry`, `return to`, `write`, `save`, `exec`,
+  and `run` must be named by some requirement's anchor, alone (a literal
+  that matches several statements justifies none of them). A statement no
+  requirement justifies is an invention: an ask is over-asking, a write
+  or exec a permission expansion, an abort or retry invented control. The
+  fix is to remove it, or to land the requirement that really needs it.
+- `scaffolding` lists compiler plumbing the source does not state, each
+  {{anchor, reason}}: only an `exec` that supplies evidence for a verify, or
+  a branch, may be scaffolding, and it is reported. Never use it to cover
+  an ask, confirmation, abort, retry, write, or run.
 - Do not paraphrase the procedure in prose outside the fenced blocks; prose
   is for meanings, context, and commands.
 {repair}
@@ -165,9 +185,10 @@ REPAIR_RULES = """
 REPAIR PHASE: your previous files and lands are included with the checker's
 diagnostics, unbacked verify gates, and inventory findings (I4 no landing,
 I5 anchor not found verbatim, I6 wrong placement for the kind, I7 missing
-demanded evidence, J1 judge found the requirement dropped). Fix every
-error without weakening requirements to silence a rule. Return the full
-corrected files and the full lands list.
+demanded evidence, I9 statement with no source requirement, I12 ask with
+no decision behind it, I13 bad scaffolding entry, J1 judge finding with its
+failure category). Fix every error without weakening requirements to
+silence a rule. Return the full corrected files, lands, and scaffolding.
 """
 
 JUDGE_PROMPT = """You audit a compiled SkillWren skill against its requirement inventory.
@@ -177,13 +198,23 @@ Explanations do not show prose sections, so requirements of kind output,
 step-meaning, context, and unrepresentable are out of scope for you unless
 the explanation contradicts them.
 
-List as short phrases, each starting with the requirement ID:
-- dropped: a requirement the explanation lacks or weakens (missing gate,
-  branch, abort, ask, retry, write, ordering, or evidence).
-- added: behaviour in the explanation that no requirement supports (an
-  extra gate, write, ask, permission, or abort); start with "none:".
-- changed: same requirement, different meaning (wrong branch, condition,
-  order, or audience).
+Classify each problem into exactly one category, as a short phrase that
+starts with the requirement ID (or "none:" when no requirement supports
+the behaviour):
+- omission: a requirement the explanation lacks or weakens (missing gate,
+  branch, abort, write, ordering, or evidence).
+- invention: behaviour no requirement supports that is not one of the
+  categories below (an extra gate, step, retry loop, or abort).
+- over_asking: a user question or confirmation where the source sets a
+  default, delegates to existing permission, or decides itself.
+- permission_expansion: the flow writes, runs, or touches something the
+  source does not authorize.
+- permission_restriction: the flow adds an approval or blocks an action
+  the source already allows (other than by asking: that is over_asking).
+- control_flow_distortion: same requirement, different branch structure
+  (unconditional made conditional or the reverse, continue made abort,
+  a readiness check made a blocking loop).
+- ordering_distortion: a required order is reversed, lost, or added.
 Wording, IDs, and flow names do not matter unless the meaning changes.
 Empty lists are fine when nothing is wrong.
 """

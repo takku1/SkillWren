@@ -65,7 +65,8 @@ deploy:
 """
 
 LANDS = {"R1": ["verify#check before write#config"],
-         "R2": ["verify #check candidate has debug off from result"],
+         "R2": ["exec config check from checks as result",
+                "verify #check candidate has debug off from result"],
          "R3": ['abort with "Unverified config."'],
          "R4": ["write an unverified config"],
          "R5": ["write #config candidate with target"]}
@@ -74,9 +75,12 @@ LANDS = {"R1": ["verify#check before write#config"],
 BAD_SKILL = GOOD_SKILL.replace("candidate has debug off from result",
                                "candidate has debug off").replace(
     "return candidate as candidate", "return")
-BAD_LANDS = dict(LANDS, R2=["verify #check candidate has debug off"])
+BAD_LANDS = dict(LANDS, R2=["exec config check from checks as result",
+                            "verify #check candidate has debug off"])
 
-JUDGE_CLEAN = {"dropped": [], "added": [], "changed": []}
+JUDGE_CLEAN = {key: [] for key in ("omission", "invention", "over_asking",
+                                   "permission_expansion", "permission_restriction",
+                                   "control_flow_distortion", "ordering_distortion")}
 
 
 def stamped():
@@ -119,7 +123,7 @@ class InventoryCoverageTests(unittest.TestCase):
 
 
 class LandingTests(unittest.TestCase):
-    def landed(self, text, lands):
+    def landed(self, text, lands, scaffolding=None, reverse=True):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         path = Path(directory.name) / "SKILL.md"
@@ -128,7 +132,12 @@ class LandingTests(unittest.TestCase):
         for item in body["requirements"]:
             if item["id"] in lands:
                 item["lands"] = lands[item["id"]]
-        return inv.check_landing(body, inv.Candidate(path)), body, path
+        if scaffolding is not None:
+            body["scaffolding"] = scaffolding
+        candidate = inv.Candidate(path)
+        findings = (inv.check_candidate(body, candidate) if reverse
+                    else inv.check_landing(body, candidate))
+        return findings, body, path
 
     def test_good_candidate_lands_every_requirement(self):
         findings, _, _ = self.landed(GOOD_SKILL, LANDS)
@@ -137,17 +146,18 @@ class LandingTests(unittest.TestCase):
     def test_missing_landing_and_missing_anchor(self):
         lands = dict(LANDS, R2=["verify that the moon is full"])
         del lands["R3"]
-        findings, _, _ = self.landed(GOOD_SKILL, lands)
+        findings, _, _ = self.landed(GOOD_SKILL, lands, reverse=False)
         self.assertEqual(sorted((f["rule"], f["id"]) for f in findings),
                          [("I4", "R3"), ("I5", "R2")])
 
     def test_order_requirement_must_be_an_order_rule(self):
         findings, _, _ = self.landed(GOOD_SKILL, dict(
-            LANDS, R1=["verify #check candidate has debug off from result"]))
+            LANDS, R1=["verify #check candidate has debug off from result"]), reverse=False)
         self.assertEqual([(f["rule"], f["id"]) for f in findings], [("I6", "R1")])
 
     def test_gate_landing_in_prose_is_not_a_statement(self):
-        findings, _, _ = self.landed(GOOD_SKILL, dict(LANDS, R2=["# Config deploy"]))
+        findings, _, _ = self.landed(GOOD_SKILL, dict(LANDS, R2=["# Config deploy"]),
+                                     reverse=False)
         rules = sorted(f["rule"] for f in findings if f["id"] == "R2")
         self.assertEqual(rules, ["I6", "I7"])
 
@@ -166,6 +176,76 @@ class LandingTests(unittest.TestCase):
         result = validate_review(originals, raw, raw, review)
         self.assertFalse(result["semantic_equivalence_proven"])
         self.assertEqual(result["non_requirements"], 1)
+
+    # ---- reverse traceability: nothing the source did not authorize
+    def test_invented_ask_is_over_asking(self):
+        text = GOOD_SKILL.replace("  write #config candidate with target",
+                                  "  ask user to approve the config write\n"
+                                  "  require confirmation\n"
+                                  "    otherwise:\n"
+                                  "      abort with \"Declined.\"\n"
+                                  "  write #config candidate with target")
+        findings, _, _ = self.landed(text, LANDS)
+        errors = [(f["rule"], f["failure"]) for f in findings if f["severity"] == "error"]
+        self.assertIn(("I9", "over-asking or permission restriction"), errors)
+        self.assertIn(("I9", "invented abort"), errors)
+
+    def test_unjustified_write_is_permission_expansion(self):
+        text = GOOD_SKILL.replace("  return candidate as candidate",
+                                  "  write candidate with backup\n  return candidate as candidate")
+        findings, _, _ = self.landed(text, LANDS)
+        self.assertEqual([(f["rule"], f["failure"]) for f in findings],
+                         [("I9", "permission expansion")])
+
+    def test_declared_scaffolding_exec_is_reported_not_silent(self):
+        lands = dict(LANDS, R2=["verify #check candidate has debug off from result"])
+        findings, _, _ = self.landed(GOOD_SKILL, lands)
+        self.assertEqual([f["rule"] for f in findings], ["I9"])
+        findings, _, _ = self.landed(GOOD_SKILL, lands, scaffolding=[
+            {"anchor": "exec config check from checks as result",
+             "reason": "evidence for the verify gate"}])
+        self.assertEqual([(f["rule"], f["severity"]) for f in findings], [("I10", "warning")])
+
+    def test_scaffolding_cannot_cover_behaviour(self):
+        lands = dict(LANDS, R3=["Unverified config"])
+        lands["R3"] = ["Unverified config."]
+        # The abort line is the only statement containing that text, so make the
+        # requirement land in prose instead and try to pass the abort off as scaffolding.
+        text = GOOD_SKILL + "\nOn failure the run stops: Unverified config.\n"
+        lands["R3"] = ["On failure the run stops"]
+        findings, _, _ = self.landed(text, lands, scaffolding=[
+            {"anchor": 'abort with "Unverified config."', "reason": "tidy exit"}])
+        self.assertIn(("I9", "invented abort"),
+                      [(f["rule"], f.get("failure")) for f in findings])
+
+    def test_ambiguous_literal_justifies_nothing_but_line_refs_do(self):
+        text = GOOD_SKILL.replace('      abort with "Unverified config."',
+                                  "      exec config check from checks as result\n      retry")
+        twice = text.replace("  write #config", "  verify candidate is still clean from result\n"
+                             "    otherwise:\n      retry\n  write #config")
+        findings, _, _ = self.landed(twice, dict(LANDS, R3=["retry"]))
+        self.assertIn("invented retry", [f.get("failure") for f in findings])
+        lines = twice.splitlines()
+        refs = [f"L{i}" for i, line in enumerate(lines, 1) if line.strip() == "retry"]
+        execs = [f"L{i}" for i, line in enumerate(lines, 1)
+                 if line.strip() == "exec config check from checks as result"]
+        findings, body, path = self.landed(twice, dict(LANDS, R3=refs, R2=LANDS["R2"] + execs))
+        self.assertEqual([f for f in findings if f["severity"] == "error"], [])
+        literal = inv.resolved(body, inv.Candidate(path))
+        self.assertEqual(literal["requirements"][2]["lands"], ["retry", "retry"])
+
+    def test_ask_justified_only_by_a_non_decision_warns(self):
+        text = GOOD_SKILL.replace("  write #config candidate with target",
+                                  "  ask user to approve the config write\n"
+                                  "  require confirmation\n"
+                                  "    otherwise:\n"
+                                  "      return candidate as candidate\n"
+                                  "  write #config candidate with target")
+        lands = dict(LANDS, R5=["write #config candidate with target",
+                                "ask user to approve the config write", "require confirmation"])
+        findings, _, _ = self.landed(text, lands)
+        self.assertEqual({f["rule"] for f in findings}, {"I12"})
+        self.assertTrue(all(f["failure"] == "over-asking" for f in findings))
 
     def test_review_rejects_unexplained_non_requirement(self):
         _, body, path = self.landed(GOOD_SKILL, LANDS)
@@ -250,7 +330,7 @@ class CompileTests(unittest.TestCase):
         self.assertEqual(len(self.requests("repair")), 2)
 
     def test_judge_drop_gets_one_repair_and_is_reported(self):
-        drop = {"dropped": ["R3 recovery"], "added": [], "changed": []}
+        drop = dict(JUDGE_CLEAN, omission=["R3 recovery"])
         script = self.script(judge=[drop])
         manifest = compile_skill(SOURCE, self.dir / "out", self.adapter(script))
         self.assertEqual(self.requests("repair")[0]["findings"][0]["rule"], "J1")
@@ -258,10 +338,10 @@ class CompileTests(unittest.TestCase):
         # not repaired forever.
         self.assertEqual([c["phase"] for c in manifest["calls"]],
                          ["inventory", "lower", "judge", "repair", "judge"])
-        self.assertEqual(manifest["judge"]["dropped"], ["R3 recovery"])
+        self.assertEqual(manifest["judge"]["omission"], ["R3 recovery"])
 
     def test_judge_verdict_reported_is_for_the_published_candidate(self):
-        drop = {"dropped": ["R3 recovery"], "added": [], "changed": []}
+        drop = dict(JUDGE_CLEAN, over_asking=["R4 asks before deploying"])
         script = self.script(judge=[drop, JUDGE_CLEAN])
         manifest = compile_skill(SOURCE, self.dir / "out", self.adapter(script))
         self.assertEqual(manifest["judge"], JUDGE_CLEAN)
@@ -289,7 +369,7 @@ class CompileTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.state.unlink()
         adapter = self.adapter(self.script(judge=[
-            dict(JUDGE_CLEAN, changed=["abort message wording"])]))
+            dict(JUDGE_CLEAN, control_flow_distortion=["R3 abort wording"])]))
         code = compile_main([str(SOURCE), "--out", str(self.dir / "b"), "--"] + adapter)
         self.assertEqual(code, 1)
         script = self.script(inventory=[{"inventory": {"requirements": []}}])
@@ -320,7 +400,9 @@ class FrozenBenchmarkTests(unittest.TestCase):
                                    .read_text(encoding="utf-8"))
             # Reordered contexts change nothing but the digest-map order.
             inventory["sources"] = {k: inventory["sources"][k] for k in originals}
-            findings = inv.check(inventory, originals, self.CORPUS / "runs" / run / "SKILL.md")
+            # Forward landing only: these runs predate reverse traceability.
+            findings = inv.check(inventory, originals, self.CORPUS / "runs" / run / "SKILL.md",
+                                 reverse=False)
             self.assertFalse([f for f in findings if f["severity"] == "error"], run)
 
 

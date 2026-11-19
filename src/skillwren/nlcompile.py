@@ -15,8 +15,10 @@ Phases (docs/current/design/nl-compiler.md):
               findings (placement by kind, demanded evidence) go back to the
               adapter until clean or the round budget is spent.
 5. judge      optional: the adapter compares each requirement with the
-              deterministic `explain-workflow` text; dropped requirements get
-              one more repair.
+              deterministic `explain-workflow` text and classifies problems
+              (omission, invention, over-asking, permission expansion or
+              restriction, control-flow or ordering distortion); flagged
+              candidates get one more repair and are judged again.
 6. publish    a new output directory with the skill files and `audit/`
               (inventory, review map, compile manifest, explanations).
 
@@ -39,6 +41,11 @@ from . import inventory as inv
 from .review import digest, read_originals, validate_review
 
 FORMAT = "skillwren-compile-1"
+# Judge failure taxonomy (design/nl-compiler.md). Omission is the forward
+# risk; the rest are behaviour the source did not authorize.
+JUDGE_CATEGORIES = ("omission", "invention", "over_asking", "permission_expansion",
+                    "permission_restriction", "control_flow_distortion",
+                    "ordering_distortion")
 LAYOUTS = ("inline", "fragments")
 TIMEOUT = 900
 
@@ -130,7 +137,7 @@ def _errors(diagnostics):
     return sum(len(entry["errors"]) for entry in diagnostics.values())
 
 
-def _land(inventory, lands):
+def _land(inventory, lands, scaffolding=None):
     if not isinstance(lands, dict):
         raise CompileError("adapter `lands` must map requirement ids to anchor lists")
     known = {item["id"] for item in inventory["requirements"]}
@@ -143,6 +150,10 @@ def _land(inventory, lands):
             item["lands"] = lands[item["id"]]
         else:
             item.pop("lands", None)
+    scaffolding = scaffolding or []
+    if not isinstance(scaffolding, list):
+        raise CompileError("adapter `scaffolding` must be a list of {anchor, reason}")
+    landed["scaffolding"] = scaffolding
     return landed
 
 
@@ -213,13 +224,13 @@ class Compilation:
         while True:
             reply = self.ask(request)
             files = _safe_files(reply.get("files"))
-            landed = _land(inventory, reply.get("lands", {}))
+            landed = _land(inventory, reply.get("lands", {}), reply.get("scaffolding"))
             if staging.exists():
                 shutil.rmtree(staging)
             staging.mkdir(parents=True)
             write_files(staging, files)
             diagnostics = diagnose(staging, files)
-            findings = inv.check_landing(landed, inv.Candidate(staging))
+            findings = inv.check_candidate(landed, inv.Candidate(staging))
             unbacked = [dict(u, file=name) for name, entry in diagnostics.items()
                         for u in entry["unbacked_verifies"]]
             clean = not _errors(diagnostics) and not any(
@@ -228,12 +239,12 @@ class Compilation:
                 judge_left -= 1
                 judged = self.ask({"phase": "judge", "inventory": landed,
                                    "explanations": explanations(staging, files)})
-                for key in ("dropped", "added", "changed"):
-                    judged[key] = _strings(judged, key)
-                if judged["dropped"] and not judge_repaired and rounds_used < self.rounds:
+                judged = {key: _strings(judged, key) for key in JUDGE_CATEGORIES}
+                flagged = [(key, text) for key in JUDGE_CATEGORIES for text in judged[key]]
+                if flagged and not judge_repaired and rounds_used < self.rounds:
                     judge_repaired = True
-                    findings = [inv._finding("J1", "judge: requirement dropped or weakened: "
-                                             + text) for text in judged["dropped"]]
+                    findings = [dict(inv._finding("J1", f"judge ({key}): {text}"), failure=key)
+                                for key, text in flagged]
                     clean = False
             if clean:
                 return files, landed, diagnostics, findings, judged, unbacked
@@ -242,6 +253,7 @@ class Compilation:
             rounds_used += 1
             request = {"phase": "repair", "sources": self.numbered, "inventory": inventory,
                        "layout": self.layout, "files": files, "lands": reply.get("lands", {}),
+                       "scaffolding": reply.get("scaffolding", []),
                        "diagnostics": diagnostics, "findings": findings,
                        "unbacked_verifies": unbacked}
 
@@ -282,7 +294,8 @@ def compile_skill(source, out, adapter, contexts=(), layout="inline", rounds=3,
         review_status = None
         if list(files) == ["SKILL.md"]:
             candidate = (staging / "SKILL.md").read_bytes()
-            review = inv.to_review(landed, job.originals, candidate)
+            review = inv.to_review(inv.resolved(landed, inv.Candidate(staging)),
+                                   job.originals, candidate)
             review_status = validate_review(job.originals, candidate, candidate, review)
             (audit / "review.json").write_text(json.dumps(review, indent=2) + "\n",
                                                encoding="utf-8")
@@ -313,7 +326,7 @@ def is_open(manifest):
     judged = manifest["judge"] or {}
     return bool(manifest["questions"] or manifest["open_findings"]
                 or manifest["check_warnings"] or manifest["unbacked_verifies"]
-                or any(judged.get(k) for k in ("dropped", "added", "changed")))
+                or any(judged.get(k) for k in JUDGE_CATEGORIES))
 
 
 def main(argv):
@@ -368,7 +381,7 @@ def main(argv):
         for gate in manifest["unbacked_verifies"]:
             print(f"unbacked verify {gate['file']}:{gate['line']}: {gate['text']}")
         judged = manifest["judge"] or {}
-        for key in ("dropped", "added", "changed"):
+        for key in JUDGE_CATEGORIES:
             for text in judged.get(key, []):
                 print(f"judge {key}: {text}")
         print("Not approved. Review audit/, run explain-workflow, and approve before use.")

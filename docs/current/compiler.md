@@ -162,8 +162,22 @@ unrepresentable), `text`, `evidence` (exec, user, effect, self, none), and
 `source` spans. Findings: I1 malformed, I3 source lines not accounted for,
 I4 no landing, I5 anchor not found, I6 wrong placement for the kind (order
 on an `order:` rule; gate, branch, decision, effect, recovery on a logic
-statement), I7 demanded evidence missing, I8 kept as prose (warning), J1
-judge drop. `skillwren inventory check` and `inventory review` run the same
+statement), I7 demanded evidence missing (a gate requirement needs the gate
+itself to cite the exec result), I8 kept as prose (warning). Reverse
+traceability: I9 a behaviour-bearing statement (ask, `require
+confirmation`/`require user`, `abort`, `retry`, `return to`, `write`,
+`save`, `exec`, `run`) that no requirement anchor names alone, labelled
+with its failure (over-asking or permission restriction, invented abort or
+retry, permission expansion); I10 declared scaffolding (warning; only an
+evidence `exec` or a branch may be scaffolding); I11 a branch no
+requirement justifies (warning); I12 an ask justified only by requirements
+that are not decisions, inputs, or user evidence (warning, over-asking);
+I13 malformed scaffolding entry. Anchors are literal text or line
+references (`L42`, `flows/x.md#L42`); an ambiguous literal justifies
+nothing, and review maps receive line references as statement text. J1 is
+a judge finding with its category: omission, invention, over_asking,
+permission_expansion, permission_restriction, control_flow_distortion,
+ordering_distortion. `skillwren inventory check` and `inventory review` run the same
 checks on any inventory and emit the review map for a single-file
 candidate.
 
