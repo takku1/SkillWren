@@ -322,9 +322,17 @@ and config binding, not just its hash), and invariant attestation;
 inputs. Verdicts: `allow` (exit 0, the only authorization), `refuse`
 for a verified refusal router (exit 3: safe terminal outcome, never
 permission to execute), `deny` (exit 1), invalid input (exit 2).
-Per-action structural checks stay with the runtime monitor. Coordinated
-rewrites of a whole report cannot be detected offline; report
-authenticity needs a trusted generation boundary or signatures.
+Per-action structural checks stay with the runtime monitor. Reports are
+recomputed from the `--study` evidence on every call, so coordinated
+report rewrites fail unless the attacker also controls the host's study
+store; only a matching study plus matching bytes yields `allow`.
+
+A guard operation can bind this gate to a protected write with a `dpcc`
+section naming the report, study, artifacts, regime, config, and a
+monitor check operation. The guard re-verifies fresh on every write and
+only writes the selected router's exact artifact bytes: monitor check
+not completed, altered evidence, or anything but `allow` denies the
+write. A verified refusal (or abstention) therefore always denies.
 
 ## Codex
 

@@ -90,17 +90,45 @@ def _check_chain(candidates, selected, artifacts, regime, cfg_sha256, reasons):
     return chain
 
 
-def verify(report, artifacts, regime, cfg_sha256, monitor_pass, policy_allows):
+def _canonical(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False)
+
+
+def verify(report, artifacts, regime, cfg_sha256, monitor_pass, policy_allows,
+           study=None, study_sha256=None):
     """Return a gate verdict; deny on anything unverifiable.
 
     artifacts maps candidate/router id to exact artifact bytes. regime
     is the live deployment regime object. cfg_sha256 binds the live
     configuration. monitor_pass and policy_allows are caller-asserted
-    runtime inputs.
+    runtime inputs. study is the original certification study: the gate
+    re-runs selection and denies reports that do not match the fresh
+    outcome, so coordinated report rewrites fail unless the attacker
+    also controls the host's evidence store holding the study.
+    study_sha256 optionally binds the raw study bytes against the
+    report's input hash.
     """
     report = _report(report)
     reasons, checked = [], {}
     status, selected = report['status'], report['selected']
+    if not isinstance(study, dict):
+        reasons.append('study:missing')
+        return {'gate_schema_version': 1, 'verdict': 'deny', 'selected': selected,
+                'action': 'deny', 'reasons': reasons, 'checked': checked}
+    try:
+        from .selection import select as _select
+        fresh = _select(study)
+    except (ValueError, OverflowError):
+        reasons.append('study:invalid')
+        return {'gate_schema_version': 1, 'verdict': 'deny', 'selected': selected,
+                'action': 'deny', 'reasons': reasons, 'checked': checked}
+    presented = dict(report)
+    presented.pop('input_sha256', None)
+    if _canonical(fresh) != _canonical(presented):
+        reasons.append('report:inauthentic')
+    if 'input_sha256' in report:
+        if study_sha256 is None or report['input_sha256'] != study_sha256:
+            reasons.append('study:unbound')
     if not isinstance(regime, dict) or not regime:
         raise ValueError('regime must be a nonempty object')
     if (not isinstance(cfg_sha256, str) or len(cfg_sha256) != 64
@@ -190,6 +218,8 @@ def _load_json_argument(text, label):
 def main(argv):
     parser = argparse.ArgumentParser(prog='skillwren certgate', description=__doc__)
     parser.add_argument('report', type=Path, help='skillwren select report JSON')
+    parser.add_argument('--study', type=Path, required=True,
+                        help='original certification study JSON (host evidence store)')
     parser.add_argument('--artifacts', type=Path, required=True,
                         help='directory with one file per candidate/router id')
     parser.add_argument('--regime', required=True,
@@ -202,11 +232,14 @@ def main(argv):
     args = parser.parse_args(argv)
     try:
         report = json.loads(args.report.read_bytes().decode('utf-8-sig'))
+        raw_study = args.study.read_bytes()
+        study = json.loads(raw_study.decode('utf-8-sig'))
         artifacts = {path.name: path.read_bytes()
                      for path in sorted(args.artifacts.iterdir()) if path.is_file()}
         regime = _load_json_argument(args.regime, 'regime')
         verdict = verify(report, artifacts, regime, args.cfg,
-                         args.monitor_pass, args.policy_allows)
+                         args.monitor_pass, args.policy_allows, study=study,
+                         study_sha256=hashlib.sha256(raw_study).hexdigest())
     except (OSError, ValueError) as error:
         print(f'skillwren certgate: {error}', file=sys.stderr)
         return 2

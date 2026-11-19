@@ -40,6 +40,10 @@
   verified refusal router yields `refuse` (exit 3), never authorization;
   monitor and policy are caller-asserted inputs. Coordinated whole-report
   rewrites remain out of scope without signatures.
+- Guard DPCC enforcement: a write operation's `dpcc` section re-verifies
+  a fresh gate allow on every write (report recomputed from the hosted
+  study, no verdict files) and only writes the selected artifact bytes;
+  monitor completion, altered evidence, refusal, or abstention deny.
 
 ## 0.9.0 (2026-11-17)
 

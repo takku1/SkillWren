@@ -13,6 +13,7 @@ import sys
 import tempfile
 import threading
 from .audit import AuditStore
+from .certgate import verify as certgate_verify
 
 
 class Denied(ValueError):
@@ -42,7 +43,12 @@ class Controller:
                 raise Denied('invalid operation')
             # A check operation (no target) only verifies: it records that a
             # pinned verifier accepted a candidate, for order rules to cite.
-            if set(op) not in ({'target', 'argv', 'pins', 'timeout'}, {'argv', 'pins', 'timeout'}):
+            # A write operation may additionally name a dpcc section binding
+            # it to a certified deployment (report, study, artifacts, regime,
+            # config, and a monitor check operation).
+            if set(op) not in ({'target', 'argv', 'pins', 'timeout'},
+                               {'argv', 'pins', 'timeout'},
+                               {'target', 'argv', 'pins', 'timeout', 'dpcc'}):
                 raise Denied('operation requires argv, pins, timeout, and target unless a check')
             self._check_argv(op)
             if 'target' not in op:
@@ -57,6 +63,9 @@ class Controller:
             targets.add(canonical)
             self._pins(op)
             self._target(op)
+        for op in self.operations.values():
+            if 'dpcc' in op:
+                self._check_dpcc(op)
         self.approvals = {}
         self.completed = set()
         self.rules, self.unenforced = [], []
@@ -130,6 +139,61 @@ class Controller:
             raise Denied('target must be a regular unlinked file')
         return target
 
+    def _check_dpcc(self, op):
+        """Validate a deployment-certification binding at policy load.
+
+        The policy is host-owned: naming an operation here is the host
+        asserting that this write deploys a certified artifact. Monitor
+        must name a check-only operation whose completion evidences a
+        passing runtime monitor. Evidence files are read fresh at each
+        write; only their paths and the regime/config bindings are
+        pinned here.
+        """
+        spec = op['dpcc']
+        if not isinstance(spec, dict) or set(spec) != {
+                'report', 'study', 'artifacts', 'regime', 'cfg', 'monitor'}:
+            raise Denied('dpcc requires report, study, artifacts, regime, cfg, monitor')
+        for key in ('report', 'study', 'artifacts'):
+            if not isinstance(spec[key], str) or not Path(spec[key]).is_absolute():
+                raise Denied(f'dpcc {key} must be an absolute path')
+        if not isinstance(spec['regime'], dict) or not spec['regime']:
+            raise Denied('dpcc regime must be a nonempty object')
+        if (not isinstance(spec['cfg'], str) or len(spec['cfg']) != 64
+                or any(c not in '0123456789abcdef' for c in spec['cfg'])):
+            raise Denied('dpcc cfg must be 64 lowercase hexadecimal characters')
+        monitor = spec['monitor']
+        if monitor not in self.operations or 'target' in self.operations[monitor]:
+            raise Denied('dpcc monitor must name a check operation')
+
+    def _enforce_dpcc(self, op, data):
+        """Require a fresh certgate allow before a certified write.
+
+        Re-reads the report, study, and artifacts on every write, so no
+        verdict file can go stale or be replayed. The written bytes must
+        equal the selected router's bound artifact: this operation
+        deploys the certified artifact, nothing else.
+        """
+        spec = op['dpcc']
+        try:
+            report = json.loads(Path(spec['report']).read_bytes().decode('utf-8-sig'))
+            raw_study = Path(spec['study']).read_bytes()
+            study = json.loads(raw_study.decode('utf-8-sig'))
+            artifacts = {path.name: path.read_bytes()
+                         for path in sorted(Path(spec['artifacts']).iterdir())
+                         if path.is_file()}
+        except OSError:
+            raise Denied('dpcc evidence unreadable')
+        except ValueError:
+            raise Denied('dpcc evidence invalid')
+        verdict = certgate_verify(report, artifacts, spec['regime'], spec['cfg'],
+                                  spec['monitor'] in self.completed, True,
+                                  study=study, study_sha256=digest(raw_study))
+        if verdict['verdict'] != 'allow':
+            raise Denied('dpcc gate denied: ' + '; '.join(verdict['reasons']))
+        bound = artifacts.get(verdict['selected'])
+        if bound is None or digest(data) != digest(bound):
+            raise Denied('content is not the certified artifact')
+
     def handle(self, request):
         with self.lock:
             if not isinstance(request, dict):
@@ -168,6 +232,8 @@ class Controller:
             approval = self.approvals.pop(name, None)
             if approval != binding:
                 raise Denied('missing, stale or consumed verification')
+            if 'dpcc' in op:
+                self._enforce_dpcc(op, data)
             if self.workflow is not None:
                 self._check_workflow()
                 missing = [first for first, then in self.rules

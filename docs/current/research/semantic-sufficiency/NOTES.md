@@ -1,5 +1,23 @@
 # Working notes: DPCC and empirical sufficiency
 
+## 2026-11-18: trust boundary closed — study-bound gate, guard wiring
+
+Re-audit P0s implemented. (1) Report authentication: `certgate` takes
+the study, recomputes selection, and denies reports that do not match
+(`report:inauthentic`); the CLI binds raw study bytes to the report's
+input hash (`study:unbound` on mismatch). Coordinated rewrites now
+require controlling the host's study store — the documented residual
+trust boundary, replacing the unsigned-report gap. (2) Guard wiring: a
+write operation's `dpcc` section (report, study, artifacts, regime,
+config, monitor check op) makes the guard re-verify fresh on every
+write and only write the selected router's exact bytes. Monitor
+completion gates the write; refusal or abstention always denies.
+Threat table: spoofed monitor/policy flags require a compromised host
+(admin-owned policy is the trust root); stale verdicts are impossible
+(no verdict files — verification is recomputed per write); tampered
+evidence/reports/artifacts deny via binding checks (10 adversarial
+guard tests + 17 gate tests).
+
 ## 2026-11-18: re-audit follow-up — refuse/allow separation, per-fallback binding
 
 Threat-model of the bridge (spoofing/tampering/elevation/repudiation):
