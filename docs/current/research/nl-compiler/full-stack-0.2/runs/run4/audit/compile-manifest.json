@@ -1,0 +1,338 @@
+{
+  "format": "skillwren-compile-1",
+  "layout": "inline",
+  "sources": {
+    "SKILL.md": "359499366e2bd4e3a4c0223cd7d4c144d158cdf5ac5562d8f08b16267f90095c",
+    "references/artifacts.md": "0161439f82fc4d8ff7cb02f3acf97a51d458f7c40eb28cef3d6479ed7170a211",
+    "references/design-method.md": "e6db97d3bff48c91cec724bac1deb789a03a0311ee484a54b394cfe58cb70261",
+    "references/existing-projects.md": "4cca5ae4b198c4e689b8583ac1c8b489a849fd8f774ceb5ce464772b0dd55e26",
+    "references/implementation.md": "18e631f5cfd294e8059bfce59f1e4e2bb966b0e951b9dab80ec46c1496285a57",
+    "references/research.md": "9066217c6a9926bf0188416e77e7c7f4401df10327ba918f8f769ab7f57f5720",
+    "references/terminology.md": "070df18b9f85f4f0432bfc8bad341afac45df85025211cca6a31482fa19f1b0f"
+  },
+  "outputs": {
+    "SKILL.md": "10e14a87b1f58ec3e737e97e7868303ac586f1b63ec8c4d66211951672cd8783"
+  },
+  "adapter": [
+    "py",
+    "-3",
+    "scripts/adapters/claude_compile.py"
+  ],
+  "calls": [
+    {
+      "phase": "inventory",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.14573640000000002,
+        "output_tokens": 14285,
+        "seconds": 70.706,
+        "phase": "inventory"
+      }
+    },
+    {
+      "phase": "inventory",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.24435069999999998,
+        "output_tokens": 14202,
+        "seconds": 69.852,
+        "phase": "inventory"
+      }
+    },
+    {
+      "phase": "lower",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.40313309999999997,
+        "output_tokens": 29494,
+        "seconds": 187.029,
+        "phase": "lower"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.5026031,
+        "output_tokens": 28617,
+        "seconds": 171.088,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "opus",
+        "cost_usd": 0.1805332,
+        "output_tokens": 2252,
+        "seconds": 21.441,
+        "phase": "judge"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.31847380000000003,
+        "output_tokens": 15849,
+        "seconds": 79.23,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.33562179999999997,
+        "output_tokens": 17425,
+        "seconds": 89.605,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "opus",
+        "cost_usd": 0.1741492,
+        "output_tokens": 1900,
+        "seconds": 19.444,
+        "phase": "judge"
+      }
+    }
+  ],
+  "requirements": 93,
+  "non_requirements": 45,
+  "check_warnings": [
+    {
+      "line": 43,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply trace behavior' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 44,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply connect contracts' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 45,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply state research question' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 46,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply investigate semantics' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 56,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 57,
+      "rule": "W5",
+      "message": "binding 'mode' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 66,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 70,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 81,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 88,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 94,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 98,
+      "rule": "W5",
+      "message": "binding 'status' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 103,
+      "rule": "W5",
+      "message": "binding 'claim_result' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 110,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 116,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 120,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 139,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 154,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 156,
+      "rule": "W5",
+      "message": "binding 'registry_entries' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 185,
+      "rule": "W5",
+      "message": "binding 'remaining' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    }
+  ],
+  "unbacked_verifies": [],
+  "open_findings": [
+    {
+      "rule": "I11",
+      "severity": "warning",
+      "message": "branch traces to no requirement: SKILL.md:58: if the request asks to build or implement:",
+      "failure": "control-flow distortion"
+    },
+    {
+      "rule": "I10",
+      "severity": "warning",
+      "message": "compiler scaffolding (Supplies evidence for the #gaps verify of the gap review; the source asks for the gap check but names no command.): SKILL.md:137: exec gaps check from checks as gapcheck",
+      "failure": "permission expansion"
+    }
+  ],
+  "judge": {
+    "omission": [],
+    "invention": [],
+    "over_asking": [
+      "R3: when the request is unclear about building, the flow asks the user to choose between planning and implementation and requires confirmation (lines 53-57), but the source makes planning the default for that case"
+    ],
+    "permission_expansion": [],
+    "permission_restriction": [],
+    "control_flow_distortion": [],
+    "ordering_distortion": []
+  },
+  "questions": [
+    "Does the 'Ground the scope' paragraph (SKILL.md line 14) require actually inspecting code in every run, or only when a repository exists?",
+    "Is the work registry required to be created when none exists (SKILL.md 44) outside standalone use, where creation is only 'when implementation work needs tracking'?",
+    "What counts as 'costly-to-reverse' and 'consequential' (SKILL.md 18) \u2014 left to agent judgment?",
+    "R3 and R66 carry evidence `user`, but the source says a build request authorizes implementation and forbids repeated approval. I did not add an ask for them. The mode is a branch on whether the request asks to build or implement. Should an explicit confirmation be added anyway?",
+    "The two decision asks (settle the missing outcome or authority decision; approve deployment, publication, tool installation, or delegation) have no `user-decides` entries. The inline layout has no authority header, so I couldn't add them. Does your checker need them?",
+    "I wrote the exec IDs as `exec #status ...` with the ID right after `exec`, following the `write #id` / `verify #id` pattern. The guide only shows the `exec#id` form in order rules. Please confirm this parses.",
+    "Does the checker accept `exec readonly <text> from checks as <name>` without an ID before the first dismissible ask (M1)? I used it so the inspection exec can precede the R11 ask."
+  ],
+  "assumptions": [
+    "Table rows in terminology.md are grouped as context requirements (definitions that guide decisions), not individual requirements.",
+    "SKILL.md line 40 is a heading ('Deliver and verify' is actually line 40; line 38 contains the gap-check text). Some line spans for R23/R24 and heading attribution may be off by one: R23/R24 content is on line 38, and line 40 is the heading.",
+    "Evidence 'self' used where the agent's own judgment suffices; 'exec' where checks or inspection are run.",
+    "Corrected SKILL.md line spans for the numbered design activities and Bound/Check paragraphs (R16-R24) to match the listing; the previous inventory had them shifted, leaving lines 27 and 29 uncovered.",
+    "Fixed the R89 span to start at line 23, since lines 21-22 are the table header.",
+    "The references are consulted through the `apply` step meanings (terminology, existing-projects, design-method, research, artifacts, implementation), not through `read` statements. A `read` into a conditional binding would be unbound on the other path.",
+    "Recording a gap and continuing is the repair for every soft failure (missing reference, declined permission, failed fit check, failed validation). The only `retry` is the implementation repair loop. That loop exits through a blocker return when the same failure repeats or a required capability is missing.",
+    "The R50 `L150` anchor for `retry` assumes my line count of the delivered file. The `retry` line is at 150.",
+    "R88-R92 (context, evidence none) are kept as short vocabulary bullets in the Context section.",
+    "Inspection of the subject is a `read` into `evidence`, not an `exec`. That keeps all execs after the asks, so nothing mutates before a dismissible ask (M1).",
+    "R3/R66 user evidence is landed as a conditional ask that fires only when the request does not say whether to plan or build, which keeps 'no repeated approval' for requests that already state it.",
+    "Declining the plan-or-build ask defaults the run to planning (design-only) instead of aborting.",
+    "Contract sections are ordered always, never, inputs, order, to fix F2.",
+    "The `evidence` binding is replaced by `inspection`, the result of the readonly exec. That fixes U1, because the exec binds it on every path.",
+    "A shared `gaps` binding is started at the top, extended at each recorded gap, and returned on every path, so gaps stay visible instead of aborting.",
+    "Line anchors L54, L60, L75 and L176 refer to the three `require confirmation` lines and the single `retry` in SKILL.md as written, counting from line 1 (the opening `---`).",
+    "Planning is the default, so the plan-versus-build ask was replaced by a branch on whether the request asks to build or implement; no user prompt is needed because the source says a build request authorizes implementation.",
+    "The technology-fit check now runs after alternatives are compared and before the research step that selects or recommends one. A failed check records a gap, and the research step and a never-rule bar recommending adoption of an unchecked candidate.",
+    "Line references L60, L75 and L176 were counted by hand against the new SKILL.md: L60 and L75 are the require confirmation lines, and L176 is the retry line.",
+    "R3/R66 user evidence is landed as an ask that fires only when the request does not say whether to build or implement; a clear build request needs no approval, and a decline defaults to planning.",
+    "The roadmap-row check (R60) stays a conditional branch, now anchored to R60.",
+    "The gap-review exec is reported as scaffolding; the remaining W9, W5 and W15 warnings are intentional because the source says to record gaps and continue."
+  ],
+  "review_map": {
+    "kind": "manual-requirement-review",
+    "requirements": 95,
+    "non_requirements": 45,
+    "original_files": [
+      "SKILL.md",
+      "references/artifacts.md",
+      "references/design-method.md",
+      "references/existing-projects.md",
+      "references/implementation.md",
+      "references/research.md",
+      "references/terminology.md"
+    ],
+    "semantic_equivalence_proven": false
+  },
+  "reverse_enforced": true,
+  "traceability": [
+    {
+      "rule": "I11",
+      "severity": "warning",
+      "message": "branch traces to no requirement: SKILL.md:58: if the request asks to build or implement:",
+      "failure": "control-flow distortion"
+    },
+    {
+      "rule": "I10",
+      "severity": "warning",
+      "message": "compiler scaffolding (Supplies evidence for the #gaps verify of the gap review; the source asks for the gap check but names no command.): SKILL.md:137: exec gaps check from checks as gapcheck",
+      "failure": "permission expansion"
+    }
+  ],
+  "approved": false,
+  "semantic_equivalence_proven": false
+}

@@ -161,3 +161,34 @@ $1.34).
 mutants for the hint, W16, guard exclusions, a failed check counting as
 run, the host-load fallback, and personal-before-project resolution);
 guard runtime sweep 9/9.
+
+## Second model: Haiku (2026-11-20)
+
+Same harness, `--model haiku`, 3 reps per arm.
+
+**Author arm.** Without a prompt note, all 3 agents prefixed their check
+commands with `Set-Location`/`cd`, which the `py`-only allowlist denies, so
+none saw a check result ([`live-haiku-author/`](field-response-2026-11-19/live-haiku-author/),
+unscored). With `--cwd-note` (the prompt adds "run each command exactly as
+given, with no `cd`"; a prompt change, so not pooled with Sonnet)
+([`live-haiku-author-cwd/`](field-response-2026-11-19/live-haiku-author-cwd/)):
+3/3 saw P3 with the new hint. 1/3 reached clean by writing the note after
+`run implement`, as the hint says, but copied the design steps inline
+instead of running `design.md`, so the host check (runs the design flow)
+fails. 2/3 stopped and reported the error. Haiku reads P3 but rarely
+completes the repair; Sonnet applied the named fix 2 of the 2 times it
+could keep checking.
+
+**Finding 7, skill invoked** ([`live-haiku-skip/`](field-response-2026-11-19/live-haiku-skip/)):
+
+| Arm | Ran the stack step |
+|---|---|
+| skip-plain | 1/3 |
+| skip-required | 3/3, before code |
+| skip-hidden | 3/3: 2 before code unprompted, 1 after `ledger check` named the missing milestone |
+
+Haiku entered the stack step more readily than Sonnet without a
+requirement (1/3 against 0/6). The direction matches Sonnet: a required
+milestone, visible or not, ends with the step run. Package provenance
+held on Haiku too: 9/9 runs recorded the package and 9/9 stale copies were
+caught. Haiku cost $0.18 for all 15 counted and uncounted runs.

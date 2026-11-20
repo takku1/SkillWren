@@ -1,0 +1,185 @@
+{
+  "method": "model-routed estimate (entry file + file list + task), run-from closure; cl100k_base",
+  "router": "haiku",
+  "cost_usd": 0.0116,
+  "skills": {
+    "docs/current/research/nl-compiler/full-stack-0.2/source": {
+      "total_tokens": 5632,
+      "entry_tokens": 1005,
+      "files": 7,
+      "tasks": {
+        "design-only": {
+          "files": [
+            "SKILL.md",
+            "references/artifacts.md",
+            "references/design-method.md",
+            "references/existing-projects.md",
+            "references/research.md",
+            "references/terminology.md"
+          ],
+          "tokens": 5164
+        },
+        "implement": {
+          "files": [
+            "SKILL.md",
+            "references/existing-projects.md",
+            "references/implementation.md"
+          ],
+          "tokens": 2019
+        },
+        "existing-project": {
+          "files": [
+            "SKILL.md",
+            "references/artifacts.md",
+            "references/design-method.md",
+            "references/existing-projects.md"
+          ],
+          "tokens": 2979
+        },
+        "research-choice": {
+          "files": [
+            "SKILL.md",
+            "references/artifacts.md",
+            "references/design-method.md",
+            "references/research.md"
+          ],
+          "tokens": 2986
+        },
+        "ambiguous-terms": {
+          "files": [
+            "SKILL.md",
+            "references/design-method.md",
+            "references/terminology.md"
+          ],
+          "tokens": 3348
+        }
+      }
+    },
+    "C:/Users/dcarn/AppData/Local/Temp/claude/fda4b9d665045fc1/69876ed1-b1f4-4cb4-bfcb-bede52c34f79/scratchpad/hand": {
+      "total_tokens": 1983,
+      "entry_tokens": 1983,
+      "files": 1,
+      "tasks": {
+        "design-only": {
+          "files": [
+            "SKILL.md"
+          ],
+          "tokens": 1983
+        },
+        "implement": {
+          "files": [
+            "SKILL.md"
+          ],
+          "tokens": 1983
+        },
+        "existing-project": {
+          "files": [
+            "SKILL.md"
+          ],
+          "tokens": 1983
+        },
+        "research-choice": {
+          "files": [
+            "SKILL.md"
+          ],
+          "tokens": 1983
+        },
+        "ambiguous-terms": {
+          "files": [
+            "SKILL.md"
+          ],
+          "tokens": 1983
+        }
+      }
+    },
+    "docs/current/research/nl-compiler/full-stack-0.2/runs/run3": {
+      "total_tokens": 5700,
+      "entry_tokens": 192,
+      "files": 4,
+      "tasks": {
+        "design-only": {
+          "files": [
+            "SKILL.md",
+            "flows/design.md",
+            "flows/implement.md",
+            "flows/research.md"
+          ],
+          "tokens": 5700
+        },
+        "implement": {
+          "files": [
+            "SKILL.md",
+            "flows/design.md",
+            "flows/implement.md",
+            "flows/research.md"
+          ],
+          "tokens": 5700
+        },
+        "existing-project": {
+          "files": [
+            "SKILL.md",
+            "flows/design.md",
+            "flows/implement.md",
+            "flows/research.md"
+          ],
+          "tokens": 5700
+        },
+        "research-choice": {
+          "files": [
+            "SKILL.md",
+            "flows/design.md",
+            "flows/implement.md",
+            "flows/research.md"
+          ],
+          "tokens": 5700
+        },
+        "ambiguous-terms": {
+          "files": [
+            "SKILL.md",
+            "flows/design.md",
+            "flows/implement.md",
+            "flows/research.md"
+          ],
+          "tokens": 5700
+        }
+      }
+    },
+    "docs/current/research/nl-compiler/full-stack-0.2/runs/run4": {
+      "total_tokens": 4365,
+      "entry_tokens": 4365,
+      "files": 1,
+      "tasks": {
+        "design-only": {
+          "files": [
+            "SKILL.md"
+          ],
+          "tokens": 4365
+        },
+        "implement": {
+          "files": [
+            "SKILL.md"
+          ],
+          "tokens": 4365
+        },
+        "existing-project": {
+          "files": [
+            "SKILL.md"
+          ],
+          "tokens": 4365
+        },
+        "research-choice": {
+          "files": [
+            "SKILL.md"
+          ],
+          "tokens": 4365
+        },
+        "ambiguous-terms": {
+          "files": [
+            "SKILL.md"
+          ],
+          "tokens": 4365
+        }
+      }
+    }
+  }
+}

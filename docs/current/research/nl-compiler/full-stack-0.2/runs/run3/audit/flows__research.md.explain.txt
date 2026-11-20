@@ -1,0 +1,38 @@
+Workflow in research.md:
+flow `research`:
+  - 'apply state research question with scope as question' (line 21)
+  - 'if the request explicitly asks for academic or deep research:' (line 22) -- branch
+    - 'apply broaden research corpus with question as corpus' (line 23)
+    - 'apply cited synthesis with corpus as synthesis' (line 24)
+  - 'exec #gather gather supplied sources and current primary documentation from checks as sources' (line 25)
+  - 'verify #sources material claims were read from the source from sources' (line 26) -- gate; failure follows its otherwise branch
+    - otherwise (line 27)
+      - 'apply record inaccessible full text with sources as source_gaps' (line 28)
+  - 'apply compare alternatives with sources as comparison' (line 29)
+  - 'if the recommendation would adopt a technology:' (line 30) -- branch
+    - 'exec adoption fit check from checks as fit' (line 31)
+    - 'verify #adoption-fit runtime, target architecture, library, kernel, graphics, network, and license fit the platform from fit' (line 32) -- gate; failure follows its otherwise branch
+      - otherwise (line 33)
+        - 'apply record unresolved assumption with fit as unresolved' (line 34)
+  - 'if evidence is unavailable:' (line 35) -- branch
+    - 'apply record unresolved assumption with comparison as unresolved' (line 36)
+  - 'verify #research-sufficient the consequential claim is supported and conflicts have bounded implications from sources' (line 37) -- gate; failure follows its otherwise branch
+    - otherwise (line 38)
+      - 'apply record open conflicts with sources as open_conflicts' (line 39)
+  - 'apply source record with comparison as research_record' (line 40)
+  - 'write #research-record research_record with design_docs' (line 41)
+  - 'return research_record as research_record' (line 42)
+Ordering (must hold on every path):
+  - 'apply state research question' before 'exec#gather' (line 16)
+Authority: no ask steps; nothing requires a human decision.
+Effects (files written or flows run):
+  - flow `research` writes design_docs
+Enforcement:
+  - 'exec #gather gather supplied sources and current primary documentation from checks as sources' (line 25) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #sources material claims were read from the source from sources' (line 26) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #adoption-fit runtime, target architecture, library, kernel, graphics, network, and license fit the platform from fit' (line 32) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #research-sufficient the consequential claim is supported and conflicts have bounded implications from sources' (line 37) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #research-record research_record with design_docs' (line 41) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec adoption fit check from checks as fit' (line 31) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

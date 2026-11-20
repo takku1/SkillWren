@@ -99,7 +99,12 @@ ARMS = ("author", "run", "skip-plain", "skip-required", "skip-hidden")
 # host routing (whether the agent loads the skill at all) and isolates the
 # field's finding 7: a loaded skill whose stack fragment is skipped.
 INVOKE = " Use the build-notes skill."
-OPTIONS = {"invoke": False}
+# --cwd-note: weaker models prefix commands with `cd`/`Set-Location`, which
+# the `py`-only allowlist denies, so their checks never ran (Haiku author
+# arm, 2026-11-20). The note is a prompt change; report such runs apart.
+CWD_NOTE = (" Your working directory is already the repository root: run each command"
+            " exactly as given, starting with `py`, with no `cd` or `Set-Location`.")
+OPTIONS = {"invoke": False, "cwd_note": False}
 
 
 def git(subject, *args):
@@ -285,6 +290,8 @@ def _one(arm, rep, model, budget, keep):
         prompt = PROMPTS["skip" if arm.startswith("skip") else arm].replace("{SW}", sw)
         if OPTIONS["invoke"] and arm.startswith("skip"):
             prompt += INVOKE
+        if OPTIONS["cwd_note"]:
+            prompt += CWD_NOTE
         events, code, seconds, stderr = run_agent(subject, model, budget, prompt, arm)
         tools, results, meta = digest(events)
         host = (check_author(subject, results, sw) if arm == "author"
@@ -320,8 +327,11 @@ def main(argv):
                                        " results merge into OUT/results.jsonl by (arm, rep)")
     parser.add_argument("--invoke", action="store_true",
                         help="name the skill in skip prompts (measure after host routing)")
+    parser.add_argument("--cwd-note", action="store_true",
+                        help="tell the agent not to cd (prompt change; report apart)")
     args = parser.parse_args(argv)
     OPTIONS["invoke"] = args.invoke
+    OPTIONS["cwd_note"] = args.cwd_note
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     keep = out / "subjects" if args.keep else None

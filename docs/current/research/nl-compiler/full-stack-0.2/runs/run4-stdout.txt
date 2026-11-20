@@ -1,0 +1,57 @@
+compiled docs/current/research/nl-compiler/full-stack-0.2/runs/run4: 93 requirements, 1 files, 8 adapter calls
+questions:
+  - Does the 'Ground the scope' paragraph (SKILL.md line 14) require actually inspecting code in every run, or only when a repository exists?
+  - Is the work registry required to be created when none exists (SKILL.md 44) outside standalone use, where creation is only 'when implementation work needs tracking'?
+  - What counts as 'costly-to-reverse' and 'consequential' (SKILL.md 18) — left to agent judgment?
+  - R3 and R66 carry evidence `user`, but the source says a build request authorizes implementation and forbids repeated approval. I did not add an ask for them. The mode is a branch on whether the request asks to build or implement. Should an explicit confirmation be added anyway?
+  - The two decision asks (settle the missing outcome or authority decision; approve deployment, publication, tool installation, or delegation) have no `user-decides` entries. The inline layout has no authority header, so I couldn't add them. Does your checker need them?
+  - I wrote the exec IDs as `exec #status ...` with the ID right after `exec`, following the `write #id` / `verify #id` pattern. The guide only shows the `exec#id` form in order rules. Please confirm this parses.
+  - Does the checker accept `exec readonly <text> from checks as <name>` without an ID before the first dismissible ask (M1)? I used it so the inspection exec can precede the R11 ask.
+assumptions:
+  - Table rows in terminology.md are grouped as context requirements (definitions that guide decisions), not individual requirements.
+  - SKILL.md line 40 is a heading ('Deliver and verify' is actually line 40; line 38 contains the gap-check text). Some line spans for R23/R24 and heading attribution may be off by one: R23/R24 content is on line 38, and line 40 is the heading.
+  - Evidence 'self' used where the agent's own judgment suffices; 'exec' where checks or inspection are run.
+  - Corrected SKILL.md line spans for the numbered design activities and Bound/Check paragraphs (R16-R24) to match the listing; the previous inventory had them shifted, leaving lines 27 and 29 uncovered.
+  - Fixed the R89 span to start at line 23, since lines 21-22 are the table header.
+  - The references are consulted through the `apply` step meanings (terminology, existing-projects, design-method, research, artifacts, implementation), not through `read` statements. A `read` into a conditional binding would be unbound on the other path.
+  - Recording a gap and continuing is the repair for every soft failure (missing reference, declined permission, failed fit check, failed validation). The only `retry` is the implementation repair loop. That loop exits through a blocker return when the same failure repeats or a required capability is missing.
+  - The R50 `L150` anchor for `retry` assumes my line count of the delivered file. The `retry` line is at 150.
+  - R88-R92 (context, evidence none) are kept as short vocabulary bullets in the Context section.
+  - Inspection of the subject is a `read` into `evidence`, not an `exec`. That keeps all execs after the asks, so nothing mutates before a dismissible ask (M1).
+  - R3/R66 user evidence is landed as a conditional ask that fires only when the request does not say whether to plan or build, which keeps 'no repeated approval' for requests that already state it.
+  - Declining the plan-or-build ask defaults the run to planning (design-only) instead of aborting.
+  - Contract sections are ordered always, never, inputs, order, to fix F2.
+  - The `evidence` binding is replaced by `inspection`, the result of the readonly exec. That fixes U1, because the exec binds it on every path.
+  - A shared `gaps` binding is started at the top, extended at each recorded gap, and returned on every path, so gaps stay visible instead of aborting.
+  - Line anchors L54, L60, L75 and L176 refer to the three `require confirmation` lines and the single `retry` in SKILL.md as written, counting from line 1 (the opening `---`).
+  - Planning is the default, so the plan-versus-build ask was replaced by a branch on whether the request asks to build or implement; no user prompt is needed because the source says a build request authorizes implementation.
+  - The technology-fit check now runs after alternatives are compared and before the research step that selects or recommends one. A failed check records a gap, and the research step and a never-rule bar recommending adoption of an unchecked candidate.
+  - Line references L60, L75 and L176 were counted by hand against the new SKILL.md: L60 and L75 are the require confirmation lines, and L176 is the retry line.
+  - R3/R66 user evidence is landed as an ask that fires only when the request does not say whether to build or implement; a clear build request needs no approval, and a decline defaults to planning.
+  - The roadmap-row check (R60) stays a conditional branch, now anchored to R60.
+  - The gap-review exec is reported as scaffolding; the remaining W9, W5 and W15 warnings are intentional because the source says to record gaps and continue.
+open I11 -: branch traces to no requirement: SKILL.md:58: if the request asks to build or implement:
+open I10 -: compiler scaffolding (Supplies evidence for the #gaps verify of the gap review; the source asks for the gap check but names no command.): SKILL.md:137: exec gaps check from checks as gapcheck
+warning SKILL.md:43 W15: order rule rests on self-report: every statement matching 'apply trace behavior' is the model's own judgment
+warning SKILL.md:44 W15: order rule rests on self-report: every statement matching 'apply connect contracts' is the model's own judgment
+warning SKILL.md:45 W15: order rule rests on self-report: every statement matching 'apply state research question' is the model's own judgment
+warning SKILL.md:46 W15: order rule rests on self-report: every statement matching 'apply investigate semantics' is the model's own judgment
+warning SKILL.md:56 W9: otherwise: block falls through
+warning SKILL.md:57 W5: binding 'mode' never referenced
+warning SKILL.md:66 W9: otherwise: block falls through
+warning SKILL.md:70 W9: otherwise: block falls through
+warning SKILL.md:81 W9: otherwise: block falls through
+warning SKILL.md:88 W9: otherwise: block falls through
+warning SKILL.md:94 W9: otherwise: block falls through
+warning SKILL.md:98 W5: binding 'status' never referenced
+warning SKILL.md:103 W5: binding 'claim_result' never referenced
+warning SKILL.md:110 W9: otherwise: block falls through
+warning SKILL.md:116 W9: otherwise: block falls through
+warning SKILL.md:120 W9: otherwise: block falls through
+warning SKILL.md:139 W9: otherwise: block falls through
+warning SKILL.md:154 W9: otherwise: block falls through
+warning SKILL.md:156 W5: binding 'registry_entries' never referenced
+warning SKILL.md:185 W5: binding 'remaining' never referenced
+judge over_asking: R3: when the request is unclear about building, the flow asks the user to choose between planning and implementation and requires confirmation (lines 53-57), but the source makes planning the default for that case
+Not approved. Review audit/, run explain-workflow, and approve before use.
+exit 1

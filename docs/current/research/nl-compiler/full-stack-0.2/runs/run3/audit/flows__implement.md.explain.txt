@@ -1,0 +1,69 @@
+Workflow in implement.md:
+flow `implement`:
+  - 'if the host lacks repository access, execution tools, or runtime:' (line 28) -- branch
+    - 'apply blocker record with design as blocker' (line 29)
+    - 'write #capability-blocker blocker with registry' (line 30)
+    - 'return blocker as report' (line 31)
+  - 'apply work package with design as work_package' (line 32)
+  - 'write #work-package work_package with registry' (line 33)
+  - 'apply investigate unresolved semantics with work_package as work_package' (line 34)
+  - 'apply connect one real path with work_package as path_slice' (line 35)
+  - 'write #path-slice path_slice with subject' (line 36)
+  - 'exec real path check from checks as path_result' (line 37)
+  - 'verify #path-check the real path works through the required boundaries from path_result' (line 38) -- gate; failure follows its otherwise branch
+    - otherwise (line 39)
+      - 'if the failure persists with the same evidence:' (line 40) -- branch
+        - 'apply blocker record with path_result as blocker' (line 41)
+        - 'write #path-blocker blocker with registry' (line 42)
+        - 'return blocker as report' (line 43)
+      - 'apply correction with path_slice as path_slice' (line 44)
+      - 'write #path-correction path_slice with subject' (line 45)
+      - 'exec real path check after correction from checks as path_result' (line 46)
+      - retry (line 47) -- re-runs the failed gate 'verify #path-check the real path works through the required boundaries from path_result' (line 38) after the repair steps above; no retry limit is stated
+  - 'apply finish remaining obligations with work_package as remaining' (line 48)
+  - 'write #remaining remaining with subject' (line 49)
+  - 'if a test double is used:' (line 50) -- branch
+    - 'apply double record with remaining as double_record' (line 51)
+    - 'write #double-record double_record with registry' (line 52)
+  - 'exec acceptance checks from checks as results' (line 53)
+  - 'verify #acceptance every selected acceptance criterion passed on the real path from results' (line 54) -- gate; failure follows its otherwise branch
+    - otherwise (line 55)
+      - 'if the failure persists with the same evidence:' (line 56) -- branch
+        - 'apply blocker record with results as blocker' (line 57)
+        - 'write #blocker blocker with registry' (line 58)
+        - 'return blocker as report' (line 59)
+      - 'apply correction with remaining as remaining' (line 60)
+      - 'write #correction remaining with subject' (line 61)
+      - 'exec acceptance checks after correction from checks as results' (line 62)
+      - retry (line 63) -- re-runs the failed gate 'verify #acceptance every selected acceptance criterion passed on the real path from results' (line 54) after the repair steps above; no retry limit is stated
+  - 'if the change is a material boundary change:' (line 64) -- branch
+    - 'apply information hiding diagnostic with remaining as diagnostic' (line 65)
+  - 'apply final report with results as report' (line 66)
+  - 'write #final-report report with registry' (line 67)
+  - 'return report as report' (line 68)
+Ordering (must hold on every path):
+  - 'apply investigate unresolved semantics' before 'write#path-slice' (line 22)
+  - 'verify#path-check' before 'write#remaining' (line 23)
+Authority: no ask steps; nothing requires a human decision.
+Effects (files written or flows run):
+  - flow `implement` writes registry
+  - flow `implement` writes subject
+Enforcement:
+  - 'write #capability-blocker blocker with registry' (line 30) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #work-package work_package with registry' (line 33) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #path-slice path_slice with subject' (line 36) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #path-check the real path works through the required boundaries from path_result' (line 38) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #path-blocker blocker with registry' (line 42) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #path-correction path_slice with subject' (line 45) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #remaining remaining with subject' (line 49) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #double-record double_record with registry' (line 52) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #acceptance every selected acceptance criterion passed on the real path from results' (line 54) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #blocker blocker with registry' (line 58) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #correction remaining with subject' (line 61) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #final-report report with registry' (line 67) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec real path check from checks as path_result' (line 37) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec real path check after correction from checks as path_result' (line 46) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec acceptance checks from checks as results' (line 53) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec acceptance checks after correction from checks as results' (line 62) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

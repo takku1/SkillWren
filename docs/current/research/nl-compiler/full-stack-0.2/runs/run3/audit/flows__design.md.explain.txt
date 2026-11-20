@@ -1,0 +1,123 @@
+Workflow in design.md:
+flow `design`:
+  - 'apply ground scope with request as scope' (line 38)
+  - 'exec readonly inspect instructions, code, contracts, tests, and prototypes from checks as inspection' (line 39) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+  - 'verify #grounded inspection covered applicable instructions, code, contracts, tests, and prototypes from inspection' (line 40) -- gate; failure follows its otherwise branch
+    - otherwise (line 41)
+      - 'apply record inspection gap with inspection as scope' (line 42)
+  - 'apply classify scope disposition with scope as dispositions' (line 43)
+  - 'if concepts or relations are ambiguous:' (line 44) -- branch
+    - 'apply terminology mapping with scope as scope' (line 45)
+  - 'if the subject is an existing project:' (line 46) -- branch
+    - 'apply establish authority with scope as scope' (line 47)
+    - 'apply design delta with scope as delta' (line 48)
+  - 'if the subject repository uses Recurspec:' (line 49) -- branch
+    - 'exec readonly recurspec status from checks as status' (line 50) -- declared read-only: not counted as a mutation before asks; enforced only when run with `ledger exec --readonly`
+    - 'verify #recurspec-cli recurspec status was read from status' (line 51) -- gate; failure follows its otherwise branch
+      - otherwise (line 52)
+        - 'apply record cli validation not performed with scope as scope' (line 53)
+    - 'apply map to contract nodes with scope as scope' (line 54)
+  - 'if ambiguity remains after available evidence:' (line 55) -- branch
+    - 'apply resolve ambiguity with scope as scope' (line 56)
+  - 'if a missing answer would change the outcome or authority:' (line 57) -- branch
+    - 'ask user to decide the missing outcome or authority answer' (line 58)
+    - 'require confirmation' (line 59) -- gate; failure follows its otherwise branch
+      - otherwise (line 60)
+        - 'apply state consequential assumption with scope as scope' (line 61)
+  - 'if the task needs deployment, publication, tool installation, or delegation without existing authorization:' (line 62) -- branch
+    - 'ask user to approve deployment, publication, tool installation, or delegation' (line 63)
+    - 'require confirmation' (line 64) -- gate; failure follows its otherwise branch
+      - otherwise (line 65)
+        - 'apply mark dependent work conditional with scope as scope' (line 66)
+  - 'if a runtime claim is uncertain and a relevant check is feasible and useful:' (line 67) -- branch
+    - 'exec runtime claim check from checks as runtime_result' (line 68)
+    - 'verify #runtime-claim the runtime claim is supported from runtime_result' (line 69) -- gate; failure follows its otherwise branch
+      - otherwise (line 70)
+        - 'apply record absent execution evidence with runtime_result as evidence_gap' (line 71)
+  - 'else:' (line 72) [else]
+    - 'apply record absent execution evidence with scope as evidence_gap' (line 73)
+  - 'if the request includes a prototype:' (line 74) -- branch
+    - 'apply prototype separation with scope as prototype_view' (line 75)
+  - 'apply trace behavior with scope as behavior' (line 76)
+  - 'apply allocate authority with behavior as authority' (line 77)
+  - 'if uncertainty could change the design:' (line 78) -- branch
+    - 'run research from flows/research.md with:' (line 79)
+      - set 'scope = scope' (line 80)
+  - 'apply resolve choices with authority as choices' (line 81)
+  - 'apply bound components with choices as components' (line 82)
+  - 'if the design needs substantial decomposition:' (line 83) -- branch
+    - 'apply challenge boundaries with components as components' (line 84)
+  - 'apply connect contracts with components as contracts' (line 85)
+  - 'if consumer assumptions do not match provider guarantees or explicit unresolved conditions:' (line 86) -- branch
+    - 'apply mark unresolved condition with contracts as contracts' (line 87)
+  - 'if the flow requires identity, retries, cancellation, timeouts, ordering, or resynchronization:' (line 88) -- branch
+    - 'apply interaction details with behavior as interaction_notes' (line 89)
+  - 'apply sequence work with contracts as work_packages' (line 90)
+  - 'if the runtime graph has delivery cycles:' (line 91) -- branch
+    - 'apply resolve delivery cycle with work_packages as work_packages' (line 92)
+  - 'if quality concerns are triggered by the scenario:' (line 93) -- branch
+    - 'apply quality concerns with scope as quality_view' (line 94)
+  - 'if gaps remain within responsibilities, across contracts, or across the outcome:' (line 95) -- branch
+    - 'apply record gap with scope as gaps' (line 96)
+  - 'if the complete task and actor feedback do not trace to an observable result:' (line 97) -- branch
+    - 'apply record gap with scope as gaps' (line 98)
+  - 'if evidence has changed since the design began:' (line 99) -- branch
+    - 'apply revisit interpretation and architecture with scope as scope' (line 100)
+  - 'if the increment is design-ready:' (line 101) -- branch
+    - 'apply label ready with work_packages as readiness' (line 102)
+  - 'else:' (line 103) [else]
+    - 'apply label conditional with work_packages as readiness' (line 104)
+  - 'apply choose artifact set with scope as artifact_set' (line 105)
+  - 'if a commitment is costly to reverse:' (line 106) -- branch
+    - 'apply commitment record with scope as commitment_record' (line 107)
+    - 'write #commitment commitment_record with registry' (line 108)
+  - 'if the subject has an established design structure:' (line 109) -- branch
+    - 'apply existing design location with subject as design_location' (line 110)
+  - 'else:' (line 111) [else]
+    - 'apply default design location with subject as design_location' (line 112)
+  - 'apply compose design artifacts with artifact_set as design' (line 113)
+  - 'write #design design with design_location' (line 114)
+  - 'apply registry entries with design as registry_entries' (line 115)
+  - 'write #registry registry_entries with registry' (line 116)
+  - 'if the subject uses Recurspec and contract edits were accepted:' (line 117) -- branch
+    - 'exec repository validation from checks as validation' (line 118)
+    - 'verify #repo-validation repository validation passed from validation' (line 119) -- gate; failure follows its otherwise branch
+      - otherwise (line 120)
+        - 'apply record validation gap with validation as validation_gap' (line 121)
+  - 'if request asks to build or implement:' (line 122) -- branch
+    - 'run implement from flows/implement.md with:' (line 123)
+      - set 'design = design' (line 124)
+    - 'return report as report' (line 125)
+  - 'else:' (line 126) [else]
+    - 'apply design only delivery with design as delivery' (line 127)
+    - 'return delivery as delivery' (line 128)
+Ordering (must hold on every path):
+  - 'exec readonly inspect' before 'write#design' (line 30)
+  - 'exec readonly inspect' before 'write#registry' (line 31)
+  - 'apply trace behavior' before 'write#design' (line 32)
+  - 'apply connect contracts' before 'apply sequence work' (line 33)
+Authority: human decisions are asked here:
+  - 'ask user to decide the missing outcome or authority answer' (line 58)
+  - 'ask user to approve deployment, publication, tool installation, or delegation' (line 63)
+  SkillWren checks the ask/confirm structure, not that a human actually decided -- approval confirms intended meaning, not formal equivalence.
+Effects (files written or flows run):
+  - flow `design` writes design_location
+  - flow `design` writes registry
+  - flow `design` runs research from flows/research.md
+  - flow `design` runs implement from flows/implement.md
+Enforcement:
+  - 'verify #grounded inspection covered applicable instructions, code, contracts, tests, and prototypes from inspection' (line 40) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #recurspec-cli recurspec status was read from status' (line 51) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #runtime-claim the runtime claim is supported from runtime_result' (line 69) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #commitment commitment_record with registry' (line 108) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #design design with design_location' (line 114) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #registry registry_entries with registry' (line 116) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #repo-validation repository validation passed from validation' (line 119) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec readonly inspect instructions, code, contracts, tests, and prototypes from checks as inspection' (line 39) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec readonly recurspec status from checks as status' (line 50) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec runtime claim check from checks as runtime_result' (line 68) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+  - 'exec repository validation from checks as validation' (line 118) is advisory-only: no stable ID, so order rules match it by prose text and the guard cannot bind it.
+Calls (cross-file runs):
+  - flow `design` runs `research` from flows/research.md (line 79) -- target file flows: research
+  - flow `design` runs `implement` from flows/implement.md (line 123) -- target file flows: implement
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

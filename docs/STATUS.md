@@ -144,7 +144,9 @@ real-host harness, adapters, and model-measurement tools.
 - With the field's prompt and neutral paths, 16/18 agents never loaded
   the skill: host routing, upstream of anything SkillWren checks.
 - NL compiler: one run per arm, model judge only, no human review of
-  compiled output; over-asking persists; fragment layout unmeasured.
+  compiled output; over-asking persists. Fragment layout measured: it
+  does not cut per-task load on full-stack (the always-read design flow
+  holds 65% of the content); both compiled forms load more than the prose.
 - Every real-agent run complied, so the form comparison hit a ceiling;
   it shows no harm from either form, not a benefit.
 - Model drafts silently drop about a third of the requirements they lose;

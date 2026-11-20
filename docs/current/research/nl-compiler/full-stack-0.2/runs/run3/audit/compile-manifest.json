@@ -1,0 +1,406 @@
+{
+  "format": "skillwren-compile-1",
+  "layout": "fragments",
+  "sources": {
+    "SKILL.md": "359499366e2bd4e3a4c0223cd7d4c144d158cdf5ac5562d8f08b16267f90095c",
+    "references/artifacts.md": "0161439f82fc4d8ff7cb02f3acf97a51d458f7c40eb28cef3d6479ed7170a211",
+    "references/design-method.md": "e6db97d3bff48c91cec724bac1deb789a03a0311ee484a54b394cfe58cb70261",
+    "references/existing-projects.md": "4cca5ae4b198c4e689b8583ac1c8b489a849fd8f774ceb5ce464772b0dd55e26",
+    "references/implementation.md": "18e631f5cfd294e8059bfce59f1e4e2bb966b0e951b9dab80ec46c1496285a57",
+    "references/research.md": "9066217c6a9926bf0188416e77e7c7f4401df10327ba918f8f769ab7f57f5720",
+    "references/terminology.md": "070df18b9f85f4f0432bfc8bad341afac45df85025211cca6a31482fa19f1b0f"
+  },
+  "outputs": {
+    "SKILL.md": "cb04aecd74dc6a48eaf14bd134c6ea1e7d91b5deab251d03ad0bb43f9f4e0274",
+    "flows/design.md": "edfe655d06ed2e37ea8f74461de522f6adc88e9cf5e7b5baed0db27c3209dc97",
+    "flows/research.md": "28882cf968a88653e97df770c0f7ffd52694440392f80851243656e0b0917d34",
+    "flows/implement.md": "4d7ffc4f1c5ff2307d59be018f275575c8edf5fdba841b820e6bb28e77eef934"
+  },
+  "adapter": [
+    "py",
+    "-3",
+    "scripts/adapters/claude_compile.py"
+  ],
+  "calls": [
+    {
+      "phase": "inventory",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.19048,
+        "output_tokens": 13586,
+        "seconds": 66.9,
+        "phase": "inventory"
+      }
+    },
+    {
+      "phase": "inventory",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.2338647,
+        "output_tokens": 13221,
+        "seconds": 62.03,
+        "phase": "inventory"
+      }
+    },
+    {
+      "phase": "lower",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.5757859999999999,
+        "output_tokens": 41849,
+        "seconds": 260.696,
+        "phase": "lower"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.44965109999999997,
+        "output_tokens": 21731,
+        "seconds": 114.0,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.3218339,
+        "output_tokens": 15037,
+        "seconds": 67.579,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "opus",
+        "cost_usd": 0.203864,
+        "output_tokens": 2560,
+        "seconds": 24.843,
+        "phase": "judge"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.33972389999999997,
+        "output_tokens": 16794,
+        "seconds": 76.807,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "opus",
+        "cost_usd": 0.20454519999999998,
+        "output_tokens": 2923,
+        "seconds": 28.512,
+        "phase": "judge"
+      }
+    }
+  ],
+  "requirements": 90,
+  "non_requirements": 43,
+  "check_warnings": [
+    {
+      "line": 32,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply trace behavior' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 33,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply connect contracts' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 41,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 43,
+      "rule": "W5",
+      "message": "binding 'dispositions' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 48,
+      "rule": "W5",
+      "message": "binding 'delta' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 52,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 60,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 65,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 70,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 71,
+      "rule": "W5",
+      "message": "binding 'evidence_gap' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 75,
+      "rule": "W5",
+      "message": "binding 'prototype_view' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 89,
+      "rule": "W5",
+      "message": "binding 'interaction_notes' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 94,
+      "rule": "W5",
+      "message": "binding 'quality_view' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 96,
+      "rule": "W5",
+      "message": "binding 'gaps' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 102,
+      "rule": "W5",
+      "message": "binding 'readiness' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 107,
+      "rule": "W5",
+      "message": "binding 'commitment_record' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 110,
+      "rule": "W5",
+      "message": "binding 'design_location' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 115,
+      "rule": "W5",
+      "message": "binding 'registry_entries' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 120,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 121,
+      "rule": "W5",
+      "message": "binding 'validation_gap' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/design.md"
+    },
+    {
+      "line": 22,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply investigate unresolved semantics' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "flows/implement.md"
+    },
+    {
+      "line": 51,
+      "rule": "W5",
+      "message": "binding 'double_record' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/implement.md"
+    },
+    {
+      "line": 65,
+      "rule": "W5",
+      "message": "binding 'diagnostic' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/implement.md"
+    },
+    {
+      "line": 16,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply state research question' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "flows/research.md"
+    },
+    {
+      "line": 24,
+      "rule": "W5",
+      "message": "binding 'synthesis' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/research.md"
+    },
+    {
+      "line": 27,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "flows/research.md"
+    },
+    {
+      "line": 28,
+      "rule": "W5",
+      "message": "binding 'source_gaps' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/research.md"
+    },
+    {
+      "line": 33,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "flows/research.md"
+    },
+    {
+      "line": 34,
+      "rule": "W5",
+      "message": "binding 'unresolved' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/research.md"
+    },
+    {
+      "line": 38,
+      "rule": "W9",
+      "message": "otherwise: block falls through",
+      "fix": "End it with retry, return to, abort, or return.",
+      "file": "flows/research.md"
+    },
+    {
+      "line": 39,
+      "rule": "W5",
+      "message": "binding 'open_conflicts' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "flows/research.md"
+    }
+  ],
+  "unbacked_verifies": [],
+  "open_findings": [
+    {
+      "rule": "I11",
+      "severity": "warning",
+      "message": "branch traces to no requirement: flows/implement.md:40: if the failure persists with the same evidence:",
+      "failure": "control-flow distortion"
+    },
+    {
+      "rule": "I11",
+      "severity": "warning",
+      "message": "branch traces to no requirement: flows/implement.md:56: if the failure persists with the same evidence:",
+      "failure": "control-flow distortion"
+    }
+  ],
+  "judge": {
+    "omission": [],
+    "invention": [],
+    "over_asking": [],
+    "permission_expansion": [],
+    "permission_restriction": [],
+    "control_flow_distortion": [],
+    "ordering_distortion": [
+      "R77/R80: in research.md the deep-research branch broadens the corpus and produces the cited synthesis (lines 23-24) before 'exec #gather' gathers supplied sources and primary documentation (line 25) and before the source-reading and sufficiency checks, so the synthesis comes before the evidence it should cite"
+    ]
+  },
+  "questions": [
+    "The skill says 'Planning is the default' but does not say how to decide whether a request 'to build or implement' is present when phrasing is indirect; is a 'go ahead' sufficient?",
+    "Are the sections in references/terminology.md lines 3-64 meant as binding rules or only glossary? Treated as context.",
+    "'Design-ready' and 'conditional' work have no defined output marker; what format should readiness take?",
+    "Standalone path creates docs/design/ only if 'no established structure'; how is that determined?",
+    "The terminology.md line 89 example is treated as an illustration (covered under R89), not a rule.",
+    "Fragment `exec` with both an ID and `readonly` has no stated syntax. I used no ID on the readonly inspection exec and ordered against it by prefix (`exec readonly inspect before write#design`). I also wrote `exec #gather ...` with the ID right after the verb, which is a guess. Please confirm both against the checker.",
+    "The source never names the registry, design-docs path or checks resource. I used `registry`, `design_location`, `design_docs` and `checks` as resource names and did not declare them in contracts, following the fragment template. Should they be declared?",
+    "The `references/*.md` files are assumed to ship unchanged in the package. Their content is consulted by name from step meanings and is not rewritten here.",
+    "R76 (final report) demands effect evidence; I landed it on the acceptance verify-from-exec and the returned report rather than inventing a separate report write. Should the final report also be written to the registry?"
+  ],
+  "assumptions": [
+    "Terminology table rows are grouped into a single context requirement rather than per-term items.",
+    "Evidence for most design obligations is 'self' since no command or user confirmation is demanded, except explicit checks/runs (exec) and user-permission gates.",
+    "Line-spanning requirements may overlap spans with headings listed as non_requirements; blank lines ignored.",
+    "Line 3 of SKILL.md (description) is both trigger context (R1) and covered there; frontmatter lines 1,2,4-6 are non-requirements.",
+    "Blank lines are ignored; requirement spans were tightened to nonblank content lines, and the terminology tables are covered by block requirements R87-R90.",
+    "R66 corrected to cite line 29 (the Standalone use body); line 27 is its heading.",
+    "Layout is `fragments`: a small SKILL.md plus flows/design.md, flows/research.md and flows/implement.md. The design flow is the entry point and calls research and implement.",
+    "The two `require confirmation` statements are anchored by line reference (flows/design.md#L59 and #L64) and the `retry` by flows/implement.md#L59. These numbers assume the files are written exactly as emitted.",
+    "No `abort` is used because the source never says to stop. Gaps, declined approvals and absent evidence are recorded and work continues. Real blockers (missing capability, failed real path, a repeated acceptance failure) are written to the registry and returned as the report.",
+    "The repair loop for acceptance checks branches on the same failure evidence before `retry`. The correction is applied, then the check is re-run, so the loop has a way out.",
+    "Order rules that depend on the inspection step use the unconditional readonly exec, not `verify#grounded`. That verify's otherwise block records a gap and continues, so a rule on it would flag the path that continues past it.",
+    "The investigate-unresolved-semantics apply runs unconditionally and does nothing when nothing is unresolved. This keeps the order rule from being skipped on some paths.",
+    "Quality-concern, readiness and design-delta items are branches or labels, not blocking gates, because the source allows conditional or unready work to be delivered as such.",
+    "Contract sections follow the order always, never, inputs, order, as the F2 diagnostic requires.",
+    "The four unbacked verify gates became branches that record the gap and continue, since the source never says to stop on them.",
+    "Output requirements with effect evidence (R29, R32, R33, R35, R37, R38, R42, R66) land on the single design write, plus the prose artifact shapes. R40 lands on the work-package write, and R22 and R72 on the double-record write.",
+    "The two repeated require confirmation statements and the one retry are anchored by line reference: design.md L59, design.md L64, implement.md L58.",
+    "Only the I7 finding (R76) was addressed: added `write #final-report report with registry` before the final return in flows/implement.md so the final report has an effect record.",
+    "The final report is persisted to the authoritative work registry, since the source names it as the place where remaining obligations are recorded.",
+    "Existing W5/W9/W15 warnings were left unchanged because they are not errors and removing the bindings or order rules would weaken requirements.",
+    "The line-reference anchors flows/design.md#L64, flows/design.md#L59 and flows/implement.md#L58 are unchanged because the new line sits after them.",
+    "Line references assume the files exactly as emitted: flows/design.md#L59 and #L64 are the two `require confirmation` lines; flows/implement.md#L47 and #L63 are the two `retry` lines."
+  ],
+  "review_map": null,
+  "reverse_enforced": true,
+  "traceability": [
+    {
+      "rule": "I11",
+      "severity": "warning",
+      "message": "branch traces to no requirement: flows/implement.md:40: if the failure persists with the same evidence:",
+      "failure": "control-flow distortion"
+    },
+    {
+      "rule": "I11",
+      "severity": "warning",
+      "message": "branch traces to no requirement: flows/implement.md:56: if the failure persists with the same evidence:",
+      "failure": "control-flow distortion"
+    }
+  ],
+  "approved": false,
+  "semantic_equivalence_proven": false
+}

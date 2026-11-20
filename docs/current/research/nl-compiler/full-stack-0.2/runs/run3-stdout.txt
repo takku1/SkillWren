@@ -1,0 +1,70 @@
+compiled docs/current/research/nl-compiler/full-stack-0.2/runs/run3: 90 requirements, 4 files, 8 adapter calls
+questions:
+  - The skill says 'Planning is the default' but does not say how to decide whether a request 'to build or implement' is present when phrasing is indirect; is a 'go ahead' sufficient?
+  - Are the sections in references/terminology.md lines 3-64 meant as binding rules or only glossary? Treated as context.
+  - 'Design-ready' and 'conditional' work have no defined output marker; what format should readiness take?
+  - Standalone path creates docs/design/ only if 'no established structure'; how is that determined?
+  - The terminology.md line 89 example is treated as an illustration (covered under R89), not a rule.
+  - Fragment `exec` with both an ID and `readonly` has no stated syntax. I used no ID on the readonly inspection exec and ordered against it by prefix (`exec readonly inspect before write#design`). I also wrote `exec #gather ...` with the ID right after the verb, which is a guess. Please confirm both against the checker.
+  - The source never names the registry, design-docs path or checks resource. I used `registry`, `design_location`, `design_docs` and `checks` as resource names and did not declare them in contracts, following the fragment template. Should they be declared?
+  - The `references/*.md` files are assumed to ship unchanged in the package. Their content is consulted by name from step meanings and is not rewritten here.
+  - R76 (final report) demands effect evidence; I landed it on the acceptance verify-from-exec and the returned report rather than inventing a separate report write. Should the final report also be written to the registry?
+assumptions:
+  - Terminology table rows are grouped into a single context requirement rather than per-term items.
+  - Evidence for most design obligations is 'self' since no command or user confirmation is demanded, except explicit checks/runs (exec) and user-permission gates.
+  - Line-spanning requirements may overlap spans with headings listed as non_requirements; blank lines ignored.
+  - Line 3 of SKILL.md (description) is both trigger context (R1) and covered there; frontmatter lines 1,2,4-6 are non-requirements.
+  - Blank lines are ignored; requirement spans were tightened to nonblank content lines, and the terminology tables are covered by block requirements R87-R90.
+  - R66 corrected to cite line 29 (the Standalone use body); line 27 is its heading.
+  - Layout is `fragments`: a small SKILL.md plus flows/design.md, flows/research.md and flows/implement.md. The design flow is the entry point and calls research and implement.
+  - The two `require confirmation` statements are anchored by line reference (flows/design.md#L59 and #L64) and the `retry` by flows/implement.md#L59. These numbers assume the files are written exactly as emitted.
+  - No `abort` is used because the source never says to stop. Gaps, declined approvals and absent evidence are recorded and work continues. Real blockers (missing capability, failed real path, a repeated acceptance failure) are written to the registry and returned as the report.
+  - The repair loop for acceptance checks branches on the same failure evidence before `retry`. The correction is applied, then the check is re-run, so the loop has a way out.
+  - Order rules that depend on the inspection step use the unconditional readonly exec, not `verify#grounded`. That verify's otherwise block records a gap and continues, so a rule on it would flag the path that continues past it.
+  - The investigate-unresolved-semantics apply runs unconditionally and does nothing when nothing is unresolved. This keeps the order rule from being skipped on some paths.
+  - Quality-concern, readiness and design-delta items are branches or labels, not blocking gates, because the source allows conditional or unready work to be delivered as such.
+  - Contract sections follow the order always, never, inputs, order, as the F2 diagnostic requires.
+  - The four unbacked verify gates became branches that record the gap and continue, since the source never says to stop on them.
+  - Output requirements with effect evidence (R29, R32, R33, R35, R37, R38, R42, R66) land on the single design write, plus the prose artifact shapes. R40 lands on the work-package write, and R22 and R72 on the double-record write.
+  - The two repeated require confirmation statements and the one retry are anchored by line reference: design.md L59, design.md L64, implement.md L58.
+  - Only the I7 finding (R76) was addressed: added `write #final-report report with registry` before the final return in flows/implement.md so the final report has an effect record.
+  - The final report is persisted to the authoritative work registry, since the source names it as the place where remaining obligations are recorded.
+  - Existing W5/W9/W15 warnings were left unchanged because they are not errors and removing the bindings or order rules would weaken requirements.
+  - The line-reference anchors flows/design.md#L64, flows/design.md#L59 and flows/implement.md#L58 are unchanged because the new line sits after them.
+  - Line references assume the files exactly as emitted: flows/design.md#L59 and #L64 are the two `require confirmation` lines; flows/implement.md#L47 and #L63 are the two `retry` lines.
+open I11 -: branch traces to no requirement: flows/implement.md:40: if the failure persists with the same evidence:
+open I11 -: branch traces to no requirement: flows/implement.md:56: if the failure persists with the same evidence:
+warning flows/design.md:32 W15: order rule rests on self-report: every statement matching 'apply trace behavior' is the model's own judgment
+warning flows/design.md:33 W15: order rule rests on self-report: every statement matching 'apply connect contracts' is the model's own judgment
+warning flows/design.md:41 W9: otherwise: block falls through
+warning flows/design.md:43 W5: binding 'dispositions' never referenced
+warning flows/design.md:48 W5: binding 'delta' never referenced
+warning flows/design.md:52 W9: otherwise: block falls through
+warning flows/design.md:60 W9: otherwise: block falls through
+warning flows/design.md:65 W9: otherwise: block falls through
+warning flows/design.md:70 W9: otherwise: block falls through
+warning flows/design.md:71 W5: binding 'evidence_gap' never referenced
+warning flows/design.md:75 W5: binding 'prototype_view' never referenced
+warning flows/design.md:89 W5: binding 'interaction_notes' never referenced
+warning flows/design.md:94 W5: binding 'quality_view' never referenced
+warning flows/design.md:96 W5: binding 'gaps' never referenced
+warning flows/design.md:102 W5: binding 'readiness' never referenced
+warning flows/design.md:107 W5: binding 'commitment_record' never referenced
+warning flows/design.md:110 W5: binding 'design_location' never referenced
+warning flows/design.md:115 W5: binding 'registry_entries' never referenced
+warning flows/design.md:120 W9: otherwise: block falls through
+warning flows/design.md:121 W5: binding 'validation_gap' never referenced
+warning flows/implement.md:22 W15: order rule rests on self-report: every statement matching 'apply investigate unresolved semantics' is the model's own judgment
+warning flows/implement.md:51 W5: binding 'double_record' never referenced
+warning flows/implement.md:65 W5: binding 'diagnostic' never referenced
+warning flows/research.md:16 W15: order rule rests on self-report: every statement matching 'apply state research question' is the model's own judgment
+warning flows/research.md:24 W5: binding 'synthesis' never referenced
+warning flows/research.md:27 W9: otherwise: block falls through
+warning flows/research.md:28 W5: binding 'source_gaps' never referenced
+warning flows/research.md:33 W9: otherwise: block falls through
+warning flows/research.md:34 W5: binding 'unresolved' never referenced
+warning flows/research.md:38 W9: otherwise: block falls through
+warning flows/research.md:39 W5: binding 'open_conflicts' never referenced
+judge ordering_distortion: R77/R80: in research.md the deep-research branch broadens the corpus and produces the cited synthesis (lines 23-24) before 'exec #gather' gathers supplied sources and primary documentation (line 25) and before the source-reading and sufficiency checks, so the synthesis comes before the evidence it should cite
+Not approved. Review audit/, run explain-workflow, and approve before use.
+exit 1

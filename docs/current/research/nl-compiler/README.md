@@ -41,9 +41,56 @@ check reported as "absent evidence").
 **Size.** The inventory makes the compiler keep everything, and the inline
 layout puts it all in the always-loaded file: about 5x the prose entry
 (5,778 bytes, references on demand) and about 3x the hand conversion
-(9,858 bytes). Faithful, but expensive per activation. `--layout
-fragments` is the intended form for a skill this size and is not yet
-measured.
+(9,858 bytes). Faithful, but expensive per activation. Runs 3 and 4
+below measure the fragments layout against it.
+
+## Layout comparison: runs 3 and 4 (2026-11-20)
+
+Same source and prompts as run 2, current compiler (reverse traceability
+enforced, re-judge after a judge repair). Run 3 `--layout fragments`, run 4
+`--layout inline`. Runner: `scripts/lab/compile_runs.sh`. The first
+attempts on 2026-11-18 failed early (adapter failure in `lower`; a Windows
+process-start failure, exit 0xC0000142, with the two arms in parallel); a
+first rerun of run 4 on 2026-11-20 died silently when the account usage
+limit was reached. Their logs are in `runs/failed-2026-11-18/` and
+`runs/failed-2026-11-20/`. The counted runs went one arm at a time.
+
+| Measure | Run 3 fragments | Run 4 inline |
+|---|---|---|
+| Valid after repair (bound 3) | yes | yes |
+| Requirements / non-requirements | 90 / 43 | 93 / 45 |
+| Unbacked verifies | 0 | 0 |
+| Judge findings left (published bytes) | 1 ordering distortion (research synthesis before gathering, R77/R80) | 1 over-asking (asks plan-or-build where the source defaults to planning, R3) |
+| Output bytes | 954 entry + 31,025 in 3 flows | 23,867, always loaded |
+| Cost | $2.52 | $2.30 |
+
+Neither run is approved: each leaves one judge finding for review, which
+is the compiler's intended stop.
+
+**Load per task** (`load-layouts.json`; `scripts/lab/load_estimate.py`,
+Haiku router over `tasks.json`, cl100k tokens, $0.01). The estimator
+follows every `run ... from` statically, so for fragments it counts the
+research and implement flows on every task even though the design flow
+calls them only on some branches; the branch-following figure counts
+them only for the tasks that need them.
+
+| Skill | Total | Entry | Mean loaded per task |
+|---|---|---|---|
+| Prose source (references on demand) | 5,632 | 1,005 | 3,299 |
+| Hand conversion (`reference/full-stack-logic.md`) | 1,983 | 1,983 | 1,983 |
+| Run 4 inline | 4,365 | 4,365 | 4,365 |
+| Run 3 fragments, static closure | 5,700 | 192 | 5,700 |
+| Run 3 fragments, branch-following | 5,700 | 192 | 4,264 |
+
+Fragments barely help on this source: the design flow is read on every
+request and holds 3,713 of the 5,700 tokens, so splitting off research
+and implement saves about 100 tokens per task against inline. Both
+compiled forms load more per task than the prose source and about twice
+the hand conversion. What would help is splitting the design flow itself
+(registry, existing-project and terminology handling are conditional in
+the source) or a lowering rule that keeps conditional guidance in
+on-demand references, as the prose does. The load figures are
+model-routed estimates, not observed agent reads.
 
 ## Dogfood: SkillWren's own conversion skill (`dogfood-skillwren/`)
 
@@ -85,5 +132,7 @@ human has reviewed these outputs. One run per arm.
 - Bounded retry: the language has no bounded-retry construct; runs encode
   "stop at a blocker" as a branch inside each repair. A construct would be
   a SPEC change (owner decision).
-- Fragment layout on full-stack, measured for size per activation.
+- Fragment layout is measured (runs 3 and 4): it does not cut load on
+  this source because the always-read design flow dominates. Next: split
+  conditional design guidance out of the entry flow, then re-measure.
 - Human review of at least one compiled output.

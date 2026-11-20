@@ -1,0 +1,7 @@
+[
+  {"id": "design-only", "task": "Design how to add multi-tenant support across our API, database, and web app. Do not implement anything yet."},
+  {"id": "implement", "task": "Build the CSV export feature end to end (backend endpoint, job, and frontend button); the design is already agreed."},
+  {"id": "existing-project", "task": "Our project has SYSTEM.md, ROADMAP.md, and Recurspec contracts. Write the design delta for moving payments to a separate service."},
+  {"id": "research-choice", "task": "Pick a message queue for the order pipeline and design how producers and consumers integrate with it."},
+  {"id": "ambiguous-terms", "task": "Product says 'workspace', 'team', and 'org' interchangeably. Design the permission model for sharing documents across them."}
+]
