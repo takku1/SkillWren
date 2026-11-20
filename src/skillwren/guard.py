@@ -29,11 +29,15 @@ def file_digest(path):
 
 
 class Controller:
-    def __init__(self, policy):
+    def __init__(self, policy, run_id=None):
         self.policy = json.loads(json.dumps(policy))
-        if (set(self.policy) - {'workflow'} != {'version', 'operations'}
+        if (set(self.policy) - {'workflow', 'skill'} != {'version', 'operations'}
                 or self.policy['version'] != 1):
             raise Denied('unsupported policy')
+        self.skill = self.policy.get('skill')
+        if self.skill is not None:
+            self._check_skill_spec(run_id)
+        self.run_id = run_id
         self.operations = self.policy['operations']
         if not isinstance(self.operations, dict) or not self.operations:
             raise Denied('operations must be a nonempty map')
@@ -74,6 +78,75 @@ class Controller:
         if self.workflow is not None:
             self._load_workflow()
         self.lock = threading.Lock()
+
+    def _check_skill_spec(self, run_id):
+        """Validate a skill-load requirement at policy load (SPEC 24).
+
+        The host names the skill, the exact package tree it approved, the
+        host-owned file its record-load hook appends to, and (on the
+        command line, not in the reusable policy) the run this guard serves.
+        Nothing here comes from the agent."""
+        spec = self.skill
+        if not isinstance(spec, dict) or set(spec) != {'name', 'tree_sha256', 'loads'}:
+            raise Denied('skill requires name, tree_sha256, loads')
+        if not isinstance(spec['name'], str) or not spec['name'].strip():
+            raise Denied('skill name must be a nonempty string')
+        if (not isinstance(spec['tree_sha256'], str) or len(spec['tree_sha256']) != 64
+                or any(c not in '0123456789abcdef' for c in spec['tree_sha256'])):
+            raise Denied('skill tree_sha256 must be 64 lowercase hexadecimal characters')
+        loads = spec['loads']
+        if not isinstance(loads, str) or not Path(loads).is_absolute():
+            raise Denied('skill loads must be an absolute path')
+        if not Path(loads).parent.is_dir():
+            raise Denied('skill loads must have an existing parent')
+        if not isinstance(run_id, str) or not run_id.strip():
+            raise Denied('a skill requirement needs the host run id')
+
+    def _check_skill_load(self):
+        """Deny unless the host recorded a load of the approved skill tree
+        in this run, and nothing in this run contradicts it.
+
+        Fails closed: the record file is host-owned, so an unreadable file,
+        a malformed line, an ambiguous resolution, or a second load of the
+        same name with a different tree all deny. Records from other runs
+        are ignored. A record proves the host loaded the package, not that
+        the agent read or followed it."""
+        if self.skill is None:
+            return
+        name, expected = self.skill['name'], self.skill['tree_sha256']
+        path = Path(self.skill['loads'])
+        if path.is_symlink():
+            raise Denied('skill load records must not be a symlink')
+        try:
+            lines = path.read_bytes().decode('utf-8').splitlines()
+        except FileNotFoundError:
+            lines = []
+        except (OSError, UnicodeError):
+            raise Denied('skill load records unreadable')
+        matched = []
+        for line in lines:
+            if not line.strip():
+                continue
+            try:
+                record = json.loads(line)
+            except ValueError:
+                raise Denied('skill load records malformed')
+            if not isinstance(record, dict):
+                raise Denied('skill load records malformed')
+            if record.get('session') != self.run_id:
+                continue
+            if name in (record.get('skill'), record.get('name')):
+                matched.append(record)
+        if not matched:
+            raise Denied(f'skill {name} was not loaded in run {self.run_id}')
+        for record in matched:
+            digests = {record.get('tree_sha256')} | {
+                c.get('tree_sha256') if isinstance(c, dict) else None
+                for c in record.get('candidates') or []}
+            if record.get('ambiguous') is not False or len(digests) != 1:
+                raise Denied(f'skill {name} load is ambiguous: candidates differ')
+            if digests != {expected}:
+                raise Denied(f'skill {name} loaded with an unapproved tree')
 
     def _check_argv(self, op):
         argv = op['argv']
@@ -248,6 +321,10 @@ class Controller:
                         'enforced_rules': [f'{a} before {b}' for a, b in self.rules]
                         + [f'never {a} before {b}' for a, b in self.exclusions],
                         'unenforced_rules': self.unenforced,
+                        'skill_load': None if self.skill is None else {
+                            'name': self.skill['name'],
+                            'tree_sha256': self.skill['tree_sha256'],
+                            'run': self.run_id},
                         'coverage': 'controller requests only'}
             if set(request) != {'action', 'operation', 'content'}:
                 raise Denied('only action, operation and content accepted')
@@ -259,6 +336,7 @@ class Controller:
             data = content.encode('utf-8')
             op = self.operations[name]
             self._pins(op)
+            self._check_skill_load()
             if 'target' not in op:
                 if action != 'verify':
                     raise Denied('check operations only verify')
@@ -289,6 +367,9 @@ class Controller:
                     raise Denied('order rule not satisfied: ' + ', '.join(
                         f'{first} before {name}' for first in missing))
                 self._check_exclusions(name)
+            # Re-read immediately before commit: a conflicting record appended
+            # while this request ran (dpcc monitor, approval check) denies.
+            self._check_skill_load()
             if snapshot is not None:
                 self._confirm_dpcc_snapshot(op, data, snapshot)
             fd, temporary = tempfile.mkstemp(prefix='.skillwren-', dir=target.parent)
@@ -335,14 +416,21 @@ def main(argv):
     parser.add_argument('policy', help='trusted host policy JSON; not agent-controlled')
     parser.add_argument('--audit', required=True, help='host-owned event log')
     parser.add_argument('--checkpoint', required=True, help='independently protected checkpoint')
+    parser.add_argument('--run-id', default=None,
+                        help='host run id (the session id the host gave the agent);'
+                             ' required when the policy has a skill requirement')
     args = parser.parse_args(argv)
     try:
-        controller = Controller(json.loads(Path(args.policy).read_text(encoding='utf-8')))
+        controller = Controller(json.loads(Path(args.policy).read_text(encoding='utf-8')),
+                                args.run_id)
         audit = AuditStore(args.audit, args.checkpoint)
         if audit.records and audit.records[-1].get('type') == 'intent':
             raise Denied('unfinished write/request intent; host must reconcile output before recovery')
-        audit.append({'type': 'start', 'policy_sha256': digest(Path(args.policy).read_bytes()),
-                      'coverage': 'controller requests only; not direct host activity'})
+        start = {'type': 'start', 'policy_sha256': digest(Path(args.policy).read_bytes()),
+                 'coverage': 'controller requests only; not direct host activity'}
+        if controller.skill is not None:
+            start['run_id'] = args.run_id
+        audit.append(start)
         while True:
             line = sys.stdin.buffer.readline(2 * 1024 * 1024 + 1)
             if not line:

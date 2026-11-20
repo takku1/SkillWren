@@ -1,6 +1,6 @@
 # Status
 
-**Last Updated**: 2026-11-20 (0.10.0 released: NL compiler and field-report response, PR #5)
+**Last Updated**: 2026-11-20 (0.11 in progress: guard skill-load assurance, SPEC 24)
 
 ## Current Phase
 
@@ -12,6 +12,17 @@ corpus review, a 72-run skill-form comparison, and the model A/B/C
 runtime comparison. Current verification results are recorded in CI.
 
 ## Active Focus
+
+- Skill-load assurance (0.11, SPEC 24, branch `skill-load-assurance`): a
+  guard policy `skill: {name, tree_sha256, loads}` plus `guard --run-id`
+  denies every protected operation unless the host-owned load file holds
+  an unambiguous load of that exact package tree in this run (fails closed,
+  rechecked before commit). Answers the field finding that 16/18 agents
+  never loaded the skill: a skipped load becomes a denied write. Load
+  assurance under the trusted-host assumptions, not adherence; isolation
+  is not yet demonstrated. 26 unit tests, 29/29 code mutants. Next:
+  spoofing/replay/TOCTOU review of the diff, then the three-tier pipeline
+  check (rebuild `Z:/full-stack`, build mochios with it, back-propagate).
 
 - Response to the full-stack field report of 2026-11-19
   ([design](current/design/field-response-2026-11-19.md),

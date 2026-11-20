@@ -449,7 +449,10 @@ run pass the host-loaded copy: `ledger check RUN --loaded <cache dir>`.
 A mismatch fails as `package-mismatch` even when every order rule held.
 In Claude Code, add a `PostToolUse` hook on `Skill` that runs
 `skillwren ledger record-load`; `check` then compares against the copy
-the host loaded without `--loaded`.
+the host loaded without `--loaded`. To refuse protected writes in a run
+that never loaded the skill, put a `skill` requirement in the guard policy
+and point the hook at a host-owned file with `--out` (SPEC 24): a skipped
+load becomes a denied write instead of a silent gap.
 
 **Require the entry step of a fragment that must not be skipped, and
 order it.** Order rules inside a fragment the model never enters hold

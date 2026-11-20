@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased (0.11.0)
+
+- Skill-load assurance (SPEC 24): a guard policy may require
+  `skill: {name, tree_sha256, loads}`; with `guard --run-id ID`, every
+  protected operation is denied unless the host-owned `loads` file holds an
+  unambiguous load of that skill, with that tree digest, in this run. It
+  fails closed on unreadable or malformed records and is rechecked
+  immediately before a write commits. Policies without `skill` are
+  unchanged. It proves a host-recorded load under the trusted-host
+  assumptions, not adherence.
+- `ledger record-load --out FILE` writes load records to a host-owned
+  file instead of the agent's working directory.
+- Tests: `tests/test_guard_skill_load.py` (26), nine new code mutants in
+  `tests/field_mutation_sweep.py` (29/29 killed).
+
 ## 0.10.0 (2026-11-20)
 
 - Response to the full-stack field report of 2026-11-19 (design note

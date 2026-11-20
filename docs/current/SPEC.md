@@ -1202,6 +1202,59 @@ the fragment is never entered. Where skipping it matters, require its
 entry step as a milestone (`ledger start --require exec#stack-profiles`):
 a skipped fragment is then `incomplete`, not `valid, complete`.
 
+## 24. Skill-load assurance (0.11)
+
+A guard policy may carry `skill: {name, tree_sha256, loads}`. `name` is the
+skill name the host's load hook records (`name`, or `plugin:name` as
+`skill`); `tree_sha256` is the approved package's tree digest (Section 23,
+the value `build` writes to the manifest); `loads` is the absolute path of
+a host-owned load-record file. The guard is then started with `--run-id
+ID` (`Controller(policy, run_id)`), the identifier the host gave this agent
+run; in Claude Code, the host starts the agent with `--session-id ID`, so
+the hook's `session_id` equals it. A policy with `skill` and no run id is
+refused. The record hook must write to the same host-owned file:
+`skillwren ledger record-load --out LOADS`.
+
+Before every request for an operation (a check's verify, a write's verify,
+a write), and again immediately before a write commits, the guard reads
+`loads` and denies unless:
+
+1. at least one record has `session` equal to the run id and names the
+   skill;
+2. every such record is unambiguous: `ambiguous` is exactly `false` and
+   the record's digest and every candidate's digest are equal (the guard
+   recomputes this rather than trusting the flag); and
+3. every such record's digest equals `tree_sha256`.
+
+Records of other runs and other skills are ignored. The check fails
+closed: an unreadable file, a symlinked file, a malformed line or a
+non-object line denies. A second load of the same skill in the run with
+another tree denies the rest of the run. A policy without `skill` behaves
+exactly as before. `status` reports the requirement as `skill_load`, and
+the audit `start` record carries the run id. The requirement composes with
+the existing preconditions; a valid load does not excuse a missing, stale
+or consumed verification, an order rule or an exclusion rule.
+
+Trusted-host assumptions: the agent can neither write `loads`, the
+policy, nor the hook configuration, nor choose the run id. The run id
+must be fresh for each run: the guard cannot tell a reused id from a
+resumed run, so a reused id would let an earlier run's load count.
+The hook's resolution must cover where the host actually loads skills
+from; a skill the host loads from a location the hook does not search
+(for example an added or managed skills directory) produces no record or a
+record of another copy, so the first denies and the second is only as good
+as the mirror. Under those
+assumptions a protected operation proves that the host recorded a load of
+the approved package tree in this run. It does not prove that the agent
+read, understood or followed the skill (this is load assurance, not
+adherence), and it does not prove what the host placed in the model's
+context: the record mirrors the host's resolution order (Section 23).
+Records the agent can write, such as the default
+`.skillwren/loaded.jsonl` in its working directory, are not evidence and
+are never read by the guard. The unit tests show the decision; the
+isolation is shown only by a deployment that keeps `loads` out of the
+agent's reach (see the runtime quickstart).
+
 ## Runtime interface (0.7+)
 
 `guard` is a trusted-host JSON-lines controller, distinct from the advisory

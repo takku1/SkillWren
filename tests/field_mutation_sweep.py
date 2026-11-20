@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = ["test_field_2026_11_19.py", "test_guard_workflow.py", "test_mutations.py",
-         "mutation_catalog.py"]
+         "mutation_catalog.py", "test_guard_skill_load.py"]
 
 # name -> (file, old, new). Each `old` must occur exactly once.
 MUTANTS = {
@@ -57,6 +57,34 @@ MUTANTS = {
     "hostload-project-before-personal": ("src/skillwren/hostload.py",
                                          "        found.append(home / \".claude\" / \"skills\" / skill)\n        for directory in [cwd, *cwd.parents]:\n            found.append(directory / \".claude\" / \"skills\" / skill)",
                                          "        for directory in [cwd, *cwd.parents]:\n            found.append(directory / \".claude\" / \"skills\" / skill)\n        found.append(home / \".claude\" / \"skills\" / skill)"),
+    # Skill-load assurance (SPEC 24)
+    "skill-load-unchecked": ("src/skillwren/guard.py",
+                             "            self._check_skill_load()\n            if 'target' not in op:",
+                             "            if 'target' not in op:"),
+    "skill-load-no-commit-recheck": ("src/skillwren/guard.py",
+                                     "            # while this request ran (dpcc monitor, approval check) denies.\n            self._check_skill_load()",
+                                     "            pass"),
+    "skill-load-run-ignored": ("src/skillwren/guard.py",
+                               "            if record.get('session') != self.run_id:",
+                               "            if False:"),
+    "skill-load-name-ignored": ("src/skillwren/guard.py",
+                                "            if name in (record.get('skill'), record.get('name')):",
+                                "            if True:"),
+    "skill-load-tree-ignored": ("src/skillwren/guard.py",
+                                "            if digests != {expected}:",
+                                "            if False:"),
+    "skill-load-ambiguity-flag-trusted": ("src/skillwren/guard.py",
+                                          "            if record.get('ambiguous') is not False or len(digests) != 1:",
+                                          "            if record.get('ambiguous') is True:"),
+    "skill-load-malformed-skipped": ("src/skillwren/guard.py",
+                                     "            except ValueError:\n                raise Denied('skill load records malformed')",
+                                     "            except ValueError:\n                continue"),
+    "skill-load-run-id-optional": ("src/skillwren/guard.py",
+                                   "        if not isinstance(run_id, str) or not run_id.strip():",
+                                   "        if False:"),
+    "hostload-out-ignored": ("src/skillwren/hostload.py",
+                             '    out = Path(out) if out else cwd / ".skillwren" / LOADS',
+                             '    out = cwd / ".skillwren" / LOADS'),
     # Finding 5, ledger
     "ledger-exclusions-ignored": ("src/skillwren/ledger.py",
                                   "    excluded = any(r[\"violations\"] for r in report[\"exclusions\"])",
@@ -109,7 +137,8 @@ def run(name, rel, old, new):
         path.write_text(text, encoding="utf-8")
         # unittest, not pytest: CI installs nothing beyond the standard library.
         proc = subprocess.run([sys.executable, "-m", "unittest", "-q", "test_field_2026_11_19",
-                               "test_guard_workflow", "test_mutations"],
+                               "test_guard_workflow", "test_mutations",
+                               "test_guard_skill_load"],
                               cwd=root / "tests", capture_output=True, text=True, timeout=300,
                               env={**os.environ, "PYTHONPATH": str(root / "src")})
         out = proc.stdout + proc.stderr

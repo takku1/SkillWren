@@ -62,6 +62,32 @@ generate the policy with `skillwren policy` (SPEC Section 22). Treat those depen
 host software. Never expose this stdio process through an unauthenticated
 network service. A same-account unrestricted shell can bypass this boundary.
 
+### Require the skill load (0.11)
+
+To refuse protected operations in a run where the agent never loaded the
+approved skill, add to the policy (SPEC Section 24):
+
+```json
+"skill": {"name": "build-notes", "tree_sha256": "<manifest tree_sha256>",
+          "loads": "/host/owned/loaded.jsonl"}
+```
+
+Configure the host's Claude Code hook (in settings the agent cannot edit)
+to write there, start the agent with a session id you choose, and give the
+guard the same id:
+
+```text
+{"hooks": {"PostToolUse": [{"matcher": "Skill", "hooks": [{"type": "command",
+  "command": "skillwren ledger record-load --out /host/owned/loaded.jsonl"}]}]}}
+claude --session-id <uuid> ...
+py -3 scripts/skillwren.py guard policy.json --run-id <uuid> --audit events.jsonl --checkpoint /independent/anchor.json
+```
+
+The hook runs with the host's permissions, but the loads file, the
+settings that hold the hook and the session id must be out of the agent's
+reach, or the agent can forge a load. This shows that the host recorded a
+load of those exact bytes in this run, not that the agent followed them.
+
 The log records request digests, outcomes and start/stop events without raw
 candidate content. A missing checkpoint, changed retained head or unfinished
 intent fails closed. Host recovery must reconcile the actual output and

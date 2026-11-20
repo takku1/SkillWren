@@ -6,7 +6,7 @@
     skillwren ledger attempt <run> --step TEXT [--detail TEXT] [--dir DIR]
     skillwren ledger check <run> [--require-evidence] [--require-completeness] [--loaded DIR] [--json] [--dir DIR]
     skillwren ledger show  <run> [--dir DIR]
-    skillwren ledger record-load            (PostToolUse hook on the Skill tool; event on stdin)
+    skillwren ledger record-load [--out F]  (PostToolUse hook on the Skill tool; event on stdin)
 
 `<run>` is the id `start` printed, or `latest`. Records live in
 DIR/<run>.jsonl (default `.skillwren/ledger`).
@@ -504,8 +504,11 @@ def main(argv):
     p_check.add_argument("--json", action="store_true")
     p_show = sub.add_parser("show", help="list the recorded steps")
     p_show.add_argument("run")
-    sub.add_parser("record-load", help="PostToolUse(Skill) hook: record which copy of a"
-                                       " skill the host loaded (reads the hook event on stdin)")
+    p_load = sub.add_parser("record-load", help="PostToolUse(Skill) hook: record which copy of a"
+                                                " skill the host loaded (reads the hook event on stdin)")
+    p_load.add_argument("--out", default=None,
+                        help="record file (default .skillwren/loaded.jsonl in the hook's cwd);"
+                             " a guard skill requirement needs a host-owned path here")
     for p in (p_start, p_exec, p_note, p_attempt, p_check, p_show):
         p.add_argument("--dir", default=str(DEFAULT_DIR))
     # The command after `--` is passed through untouched, so its own flags and
@@ -517,7 +520,7 @@ def main(argv):
     args = parser.parse_args(argv)
     if args.action == "record-load":
         from .hostload import hook_main
-        return hook_main()
+        return hook_main(out=args.out)
     try:
         if args.action == "start":
             run, path, rules = start(args.flow_file, args.dir, args.label, args.required,

@@ -91,9 +91,14 @@ def candidates(skill, cwd, home):
     return out
 
 
-def record_load(event, home=None):
+def record_load(event, home=None, out=None):
     """Append one load record for a PostToolUse(Skill) hook event; returns it,
-    or None when the event is not a skill load or nothing resolves."""
+    or None when the event is not a skill load or nothing resolves.
+
+    `out` is the record file. The default (.skillwren/loaded.jsonl in the
+    working directory) is fine for `ledger check`, but the agent can write
+    there; a guard skill requirement (SPEC 24) must name a host-owned file
+    and the hook must be configured with the same `--out`."""
     from .ledger import package_identity
     if event.get("tool_name") != "Skill":
         return None
@@ -114,7 +119,7 @@ def record_load(event, home=None):
     record = {"time": _now(), "skill": skill, "name": skill.split(":")[-1],
               "session": event.get("session_id"), **found[0], "candidates": found,
               "ambiguous": len({c["tree_sha256"] for c in found}) > 1}
-    out = cwd / ".skillwren" / LOADS
+    out = Path(out) if out else cwd / ".skillwren" / LOADS
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("a", encoding="utf-8") as f:
         f.write(json.dumps(record, sort_keys=True) + "\n")
@@ -141,11 +146,11 @@ def latest_load(loads_file, name, before=None):
     return best
 
 
-def hook_main(stream=None):
+def hook_main(stream=None, out=None):
     """Entry point for the hook: never fails the host's tool call."""
     try:
         event = json.loads((stream or sys.stdin).read() or "{}")
-        record_load(event)
+        record_load(event, out=out)
     except Exception as error:  # report, do not block the host
         print(f"skillwren record-load: {error}", file=sys.stderr)
     return 0
