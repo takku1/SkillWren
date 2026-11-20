@@ -21,7 +21,7 @@ runtime comparison. Current verification results are recorded in CI.
   (`research/fidelity-benchmark/`) scores preservation and introduction
   against human-reviewed requirements, and `coverage --fidelity` gives each
   preserved requirement its enforcement tier. Waiting on the owner's
-  review of the 79 candidate requirements. After that: score builds from
+  review of the 87 candidate requirements (AI-drafted, AI-reviewed twice). After that: score builds from
   both paths, then the bypass experiment (skip a prerequisite, stale
   evidence, forged approval, a prohibited push, and an alternate tool,
   the last needing a credential in the isolation container).
@@ -234,8 +234,8 @@ real-host harness, adapters, and model-measurement tools.
   restored within one turn is not seen; command logs narrow this but are
   not filesystem auditing.
 - Built skills are smoke-checked, not semantically verified: the fidelity
-  benchmark (`research/fidelity-benchmark/`) awaits the owner's review of
-  its 79 candidate requirements.
+  benchmark (`research/fidelity-benchmark/`) awaits the owner's approval of
+  its 87 candidate requirements.
 
 ## Documents
 

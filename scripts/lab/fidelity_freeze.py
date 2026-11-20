@@ -38,7 +38,8 @@ def parse(review):
     header = {k: (m.group(1).strip() if m else "") for k, m in
               (("source", re.search(r"^Source: (\S+)", text, re.M)),
                ("reviewed_by", re.search(r"^Reviewed by:(.*)$", text, re.M)),
-               ("date", re.search(r"^Date:(.*)$", text, re.M)))}
+               ("date", re.search(r"^Date:(.*)$", text, re.M)),
+               ("candidate_status", re.search(r"^Candidate status:(.*(?:\n(?![-#\n]).*)*)", text, re.M)))}
     source = BENCH / header["source"] if header["source"] else None
     body = norm(source.read_text(encoding="utf-8")) if source and source.is_file() else None
     problems, items, seen = [], [], set()
@@ -96,7 +97,9 @@ def main(argv=None):
         out = BENCH / "frozen" / f"{review.stem}.json"
         record = {"source": header["source"], "source_sha256": digest(BENCH / header["source"]),
                   "review_sha256": digest(review), "reviewed_by": header["reviewed_by"],
-                  "date": header["date"], "requirements": kept,
+                  "date": header["date"],
+                  "candidate_provenance": " ".join(header["candidate_status"].split()),
+                  "requirements": kept,
                   "dropped": [i["id"] for i in items if not i["kept"]]}
         if out.is_file():
             old = json.loads(out.read_text(encoding="utf-8"))

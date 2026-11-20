@@ -21,7 +21,7 @@ Without it the benchmark would grade a model against a model.
 | Step | State |
 |---|---|
 | Corpus: 5 sources, 2,550 words | done (`sources/`) |
-| Candidate requirement lists: 79 lines, every quote verbatim in its source | done, **awaiting human review** (`review/`) |
+| Candidate requirement lists: 87 kept (88 lines), every quote verbatim in its source | AI-drafted, AI-reviewed twice (revision logs in each file); **awaiting human approval** (`review/`) |
 | Freeze tool (`scripts/lab/fidelity_freeze.py`) | done |
 | Preservation and introduction scorer (`scripts/lab/fidelity_score.py`) | done; smoke-tested on candidates only |
 | Builds to score: `skillwren compile` and the skill, two models | after freezing |
@@ -52,6 +52,9 @@ py -3 scripts/lab/fidelity_freeze.py              # writes frozen/<source>.json
 
 Freezing pins the source and review digests and refuses to overwrite a list
 frozen from other bytes.
+The frozen file also records the candidates' provenance (`candidate_provenance`):
+AI-drafted and AI-reviewed lines become ground truth only through the
+human reviewer named in the file.
 
 ## Enforcement tier per requirement
 

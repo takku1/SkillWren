@@ -3,6 +3,8 @@
 Source: sources/full-stack/SKILL.md
 Reviewed by: <your name>
 Date: <YYYY-MM-DD>
+Candidate status: AI-drafted, AI-reviewed twice (drafting session; external AI review
+2026-11-20). Not human-approved: freezing needs the human reviewer's name and date.
 
 **How to review.** These are model-drafted candidates. For each line: keep it
 (`[x]`), drop it (change to `[ ]`), or edit the requirement text so it says
@@ -37,3 +39,17 @@ most scrutiny from you, not from the drafter.
 - [x] FS-21 | output | Design-only work delivers scope, linked design, ownership and contracts, research-backed choices, ordered increments and blockers, and says what is ready versus conditional. | "Identify what is ready versus conditional."
 - [x] FS-22 | obligation | Authorized implementation continues through the selected acceptance criteria; a first working increment does not complete the milestone. | "Design readiness and a first working increment do not mean the milestone is complete."
 - [x] FS-23 | obligation | Explain excluding a material quality concern, without adding unrelated scope. | "Explain excluding a material concern without adding unrelated scope."
+- [x] FS-24 | obligation | Match each consumer's assumptions to provider guarantees, or record them as explicit unresolved conditions. | "Match consumer assumptions to provider guarantees or explicit unresolved conditions."
+- [x] FS-25 | ordering | Resolve consequential reuse before detailing custom internals. | "resolve consequential reuse before detailing custom internals"
+- [x] FS-26 | obligation | Stop at adopted providers' public boundaries and allocate the required fit gaps. | "Stop at adopted providers' public boundaries and allocate required fit gaps."
+- [x] FS-27 | prohibition | Components do not dictate files, packages, services, processes or teams; screens, nouns, directories and workflow steps do not dictate components. | "components do not dictate files, packages, services, processes, or teams"
+- [x] FS-28 | obligation | Split components where different decisions need hiding, authority changes hands, protection or lifecycle differs, or coupling prevents a coherent increment. | "Split where different decisions need hiding, authority changes hands, protection/lifecycle differs, or coupling prevents a coherent increment."
+- [x] FS-29 | ordering | Resolve shared interface work before claiming that increments are independent. | "resolve shared interface work before claiming independence"
+- [x] FS-30 | prohibition | Do not freeze requirements before exploring architecture; iterate as evidence changes. | "do not freeze requirements before exploring architecture"
+- [x] FS-31 | obligation | An increment is design-ready only when its outcome, contracts, prerequisites and checks are usable and its consequential decisions are resolved. | "A next increment is design-ready when its outcome, contracts, prerequisites, and checks are usable and consequential decisions resolved."
+- [x] FS-32 | obligation | Separate prototype appearance and interaction requirements from simulated behavior. | "Separate prototype appearance/interaction requirements from simulated behavior."
+
+## Revision log
+
+- FS-24 (consumer/provider contracts), FS-25 (resolve reuse first) and FS-27 (components are not deployment units) added from the external AI review's list of missing architectural constraints.
+- FS-26, FS-28 to FS-32 added on a second reading of the source for the same reason: each can change a generated design (provider boundaries, split criteria, shared interfaces before independence, no early freeze, design readiness, prototype vs simulated behavior).
