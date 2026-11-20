@@ -1,10 +1,10 @@
 # Status
 
-**Last Updated**: 2026-11-20 (0.12.2: launcher-counted repair budget; frozen-configuration matrix)
+**Last Updated**: 2026-11-20 (0.13.0: enforcement coverage; fidelity benchmark awaiting review)
 
 ## Current Phase
 
-Package 0.12.2, release candidate for supervised skill authoring: the `skillwren` skill installs as a self-contained Claude Code plugin
+Package 0.13.0, release candidate for supervised skill authoring: the `skillwren` skill installs as a self-contained Claude Code plugin
 (`/plugin install skillwren --marketplace takku1/SkillWren`, no pip), builds
 a new skill from a request or converts one, and a headless agent with only
 the plugin built a checked skill end to end. Runtime pieces (guard, ledger)
@@ -14,6 +14,17 @@ corpus review, a 72-run skill-form comparison, and the model A/B/C
 runtime comparison. Current verification results are recorded in CI.
 
 ## Active Focus
+
+- Translation, enforcement and behavior are measured separately (0.13):
+  `skillwren coverage` labels every rule, gate and write enforced,
+  recorded, instructed or unverifiable (SPEC 25); the fidelity benchmark
+  (`research/fidelity-benchmark/`) scores preservation and introduction
+  against human-reviewed requirements, and `coverage --fidelity` gives each
+  preserved requirement its enforcement tier. Waiting on the owner's
+  review of the 79 candidate requirements. After that: score builds from
+  both paths, then the bypass experiment (skip a prerequisite, stale
+  evidence, forged approval, a prohibited push, and an alternate tool,
+  the last needing a credential in the isolation container).
 
 - Skill-building product (0.12.0): `skills/skillwren/` is a skill that
   builds skills, written in SkillWren itself (inline form, clean with no

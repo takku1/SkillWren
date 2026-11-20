@@ -454,6 +454,16 @@ that never loaded the skill, put a `skill` requirement in the guard policy
 and point the hook at a host-owned file with `--out` (SPEC 24): a skipped
 load becomes a denied write instead of a silent gap.
 
+**Know which promises are only instructions (0.13).** Run `skillwren
+coverage` on the finished skill. Each rule, gate and write comes back as
+enforced (a guard policy bound to the flow blocks the violation), recorded
+(the ledger can detect it afterwards), instructed (only the model's word)
+or unverifiable. To move a prohibition or ordering up to enforced, make
+both steps typed guard operations and bind a policy (`skillwren policy`);
+to move an instructed rule up to recorded, anchor its earlier step to a
+command result, artifact or user decision. A required step cannot be
+enforced by blocking alone, only as the prerequisite of a protected write.
+
 **Require the entry step of a fragment that must not be skipped, and
 order it.** Order rules inside a fragment the model never enters hold
 vacuously; full-stack's stack flow was skipped 3/3 when the model judged

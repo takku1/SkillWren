@@ -53,6 +53,14 @@ py -3 scripts/lab/fidelity_freeze.py              # writes frozen/<source>.json
 Freezing pins the source and review digests and refuses to overwrite a list
 frozen from other bytes.
 
+## Enforcement tier per requirement
+
+`skillwren coverage BUILT_SKILL.md --fidelity result.json [--policy P]` gives
+each preserved requirement the tier of the element that preserves it:
+enforced, recorded, instructed or unverifiable (SPEC 25). A requirement can
+be faithfully translated and still only instructed; the two are reported
+side by side, never merged.
+
 ## Scoring
 
 ```text

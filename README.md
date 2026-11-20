@@ -78,7 +78,7 @@ it; see [Evidence](#evidence).
 - `src/skillwren/` — stdlib-only package and `skillwren` CLI (`check`,
   `explain-workflow`, `draft`, `approve`, `policy`, `guard`, `ledger`,
   `audit`, `sandbox`, `measure`, `select`, `certgate`, `build`, `conform`,
-  `compile`, `inventory`). `compile` runs the natural-language compiler
+  `compile`, `inventory`, `coverage`). `compile` runs the natural-language compiler
   (`nlcompile`) and `inventory` its requirement accounting.
   The validator is the `skillwren.validator` package: `syntax`,
   `document`, `schema`, `flowgraph`, `ordering`, `analysis`, `files`,
@@ -231,8 +231,10 @@ observed behavior).
 
 ## Status
 
-v0.12.2 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
-[CHANGELOG.md](CHANGELOG.md). 0.12 ships the `skillwren` skill as a
+v0.13.0 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
+[CHANGELOG.md](CHANGELOG.md). 0.13 adds `skillwren coverage`: which
+of a skill's rules a trusted host enforces, which the ledger can only
+record, and which are instructions only. 0.12 ships the `skillwren` skill as a
 self-contained plugin that builds new skills from a request (see
 [Install the skill](#install-the-skill)). 0.11 adds skill-load assurance: a guard
 policy can refuse every protected operation in a run where the host did
@@ -420,9 +422,8 @@ py -3 scripts/skillwren.py check --fragment --summary --audit tests/fixtures/fra
 On macOS/Linux use `python3 scripts/skillwren.py` with the same arguments.
 From another project, use the absolute path to this checkout's launcher;
 input paths and ledger output remain relative to your current directory.
-For conversion, the Codex skill links to the canonical conversion procedure
-and repository documentation. Keep this checkout available; copying only
-its skill folder into another project will break those relative references.
+Inside this checkout the Codex pointer uses `skills/skillwren/`; in another
+project, copy the self-contained `plugin/skillwren/` folder instead.
 
 `check`, `measure`, `build`, and `ledger` are host-independent. `conform`
 currently launches Claude Code and does **not** evaluate Codex runs. The

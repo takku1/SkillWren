@@ -1,0 +1,80 @@
+{
+  "scenario": "issue-triage",
+  "model": "haiku",
+  "cost_usd": 0.0275,
+  "score": {
+    "packages": [
+      "issue-triage"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 6,
+    "repairs": 2,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 4,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-dtgakrlu\\issue-triage\\SKILL.md:15: warning W15: order rule rests on self-report: every statement matching 'require label' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-dtgakrlu\\issue-triage\\SKILL.md:25: warning W5: binding 'clarity' never referenced -- Use it or drop the `as`.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-dtgakrlu\\issue-triage\\SKILL.md:28: warning W5: binding 'label' never referenced -- Use it or drop the `as`.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-dtgakrlu\\issue-triage\\SKILL.md:36: warning W5: binding 'reason' never referenced -- Use it or drop the `as`.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-dtgakrlu\\issue-triage\\SKILL.md: flow issue-triage: inputs issue_text; writes triage_file; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "bug": true,
+      "triage": true
+    }
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to build a new skill named issue-triage, in ./issue-triage. Given ",
+      "result": "I've read the SkillWren language reference and drafted the requirement inventory. The procedure requires your confirmation before I write the skill draft, so nothing has been written yet.\n\n**Requirement inventory (issue-triage)**\n\n1. Skill name is `issue-triage`, created in `./issue-triage`. *(request)*\n2. Input: the text of one issue. *(request)*\n3. Output label is one of `bug`, `feature`, `question`. *(request)*\n4. If the label is unclear, ask the user before labelling. *(request)*\n5. Write the label and a one-line reason to `triage.md`. *(request)*\n6. Must not close the issue. *(request)*\n7. Must not edit the issue. *(request)*\n8. If no issue text is given, stop with a message asking for it. *(inferred)*\n9. The label is settled, by the model or by the user's answer, before `triage.md` is written. *(inferred ordering)*\n10. The reason is one line. *(inferred)*\n11. `triage.md` is written in the current working directory, not inside `./issue-triage`. *(inferred, please confirm)*\n\n**Questions before I draft:**\n\n- Should `triage.md` be written in the current working directory (as in item 11), or in `./issue-triage`, or somewhere else?\n- Is the issue text always pasted in by the user? I'm assuming the skill never fetches issues from GitHub or any other tracker.\n\nReply with \"confirmed\" or with corrections (for example, the `triage.md` location), and I'll write the draft, check it, and build the skill.",
+      "num_turns": 4,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 2,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The `issue-triage` skill is built in `./issue-triage`. The checker reports no errors, but it does report four warnings that I left in place (explained below).\n\n**What the skill does**\n- Takes the issue text. If it's missing, the skill stops and asks for it.\n- The model proposes a label of bug, feature or question. If the label is unclear, the user is asked to choose one. If the label is still not one of the three, the skill aborts and writes nothing.\n- It writes one line, `<label>: <reason>`, to `triage.md` in the current working directory. It appends, so earlier lines are kept.\n- It never closes, edits or comments on the issue. The skill has no command or write path that touches the issue, so this is a written instruction, not something the workflow enforces.\n\n**Files**\n- `./issue-triage/SKILL.md`: the built skill.\n- `./issue-triage-draft/SKILL.md`: the working draft that the build came from.\n\n**Checks**\n- `check --fragment --audit`: no errors. Four warnings remain:\n  - W15: the rule \"label settled before `triage.md` is written\" rests on the model's own judgment. The user is only asked on the unclear path, so no outside signal covers the clear path. I kept the rule. The label is inherently a judgment call, and the rule is only as strong as the `require` check.\n  - W5 (three times): the checker says `clarity`, `label` and `reason` are never referenced. They are used in natural-language conditions and generate inputs, which the checker doesn't count. I did not change the names.\n- `explain-workflow`: the flow matches the inventory you confirmed.\n- `coverage`: 0 enforced, 0 recorded, 4 instructed. Nothing outside the model blocks or records the label gate, the issue-text check, or the `triage.md` write.\n- `build`: succeeded, with the same four warnings.\n\n**Limits**\n- A clean check shows the procedure is well formed. It does not show that the model labels issues correctly.\n- I did not run the skill on sample issues.\n- `explain-workflow` says the approval step (`SW approve`) is for you to run after reading the explanation. I did not run it.",
+      "num_turns": 17,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "issue-triage-draft/.skillwren/budget.json",
+          "issue-triage-draft/SKILL.md",
+          "issue-triage/SKILL.md",
+          "issue-triage/manifest.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 16,
+      "commands": [
+        "cd \"/c/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu\" && (python3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check issue-triage-draft/SKILL.md || py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check issue-triage-draft/SKILL.md); echo \"exit=$?\"",
+        "py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage-draft/SKILL.md\"",
+        "py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage-draft/SKILL.md\"",
+        "py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage-draft/SKILL.md\"",
+        "cd /c/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu 2>/dev/null; py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage-draft/SKILL.md\"; echo \"check=$?\"; py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" explain-workflow \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage-draft/SKILL.md\"; echo \"explain=$?\"; py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" coverage \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage-draft/SKILL.md\"; echo \"coverage=$?\"",
+        "py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage-draft/SKILL.md\"",
+        "py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" build \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage-draft\" --out \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage\"",
+        "py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" explain-workflow \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage/SKILL.md\"",
+        "py -3 -I \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" coverage \"C:/Users/<user>/AppData/Local/Temp/sw-proj-dtgakrlu/issue-triage/SKILL.md\""
+      ],
+      "check_calls": 6
+    }
+  ]
+}

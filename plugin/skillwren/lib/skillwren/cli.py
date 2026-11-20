@@ -12,6 +12,7 @@ COMMANDS = {
     "sandbox": ("skillwren.sandbox", "observe command effects in an offline restricted container"),
     "guard": ("skillwren.guard", "mediate policy-bound verified writes on a trusted host"),
     "policy": ("skillwren.policy", "generate a pinned, workflow-bound guard policy from a flow"),
+    "coverage": ("skillwren.coverage", "classify each rule, gate and write as enforced, recorded, instructed or unverifiable"),
     "measure": ("skillwren.metrics", "compare measured context sizes"),
     "select": ("skillwren.selection", "select a fixed candidate under empirical risk bounds"),
     "certgate": ("skillwren.certgate", "verify a selection certificate against artifacts and context"),

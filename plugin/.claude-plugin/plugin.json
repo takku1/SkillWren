@@ -1,6 +1,6 @@
 {
   "name": "skillwren",
-  "version": "0.12.2",
+  "version": "0.13.0",
   "description": "Build new agent skills, or convert existing ones, as checked SkillWren logic: explicit steps, gates and ordering rules validated before the skill ships. Bundles the SkillWren checker (Python 3.9+, no installation).",
   "author": {
     "name": "takku1"

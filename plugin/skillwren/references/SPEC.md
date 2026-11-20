@@ -1,7 +1,7 @@
 # SkillWren — Skill Logic Architecture (Contract-Header + Logic-Body)
 
 - Date: 2026-10-01; last revised 2026-11-17
-- Status: format 0.10 (package 0.12.2, 2026-11-20); 0.11 adds skill-load
+- Status: format 0.10 (package 0.13.0, 2026-11-20); 0.11 adds skill-load
   assurance for the guard (Section 24); 0.10 adds the
   workflow-bound guard (Section 22) and exclusion rules with package
   provenance (Section 23); 0.9 added typed return anchors and declared
@@ -1261,6 +1261,28 @@ Records the agent can write, such as the default
 are never read by the guard. The unit tests show the decision; the
 isolation is shown only by a deployment that keeps `loads` out of the
 agent's reach (see the runtime quickstart).
+
+## 25. Enforcement coverage (0.13)
+
+`skillwren coverage FILE... [--complete] [--policy POLICY] [--fidelity SCORE]`
+states what kind of guarantee backs each order rule, exclusion rule, gate,
+command and write. It adds no syntax and changes no verdict of `check`.
+
+| Tier | Meaning | Assigned to |
+|---|---|---|
+| enforced | a trusted host blocks the violation | an order or exclusion rule whose two steps are operations of a guard policy bound to this flow, by the guard's own test (Section 22; for an order rule the later operation must be a write); a write typed as such an operation; a gate or command that is the earlier step of an enforced rule |
+| recorded | not blocked, but observable outside the model, so `ledger check` detects a violation after the run | a rule whose earlier step leaves a command result, artifact or user decision; a gate resting on evidence or a user decision; a command |
+| instructed | rests on the model's own judgment | a rule whose earlier step is only self-report (W15); a self-judged gate; an unmediated write |
+| unverifiable | cannot be checked as written | a rule whose earlier step matches no statement |
+
+Without `--policy` nothing is enforced. Blocking enforces safety (a step
+must not happen, or not before another); it cannot make an agent perform a
+step eventually, so a required step is enforced only as the prerequisite of
+a protected write. With `--fidelity`, each preserved requirement of a
+fidelity-benchmark score takes the strongest tier of the element on the
+lines its quote occupies; a quote in prose outside the semantic blocks is
+instructed. Enforced still assumes the guard's deployment conditions
+(Sections 22 and 24): the agent cannot reach the target any other way.
 
 ## Runtime interface (0.7+)
 

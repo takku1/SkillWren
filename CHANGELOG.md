@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.13.0 (2026-11-20)
+
+- `skillwren coverage` (SPEC 25): each order rule, exclusion rule, gate,
+  command and write is classified enforced (a guard policy bound to the
+  flow blocks the violation, by the guard's own test), recorded (`ledger
+  check` can detect it afterwards), instructed (the model's word only) or
+  unverifiable, with the reason. Nothing is enforced without `--policy`; a
+  required step is enforced only as the prerequisite of a protected write
+  (blocking enforces safety, not liveness). `--fidelity` maps each
+  preserved requirement of a fidelity-benchmark score to the tier of the
+  element its quote sits in, so translation and enforcement are reported
+  side by side. 8 tests; 5 code mutants (36/36 killed).
+- The `skillwren` skill runs `coverage` before `build` and reports which
+  requirements are only instructed.
+
 ## 0.12.2 (2026-11-20)
 
 - The repair budget is counted by the skill's launcher, not the model. A

@@ -141,3 +141,12 @@ Limits: one run per cell; synthetic tasks; scripted corrections; the
 expected-phrase, no-`write` and no-relabel checks are smoke tests, not a
 measure of whether a built skill means what its source meant (that needs
 human-reviewed requirements, the next research step).
+
+## 0.13.0 smoke: coverage in the skill (`smoke-0.13.0-coverage/`, $0.03)
+
+One run (Haiku, `issue-triage`) on the frozen 0.13.0 plugin: built at the
+requested path with 0 errors, 2 repairs, nothing changed before
+confirmation. The agent ran `coverage` and reported "0 enforced, 0
+recorded, 4 instructed. Nothing outside the model blocks or records the
+label gate, the issue-text check, or the `triage.md` write." The 0.12.2
+matrix above was not rerun for this one added step.

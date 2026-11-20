@@ -133,6 +133,8 @@ release-notes:
 
 `SW check --fragment --summary --audit SKILL.md flows/*.md` (flow files and
 inline skills), `SW check FILE` (complete skills), `SW explain-workflow
-FILE` (the deterministic reading a user reviews), `SW build DIR --out
+FILE` (the deterministic reading a user reviews), `SW coverage FILE`
+(each rule, gate and write as enforced, recorded, instructed or
+unverifiable), `SW build DIR --out
 DEST` (package), `SW approve FILE` (the user records approval of exact
 bytes; never run it for them). Exit 0 no errors, 1 errors, 2 usage.

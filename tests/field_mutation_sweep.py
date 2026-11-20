@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = ["test_field_2026_11_19.py", "test_guard_workflow.py", "test_mutations.py",
-         "mutation_catalog.py", "test_guard_skill_load.py"]
+         "mutation_catalog.py", "test_guard_skill_load.py", "test_coverage.py"]
 
 # name -> (file, old, new). Each `old` must occur exactly once.
 MUTANTS = {
@@ -91,6 +91,20 @@ MUTANTS = {
     "package-identity-eol-sensitive": ("src/skillwren/compiler.py",
                                        'return data if b"\\0" in data else data.replace(b"\\r\\n", b"\\n")',
                                        "return data"),
+    # Enforcement coverage (0.13): never claim "enforced" without the guard's own conditions
+    "coverage-ignores-binding": ("src/skillwren/coverage.py",
+                                 "guarded = bound and first in ops", "guarded = first in ops"),
+    "coverage-self-counts-as-evidence": ("src/skillwren/coverage.py",
+                                         'outside = sorted(set(classes) - {"self"})',
+                                         "outside = sorted(set(classes))"),
+    "coverage-no-prerequisites": ("src/skillwren/coverage.py",
+                                  "            if op in prerequisites:", "            if False:"),
+    "coverage-unmediated-write-enforced": ("src/skillwren/coverage.py",
+                                           '            if op in ops and "target" in ops[op]:',
+                                           "            if True:"),
+    "coverage-unmatched-rule-instructed": ("src/skillwren/coverage.py",
+                                           "        if not classes:\n            return \"unverifiable\"",
+                                           "        if False:\n            return \"unverifiable\""),
     # Finding 5, ledger
     "ledger-exclusions-ignored": ("src/skillwren/ledger.py",
                                   "    excluded = any(r[\"violations\"] for r in report[\"exclusions\"])",
@@ -144,7 +158,7 @@ def run(name, rel, old, new):
         # unittest, not pytest: CI installs nothing beyond the standard library.
         proc = subprocess.run([sys.executable, "-m", "unittest", "-q", "test_field_2026_11_19",
                                "test_guard_workflow", "test_mutations",
-                               "test_guard_skill_load"],
+                               "test_guard_skill_load", "test_coverage"],
                               cwd=root / "tests", capture_output=True, text=True, timeout=300,
                               env={**os.environ, "PYTHONPATH": str(root / "src")})
         out = proc.stdout + proc.stderr

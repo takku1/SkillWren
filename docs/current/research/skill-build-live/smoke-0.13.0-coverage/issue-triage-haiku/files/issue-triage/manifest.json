@@ -1,0 +1,45 @@
+{
+  "format": "skillwren-build-1",
+  "mode": "fragments",
+  "entry": "SKILL.md",
+  "checked_fragments": [
+    "SKILL.md"
+  ],
+  "expanded_sha256": "914a617a3c19944530b80d867aa7c2a9b2cc0761a0f6e74e193bd6e35dd12d2f",
+  "expanded_bytes": 1588,
+  "tree_sha256": "8ce1cb834e2abbbdbc51a0278d3213314459c3b386c5b13462aba15a4d49c53f",
+  "sources": {
+    "SKILL.md": {
+      "sha256": "0c209ac1fce2ddc0bf00ffdc4d6ccc64b5e667768483ae6974edc8fe3c6ad477",
+      "bytes": 1564
+    }
+  },
+  "contexts": [],
+  "deferred_contexts": [],
+  "warnings": [
+    {
+      "file": "SKILL.md",
+      "line": 15,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'require label' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 25,
+      "rule": "W5",
+      "message": "binding 'clarity' never referenced"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 28,
+      "rule": "W5",
+      "message": "binding 'label' never referenced"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 36,
+      "rule": "W5",
+      "message": "binding 'reason' never referenced"
+    }
+  ]
+}

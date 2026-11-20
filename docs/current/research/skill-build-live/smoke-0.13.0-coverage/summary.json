@@ -1,0 +1,17 @@
+[
+  {
+    "scenario": "issue-triage",
+    "model": "haiku",
+    "cost": 0.0275,
+    "pre_confirm_clean": true,
+    "check_calls": 6,
+    "repairs": 2,
+    "at_destination": true,
+    "untouched": true,
+    "built": true,
+    "errors": 0,
+    "warnings": 4,
+    "expected": true,
+    "built_equals_a_draft": true
+  }
+]

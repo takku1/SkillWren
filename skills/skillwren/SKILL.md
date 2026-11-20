@@ -74,6 +74,7 @@ skillwren:
       return to checking
 
   exec workflow explanation from launcher as explanation
+  exec coverage report from launcher as coverage
   exec skill build from launcher as package
   verify the package built without errors from package
     otherwise:
@@ -86,6 +87,7 @@ skillwren:
   return #built:
     skill = package
     explanation
+    coverage
 ```
 
 ## Commands
@@ -98,6 +100,7 @@ Pass explicit file names, not shell globs.
 |---|---|
 | `exec skill check` | flow files: `SW check --fragment --summary --audit SKILL.md flows/*.md`; a complete skill (contract header): `SW check SKILL.md` |
 | `exec workflow explanation` | `SW explain-workflow <file>` for each file with a `logic` block |
+| `exec coverage report` | `SW coverage <file>` (add `--complete` for a complete skill): each rule, gate and write as enforced, recorded, instructed or unverifiable |
 | `exec skill build` | `SW build <name>-draft --out <destination>`: pass the draft folder, not a file, for the inline form and flow files (only a complete skill with a contract header is built from its file) |
 
 Exit 0 means no errors, 1 means errors, 2 means a usage failure, and 3
@@ -155,7 +158,10 @@ the last checker output or the unlanded requirements, what each repair
 tried, and what you need from the user. Never present a blocked draft as a
 built skill.
 
-**Built**: return the built skill's path, the workflow explanation, the requirement
+**Built**: return the built skill's path, the workflow explanation, the coverage
+report (say plainly which requirements are only instructed: nothing outside
+the model stops or records them, and only a guard policy makes a rule
+enforced), the requirement
 inventory with where each line landed, and limits: a clean check proves
 the written procedure is well formed and ordered, not that a model will
 follow it or that it does what the user meant beyond the inventory they
