@@ -15,3 +15,5 @@ docs/current/research/nl-compiler/** -text
 # identical on every checkout so `build_plugin.py --check` and package digests hold.
 plugin/** -text
 .claude-plugin/marketplace.json -text
+# Fidelity benchmark sources are pinned by digest in frozen requirement lists.
+docs/current/research/fidelity-benchmark/sources/** -text

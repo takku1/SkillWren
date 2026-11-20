@@ -208,6 +208,12 @@ real-host harness, adapters, and model-measurement tools.
 - The host demo shares one OS account between agent and host; isolation
   is proved separately (`scripts/isolation_probe.py`).
 - Order rules check the written procedure, not what the model does.
+- Live harness snapshots files after each turn, so a file changed and
+  restored within one turn is not seen; command logs narrow this but are
+  not filesystem auditing.
+- Built skills are smoke-checked, not semantically verified: the fidelity
+  benchmark (`research/fidelity-benchmark/`) awaits the owner's review of
+  its 79 candidate requirements.
 
 ## Documents
 
