@@ -1,0 +1,51 @@
+{
+  "format": "skillwren-build-1",
+  "mode": "fragments",
+  "entry": "SKILL.md",
+  "checked_fragments": [
+    "SKILL.md"
+  ],
+  "expanded_sha256": "fd8e7691f4e6c4191c3c5e1760724247a21226a4b6946240d85034537dc3ece0",
+  "expanded_bytes": 4966,
+  "tree_sha256": "9377e3fd003bf2a72d914d93e53207dacf973127ba9afb62b15adb63e81325c0",
+  "sources": {
+    "SKILL.md": {
+      "sha256": "45f6b6f993b3821488da58788293124d8f70981f59816d7e030b6be84d807690",
+      "bytes": 4942
+    }
+  },
+  "contexts": [],
+  "deferred_contexts": [],
+  "warnings": [
+    {
+      "file": "SKILL.md",
+      "line": 15,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'read pull request context' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 16,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'verify #intent the intent is stated in one sentence' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 17,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'generate detail findings' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 18,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'generate test findings' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 19,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'verify #complete the report has all seven sections' is the model's own judgment"
+    }
+  ]
+}

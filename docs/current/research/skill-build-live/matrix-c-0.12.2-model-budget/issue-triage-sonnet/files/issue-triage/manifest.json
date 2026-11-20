@@ -1,0 +1,27 @@
+{
+  "format": "skillwren-build-1",
+  "mode": "fragments",
+  "entry": "SKILL.md",
+  "checked_fragments": [
+    "SKILL.md"
+  ],
+  "expanded_sha256": "f8365681c9b83728ed3a44137bdd3c2a9af5c4cc16291da277ff1fc44bd28e6a",
+  "expanded_bytes": 1576,
+  "tree_sha256": "d364676e53d0c05fbad6102ee4ac5d509ee000dde34f5ffa31a507b87bf43596",
+  "sources": {
+    "SKILL.md": {
+      "sha256": "ca7f64869dfebcb05b2a2e7d2219828fe152d29c3f7795498622481e76643586",
+      "bytes": 1552
+    }
+  },
+  "contexts": [],
+  "deferred_contexts": [],
+  "warnings": [
+    {
+      "file": "SKILL.md",
+      "line": 12,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'generate verdict' is the model's own judgment"
+    }
+  ]
+}

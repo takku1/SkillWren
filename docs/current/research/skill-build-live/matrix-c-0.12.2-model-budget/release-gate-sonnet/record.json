@@ -1,0 +1,51 @@
+{
+  "scenario": "release-gate",
+  "model": "sonnet",
+  "cost_usd": 0.1873,
+  "score": {
+    "packages": [],
+    "at_destination": false,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 4,
+    "project_files_untouched": true,
+    "built": false
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to build a new skill named release-gate, in ./release-gate. Before",
+      "result": "I haven't drafted anything yet. SkillWren needs you to confirm the requirement inventory first. Here it is.\n\n**Requirement inventory for `release-gate`**\n\n1. Build a skill named `release-gate`, with the built package written to `./release-gate`. *(quoted from the request)*\n2. Before tagging a release, run the test suite. *(quoted)*\n3. If any test fails, refuse to continue. The skill stops with no tag and no further steps. *(quoted)*\n4. Ask the user to confirm the version number. *(quoted)*\n5. Order: tests pass, then the user confirms the version, then the tag is created. The tag is created only after both. *(quoted: \"only then\")*\n6. Create the git tag. *(quoted)*\n7. Never push to a remote. This covers `git push`, `--tags`, and any remote-writing command, and it holds for the whole skill. *(quoted prohibition)*\n8. Inferred: the test command comes from the user or from project detection. The skill asks for it if it can't find one, and it doesn't guess silently.\n9. Inferred: the tag command is `git tag` with the confirmed version, and it runs only in the local repository.\n10. Inferred: if the user declines or corrects the version, the skill asks again and does not tag.\n11. Inferred: because the test run might write caches or artifacts, it isn't marked `readonly`.\n\nQuestions to settle:\n- Should an annotated tag (`git tag -a v1.2.3 -m ...`) or a lightweight tag be used? I'd default to annotated.\n- What if there is no detectable test command? I'd default to asking you, and aborting if you give none.\n\nPlease confirm the inventory as written, or tell me what to add, change or remove, including your answers to the two questions above. Once you confirm, I'll draft, check and build the skill.",
+      "num_turns": 3,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 1,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "I've stopped before building because the checker found an ordering conflict that needs your decision. The draft is saved at `release-gate-draft/SKILL.md`, and nothing is built yet.\n\n**The error (M1):** the checker reports `ask after a mutation (line 23) breaks dismissal safety`. You confirmed this order: run the tests, then ask you to confirm the version, then tag. Running the tests counts as a possible write, because test runs can create caches or artifacts. SkillWren wants any question asked before a command that might change something, so that a dismissed question leaves nothing changed.\n\nThe rest of the check was clean. The three order rules each rest on real evidence: the test result, or your confirmation.\n\nI won't mark the test run `readonly`, since that would be false. Here are the options:\n\n1. **Keep your confirmed order and accept the M1 error.** The test run happens first, as you specified. Its only possible side effects are the test runner's own caches or artifacts. The checker would still report an error, so `build` may refuse to package it.\n2. **Reorder: ask for the version first, run the tests, then tag.** This satisfies M1. The cost is that you confirm a version before knowing whether the tests pass. I'd keep the tag step gated on the tests passing and on your confirmation, so no tag is ever made after a failure.\n3. **Ask twice.** Ask for the version up front, which is a proposal and harmless. Run the tests, then ask for a final \"tag it\" confirmation. This keeps the \"tests before the tag decision\" intent and is M1-safe, but it adds a second prompt. It changes the inventory, because you would confirm the version twice.\n\nI recommend option 3, because it fits your intent and passes the check. Which option do you want?",
+      "num_turns": 10,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "release-gate-draft/SKILL.md"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 9,
+      "commands": [
+        "mkdir -p release-gate-draft && cat > release-gate-draft/SKILL.md <<'EOF'\n---\nname: release-gate\ndescription: Gate a release tag behind a passing test suite and an explicit version confirmation, then create a local git tag. Never pushes. Use before tagging a release.\n---\n\n# Release gate\n\n```contract\ninputs:\n  request, test_command\norder:\n  verify #tests before ask user to confirm the version\n  ask user to confirm the version before exec git tag\n  verify #tests before exec git tag\n  never exec git tag before exec git push\n```\n\n```logic\nrelease-gate:\n  require test_command exists\n    otherwise:\n      ask user for the test command as test_command\n      require test_command exists\n        otherwise:\n          abort with \"No test command given; nothing was tagged.\"\n\n  exec test suite from tools as tests\n  verify #tests every test passed from tests\n    otherwise:\n      abort with \"Tests failed; refusing to continue. Nothing was tagged.\"\n\n  apply version proposal with request as version\n  show version\n  ask user to confirm the version\n  require user confirms the version\n    otherwise:\n      abort with \"Version not confirmed; nothing was tagged.\"\n\n  exec git tag from tools as tag\n  verify the tag was created locally from tag\n    otherwise:\n      abort with \"Tag creation failed; nothing was pushed.\"\n\n  return #tagged:\n    tag = version\n```\n\n| Step | Command |\n|---|---|\n| `exec test suite` | the confirmed `test_command`, run in the repository root |\n| `exec git tag` | `git tag -a <version> -m \"Release <version>\"` (local only) |\n\n## Step meanings\n\n- **version proposal**: take the version from the request, or the next version suggested by the latest local tag; it is only a proposal until the user confirms.\n- **tools**: the repository's command line. Only local commands are allowed: never run `git push`, `git push --tags`, or any command that writes to a remote.\nEOF\npy -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check release-gate-draft/SKILL.md --fragment --summary --audit; echo $?",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit release-gate-draft/SKILL.md; echo $?",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit release-gate-draft/SKILL.md",
+        "pwd; ls -la release-gate-draft 2>&1 | head",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit release-gate-draft/SKILL.md"
+      ],
+      "check_calls": 4
+    }
+  ]
+}

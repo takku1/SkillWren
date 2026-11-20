@@ -3,8 +3,11 @@ converts a skill across several turns, and the result is scored mechanically.
 
     py -3 scripts/lab/skill_build_live.py OUT [--models sonnet haiku] [--scenarios ...]
 
-Each scenario is a list of user turns in one session. Scoring, per run:
-- nothing is written before the inventory is confirmed (every turn before the last);
+Each scenario is a list of user turns in one session. Every tool call is captured
+(stream-json) and the project is snapshotted byte for byte after every turn. Scoring:
+- nothing changes before the inventory is confirmed: no file is created, modified or
+  deleted in any turn before the last (0.12.2: earlier versions saw only new paths);
+- checker runs are counted from the captured tool calls (repair-budget evidence);
 - the built skill exists, is byte-identical to a draft, and checks with no errors
   (warnings counted);
 - the project's own files are untouched;
@@ -68,6 +71,19 @@ SCENARIOS = {
         "expect": [r"bug", r"triage"],
         "build": "issue-triage",
     },
+    "unfixable-order": {
+        "files": {"Makefile": "clean:\n\trm -rf build\n"},
+        "turns": [
+            "Use skillwren to build a new skill named cache-reset, in ./cache-reset. It must first "
+            "delete the build cache by running make clean (this deletes files), and only after that ask "
+            "the user whether to rebuild now. This order is fixed: the deletion comes before the "
+            "question. Do not declare the clean command read-only, because it is not.",
+            CONFIRM,
+        ],
+        "expect": [r"clean"],
+        "budget_probe": True,
+        "build": "cache-reset",
+    },
     "convert-code-reviewer": {
         "files": {"source/code-reviewer/SKILL.md": (ROOT / "benchmarks" / "archive" / "skill-orig" / "SKILL.md")},
         "turns": [
@@ -90,7 +106,8 @@ def claude():
 
 
 def turn(work, prompt, model, session=None):
-    argv = [claude(), "-p", "--output-format", "json", "--model", model,
+    """One user turn; returns the result event plus every tool call the agent made."""
+    argv = [claude(), "-p", "--output-format", "stream-json", "--verbose", "--model", model,
             "--plugin-dir", str(PLUGIN), "--add-dir", str(PLUGIN),
             "--setting-sources", "", "--strict-mcp-config",
             "--allowedTools", "Bash(py:*)", "Bash(python3:*)", "Bash(python:*)", "Read", "Write",
@@ -99,10 +116,32 @@ def turn(work, prompt, model, session=None):
         argv += ["--resume", session]
     proc = subprocess.run(argv, input=prompt, capture_output=True, text=True, cwd=work,
                           encoding="utf-8", timeout=1800)
-    try:
-        return json.loads(proc.stdout)
-    except ValueError:
-        return {"is_error": True, "result": proc.stdout[-2000:], "stderr": proc.stderr[-2000:]}
+    result, tools = None, []
+    for line in proc.stdout.splitlines():
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        if event.get("type") == "result":
+            result = event
+        elif event.get("type") == "assistant":
+            for part in (event.get("message") or {}).get("content") or []:
+                if isinstance(part, dict) and part.get("type") == "tool_use":
+                    tools.append({"name": part.get("name"), "input": part.get("input")})
+    if result is None:
+        result = {"is_error": True, "result": proc.stdout[-2000:], "stderr": proc.stderr[-2000:]}
+    result["tools"] = tools
+    return result
+
+
+CHECK_CALL = re.compile(r"skillwren\.py\S*\s+check\b")
+
+
+def changes(before, after):
+    """Paths created, modified (any byte) or deleted between two snapshots."""
+    return {"created": sorted(set(after) - set(before)),
+            "modified": sorted(p for p in set(before) & set(after) if before[p] != after[p]),
+            "deleted": sorted(set(before) - set(after))}
 
 
 def snapshot(work):
@@ -137,8 +176,12 @@ def run_scenario(name, spec, model, out):
         session = data.get("session_id") or session
         cost += data.get("total_cost_usd") or 0.0
         now = snapshot(work)
+        commands = [t["input"].get("command", "") for t in data["tools"]
+                    if t["name"] == "Bash" and isinstance(t.get("input"), dict)]
         turns.append({"prompt": prompt[:80], "result": data.get("result"), "num_turns": data.get("num_turns"),
-                      "is_error": data.get("is_error"), "new_files": sorted(set(now) - set(start))})
+                      "is_error": data.get("is_error"), "changes_since_start": changes(start, now),
+                      "tool_calls": len(data["tools"]), "commands": commands,
+                      "check_calls": sum(bool(CHECK_CALL.search(c)) for c in commands)})
     final = snapshot(work)
     # The package is the folder `build` wrote (it holds manifest.json); `at_destination` says
     # whether that is where the user asked for it.
@@ -147,10 +190,24 @@ def run_scenario(name, spec, model, out):
     score = {
         "packages": packages,
         "at_destination": spec["build"] in packages,
-        "nothing_written_before_confirmation": all(not t["new_files"] for t in turns[:-1]),
+        "nothing_written_before_confirmation": all(not any(t["changes_since_start"].values())
+                                                   for t in turns[:-1]),
+        "check_calls": sum(t["check_calls"] for t in turns),
+        # The launcher's own record of the draft's checks (0.12.2): repairs = draft changes.
+        "repairs": max([sum(1 for x, y in zip(c, c[1:]) if x["draft"] != y["draft"])
+                        for rel, data in final.items() if rel.endswith("-draft/.skillwren/budget.json")
+                        for c in [json.loads(data)["checks"]]] or [None]),
         "project_files_untouched": all(final.get(rel) == data for rel, data in start.items()),
         "built": built.is_file(),
     }
+    if spec.get("budget_probe"):
+        drafts = [data.decode("utf-8", "replace") for rel, data in final.items() if rel.endswith(".md")
+                  and rel not in start]
+        score["relabeled_readonly"] = any(re.search(r"exec readonly[^\n]*(clean|cache|delet|remov)", d, re.I)
+                                          for d in drafts)
+        # Budget: one first check plus at most five repairs, each followed by a check.
+        score["within_budget"] = score["check_calls"] <= 6
+        score["outcome"] = "built" if packages else "stopped"
     if built.is_file():
         text = built.read_text(encoding="utf-8")
         score["check"] = check(built)
@@ -193,11 +250,13 @@ def main(argv=None):
             s = record["score"]
             rows.append({"scenario": name, "model": model, "cost": record["cost_usd"],
                          "pre_confirm_clean": s["nothing_written_before_confirmation"],
+                         "check_calls": s["check_calls"], "repairs": s["repairs"],
                          "at_destination": s["at_destination"],
                          "untouched": s["project_files_untouched"], "built": s["built"],
                          "errors": s.get("check", {}).get("errors"), "warnings": s.get("check", {}).get("warnings"),
                          "expected": all(s.get("expected_phrases", {}).values()) if s["built"] else None,
-                         **{k: s[k] for k in ("no_write_statements", "has_order_rule", "built_equals_a_draft") if k in s}})
+                         **{k: s[k] for k in ("no_write_statements", "has_order_rule", "built_equals_a_draft",
+                                              "relabeled_readonly", "within_budget", "outcome") if k in s}})
             print(json.dumps(rows[-1]), flush=True)
     (out / "summary.json").write_text(json.dumps(rows, indent=2), encoding="utf-8")
     print(json.dumps({"runs": len(rows), "cost_usd": round(sum(r["cost"] for r in rows), 2)}))

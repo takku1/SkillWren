@@ -1,0 +1,57 @@
+{
+  "format": "skillwren-build-1",
+  "mode": "fragments",
+  "entry": "SKILL.md",
+  "checked_fragments": [
+    "SKILL.md"
+  ],
+  "expanded_sha256": "e4e9a2b7c6c9f199925e29316ca0063ab1a60964ed30f29f06e7932b692db72d",
+  "expanded_bytes": 5232,
+  "tree_sha256": "462b1bc00ca09e711bcda8ec95b2c2bcd55c59ff99ddd032613732557cb1fc8a",
+  "sources": {
+    "SKILL.md": {
+      "sha256": "c0e446008d5f46cf278cae3b189ac6080e41787316fbbfa4318921fabd66970f",
+      "bytes": 5208
+    }
+  },
+  "contexts": [],
+  "deferred_contexts": [],
+  "warnings": [
+    {
+      "file": "SKILL.md",
+      "line": 17,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'generate structure review' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 18,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply review checks' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 19,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'generate details review' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 20,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'show critical' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 21,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'generate test review' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 22,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply report template' is the model's own judgment"
+    }
+  ]
+}

@@ -69,7 +69,7 @@ Conditions stay natural language. Indentation is structure (two spaces).
 | O1 | `otherwise:` sits only directly under `require`, `verify`, `read`, `open` | move the repair under its gate |
 | L3 | `retry` only inside an `otherwise:` block | use `return to <label>` elsewhere |
 | W9 | a repair falls through | end it with `retry`, `return to`, `abort` or `return` |
-| M1 | a write or non-readonly `exec` happens before an `ask` | ask first; a dismissed ask must leave nothing changed |
+| M1 | a write or non-readonly `exec` happens before an `ask` | ask first; a dismissed ask must leave nothing changed. Use `exec readonly` only for a command that cannot write anything (not tests, builds or installs); if the order must stay, say so and let the user decide |
 | A2 | `require user ...` without a decision `ask` before it, or an ask with no following `require` | pair them; decision asks take no `as` |
 | P1 / P3 | an order or exclusion rule is broken on some path | move the step the message names; the hint says where |
 | W12 | an `apply` spec has no step meaning | add `- **<spec>**: ...` under Step meanings |

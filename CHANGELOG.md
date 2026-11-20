@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.12.2 (2026-11-20)
+
+- The repair budget is counted by the skill's launcher, not the model. A
+  `check` of a `*-draft` folder is recorded in `.skillwren/budget.json`
+  (skipped by `build`); after five repairs without a clean check, or as
+  soon as a repair leaves exactly the same result, it prints why and exits
+  3, and the skill takes its blocked exit. Under the model-counted budget
+  of 0.12.1, one Haiku run made about eight repair rounds.
+- The skill and language card forbid marking a possibly-writing command
+  (tests, builds, installs) `exec readonly` to satisfy M1; reorder with the
+  user's agreement or stop blocked.
+- Live harness: byte snapshots after every turn (creations, edits and
+  deletions, not only new paths), every tool call captured, checker runs
+  and the launcher's repair record scored, plus an `unfixable-order`
+  scenario.
+- Frozen-configuration results (`research/skill-build-live/`, $1.46, two
+  models, five scenarios): nothing changed before confirmation 10/10;
+  6/6 satisfiable scenarios built with 0 errors; 4/4 unsatisfiable ones
+  stopped blocked; no `readonly` relabel; 0-4 repairs per run.
+- Corrections to 0.12.1: its "11 of 12 built" mixed two configurations,
+  and one of those builds (Sonnet, `release-gate`) passed by relabeling the
+  test run `exec readonly`.
+
 ## 0.12.1 (2026-11-20)
 
 - Bounded repairs in the `skillwren` skill: each of its three model repair

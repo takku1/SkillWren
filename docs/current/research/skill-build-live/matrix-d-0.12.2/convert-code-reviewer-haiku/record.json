@@ -1,0 +1,83 @@
+{
+  "scenario": "convert-code-reviewer",
+  "model": "haiku",
+  "cost_usd": 0.0335,
+  "score": {
+    "packages": [
+      "code-reviewer-logic"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 7,
+    "repairs": 4,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 6,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-it8l2puu\\code-reviewer-logic\\SKILL.md:17: warning W15: order rule rests on self-report: every statement matching 'generate structure review' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-it8l2puu\\code-reviewer-logic\\SKILL.md:18: warning W15: order rule rests on self-report: every statement matching 'apply review checks' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-it8l2puu\\code-reviewer-logic\\SKILL.md:19: warning W15: order rule rests on self-report: every statement matching 'generate details review' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-it8l2puu\\code-reviewer-logic\\SKILL.md:20: warning W15: order rule rests on self-report: every statement matching 'show critical' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-it8l2puu\\code-reviewer-logic\\SKILL.md:21: warning W15: order rule rests on self-report: every statement matching 'generate test review' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-it8l2puu\\code-reviewer-logic\\SKILL.md:22: warning W15: order rule rests on self-report: every statement matching 'apply report template' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-it8l2puu\\code-reviewer-logic\\SKILL.md: flow code-reviewer: inputs request; writes -; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "review": true
+    },
+    "no_write_statements": true
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to convert the existing skill at ./source/code-reviewer/SKILL.md i",
+      "result": "I read the source skill, but I've stopped before drafting. The conversion procedure requires your confirmation of the requirement inventory first. Please confirm it, or tell me what to change.\n\n**Source note:** `source/code-reviewer/` contains only `SKILL.md`. The Reference Guide links six files that aren't there: `references/review-checklist.md`, `common-issues.md`, `feedback-examples.md`, `report-template.md`, `spec-compliance-review.md`, and `receiving-feedback.md`. I can't convert their content. See question 1.\n\n**Requirement inventory (from `source/code-reviewer/SKILL.md`)**\n\n| # | Requirement | Where it lands |\n|---|---|---|\n| R1 | Frontmatter: `name: code-reviewer`; the description says it reviews diffs/files for bugs, security (SQLi, XSS, insecure deserialization), code smells, N+1 queries, naming, and architecture, and produces a prioritized report. | Skill frontmatter |\n| R2 | Workflow 1, Context: read the PR description and state the PR's intent in one sentence before proceeding. If you can't, ask the author to clarify. | Logic: gate before review, with an ask-user repair |\n| R3 | Workflow 2, Structure: check architecture and design. Does it follow existing patterns? Are new abstractions justified? | Logic step |\n| R4 | Workflow 3, Details: check code quality, security, and performance using the Reference Guide. Ask about N+1 queries, hardcoded secrets, and injection risks. | Logic step; reads references (see Q1) |\n| R5 | Workflow 4, Tests: check coverage and quality. Are edge cases covered? Do tests assert behavior rather than implementation? | Logic step |\n| R6 | Workflow 5, Feedback: produce the categorized report. Critical issues found in step 3 are noted immediately, not held to the end. | Logic step; order rule (step 3 before 5) |\n| R7 | Disagreement handling: acknowledge the author's stated reasoning before suggesting an alternative. Don't block on style when a linter or formatter is configured. | Step meaning / guidance text |\n| R8 | Reference Guide: load each reference by context (checklist, common issues, feedback examples, report template, spec compliance, receiving feedback). | `read ... from references` steps (inferred form) |\n| R9 | Quick-reference patterns: N+1 (bad/good), magic numbers (bad/good), SQL injection (bad/good), in Python. | Kept as examples in a step meaning |\n| R10 | MUST DO: summarize intent first; specific, actionable feedback; code examples; praise good patterns; prioritize critical \u2192 minor; review tests as thoroughly as code; check OWASP Top 10. | Constraints (guidance) |\n| R11 | MUST NOT DO: no condescension; no style nitpicks when linters exist; no blocking on preferences; no demanding perfection; no review without understanding the why; no skipping praise. | Constraints (prohibitions) |\n| R12 | Output template, in order: Summary, Critical, Major, Minor, Positive feedback, Questions for author, Verdict (Approve / Request Changes / Comment). | Output step; order rule |\n| R13 | Read-only: `allowed-tools: Read, Grep, Glob` (inferred as a no-write constraint). | Prohibition; no `write` or non-readonly `exec` in the logic |\n| R14 | Knowledge reference (SOLID, DRY, KISS, YAGNI, OWASP, etc.) and documentation link. | Informational; kept in frontmatter or a note, not logic |\n| R15 | Workflow order 1 \u2192 2 \u2192 3 \u2192 4 \u2192 5 (inferred from the numbering). | `order:` rules |\n\n**Proposed shape:** one `SKILL.md` with `name`/`description` frontmatter, a `contract` block, one `logic` block (intent gate \u2192 structure \u2192 details \u2192 tests \u2192 report), a command table, and step meanings. Output goes to `./code-reviewer-logic`. The working draft goes to `./code-reviewer-draft/`. The original stays untouched.\n\n**Questions**\n\n1. **Reference files:** Are `references/*.md` somewhere else, or should I convert the Reference Guide to inline step meanings based only on the quick-reference patterns in `SKILL.md`?\n2. **Input:** Is the input a PR description plus diff, a set of files, or both? I'll make it a single `request` input unless you say otherwise.\n3. **Inventory:** Are R13 (read-only) and R15 (ordering) right as I've inferred them? Anything to add, drop, or correct?\n\nOnce you confirm, I'll draft the logic, run the checker, and build to `./code-reviewer-logic`.",
+      "num_turns": 6,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 4,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The skill built to `./code-reviewer-logic`, but with six warnings I explained rather than fixed. The original `source/code-reviewer/SKILL.md` is unchanged. The working draft is in `./code-reviewer-draft/`.\n\n**Choices I made**\n\n- **Reference files:** You didn't answer my question about the six linked `references/*.md` files, and they aren't in `source/`. I inlined the review checks, the MUST/MUST NOT rules, and the output template from `SKILL.md` itself. The linked files' content is not converted.\n- **Input:** A single `request` input (the PR description, diff, or files).\n- **Intent gate:** I added a user confirmation of the PR intent after the one-sentence summary, since the source calls it a checkpoint. If the user doesn't confirm, the skill asks for clarification and loops back.\n- **Read-only:** The logic has no `write` or `exec` steps, which matches `allowed-tools: Read, Grep, Glob`.\n\n**Warnings left in place**\n\nThe checker reports six W15 warnings: the order rules for structure \u2192 details \u2192 critical \u2192 tests \u2192 report rest on the model's own judgment. A read-only reviewer produces no exec result or written artifact to anchor them to. The order is still enforced by statement sequence in the logic. I left the rules in place rather than deleting them.\n\n**Launcher status**\n\nThe launcher reported the repair budget as spent: several repairs left the same W15 warnings, so I stopped editing. The build still succeeded with those six warnings.\n\n**Limits**\n\n- The checker doesn't follow names in comma lists such as `from a, b`, so I chained each review's output into the next step as a single source. The report is built from the test review, which is itself built from the earlier reviews.\n- A clean check shows the procedure is well formed and ordered, not that a model will follow it.\n- The workflow explanation is generated from the logic. Please read it; if it's right, you record approval with `SW approve code-reviewer-logic/SKILL.md`. I haven't run that, since it's your step.",
+      "num_turns": 21,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "code-reviewer-draft/.skillwren/budget.json",
+          "code-reviewer-draft/SKILL.md",
+          "code-reviewer-logic/SKILL.md",
+          "code-reviewer-logic/manifest.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 20,
+      "commands": [
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md; echo \"exit=$?\"",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "grep -n -i \"generate\" \"Z:/SkillWren/plugin/skillwren/references/SPEC.md\" | head -40",
+        "sed -n 935,960p \"Z:/SkillWren/plugin/skillwren/references/SPEC.md\"",
+        "mkdir -p /tmp/swtest && sed 's/generate report from intent, structure, details, tests as report/generate report from structure as report/' code-reviewer-draft/SKILL.md > /tmp/swtest/SKILL.md && py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit \"C:/Users/<user>/AppData/Local/Temp/swtest/SKILL.md\" 2>&1 | grep -E \"W5|clean|error\" ; echo; cp /tmp/swtest/SKILL.md /tmp/swtest/x.md; true",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md; py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" explain-workflow code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" build code-reviewer-draft --out code-reviewer-logic"
+      ],
+      "check_calls": 7
+    }
+  ]
+}

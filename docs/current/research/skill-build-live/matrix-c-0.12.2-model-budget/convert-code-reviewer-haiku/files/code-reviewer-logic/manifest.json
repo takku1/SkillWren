@@ -1,0 +1,20 @@
+{
+  "format": "skillwren-build-1",
+  "mode": "fragments",
+  "entry": "SKILL.md",
+  "checked_fragments": [
+    "SKILL.md"
+  ],
+  "expanded_sha256": "dc82b38c1da0cd0794336d531177fb86acaf854b74247309ab6ff2651ae03344",
+  "expanded_bytes": 4941,
+  "tree_sha256": "6e61ecb128a052d8342ecaad92029d1d6a38e1152e47e3063b4a87920d0a0edd",
+  "sources": {
+    "SKILL.md": {
+      "sha256": "144220504933f12be5709dd424227a10c4c0f099ea37ef7b849ffffa92dfed53",
+      "bytes": 4917
+    }
+  },
+  "contexts": [],
+  "deferred_contexts": [],
+  "warnings": []
+}

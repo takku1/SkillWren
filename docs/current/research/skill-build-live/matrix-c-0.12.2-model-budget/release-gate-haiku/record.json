@@ -1,0 +1,73 @@
+{
+  "scenario": "release-gate",
+  "model": "haiku",
+  "cost_usd": 0.0235,
+  "score": {
+    "packages": [
+      "release-gate"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 4,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-x97ypdgs\\release-gate\\SKILL.md: flow release-gate: inputs request; writes -; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "test": true,
+      "tag": true
+    },
+    "has_order_rule": true
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to build a new skill named release-gate, in ./release-gate. Before",
+      "result": "I've drafted the requirement inventory for `release-gate`. Nothing has been written yet. Please confirm it, or tell me what's missing or wrong, before I draft the skill.\n\n**Requirement inventory**\n\n| # | Line | Source |\n|---|---|---|\n| R1 | Before tagging a release, run the test suite. | quoted |\n| R2 | Refuse to continue if any test fails. | quoted |\n| R3 | Ask the user to confirm the version number. | quoted |\n| R4 | Only after confirmation, create the git tag. | quoted (ordering: tag comes after R1 to R3) |\n| R5 | Never push to a remote, including `git push --tags`. | quoted (prohibition; the \"including\" part is inferred) |\n| I1 | The test command is detected from the project (e.g. `package.json` `test` script, `pytest`), and the user is asked if detection fails. | inferred |\n| I2 | The skill proposes a version number (from the latest tag, or the project manifest) and the user confirms or edits it. | inferred |\n| I3 | The tag is annotated, named `v<version>`, and created locally only. | inferred |\n| I4 | A failing test stops the run with no tag created. Rerunning after a fix starts from R1. | inferred |\n| I5 | The skill checks that it is inside a git repository and stops if it is not. | inferred |\n\n**Where things will go:** the draft is built in `release-gate-draft/` in the working directory, and the finished skill goes to `./release-gate/`.\n\n**Questions for you:**\n1. Do I3 (annotated `vX.Y.Z` tags) and I5 (repo check) match what you want? I'll drop either one if not.\n2. Should the skill also require a clean working tree before tagging? I left that out because you didn't ask for it.\n3. Is the test command detected from the project, as in I1, or do you want it passed in?\n\nReply \"confirmed\" to proceed with these lines, or send corrections.",
+      "num_turns": 3,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 1,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The `release-gate` skill is built in `./release-gate/` (`SKILL.md` and `manifest.json`). The checker reports clean, with zero errors and zero warnings.\n\n**Where each inventory line landed**\n\n| Line | Where it is in the skill |\n|---|---|\n| R1 run tests before tagging | `exec project tests`, then `verify #tests`, before `exec create tag` |\n| R2 refuse if a test fails | `verify #tests ... otherwise: abort` (no tag created) |\n| R3 ask to confirm the version | `ask user to confirm the version number` and `require user confirms the version number` (abort if not confirmed) |\n| R4 tag only after confirmation | `order:` rules: ask before tests, tests before tag, ask before tag |\n| R5 never push | `never:` block: \"push to any remote, including git push --tags\" |\n| I1 detect the test command | `if no test command can be detected` branch: asks the user, then shows the command |\n| I2 proposed version | `exec readonly latest tag`, then `generate proposed version`, then `show proposal` (patch bump, `0.1.0` if no tags) |\n| I3 annotated `vX.Y.Z` tag, local only | `exec create tag`: `git tag -a v<version> -m ...` |\n| I4 failed tests leave no tag | `abort` in the test gate, so the tag step never runs |\n| I5 git repo check | `require the working directory is a git repository`, aborts if not |\n\n**Choices I made that you may want to change**\n- **Version confirmation comes before the test run, not after.** Running the tests is a state-changing command, and the checker blocks changes made before a question the user can dismiss. Asking first keeps that safe. Tests still gate the tag, and R4 still holds.\n- **The user can't type a different version at the confirmation step.** They confirm the proposal or the run stops, and they can rerun the gate to change it.\n- **Your two open questions were not answered, so I used my defaults:** annotated tags and the repo check are in, and there is no clean-working-tree check.\n\n**Limits:** a clean check shows the procedure is well formed and ordered. It does not show that the agent will follow it. The workflow explanation is generated from the logic, so please read it. If you accept it, you record that with `SW approve <file>` yourself. I did not run `approve` for you. Nothing was installed, and I did not test the skill against a real repository. The draft is in `release-gate-draft/`.",
+      "num_turns": 17,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "release-gate-draft/SKILL.md",
+          "release-gate/SKILL.md",
+          "release-gate/manifest.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 16,
+      "commands": [
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check release-gate-draft/SKILL.md; echo \"exit=$?\"",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check release-gate-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit release-gate-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit release-gate-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" explain-workflow release-gate-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" build release-gate-draft --out release-gate",
+        "ls -la release-gate && head -5 release-gate/SKILL.md"
+      ],
+      "check_calls": 4
+    }
+  ]
+}

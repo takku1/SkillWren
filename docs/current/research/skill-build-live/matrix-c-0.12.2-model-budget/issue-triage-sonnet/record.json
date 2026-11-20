@@ -1,0 +1,74 @@
+{
+  "scenario": "issue-triage",
+  "model": "sonnet",
+  "cost_usd": 0.2087,
+  "score": {
+    "packages": [
+      "issue-triage"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 4,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 1,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-9jkwzg0w\\issue-triage\\SKILL.md:12: warning W15: order rule rests on self-report: every statement matching 'generate verdict' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-9jkwzg0w\\issue-triage\\SKILL.md: flow issue-triage: inputs issue_text; writes triage_file; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "bug": true,
+      "triage": true
+    }
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to build a new skill named issue-triage, in ./issue-triage. Given ",
+      "result": "Here is the requirement inventory for `issue-triage`. Please confirm it or tell me what to change.\n\n1. **Input:** the issue's text. If it's missing, abort and ask for it.\n2. **Label:** classify the issue as exactly one of `bug`, `feature` or `question`.\n3. **Unclear label:** if the text doesn't clearly fit one label, ask the user which label applies. Use the user's answer as the label.\n4. **Output:** write the label and a one-line reason to `triage.md`.\n5. **Prohibition:** never close, edit, comment on, relabel or otherwise change the issue itself. The skill only reads the issue text and writes `triage.md`.\n6. **Ordering:** `triage.md` is written only after the label is decided, whether by the model or by the user.\n7. **Destination:** build the skill into `./issue-triage`.\n\nInferred, so please check these:\n- A reason of at most one line, with no line breaks.\n- Where `triage.md` goes: the current working directory.\n- If `triage.md` already exists, I'd overwrite it. Say so if you'd rather append, with one entry per issue.\n- The `triage.md` format: `label: <label>` followed by `reason: <one line>`.\n- Whether \"unclear\" means I should ask whenever the text plausibly fits two labels.\n\nDo you confirm this inventory, or would you change any line (especially overwrite versus append)?",
+      "num_turns": 3,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 1,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "I built the `issue-triage` skill into `./issue-triage`. The check passes with no errors and one warning, which I've accepted.\n\n**What it does:** it takes the issue's text and aborts if there is none. It labels the issue `bug`, `feature` or `question` with a one-line reason. If the label is unclear or fits more than one category, it shows its verdict and asks you to choose. If you don't choose, it aborts and writes nothing. It then writes `label: <label>` and `reason: <one line>` to `triage.md` in the current directory, overwriting any existing file. It never calls an issue tracker, so it can't close or edit the issue.\n\n**Where each requirement landed:**\n1. Issue text input: the `require issue_text exists` gate, with an abort.\n2. One of three labels: the step meaning for `verdict`.\n3. Ask when unclear: the `if` branch, followed by the `ask user` step and its `require user` gate.\n4. Write label and reason: `write verdict with triage_file`, plus the `triage_file` step meaning.\n5. Must not touch the issue: no tracker step exists, the contract has a `never write * with triage_file` rule, and the Limits section states it.\n6. Label decided before the write: the order rule `generate verdict before write verdict`.\n7. Destination: `./issue-triage`.\n\n**Warning I accepted (W15):** the order rule in item 6 rests on the model's own judgment, so there's no outside signal to anchor it to. The user is only asked on the unclear path, so that can't anchor it either. The ordering still holds, because `write verdict` needs a `verdict` that only exists after the label is decided.\n\n**Limits:**\n- A clean check proves the procedure is well formed and ordered. It doesn't prove a model will follow it.\n- I haven't installed the skill or run any model evaluations.\n- Please read the workflow explanation printed above. If you accept it, run `SW approve` on the file yourself. I haven't run it.\n- The `issue-triage-draft/` folder is still in the working directory. It's the editable source, and `./issue-triage` is the build.",
+      "num_turns": 14,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "issue-triage-draft/SKILL.md",
+          "issue-triage/SKILL.md",
+          "issue-triage/manifest.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 13,
+      "commands": [
+        "mkdir -p issue-triage-draft && cat > issue-triage-draft/SKILL.md <<'EOF'\n---\nname: issue-triage\ndescription: Label an issue as bug, feature or question from its text, ask the user when the label is unclear, and write the label and a one-line reason to triage.md. Never closes or edits the issue. Use when asked to triage an issue.\n---\n\n# Issue triage\n\n```contract\ninputs:\n  issue_text\norder:\n  generate verdict before write verdict\n  never write * with triage_file before generate verdict\n```\n\n```logic\nissue-triage:\n  require issue_text exists\n    otherwise:\n      abort with \"Give the issue's text to triage.\"\n\n  generate verdict from issue_text as verdict\n\n  if the verdict is unclear, or the text plausibly fits more than one label:\n    show verdict\n    ask user to choose the label: bug, feature or question\n    require user chooses one of bug, feature or question\n      otherwise:\n        abort with \"No label chosen; nothing was written.\"\n    apply user label with verdict as verdict\n\n  write verdict with triage_file\n  return verdict as verdict\n```\n\n## Step meanings\n\n- **verdict**: exactly one label, `bug`, `feature` or `question`, plus a reason of one line with no line breaks, based only on the issue text.\n- **user label**: replace the label with the user's choice and rewrite the reason in one line to match it.\n- **triage_file**: `triage.md` in the current working directory, overwritten, containing `label: <label>` then `reason: <one line>`.\n\n## Limits\n\nThis skill only reads the issue text and writes `triage.md`. It never closes, edits, comments on or relabels the issue, and never calls an issue tracker.\nEOF\nSW=\"py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\"; $SW check --fragment --summary --audit issue-triage-draft/SKILL.md; echo exit $?",
+        "ls issue-triage-draft; py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit issue-triage-draft/SKILL.md; echo exit $?",
+        "python3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit issue-triage-draft/SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit issue-triage-draft/SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit issue-triage-draft/SKILL.md",
+        "S=Z:/SkillWren/plugin/skillwren/scripts/skillwren.py; py -3 $S explain-workflow issue-triage-draft/SKILL.md; py -3 $S build issue-triage-draft --out ./issue-triage; echo exit $?",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py explain-workflow issue-triage-draft/SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py build issue-triage-draft --out ./issue-triage"
+      ],
+      "check_calls": 4
+    }
+  ]
+}

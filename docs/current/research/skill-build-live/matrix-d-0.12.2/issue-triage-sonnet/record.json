@@ -1,0 +1,76 @@
+{
+  "scenario": "issue-triage",
+  "model": "sonnet",
+  "cost_usd": 0.2324,
+  "score": {
+    "packages": [
+      "issue-triage"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 4,
+    "repairs": 1,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-z90nb903\\issue-triage\\SKILL.md: flow issue-triage: inputs issue_text; writes triage_file; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "bug": true,
+      "triage": true
+    }
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to build a new skill named issue-triage, in ./issue-triage. Given ",
+      "result": "I've read the language reference. Before I draft anything, please confirm this requirement inventory.\n\n**Requirement inventory for `issue-triage`** (built to `./issue-triage`)\n\n1. Input: the text of one issue. The user supplies it. *(request)*\n2. If the issue text is missing, stop and ask for it. *(inferred)*\n3. Label the issue as exactly one of `bug`, `feature` or `question`. *(request)*\n4. If the label is unclear, ask the user which label applies and use their answer. Don't guess. *(request)*\n5. Write the label and a one-line reason to `triage.md`. *(request)*\n6. Never close or edit the issue itself. The skill's only write is `triage.md`. It has no step that touches the issue tracker. *(request)*\n7. Ask before writing, so a dismissed question leaves nothing changed. *(inferred, from the checker's M1 rule)*\n8. The reason is one line. *(request)*\n9. `triage.md` is created in the working directory. If it exists, new entries are appended and nothing is overwritten. *(inferred)*\n10. The skill returns the label and reason as its result. *(inferred)*\n\n**Questions for you:**\n- Are items 2, 7, 9 and 10 right? Item 9 is the one I'm least sure of: should it append or overwrite `triage.md`?\n- Should the skill write an entry only after you confirm a label that it chose itself without asking? I've assumed it doesn't, and only unclear cases get a question.\n\nReply \"confirmed\", or tell me what to change. I'll draft the skill after that.",
+      "num_turns": 4,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 2,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "I built the skill and it passed the check with no warnings. It's at `./issue-triage/SKILL.md`, and the draft is in `./issue-triage-draft/`. Nothing else is running.\n\n**What the skill does**\n- It asks for the issue text if none was given.\n- It labels the issue `bug`, `feature` or `question`, with a one-line reason.\n- If the label is unclear, it shows its guess and asks you to choose. If you don't choose, it stops and leaves `triage.md` unchanged.\n- It checks that the label is one of the three and the reason is one line. Then it appends `- <label>: <reason>` to `triage.md` and returns the result.\n- The skill has no step that touches the issue tracker. Its only write is `triage.md`.\n\n**Where each requirement landed**\n- Items 1 and 2 (input, ask for missing text): the intake gate.\n- Items 3, 4 and 8 (the three labels, ask when unclear, one-line reason): the `generate` step, the unclear-label branch and the `verify` gate.\n- Items 5, 9 and 10 (write to `triage.md`, append, return the result): the final `write` and `return`.\n- Item 6 (never close or edit the issue): there is no such step, and the `triage_file` step meaning says so explicitly.\n- Item 7 (ask before writing): the question comes before the only `write`, and the checker's M1 rule would flag it otherwise.\n\n**Limits**\n- **Check scope:** the check shows the procedure is well formed. It doesn't show that a model will label issues well.\n- **Order rules:** there are none. The question and the write sit on different branches, so an order rule would fail the check. \"Never edit the issue\" is enforced by the skill having no step that could do it.\n- **Retry limit:** the format `verify` gate retries without a stated limit.\n- **Shell problems:** a couple of shell calls were blocked along the way. I reran them and they went through, so the build itself is unaffected.\n\nPlease read the workflow explanation above. If you accept it, run `SW approve ./issue-triage/SKILL.md` yourself. I won't run that for you. I haven't installed the skill or run any model evaluations.",
+      "num_turns": 14,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "issue-triage-draft/.skillwren/budget.json",
+          "issue-triage-draft/SKILL.md",
+          "issue-triage/SKILL.md",
+          "issue-triage/manifest.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 13,
+      "commands": [
+        "mkdir -p issue-triage-draft && cat > issue-triage-draft/SKILL.md <<'EOF'\n---\nname: issue-triage\ndescription: Label an issue as bug, feature or question from its text, ask the user when the label is unclear, and record the label with a one-line reason in triage.md. Never closes or edits the issue. Use when asked to triage, label or classify an issue.\n---\n\n# Issue triage\n\n```contract\ninputs:\n  issue_text\n```\n\n```logic\nissue-triage:\n  require issue_text exists\n    otherwise:\n      ask user for the issue text as issue_text\n      require issue_text exists\n        otherwise:\n          abort with \"No issue text given; nothing was labelled or written.\"\n\n  generate triage from issue_text as triage\n  apply triage format with triage as triage\n\n  if the label in triage is unclear:\n    show triage\n    ask user to decide the label as bug, feature or question\n    require user decides the label\n      otherwise:\n        abort with \"No label chosen; triage.md was not changed.\"\n    apply user label with triage as triage\n\n  verify the label is exactly one of bug, feature or question and the reason is one line from triage\n    otherwise:\n      apply triage format with triage as triage\n      retry\n\n  write triage with triage_file\n  return triage as triage\n```\n\n## Step meanings\n\n- **triage**: choose exactly one label (`bug`: something that should work is broken; `feature`: a request for new or changed behaviour; `question`: a request for information or help) and a one-line reason. Mark the label unclear when the text fits more than one label or none.\n- **triage format**: one label from `bug`, `feature`, `question` (or `unclear`) and a reason on a single line.\n- **user label**: replace the label with the user's choice and rewrite the reason in one line to match it.\n- **triage_file**: `triage.md` in the working directory. Append the entry as `- <label>: <reason>`; never overwrite earlier entries. This is the only thing the skill writes. It never closes, comments on, labels or edits the issue or its tracker.\nEOF\nSW=\"py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\"\n$SW check --fragment --summary --audit issue-triage-draft/SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit issue-triage-draft/SKILL.md; echo exit $?",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit issue-triage-draft/SKILL.md",
+        "ls issue-triage-draft; pwd",
+        "cd \"C:/Users/<user>/AppData/Local/Temp/sw-proj-z90nb903\" && py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit issue-triage-draft/SKILL.md",
+        "cd \"C:/Users/<user>/AppData/Local/Temp/sw-proj-z90nb903\" && py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit issue-triage-draft/SKILL.md",
+        "cd \"C:/Users/<user>/AppData/Local/Temp/sw-proj-z90nb903\" && SW=\"py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" && $SW explain-workflow issue-triage-draft/SKILL.md && $SW build issue-triage-draft --out ./issue-triage",
+        "cd \"C:/Users/<user>/AppData/Local/Temp/sw-proj-z90nb903\" && py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" explain-workflow issue-triage-draft/SKILL.md",
+        "cd \"C:/Users/<user>/AppData/Local/Temp/sw-proj-z90nb903\" && py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" build issue-triage-draft --out ./issue-triage"
+      ],
+      "check_calls": 4
+    }
+  ]
+}

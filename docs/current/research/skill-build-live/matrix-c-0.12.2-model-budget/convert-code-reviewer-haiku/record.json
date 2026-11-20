@@ -1,0 +1,80 @@
+{
+  "scenario": "convert-code-reviewer",
+  "model": "haiku",
+  "cost_usd": 0.0422,
+  "score": {
+    "packages": [
+      "code-reviewer-logic"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 9,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ofys5ufa\\code-reviewer-logic\\SKILL.md: flow code-reviewer: inputs change; writes -; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "review": true
+    },
+    "no_write_statements": true
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to convert the existing skill at ./source/code-reviewer/SKILL.md i",
+      "result": "I've read the source and the SkillWren language reference. Before drafting, the procedure requires you to confirm the requirement inventory below. One problem first: the source links to five reference files that aren't in `./source/code-reviewer/`, and the procedure says to read every linked file that changes a decision.\n\n**Missing from source:** `references/review-checklist.md`, `common-issues.md`, `feedback-examples.md`, `report-template.md`, `spec-compliance-review.md`, `receiving-feedback.md`. The Reference Guide says to load them by context, so they affect the review, not just the wording.\n\n## Requirement inventory (draft, not yet confirmed)\n\nQuoted from `source/code-reviewer/SKILL.md` unless marked *inferred*.\n\n**Scope and authority**\n- R1. Frontmatter `name: code-reviewer`, with the description and triggers as written.\n- R2. `allowed-tools: Read, Grep, Glob`. The review reads code and never writes. *(inferred: read-only is the consequence of the tool list)*\n- R3. Trigger: use for PR reviews, code quality audits, refactoring suggestions, security checks.\n\n**Ordered workflow**\n- R4. Step 1 Context: read the PR description and understand the problem. Checkpoint: summarize the PR's intent in one sentence before proceeding; if you cannot, ask the author to clarify. *(order: R4 before R5\u2013R8)*\n- R5. Step 2 Structure: review architecture and design decisions (existing patterns, justified abstractions). *(order: after R4, before R6)*\n- R6. Step 3 Details: check quality, security, performance using the Reference Guide checks (N+1, hardcoded secrets, injection). *(order: after R5, before R7)*\n- R7. Step 3 critical issues are noted immediately, not held until the end. *(an ordering rule inside R6\u2013R8)*\n- R8. Step 4 Tests: validate coverage and quality (edge cases; tests assert behavior, not implementation). *(order: after R6, before R9)*\n- R9. Step 5 Feedback: produce the categorized report from the Output Template. *(order: last)*\n\n**Conditions and exceptions**\n- R10. Disagreement: if the author left comments explaining a non-obvious choice, acknowledge their reasoning before suggesting an alternative.\n- R11. Never block on style when a linter or formatter is configured.\n- R12. Reference loading: load each reference file when its \"Load When\" condition holds. *(see the missing-files question below)*\n\n**Musts and must-nots**\n- R13. MUST: summarize intent first; specific, actionable feedback; code examples in suggestions; praise good patterns; prioritize critical \u2192 minor; review tests as thoroughly as code; OWASP Top 10 as baseline.\n- R14. MUST NOT: be condescending or rude; nitpick style when linters exist; block on personal preference; demand perfection; review without understanding the why; skip praise.\n\n**Output**\n- R15. Report sections in this order: Summary (one-sentence intent + overall assessment); Critical; Major; Minor; Positive feedback; Questions for author; Verdict (Approve / Request Changes / Comment).\n- R16. Verdict must be one of the three listed values. *(inferred)*\n\n**Evidence and knowledge**\n- R17. Pattern examples (N+1, magic number, SQL injection bad/good) are guidance for Step 3; they stay as reference text in the converted skill.\n- R18. Knowledge: SOLID, DRY, KISS, YAGNI, design patterns, OWASP Top 10, language idioms, testing patterns. Background only; no decision depends on it. *(inferred)*\n\n**Dropped or not carried**\n- R19. The documentation link and `license`/`metadata` fields are not procedure. They will be kept as frontmatter or a note, not as logic. *(inferred)*\n\n**Inputs (inferred):** a PR description and diff or files to review.\n\n## Questions\n\n1. **Missing references:** Do you have the six reference files? If yes, put them in `./source/code-reviewer/references/` and I'll read them before drafting. If not, should I convert without them and record the loss as a stated limit? Without them, R12 and the Step 3 and Step 4 checklists can't be checked against anything.\n2. **Confirm or correct the inventory:** Reply \"confirmed\", or name the lines to add, change or remove. In particular, confirm R2 (read-only), R16 and R18 (inferred), and the inferred input in R19.\n3. **Author clarification (R4):** The source says \"ask the author to clarify\". In the converted skill, should that be a question to the user running the review, or a note in the report's Questions section?\n\nOnce you answer, I'll write the draft to `./code-reviewer-logic-draft/`, run the checker and explainer, and build the package to `./code-reviewer-logic/`. The original stays untouched.",
+      "num_turns": 5,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 3,
+      "commands": [
+        "cd \"C:/Users/<user>/AppData/Local/Temp/sw-proj-ofys5ufa\" && ls -la && find source -type f | head -50 && cat source/code-reviewer/SKILL.md",
+        "cat \"Z:/SkillWren/plugin/skillwren/references/language.md\""
+      ],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The package is built at `./code-reviewer-logic/`, and the checker is clean: 0 errors, 0 warnings. The original `./source/code-reviewer/SKILL.md` is untouched.\n\n## Where each requirement landed\n\n| Req | Landed in | Status |\n|---|---|---|\n| R1 frontmatter (`name`, description, `license`, `allowed-tools`) | frontmatter | kept |\n| R2 read-only | no write or exec statements; `allowed-tools: Read, Grep, Glob` | kept |\n| R3 trigger | `description` | kept |\n| R4 Context step, one-sentence intent checkpoint | `verify #intent`; clarification via `ask user` | kept (see choice 2) |\n| R5 Structure | `apply structure checks`, `verify #structure` | kept |\n| R6 Details | `apply detail checks`, `verify #details` | kept |\n| R7 critical issues shown immediately | `if details contains a critical issue: show critical issues` | kept |\n| R8 Tests | `apply test checks`, `verify #tests` | kept |\n| R9 Feedback | `apply report template`, `return #report` | kept |\n| R10 author's reasoning acknowledged first | detail checks step meaning | kept |\n| R11 no style blocking when a linter is configured | detail checks step meaning | kept |\n| **R12 reference loading** | **not landed** | **missing**: the six reference files weren't in the source |\n| R13 MUSTs | report template and check steps | kept |\n| R14 MUST NOTs | report template | kept |\n| R15 report sections in order | report template | kept |\n| R16 verdict is one of three values | report template | kept |\n| R17 bad/good pattern examples | detail checks step meaning | kept |\n| R18 background knowledge (SOLID, DRY, \u2026) | not included | dropped: background only, no decision depends on it |\n| R19 documentation link, `metadata` block | not included | dropped: not procedure |\n\n## Choices I made\n\n1. **Missing references:** converted without them. R12 is the one requirement that did not land as written. If you add the six files, I can add a `read ... from references` step with an owned repair.\n2. **Author clarification (R4):** routed to the user running the review (`ask user for the author's clarification`), since that's the only interactive path.\n3. **Citation check:** the three `verify` gates check that each finding cites a file and line that appears in the change. They don't check that the finding is correct.\n\n## Workflow (condensed from `explain-workflow`)\n\n1. Require a change (PR description plus diff or files). Abort if missing.\n2. Generate a one-sentence intent from the PR and show it. If it fails the check, ask the user for clarification, rewrite the intent, and retry.\n3. Read changed files and existing patterns. Structure checks, show results, verify citations against the change, repair and retry on failure.\n4. Detail checks, verify citations, repair and retry. Show any critical issues as soon as they're found.\n5. Test checks, show, verify citations, repair and retry.\n6. Build the report in the seven-section template, show it, and return it.\n\nThe four ordering rules hold on every path, and each rests on an evidence-backed verify. The retry loops state no retry limit. The repair budget is your own count, not a mechanical limit.\n\n**Next steps for you:**\n- Read the workflow above, or run `py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py explain-workflow code-reviewer-draft/SKILL.md`. If you accept it, you record that yourself with `SW approve <file>`. I haven't run `approve`.\n- Decide on the six reference files (choice 1).\n\nA clean check shows the procedure is well formed and ordered. It doesn't show that a model will follow it, or that it reviews code well.",
+      "num_turns": 27,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "code-reviewer-draft/SKILL.md",
+          "code-reviewer-logic/SKILL.md",
+          "code-reviewer-logic/manifest.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 26,
+      "commands": [
+        "ls \"Z:/SkillWren/plugin/skillwren/scripts\" && grep -n -B2 -A6 \"W15\" \"Z:/SkillWren/plugin/skillwren/references/SPEC.md\" | head -60; grep -n -A12 \"^## .*order\" \"Z:/SkillWren/plugin/skillwren/references/SPEC.md\" | head -60",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md; echo \"EXIT $?\"",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "cd /c/Users/<user>/AppData/Local/Temp/sw-proj-ofys5ufa/code-reviewer-draft && sed -i -e 's/with clarification, intent as intent/with clarification and intent as intent/' -e 's/with changed, patterns as structure/with changed and patterns as structure/' -e 's/with structure, changed as structure/with structure and changed as structure/' -e 's/with details, changed as details/with details and changed as details/' -e 's/with tests, changed as tests/with tests and changed as tests/' -e 's/with intent, structure, details, tests as report/with intent and structure and details and tests as report/' SKILL.md && cd .. && py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "sed -i -e 's/with clarification, intent as intent/with clarification and intent as intent/' -e 's/with changed, patterns as structure/with changed and patterns as structure/' -e 's/with structure, changed as structure/with structure and changed as structure/' -e 's/with details, changed as details/with details and changed as details/' -e 's/with tests, changed as tests/with tests and changed as tests/' -e 's/with intent, structure, details, tests as report/with intent and structure and details and tests as report/' code-reviewer-draft/SKILL.md && py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" explain-workflow code-reviewer-draft/SKILL.md",
+        "py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" build code-reviewer-draft --out ./code-reviewer-logic"
+      ],
+      "check_calls": 9
+    }
+  ]
+}

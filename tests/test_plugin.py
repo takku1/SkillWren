@@ -83,6 +83,68 @@ class PluginTests(unittest.TestCase):
                                 f"repair at logic line {i + 1} loops without a blocked exit")
         self.assertGreaterEqual(loops, 3)
 
+    # 0.12.2: the repair budget is counted by the launcher, not the model (Haiku ran
+    # about eight repair rounds under a model-counted budget of five).
+
+    DRAFT = ("---\nname: x\ndescription: demo\n---\n\n```contract\ninputs:\n  request\n```\n\n"
+             "```logic\nx:\n  exec make clean from tools as cleaned\n"
+             "  ask user whether to rebuild as choice\n{extra}  return cleaned as result\n```\n")
+
+    def draft(self, tmp, extra=""):
+        folder = Path(tmp) / "x-draft"
+        folder.mkdir(exist_ok=True)
+        (folder / "SKILL.md").write_text(self.DRAFT.format(extra=extra), encoding="utf-8")
+        return folder
+
+    def check_draft(self, folder):
+        return run(SKILL / "scripts" / "skillwren.py", "check", "--fragment", folder / "SKILL.md")
+
+    def test_budget_stops_a_repair_that_changes_nothing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = self.draft(tmp)
+            self.assertEqual(self.check_draft(folder).returncode, 1)
+            with (folder / "SKILL.md").open("a", encoding="utf-8") as f:
+                f.write("\nA note that fixes nothing.\n")
+            result = self.check_draft(folder)
+            self.assertEqual(result.returncode, 3, result.stdout)
+            self.assertIn("same problems", result.stdout)
+
+    def test_budget_stops_after_five_repairs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = self.draft(tmp)
+            codes = [self.check_draft(folder).returncode]
+            for i in range(1, 6):  # each repair changes the result (a new undefined apply)
+                extra = "".join(f"  apply step{k} with request as request\n" for k in range(i))
+                self.draft(tmp, extra)
+                codes.append(self.check_draft(folder).returncode)
+            self.assertEqual(codes, [1, 1, 1, 1, 1, 3])
+
+    def test_budget_never_stops_a_clean_draft_or_touches_other_folders(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "y-draft"
+            folder.mkdir()
+            text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+            for i in range(7):
+                (folder / "SKILL.md").write_text(text + f"\n<!-- {i} -->\n", encoding="utf-8")
+                self.assertEqual(self.check_draft(folder).returncode, 0)
+            other = Path(tmp) / "plain"
+            other.mkdir()
+            (other / "SKILL.md").write_text(self.DRAFT.format(extra=""), encoding="utf-8")
+            run(SKILL / "scripts" / "skillwren.py", "check", "--fragment", other / "SKILL.md")
+            self.assertFalse((other / ".skillwren").exists())
+
+    def test_budget_state_is_not_packaged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "y-draft"
+            folder.mkdir()
+            shutil.copy2(SKILL / "SKILL.md", folder / "SKILL.md")
+            self.check_draft(folder)
+            self.assertTrue((folder / ".skillwren" / "budget.json").is_file())
+            out = Path(tmp) / "pkg"
+            result = run(SKILL / "scripts" / "skillwren.py", "build", folder, "--out", out)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertFalse(any(".skillwren" in p.parts for p in out.rglob("*")))
+
     def test_skill_links_resolve_inside_the_plugin(self):
         text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
         for target in re.findall(r"\]\(([^)#]+)\)", text) + re.findall(r"`(references/[^`]+\.md)`", text):

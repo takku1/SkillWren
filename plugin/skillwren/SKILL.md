@@ -100,8 +100,9 @@ Pass explicit file names, not shell globs.
 | `exec workflow explanation` | `SW explain-workflow <file>` for each file with a `logic` block |
 | `exec skill build` | `SW build <name>-draft --out <destination>`: pass the draft folder, not a file, for the inline form and flow files (only a complete skill with a contract header is built from its file) |
 
-Exit 0 means no errors, 1 means errors, 2 means a usage failure. A warning
-is not a pass: fix it or say why it is acceptable.
+Exit 0 means no errors, 1 means errors, 2 means a usage failure, and 3
+means the repair budget is spent (the launcher prints why). A warning is
+not a pass: fix it or say why it is acceptable.
 
 ## Step meanings
 
@@ -129,13 +130,21 @@ is not a pass: fix it or say why it is acceptable.
   vocabulary, gates with owned repairs, a signal outside the model behind
   every order rule, `ask` followed by `require user ...`.
 - **check repair**: fix what the checker reported in the represented
-  control flow. Never weaken a requirement or delete a rule to silence it.
+  control flow. Never weaken a requirement or delete a rule to silence it,
+  and never mark an `exec` `readonly` unless the command cannot change
+  anything (tests, builds and installs can write caches or artifacts). If
+  M1 conflicts with the confirmed order (a command that may write must
+  run before a question), the repair is to reorder with the user's
+  agreement or stop blocked and ask; not to relabel the command.
 - **requirement repair**: add the missing requirement where it belongs, or
   ask the user whether to drop it. A requirement may not disappear.
-- **repair budget**: spent when a check reports the same problems as the
-  attempt before it (no progress), or after five repairs in this run across
-  all three repair loops. Count them; this is your own count, not a
-  mechanical limit.
+- **repair budget**: spent when the check of the draft folder exits 3.
+  The launcher counts it for you: a repair is any change to the draft
+  folder between two checks, and the budget is spent after five repairs
+  without a clean check, or as soon as a repair leaves exactly the same
+  problems. Do not delete its record (`<name>-draft/.skillwren/`) to reset
+  it; for the requirement and build loops, run the check again to read the
+  budget.
 - **inventory revision**: add, correct or remove the lines the user named,
   then show the whole inventory again.
 

@@ -1,0 +1,87 @@
+{
+  "scenario": "changelog-correct",
+  "model": "haiku",
+  "cost_usd": 0.0293,
+  "score": {
+    "packages": [
+      "changelog-entry"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 4,
+    "repairs": 1,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-9o5jh69m\\changelog-entry\\SKILL.md: flow changelog-entry: inputs changelog_file, request; writes changelog_file; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "Changed": true,
+      "pull request|PR number|\\(#": true
+    }
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to build a new skill named changelog-entry, in ./changelog-entry. ",
+      "result": "Before I draft anything, I need you to check the requirement inventory below. I've quoted your request where it states a requirement and marked what I inferred.\n\n**Requirement inventory: changelog-entry**\n\n1. [request] Skill name is `changelog-entry`, created at `./changelog-entry`.\n2. [request] The skill adds one entry to `CHANGELOG.md` for a change the user describes.\n3. [request] It must read the current `CHANGELOG.md` before writing anything.\n4. [request] When the description does not make clear whether the entry belongs under Added or Fixed, the skill asks the user. It does not guess.\n5. [request] It never edits any file other than `CHANGELOG.md`.\n6. [request] It shows the user the new entry before writing it. It writes only after the user approves.\n7. [inferred] Input: the user's change description, plus the `CHANGELOG.md` in the project working directory.\n8. [inferred] Order: read `CHANGELOG.md`, then pick the section (asking if unclear), then draft the entry, then show it, then get approval, then write.\n9. [inferred] The entry follows the formatting already used in `CHANGELOG.md` (bullet style, Unreleased section, etc.).\n10. [inferred] If `CHANGELOG.md` does not exist, the skill stops and asks. It does not create the file.\n\nPlease confirm or correct these. I need answers to two things:\n\n- Is `CHANGELOG.md` in the project root (`C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-9o5jh69m`)? I haven't been able to check that yet, and the skill depends on it.\n- Should entries go under an `Unreleased` heading with `Added` and `Fixed` subsections? If your changelog uses a different layout, tell me what it is.",
+      "num_turns": 3,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 1,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Not quite. Changes to the inventory: the skill must also allow a Changed section",
+      "result": "Your corrections are in. I also checked the two open questions: `CHANGELOG.md` is in the project root, and it has an `## Unreleased` heading with empty `### Added` and `### Fixed` subsections. Neither has a `Changed` subsection yet.\n\n**Revised requirement inventory: changelog-entry**\n\n1. [request] Skill name is `changelog-entry`, created at `./changelog-entry`.\n2. [request] The skill adds one entry to `CHANGELOG.md` for a change the user describes.\n3. [request] It must read the current `CHANGELOG.md` before writing anything.\n4. [request, revised] The entry goes under one of three sections: Added, Fixed, or Changed. When the description does not make the section clear, the skill asks the user. It does not guess.\n5. [request] It never edits any file other than `CHANGELOG.md`.\n6. [request] It shows the user the new entry before writing it. It writes only after the user approves.\n7. [request, revised] Every entry ends with the pull request number in parentheses, such as `(#123)`. If the user gives no PR number, the skill asks for it before drafting the entry.\n8. [inferred] Input: the user's change description, plus `CHANGELOG.md` in the project root. Confirmed: the file exists there.\n9. [inferred] Order: read `CHANGELOG.md`, then pick the section (asking if unclear), then get the PR number (asking if missing), then draft the entry, then show it, then get approval, then write.\n10. [inferred] The entry follows the formatting already in `CHANGELOG.md` (bullet style under the `## Unreleased` heading). The skill adds a `### Changed` subsection under `## Unreleased` when it writes the first Changed entry. That keeps the Keep a Changelog order of Added, Changed, Fixed. Tell me if you want Changed placed differently.\n11. [inferred] If `CHANGELOG.md` does not exist, the skill stops and asks. It does not create the file.\n\nConfirm this inventory, or tell me what to change, and I'll write the draft.",
+      "num_turns": 3,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 2,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The `changelog-entry` skill is built at `./changelog-entry/`. It contains `SKILL.md` and `manifest.json`. I did not edit `CHANGELOG.md` or run the skill on a real change.\n\n**Where each inventory line landed**\n\n1. Name and location: the package is at `./changelog-entry`.\n2. One entry per change: the `logic` block writes one entry through `write updated_changelog with changelog_file`.\n3. Read first: `read changelog from changelog_file as current`, followed by a `verify` gate that the text is present. An order rule requires that gate before the entry is generated.\n4. Added, Changed or Fixed: if the request doesn't make the section clear, the skill asks for it. The gate rejects anything other than those three.\n5. Only `CHANGELOG.md`: the only write in the workflow is to `changelog_file`.\n6. Show, then approve, then write: `show entry`, then `ask user to approve the entry`, then `require user approves the entry`. An order rule requires the approval before the write.\n7. PR number: the skill asks for the number when the request doesn't include one, and the entry format ends with `(#123)`.\n8. Input and location: `changelog_file` is `CHANGELOG.md` in the project root.\n9. Order: read, then the PR number and section checks, then generate, show, approve, and write.\n10. Formatting: the entry follows the existing bullet style. The placement step adds a `### Changed` heading under `## Unreleased` when it is missing, keeping Added, Changed, Fixed order.\n11. Missing file: the skill aborts. It does not create `CHANGELOG.md`.\n\n**Choices I made while building**\n\n- I checked the draft with `check --fragment`. Without it, the checker rejected the draft because it expected a complete-skill header. The inline form is the one `language.md` describes.\n- I dropped an order rule that required `show entry` before the approval. The checker flagged it as resting on the model's own judgment. The `show` line is still in the logic, directly before the approval gate, so the order holds by sequence.\n- The PR-number and section checks are `verify` gates rather than `require` gates, because the checker only tracks bindings that `verify` gates reference. Behavior is the same: the skill aborts if the value is missing.\n\n**Check and build results**\n\n- The fragment check is clean with no warnings.\n- The build succeeded with zero warnings.\n- `explain-workflow` produced the reading. Please read it at `./changelog-entry/SKILL.md` before approving it.\n\nThe checker also notes that it verifies the procedure's structure, not that a model will follow it. Approval is yours to record with `SW approve`, and I haven't run it.",
+      "num_turns": 16,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "changelog-entry-draft/.skillwren/budget.json",
+          "changelog-entry-draft/SKILL.md",
+          "changelog-entry/SKILL.md",
+          "changelog-entry/manifest.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 15,
+      "commands": [
+        "py -3 \"/z/SkillWren/plugin/skillwren/scripts/skillwren.py\" check changelog-entry-draft/SKILL.md; echo \"exit=$?\"",
+        "py -3 \"/z/SkillWren/plugin/skillwren/scripts/skillwren.py\" check changelog-entry-draft/SKILL.md",
+        "py -3 \"/z/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit changelog-entry-draft/SKILL.md",
+        "py -3 \"/z/SkillWren/plugin/skillwren/scripts/skillwren.py\" check --fragment --summary --audit changelog-entry-draft/SKILL.md",
+        "py -3 \"/z/SkillWren/plugin/skillwren/scripts/skillwren.py\" explain-workflow changelog-entry-draft/SKILL.md",
+        "py -3 \"/z/SkillWren/plugin/skillwren/scripts/skillwren.py\" build changelog-entry-draft --out changelog-entry"
+      ],
+      "check_calls": 4
+    }
+  ]
+}

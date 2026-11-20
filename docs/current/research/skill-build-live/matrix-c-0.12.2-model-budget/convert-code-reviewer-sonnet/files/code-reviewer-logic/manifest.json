@@ -1,0 +1,33 @@
+{
+  "format": "skillwren-build-1",
+  "mode": "fragments",
+  "entry": "SKILL.md",
+  "checked_fragments": [
+    "SKILL.md"
+  ],
+  "expanded_sha256": "c75c597c1d0f4fec52e602a20a55ba58a0d2cd77d119d8e5deffb9c7431fd24e",
+  "expanded_bytes": 5614,
+  "tree_sha256": "118835741ba60cff61a7125079f8d6f44b73da311a3c2d71578f653fa14ecbfa",
+  "sources": {
+    "SKILL.md": {
+      "sha256": "773e84e4f0abaa1c9fc7c28a7714c4d692021c153bf0485bb71a20c0e61e63bb",
+      "bytes": 5590
+    }
+  },
+  "contexts": [],
+  "deferred_contexts": [],
+  "warnings": [
+    {
+      "file": "SKILL.md",
+      "line": 25,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'verify #intent the intent summary is a single sentence' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 26,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'verify #report the report meets the output and tone rules' is the model's own judgment"
+    }
+  ]
+}

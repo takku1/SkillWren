@@ -1,11 +1,10 @@
 # Status
 
-**Last Updated**: 2026-11-20 (0.12.1: bounded repairs, scenario matrix on two models)
+**Last Updated**: 2026-11-20 (0.12.2: launcher-counted repair budget; frozen-configuration matrix)
 
 ## Current Phase
 
-Package 0.12.1, release candidate for production use of the skill-building
-path: the `skillwren` skill installs as a self-contained Claude Code plugin
+Package 0.12.2, release candidate for supervised skill authoring: the `skillwren` skill installs as a self-contained Claude Code plugin
 (`/plugin install skillwren --marketplace takku1/SkillWren`, no pip), builds
 a new skill from a request or converts one, and a headless agent with only
 the plugin built a checked skill end to end. Runtime pieces (guard, ledger)
@@ -24,10 +23,13 @@ runtime comparison. Current verification results are recorded in CI.
   `scripts/build_plugin.py` (checker bundled, standard library only) and
   checked for drift in the test suite. Live proof:
   `research/skill-build-live/` (one task, one model, $0.25 per build).
-  0.12.1 bounds the skill's repair loops (`return #blocked`) and ran a
-  scenario matrix (correction, two new skills, a conversion; Sonnet and
-  Haiku): nothing written before confirmation in every run, 11/12 built
-  with 0 errors, the twelfth stopped correctly at the blocked exit. Next:
+  0.12.1 added blocked exits to the repair loops; 0.12.2 has the launcher
+  count repairs (a model-counted budget was exceeded once by Haiku) and
+  forbids `readonly` relabeling. Frozen 0.12.2 matrix (two models, five
+  scenarios): nothing changed before confirmation 10/10; 6/6 satisfiable
+  scenarios built with 0 errors; 4/4 unsatisfiable ones stopped blocked;
+  0-4 repairs per run. Built skills are smoke-checked, not semantically
+  verified. Next:
   real users correcting inventories, human review of built skills against
   intent; PyPI if wanted (needs the owner's account).
 - Compiler vs. compression (external review, 2026-11-20): `compile` and

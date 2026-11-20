@@ -1,0 +1,75 @@
+{
+  "scenario": "convert-code-reviewer",
+  "model": "sonnet",
+  "cost_usd": 0.3722,
+  "score": {
+    "packages": [
+      "code-reviewer-logic"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 5,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 2,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-1vmhc15g\\code-reviewer-logic\\SKILL.md:25: warning W15: order rule rests on self-report: every statement matching 'verify #intent the intent summary is a single sentence' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-1vmhc15g\\code-reviewer-logic\\SKILL.md:26: warning W15: order rule rests on self-report: every statement matching 'verify #report the report meets the output and tone rules' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-1vmhc15g\\code-reviewer-logic\\SKILL.md: flow code-reviewer: inputs request, target; writes -; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "review": true
+    },
+    "no_write_statements": true
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to convert the existing skill at ./source/code-reviewer/SKILL.md i",
+      "result": "I've read the source. It's a single file, and the `references/*.md` files it links to aren't on disk, so I can only convert what the SKILL.md says. Here is the requirement inventory. Nothing has been written yet, and the original is untouched.\n\n## Requirement inventory\n\n**Workflow (ordered)**\n1. Context: read the PR description and understand the problem being solved.\n2. Context checkpoint: summarize the PR's intent in one sentence before proceeding.\n3. If you can't summarize it, ask the author to clarify.\n4. Structure: review architecture and design. Does the change follow existing codebase patterns? Are new abstractions justified?\n5. Details: check code quality, security and performance using the Reference Guide checks. Look for N+1 queries, hardcoded secrets and injection risks.\n6. Tests: validate coverage and quality. Are edge cases covered? Do the tests assert behavior rather than implementation?\n7. Feedback: produce a categorized report using the Output Template.\n8. If critical issues are found in Details, note them immediately and don't wait until the end.\n\n**Conditions and exceptions**\n9. If the author left comments explaining a non-obvious choice, acknowledge their reasoning before suggesting an alternative.\n10. Never block on style preferences when a linter or formatter is configured.\n\n**MUST DO**\n11. Summarize the PR's intent before reviewing.\n12. Give specific, actionable feedback.\n13. Include code examples in suggestions.\n14. Praise good patterns.\n15. Prioritize feedback from critical to minor.\n16. Review tests as thoroughly as code.\n17. Check for security issues, with the OWASP Top 10 as the baseline.\n\n**MUST NOT DO**\n18. Don't be condescending or rude.\n19. Don't nitpick style when linters exist.\n20. Don't block on personal preferences.\n21. Don't demand perfection.\n22. Don't review without understanding the why.\n23. Don't skip praising good work.\n\n**Output (report must include, in this order)**\n24. Summary: a one-sentence intent recap and an overall assessment.\n25. Critical issues: must fix before merge (bugs, security, data loss).\n26. Major issues: should fix (performance, design, maintainability).\n27. Minor issues: nice to have (naming, readability).\n28. Positive feedback: specific patterns done well.\n29. Questions for the author: clarifications needed.\n30. Verdict: Approve, Request Changes or Comment.\n\n**Reference Guide (load by context)**\n31. Review checklist: load when starting a review.\n32. Common issues: load for N+1 queries, magic numbers and patterns.\n33. Feedback examples: load when writing feedback.\n34. Report template: load when writing the final report.\n35. Spec compliance: load when reviewing implementations or verifying a spec.\n36. Receiving feedback: load when responding to review comments.\n37. These six reference files are missing from the source folder (inferred).\n\n**Quick-reference patterns**\n38. N+1: don't query inside a loop; prefetch in bulk.\n39. Magic numbers: use named constants.\n40. SQL injection: use parameterized queries, not string interpolation.\n\n**Other**\n41. Allowed tools are Read, Grep and Glob, so the review is read-only. Nothing in the reviewed code is changed.\n42. Knowledge base: SOLID, DRY, KISS, YAGNI, design patterns, OWASP Top 10, language idioms and testing patterns.\n43. Persona: a senior engineer giving thorough, constructive reviews that improve quality and share knowledge.\n44. Metadata to keep in the frontmatter: license MIT, author, version 1.1.0, triggers and related skills (security-reviewer, test-master, architecture-designer).\n\n**Inferred**\n- The logic takes the review target (PR or diff) as an input.\n- Requirement 41 becomes an `exec readonly`/read-only constraint stated in the step meanings. It can't be enforced as an order rule.\n- Requirements 18\u201323 and 12\u201314 become checks in a final verify-the-report gate, because they are style rules rather than steps.\n\nDoes this inventory look right? If anything is wrong or missing, tell me which lines to change. Otherwise, confirm and I'll draft the logic in `code-reviewer-logic`.",
+      "num_turns": 6,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 4,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The converted skill is built at `./code-reviewer-logic`, and `./source/code-reviewer/SKILL.md` is unchanged. The check reports no errors and two warnings, and the build succeeded. I did not run a model to test how well the skill reviews code.\n\n## The two warnings\nBoth are W15, \"order rule rests on self-report\". They cover these ordering rules:\n- The one-sentence PR intent summary must be verified before any structure findings are generated.\n- The report must pass the output and tone check before the review returns.\n\nBoth are judgments the model makes itself. The original skill is read-only (Read, Grep, Glob), so there is no command whose output could back them up. I accepted the warnings and did not invent a signal. Adding a user decision as the signal would force a prompt on every review, which the original doesn't ask for.\n\n## Requirement inventory and where each line landed\n- **1\u20133, intent checkpoint (#intent)**:\n  - Steps: read the PR description, then generate the intent summary.\n  - Gate: the summary must be a single sentence.\n  - If the gate fails, the skill asks the author to clarify, then retries.\n  - Order rule: the gate must pass before structure findings are generated.\n- **4, structure review**: `generate structure findings` plus the `review conventions` meaning.\n- **5, 17, details and security**: `generate detail findings`, `review conventions` and `security baseline` (OWASP Top 10).\n- **6, 16, tests**: `generate test findings` plus `review conventions`.\n- **7, 24\u201330, report**: `generate review report` and `report rules`, which list the seven sections in order. The #report gate checks the report against them.\n- **8, critical issues shown immediately**: `if details contain critical issues: show ...` right after the details stage.\n- **9, 10, 12\u201315, 19\u201323, conventions and tone**: `review conventions` and `report rules`, enforced by the #report gate.\n- **11, summarize before reviewing**: the #intent gate and its order rule.\n- **18, tone**: `report rules` and the #report gate.\n- **31\u201337, reference files**: `read ... from references` steps, with the `references` meaning noting the files were missing at conversion.\n- **38\u201340, quick-reference patterns**: inside `review conventions`.\n- **41, read-only**: stated in the skill body and the `target` meaning.\n- **42\u201343, knowledge base and persona**: the body text and `review conventions`.\n- **44, metadata**: kept in the frontmatter.\n- **Inferred, `target` input**: the skill aborts if no PR, diff or files are named.\n\n## Limits\n- The check proves the procedure is well formed and ordered. It does not prove a model will follow it.\n- The `references/*.md` files were never in the source folder, so the read steps tell the model to carry on from the step meanings if a file is missing.\n- The `references` reads have no bindings, because the checker flagged unused ones. The reference text therefore reaches the model as context, not as an explicit input to a generate step.\n- The retry loops don't set a limit. The #report loop has a repair-budget exit, but the #intent clarification loop doesn't.\n\nPlease read the workflow explanation above. If you accept it, record that with `SW approve code-reviewer-logic/SKILL.md`. That step is yours, so I haven't run it. I also haven't installed the skill. The `code-reviewer-draft/` working folder is still in the project directory.",
+      "num_turns": 23,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "code-reviewer-draft/SKILL.md",
+          "code-reviewer-logic/SKILL.md",
+          "code-reviewer-logic/manifest.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 22,
+      "commands": [
+        "py -3 /z/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "cd /c/Users/<user>/AppData/Local/Temp/sw-proj-1vmhc15g/code-reviewer-draft && python3 - <<'E'\np='SKILL.md';s=open(p,encoding='utf-8').read()\na=s.index('order:\\n');b=s.index('```\\n\\n```logic')\ns=s[:a]+'''order:\n  verify #intent the intent summary is a single sentence before generate structure findings\n  verify #report the report meets the output and tone rules before return#reviewed\n'''+s[b:]\ns=s.replace('generate structure findings from target as structure','generate structure findings from target, intent, checklist as structure')\ns=s.replace('generate detail findings from target as details','generate detail findings from target, structure, common_issues as details')\ns=s.replace('generate test findings from target as tests','generate test findings from target, details, spec_guidance as tests')\nopen(p,'w',encoding='utf-8').write(s)\nE\npy -3 /z/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit SKILL.md",
+        "py -3 /z/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit code-reviewer-draft/SKILL.md",
+        "cd /c/Users/<user>/AppData/Local/Temp/sw-proj-1vmhc15g/code-reviewer-draft && sed -i -e 's/ as checklist$//;s/ as common_issues$//;s/ as spec_guidance$//;s/ as template$//;s/ as examples$//' -e 's/, checklist as/ as/;s/, common_issues as/ as/;s/, spec_guidance as/ as/;s/, template, examples as/ as/' SKILL.md && cd .. && py -3 /z/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit code-reviewer-draft/SKILL.md | grep -E \"warning|error|clean\"",
+        "py -3 /z/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit code-reviewer-draft/SKILL.md | grep -E \"warning|error|clean\"",
+        "SW=\"py -3 /z/SkillWren/plugin/skillwren/scripts/skillwren.py\"; $SW explain-workflow code-reviewer-draft/SKILL.md; echo ---; $SW build code-reviewer-draft --out code-reviewer-logic; echo exit $?; ls -R code-reviewer-logic | head -20",
+        "py -3 /z/SkillWren/plugin/skillwren/scripts/skillwren.py explain-workflow code-reviewer-draft/SKILL.md",
+        "py -3 /z/SkillWren/plugin/skillwren/scripts/skillwren.py build code-reviewer-draft --out code-reviewer-logic"
+      ],
+      "check_calls": 5
+    }
+  ]
+}
