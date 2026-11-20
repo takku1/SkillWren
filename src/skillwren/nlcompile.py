@@ -99,8 +99,9 @@ def write_files(root, files):
     for name, text in files.items():
         target = Path(root) / name
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(text if text.endswith("\n") else text + "\n", encoding="utf-8",
-                          newline="\n")
+        # Bytes, not write_text(newline=): that keyword needs Python 3.10.
+        body = text if text.endswith("\n") else text + "\n"
+        target.write_bytes(body.encode("utf-8"))
 
 
 def diagnose(root, files):
