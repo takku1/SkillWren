@@ -91,14 +91,18 @@ def candidates(skill, cwd, home):
     return out
 
 
-def record_load(event, home=None, out=None):
+def record_load(event, home=None, out=None, package=None):
     """Append one load record for a PostToolUse(Skill) hook event; returns it,
     or None when the event is not a skill load or nothing resolves.
 
     `out` is the record file. The default (.skillwren/loaded.jsonl in the
     working directory) is fine for `ledger check`, but the agent can write
     there; a guard skill requirement (SPEC 24) must name a host-owned file
-    and the hook must be configured with the same `--out`."""
+    and the hook must be configured with the same `--out`.
+
+    `package` is the directory the host loaded, when the hook knows it (a
+    plugin hook gets it as ${CLAUDE_PLUGIN_ROOT}/<skill>). The record then
+    names that copy alone instead of mirroring the host's resolution order."""
     from .ledger import package_identity
     if event.get("tool_name") != "Skill":
         return None
@@ -108,7 +112,7 @@ def record_load(event, home=None, out=None):
     cwd = Path(event.get("cwd") or ".")
     home = Path(home) if home else Path.home()
     found = []
-    for directory in candidates(skill, cwd, home):
+    for directory in ([Path(package)] if package else candidates(skill, cwd, home)):
         try:
             found.append({"path": str(directory),
                           "tree_sha256": package_identity(directory)["tree_sha256"]})
@@ -146,11 +150,11 @@ def latest_load(loads_file, name, before=None):
     return best
 
 
-def hook_main(stream=None, out=None):
+def hook_main(stream=None, out=None, package=None):
     """Entry point for the hook: never fails the host's tool call."""
     try:
         event = json.loads((stream or sys.stdin).read() or "{}")
-        record_load(event, out=out)
+        record_load(event, out=out, package=package)
     except Exception as error:  # report, do not block the host
         print(f"skillwren record-load: {error}", file=sys.stderr)
     return 0

@@ -11,7 +11,12 @@
   unchanged. It proves a host-recorded load under the trusted-host
   assumptions, not adherence.
 - `ledger record-load --out FILE` writes load records to a host-owned
-  file instead of the agent's working directory.
+  file instead of the agent's working directory. `--package DIR` records
+  the directory the host loaded (a plugin hook's
+  `${CLAUDE_PLUGIN_ROOT}/<skill>`) instead of resolving the name; from
+  full-stack field report 5, whose hook records its own copy.
+- Pipeline check (rebuild full-stack, build in MochiOS, feed back):
+  [full-stack live use 2026-11-20](docs/current/research/full-stack-live-use-2026-11-20.md).
 - Tests: `tests/test_guard_skill_load.py` (26), nine new code mutants in
   `tests/field_mutation_sweep.py` (29/29 killed).
 

@@ -1243,7 +1243,9 @@ The hook's resolution must cover where the host actually loads skills
 from; a skill the host loads from a location the hook does not search
 (for example an added or managed skills directory) produces no record or a
 record of another copy, so the first denies and the second is only as good
-as the mirror. Under those
+as the mirror. A hook that knows the loaded directory (a plugin hook, as
+`${CLAUDE_PLUGIN_ROOT}/<skill>`) removes the mirror: `record-load --package
+DIR` records that directory as the only candidate. Under those
 assumptions a protected operation proves that the host recorded a load of
 the approved package tree in this run. It does not prove that the agent
 read, understood or followed the skill (this is load assurance, not

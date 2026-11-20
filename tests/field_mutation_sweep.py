@@ -85,6 +85,9 @@ MUTANTS = {
     "hostload-out-ignored": ("src/skillwren/hostload.py",
                              '    out = Path(out) if out else cwd / ".skillwren" / LOADS',
                              '    out = cwd / ".skillwren" / LOADS'),
+    "hostload-package-ignored": ("src/skillwren/hostload.py",
+                                 "([Path(package)] if package else candidates(skill, cwd, home))",
+                                 "candidates(skill, cwd, home)"),
     # Finding 5, ledger
     "ledger-exclusions-ignored": ("src/skillwren/ledger.py",
                                   "    excluded = any(r[\"violations\"] for r in report[\"exclusions\"])",

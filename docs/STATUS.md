@@ -20,9 +20,15 @@ runtime comparison. Current verification results are recorded in CI.
   rechecked before commit). Answers the field finding that 16/18 agents
   never loaded the skill: a skipped load becomes a denied write. Load
   assurance under the trusted-host assumptions, not adherence; isolation
-  is not yet demonstrated. 26 unit tests, 29/29 code mutants. Next:
-  spoofing/replay/TOCTOU review of the diff, then the three-tier pipeline
-  check (rebuild `Z:/full-stack`, build mochios with it, back-propagate).
+  is not yet demonstrated. 27 unit tests, 30/30 code mutants; diff
+  reviewed for spoofing/replay/TOCTOU (run-id freshness and hook
+  resolution stated as assumptions in SPEC 24). Three-tier pipeline check
+  done ([report](current/research/full-stack-live-use-2026-11-20.md)):
+  full-stack 0.9.0 adopted exclusion rules (P3 caught its F-4 order on
+  paper) and package binding; a MochiOS build ran clean on it; fed back
+  as `record-load --package DIR` here and `widen` / `--section` in
+  full-stack. Open: merge PR #6 and full-stack#2, release, update the
+  installed plugin.
 
 - Response to the full-stack field report of 2026-11-19
   ([design](current/design/field-response-2026-11-19.md),

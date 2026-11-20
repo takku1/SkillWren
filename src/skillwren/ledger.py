@@ -509,6 +509,9 @@ def main(argv):
     p_load.add_argument("--out", default=None,
                         help="record file (default .skillwren/loaded.jsonl in the hook's cwd);"
                              " a guard skill requirement needs a host-owned path here")
+    p_load.add_argument("--package", default=None, metavar="DIR",
+                        help="the directory the host loaded (a plugin hook: ${CLAUDE_PLUGIN_ROOT}/<skill>);"
+                             " recorded as the only candidate instead of resolving the name")
     for p in (p_start, p_exec, p_note, p_attempt, p_check, p_show):
         p.add_argument("--dir", default=str(DEFAULT_DIR))
     # The command after `--` is passed through untouched, so its own flags and
@@ -520,7 +523,7 @@ def main(argv):
     args = parser.parse_args(argv)
     if args.action == "record-load":
         from .hostload import hook_main
-        return hook_main(out=args.out)
+        return hook_main(out=args.out, package=args.package)
     try:
         if args.action == "start":
             run, path, rules = start(args.flow_file, args.dir, args.label, args.required,

@@ -252,6 +252,20 @@ class SkillLoadGuardTests(unittest.TestCase):
         record_load(event, home=self.home, out=self.loads)
         self.assertDenied(Controller(self.policy, RUN), 'unapproved tree')
 
+    def test_hook_given_the_loaded_package_records_it_without_resolving(self):
+        # full-stack field report 5: a plugin hook knows the copy the host loaded, so the
+        # record need not mirror the host's resolution order. A same-named personal skill
+        # with other bytes would make the resolved record ambiguous; the given one is not.
+        other = self.home / '.claude' / 'skills' / 'shadow' / 'build-notes'
+        other.mkdir(parents=True)
+        (other / 'SKILL.md').write_text('---\nname: build-notes\n---\nOther.\n', encoding='utf-8')
+        event = {'tool_name': 'Skill', 'tool_input': {'skill': 'notes:build-notes'},
+                 'cwd': str(self.workspace), 'session_id': RUN}
+        record = record_load(event, home=self.home, out=self.loads, package=self.package)
+        self.assertEqual(record['candidates'], [{'path': str(self.package), 'tree_sha256': self.tree}])
+        self.assertFalse(record['ambiguous'])
+        self.assertEqual(self.write_through(Controller(self.policy, RUN))['written'], 'write#report')
+
     def test_cli_requires_run_id_for_a_skill_policy(self):
         policy = self.host / 'policy.json'
         policy.write_text(json.dumps(self.policy), encoding='utf-8')
