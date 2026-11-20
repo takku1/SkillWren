@@ -18,7 +18,10 @@ Blocking enforces safety (something must not happen, or must not happen before s
 else); it cannot make an agent do something eventually. A required step is enforced only
 as a prerequisite of a protected action, which is why gates are enforced only that way.
 With `--fidelity`, each requirement of a fidelity-benchmark score is given the tier of the
-skill element its preserving quote sits in (prose outside the logic is instructed).
+skill element its preserving quote sits in, conservatively: a quote spanning several elements
+gets the weakest of their tiers, a quote found more than once (or not at all) is
+`ambiguous`, and prose outside the logic is instructed. The tier belongs to the element; it
+does not show that the element enforces the whole requirement.
 """
 import argparse
 import json
@@ -138,16 +141,25 @@ def requirement_tiers(path, rows, score):
             continue
         quote = " ".join(req["quote"].split())
         at = flat.find(quote)
-        lines = [n for o, n in starts if at <= o < at + len(quote)] or \
-                [max((n for o, n in starts if o <= at), default=0)]
+        if at < 0 or flat.find(quote, at + 1) >= 0:
+            # Not found, or found more than once: which element preserves it is unknown.
+            out.append({"id": req["id"], "kind": req["kind"], "tier": "ambiguous",
+                        "why": "quote not found" if at < 0 else "quote occurs more than once"})
+            continue
+        first_line = max((n for o, n in starts if o <= at), default=0)
+        lines = sorted({first_line, *(n for o, n in starts if at <= o < at + len(quote))})
         hits = [by_line[n] for n in lines if n in by_line]
         if hits:
-            best = min(hits, key=lambda r: TIERS.index(r["tier"]))
-            out.append({"id": req["id"], "kind": req["kind"], "tier": best["tier"],
-                        "why": f"{best['kind']} line {best['line']}: {best['why']}"})
+            # Conservative: a quote spanning several elements gets the weakest of their tiers,
+            # and the tier is the element's, not proof that it enforces the whole requirement.
+            weakest = max(hits, key=lambda r: TIERS.index(r["tier"]))
+            span = f" (quote spans {len(hits)} elements; weakest shown)" if len(hits) > 1 else ""
+            out.append({"id": req["id"], "kind": req["kind"], "tier": weakest["tier"],
+                        "why": f"{weakest['kind']} line {weakest['line']}: {weakest['why']}{span}; "
+                               "tier of the element, not proof it enforces the whole requirement"})
         else:
             out.append({"id": req["id"], "kind": req["kind"], "tier": "instructed",
-                        "why": f"prose (line {lines[0]}), not a checked element"})
+                        "why": f"prose (line {first_line}), not a checked element"})
     return out
 
 
@@ -168,7 +180,8 @@ def main(argv=None):
             score = json.loads(Path(args.fidelity).read_text(encoding="utf-8"))
             reqs = requirement_tiers(path, rows, score)
             entry["requirements"] = reqs
-            entry["requirement_counts"] = {t: sum(r["tier"] == t for r in reqs) for t in (*TIERS, None)}
+            entry["requirement_counts"] = {t: sum(r["tier"] == t for r in reqs)
+                                           for t in (*TIERS, "ambiguous", None)}
         report[path] = entry
     if args.json:
         print(json.dumps(report, indent=2, default=str))
@@ -184,7 +197,8 @@ def main(argv=None):
             print(f"  {r['id']} ({r['kind']}): {r['tier'] or 'absent'} -- {r['why']}")
         if "requirement_counts" in entry:
             c = entry["requirement_counts"]
-            print(f"{path}: requirements " + ", ".join(f"{c[t]} {t}" for t in TIERS) + f", {c[None]} not preserved")
+            print(f"{path}: requirements " + ", ".join(f"{c[t]} {t}" for t in TIERS)
+                  + f", {c['ambiguous']} ambiguous, {c[None]} not preserved")
     return 0
 
 

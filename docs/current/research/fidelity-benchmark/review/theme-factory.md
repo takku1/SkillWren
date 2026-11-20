@@ -3,8 +3,9 @@
 Source: sources/theme-factory/SKILL.md
 Reviewed by: <your name>
 Date: <YYYY-MM-DD>
-Candidate status: AI-drafted, AI-reviewed twice (drafting session; external AI review
-2026-11-20). Not human-approved: freezing needs the human reviewer's name and date.
+Candidate status: AI-drafted, AI-reviewed three times (drafting session; external AI
+reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human
+reviewer's name and date.
 
 **How to review.** These are model-drafted candidates. For each line: keep it
 (`[x]`), drop it (change to `[ ]`), or edit the requirement text so it says
@@ -18,7 +19,7 @@ be wrong? If not, drop it.
 
 - [x] TF-1 | ordering | Show the theme showcase (`theme-showcase.pdf`) before asking for a choice. | "Display the `theme-showcase.pdf` file to allow users to see all available themes visually."
 - [x] TF-2 | prohibition | Never modify the showcase file; only show it. | "Do not make any modifications to it; simply show the file for viewing."
-- [x] TF-3 | ordering | The sequence is showcase, then ask which theme to apply, then explicit confirmation of the choice, then apply; no step is skipped or reordered. | "Ask which theme to apply to the deck"
+- [x] TF-3 | ordering | The sequence is showcase, then ask which theme to apply, then explicit confirmation of the choice, then apply; no step is skipped or reordered. | "Display the `theme-showcase.pdf` file ... Ask which theme to apply to the deck ... Get explicit confirmation about the chosen theme ... Once a theme has been chosen, apply the selected theme's colors and fonts to the deck/artifact"
 - [x] TF-4 | authority | Apply a theme only after the user explicitly confirms the choice. | "Get explicit confirmation about the chosen theme"
 - [x] TF-5 | ordering | After a theme is chosen, read its file from `themes/` before applying it. | "Read the corresponding theme file from the `themes/` directory"
 - [x] TF-6 | obligation | Apply the theme's colors and fonts consistently throughout the artifact. | "Apply the specified colors and fonts consistently throughout the deck"
@@ -33,3 +34,4 @@ be wrong? If not, drop it.
 ## Revision log
 
 - TF-3 restated as the full sequence (showcase, ask, explicit confirmation, apply); it was labelled ordering but only said to ask (external AI review).
+- Revision 3: TF-3's quote now covers all four steps of the sequence (multi-span quote, each span verified) instead of only the ask (external AI review).

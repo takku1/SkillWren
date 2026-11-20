@@ -15,6 +15,7 @@ scores against the unreviewed candidate list and stamps the result so; without i
 frozen (human-reviewed) list is required. Spends model usage (about $0.05-0.15 per call).
 """
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -81,6 +82,13 @@ def requirements(source_id, candidates):
     if not frozen.is_file():
         sys.exit(f"no frozen requirements for {source_id}: review and freeze first, or pass --candidates")
     data = json.loads(frozen.read_text(encoding="utf-8"))
+    # The answer key is only valid for the bytes it was frozen against.
+    for rel, key in ((data["source"], "source_sha256"), (f"review/{source_id}.md", "review_sha256")):
+        actual = hashlib.sha256((BENCH / rel).read_bytes()).hexdigest()
+        if actual != data[key]:
+            sys.exit(f"{rel} changed since it was frozen ({key} differs): scoring would compare a "
+                     "different text against the old answer key. Start a new benchmark revision: "
+                     "move frozen/" + f"{source_id}.json aside, review again, and re-freeze.")
     return data["source"], data["requirements"], f"frozen, reviewed by {data['reviewed_by']} on {data['date']}"
 
 
@@ -100,6 +108,23 @@ def judge(source_text, built_text, reqs, model):
     return data.get("structured_output") or json.loads(data["result"]), data.get("total_cost_usd", 0)
 
 
+def adjudication(result):
+    """The judgments most likely to be wrong in a way that matters, for a human to check."""
+    lines = [f"# Adjudication: {result['source']}", "",
+             f"Built: `{result['built']}`. Judge: {result['judge']}. Basis: {result['basis']}.", "",
+             "Mark each line [x] agree or [!] overturn, with a reason.", "", "## Requirement verdicts", ""]
+    for r in result["requirements"]:
+        if r["verdict"] != "preserved":
+            lines.append(f"- [ ] {r['id']} ({r['kind']}): judge says {r['judge_verdict']}"
+                         f"{' (quote not found: unverified)' if r['verdict'] == 'unverified' else ''}. "
+                         f"{r['reason']} Quote: \"{r['quote'][:200]}\"")
+    lines += ["", "## Introduced behavior that widens what the agent may do", ""]
+    for i in result["introduced"]:
+        if i["widens"]:
+            lines.append(f"- [ ] {i['behavior']} Quote: \"{i['quote'][:200]}\"")
+    return "\n".join(lines) + "\n"
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("source_id")
@@ -107,6 +132,9 @@ def main(argv=None):
     parser.add_argument("--candidates", action="store_true", help="score against the unreviewed candidates")
     parser.add_argument("--model", default="sonnet")
     parser.add_argument("--out")
+    parser.add_argument("--adjudication", metavar="FILE",
+                        help="write a Markdown sheet of every weakened, missing or unverified verdict and "
+                             "every widening introduction, for a human to confirm or overturn")
     args = parser.parse_args(argv)
     source_rel, reqs, basis = requirements(args.source_id, args.candidates)
     source_text = (BENCH / source_rel).read_text(encoding="utf-8")
@@ -134,6 +162,8 @@ def main(argv=None):
         "requirements": rows, "introduced": introduced, "cost_usd": round(cost or 0, 4),
     }
     text = json.dumps(result, indent=2)
+    if args.adjudication:
+        Path(args.adjudication).write_text(adjudication(result), encoding="utf-8")
     if args.out:
         Path(args.out).write_text(text + "\n", encoding="utf-8")
     print(json.dumps({k: result[k] for k in ("source", "basis", "preservation", "introduction", "cost_usd")}, indent=1))

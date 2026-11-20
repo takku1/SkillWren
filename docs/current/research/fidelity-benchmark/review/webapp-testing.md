@@ -3,8 +3,9 @@
 Source: sources/webapp-testing/SKILL.md
 Reviewed by: <your name>
 Date: <YYYY-MM-DD>
-Candidate status: AI-drafted, AI-reviewed twice (drafting session; external AI review
-2026-11-20). Not human-approved: freezing needs the human reviewer's name and date.
+Candidate status: AI-drafted, AI-reviewed three times (drafting session; external AI
+reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human
+reviewer's name and date.
 
 **How to review.** These are model-drafted candidates. For each line: keep it
 (`[x]`), drop it (change to `[ ]`), or edit the requirement text so it says
@@ -34,3 +35,4 @@ be wrong? If not, drop it.
 ## Revision log
 
 - WT-7 states its condition explicitly: the `networkidle` wait applies to dynamic-app inspection only (external AI review).
+- Revision 3: no requirement changes (external AI review found it consistent with the source).

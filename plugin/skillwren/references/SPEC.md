@@ -1,7 +1,7 @@
 # SkillWren — Skill Logic Architecture (Contract-Header + Logic-Body)
 
 - Date: 2026-10-01; last revised 2026-11-17
-- Status: format 0.10 (package 0.13.1, 2026-11-20); 0.11 adds skill-load
+- Status: format 0.10 (package 0.13.2, 2026-11-20); 0.11 adds skill-load
   assurance for the guard (Section 24); 0.10 adds the
   workflow-bound guard (Section 22) and exclusion rules with package
   provenance (Section 23); 0.9 added typed return anchors and declared
@@ -1279,9 +1279,12 @@ Without `--policy` nothing is enforced. Blocking enforces safety (a step
 must not happen, or not before another); it cannot make an agent perform a
 step eventually, so a required step is enforced only as the prerequisite of
 a protected write. With `--fidelity`, each preserved requirement of a
-fidelity-benchmark score takes the strongest tier of the element on the
-lines its quote occupies; a quote in prose outside the semantic blocks is
-instructed. Enforced is declared, not demonstrated: it assumes the
+fidelity-benchmark score takes the tier of the element on the lines its
+quote occupies, conservatively (0.13.2): the weakest tier when the quote
+spans several elements, `ambiguous` when the quote occurs more than once or
+not at all, and instructed for prose outside the semantic blocks. The tier
+is the element's; it does not show that the element enforces the whole
+requirement. Enforced is declared, not demonstrated: it assumes the
 guard's deployment conditions (Sections 22 and 24), that the agent can
 reach the protected target only through the guard. Every enforced row
 carries that assumption (`assumes`), because a policy cannot show it; a

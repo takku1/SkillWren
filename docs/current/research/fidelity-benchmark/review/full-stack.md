@@ -3,8 +3,9 @@
 Source: sources/full-stack/SKILL.md
 Reviewed by: <your name>
 Date: <YYYY-MM-DD>
-Candidate status: AI-drafted, AI-reviewed twice (drafting session; external AI review
-2026-11-20). Not human-approved: freezing needs the human reviewer's name and date.
+Candidate status: AI-drafted, AI-reviewed three times (drafting session; external AI
+reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human
+reviewer's name and date.
 
 **How to review.** These are model-drafted candidates. For each line: keep it
 (`[x]`), drop it (change to `[ ]`), or edit the requirement text so it says
@@ -42,7 +43,8 @@ most scrutiny from you, not from the drafter.
 - [x] FS-24 | obligation | Match each consumer's assumptions to provider guarantees, or record them as explicit unresolved conditions. | "Match consumer assumptions to provider guarantees or explicit unresolved conditions."
 - [x] FS-25 | ordering | Resolve consequential reuse before detailing custom internals. | "resolve consequential reuse before detailing custom internals"
 - [x] FS-26 | obligation | Stop at adopted providers' public boundaries and allocate the required fit gaps. | "Stop at adopted providers' public boundaries and allocate required fit gaps."
-- [x] FS-27 | prohibition | Components do not dictate files, packages, services, processes or teams; screens, nouns, directories and workflow steps do not dictate components. | "components do not dictate files, packages, services, processes, or teams"
+- [x] FS-27 | prohibition | Screens, nouns, directories and workflow steps do not dictate components. | "Screens, nouns, directories, and workflow steps do not dictate components"
+- [x] FS-33 | prohibition | Components do not dictate files, packages, services, processes or teams. | "components do not dictate files, packages, services, processes, or teams"
 - [x] FS-28 | obligation | Split components where different decisions need hiding, authority changes hands, protection or lifecycle differs, or coupling prevents a coherent increment. | "Split where different decisions need hiding, authority changes hands, protection/lifecycle differs, or coupling prevents a coherent increment."
 - [x] FS-29 | ordering | Resolve shared interface work before claiming that increments are independent. | "resolve shared interface work before claiming independence"
 - [x] FS-30 | prohibition | Do not freeze requirements before exploring architecture; iterate as evidence changes. | "do not freeze requirements before exploring architecture"
@@ -53,3 +55,4 @@ most scrutiny from you, not from the drafter.
 
 - FS-24 (consumer/provider contracts), FS-25 (resolve reuse first) and FS-27 (components are not deployment units) added from the external AI review's list of missing architectural constraints.
 - FS-26, FS-28 to FS-32 added on a second reading of the source for the same reason: each can change a generated design (provider boundaries, split criteria, shared interfaces before independence, no early freeze, design readiness, prototype vs simulated behavior).
+- Revision 3: FS-27 split into FS-27 (what does not determine components) and FS-33 (what components do not determine); a compiler could keep one and lose the other (external AI review).

@@ -231,7 +231,7 @@ observed behavior).
 
 ## Status
 
-v0.13.1 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
+v0.13.2 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
 [CHANGELOG.md](CHANGELOG.md). 0.13 adds `skillwren coverage`: which
 of a skill's rules a trusted host enforces, which the ledger can only
 record, and which are instructions only. 0.12 ships the `skillwren` skill as a

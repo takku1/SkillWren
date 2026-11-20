@@ -17,7 +17,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = ["test_field_2026_11_19.py", "test_guard_workflow.py", "test_mutations.py",
-         "mutation_catalog.py", "test_guard_skill_load.py", "test_coverage.py"]
+         "mutation_catalog.py", "test_guard_skill_load.py", "test_coverage.py",
+    "test_fidelity_tools.py"]
 
 # name -> (file, old, new). Each `old` must occur exactly once.
 MUTANTS = {
@@ -108,6 +109,18 @@ MUTANTS = {
     "coverage-unmatched-rule-instructed": ("src/skillwren/coverage.py",
                                            "        if not classes:\n            return \"unverifiable\"",
                                            "        if False:\n            return \"unverifiable\""),
+    # Fidelity benchmark integrity (revision 3, external review)
+    "fidelity-digest-unchecked": ("scripts/lab/fidelity_score.py",
+                                  "        if actual != data[key]:", "        if False:"),
+    "fidelity-multispan-unchecked": ("scripts/lab/fidelity_freeze.py",
+                                     'any(norm(span) not in body for span in quote[1:-1].split(" ... "))',
+                                     'norm(quote[1:-1].split(" ... ")[0]) not in body'),
+    "coverage-span-strongest": ("src/skillwren/coverage.py",
+                                "            weakest = max(hits, key=lambda r: TIERS.index(r[\"tier\"]))",
+                                "            weakest = min(hits, key=lambda r: TIERS.index(r[\"tier\"]))"),
+    "coverage-duplicate-quote-accepted": ("src/skillwren/coverage.py",
+                                          "        if at < 0 or flat.find(quote, at + 1) >= 0:",
+                                          "        if at < 0:"),
     # Finding 5, ledger
     "ledger-exclusions-ignored": ("src/skillwren/ledger.py",
                                   "    excluded = any(r[\"violations\"] for r in report[\"exclusions\"])",
@@ -144,7 +157,7 @@ MUTANTS = {
 def run(name, rel, old, new):
     with tempfile.TemporaryDirectory(prefix="skillwren-field-mutant-") as directory:
         root = Path(directory)
-        for folder in ("src", "examples", "docs/current/research/lifecycle"):
+        for folder in ("src", "examples", "docs/current/research/lifecycle", "scripts/lab"):
             shutil.copytree(ROOT / folder, root / folder,
                             ignore=shutil.ignore_patterns("__pycache__", "*.egg-info"))
         shutil.copytree(ROOT / "tests/fixtures", root / "tests/fixtures")
@@ -162,7 +175,7 @@ def run(name, rel, old, new):
         try:
             proc = subprocess.run([sys.executable, "-m", "unittest", "-q", "test_field_2026_11_19",
                                    "test_guard_workflow", "test_mutations",
-                                   "test_guard_skill_load", "test_coverage"],
+                                   "test_guard_skill_load", "test_coverage", "test_fidelity_tools"],
                                   cwd=root / "tests", capture_output=True, text=True, timeout=300,
                                   env={**os.environ, "PYTHONPATH": str(root / "src")})
         except subprocess.TimeoutExpired:

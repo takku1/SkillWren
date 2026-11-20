@@ -3,8 +3,9 @@
 Source: sources/code-reviewer/SKILL.md
 Reviewed by: <your name>
 Date: <YYYY-MM-DD>
-Candidate status: AI-drafted, AI-reviewed twice (drafting session; external AI review
-2026-11-20). Not human-approved: freezing needs the human reviewer's name and date.
+Candidate status: AI-drafted, AI-reviewed three times (drafting session; external AI
+reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human
+reviewer's name and date.
 
 **How to review.** These are model-drafted candidates. For each line: keep it
 (`[x]`), drop it (change to `[ ]`), or edit the requirement text so it says
@@ -38,9 +39,10 @@ be wrong? If not, drop it.
 - [x] CR-20 | obligation | Prioritize feedback from critical to minor. | "Prioritize feedback (critical → minor)"
 - [x] CR-21 | output | The report contains a summary (one-sentence intent recap and overall assessment), critical, major and minor issues, positive feedback, questions for the author, and a verdict. | "Code review report must include:"
 - [x] CR-22 | output | The verdict is one of Approve, Request Changes or Comment. | "Approve / Request Changes / Comment"
-- [x] CR-23 | authority | Review only: read and search code; never edit files or run commands (derived from the tool allowlist, not stated in the prose). | "allowed-tools: Read, Grep, Glob"
+- [x] CR-23 | authority | Review only: read and search code; never edit files or run commands (derived from the tool allowlist, not stated in the prose; an allowlist limits the skill's tools, it is not host-enforced isolation). | "allowed-tools: Read, Grep, Glob"
 
 ## Revision log
 
 - CR-11 now covers both blocking on and nitpicking style when a linter or formatter exists; CR-12 dropped as overlapping (external AI review: CR-11/12/13 overlap; CR-13, personal preferences in general, kept as distinct).
 - CR-23 states that it is derived from `allowed-tools`, not from the prose (external AI review).
+- Revision 3: CR-23 notes that a tool allowlist is not host-enforced isolation (external AI review).

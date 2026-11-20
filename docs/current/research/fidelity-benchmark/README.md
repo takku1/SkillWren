@@ -21,7 +21,7 @@ Without it the benchmark would grade a model against a model.
 | Step | State |
 |---|---|
 | Corpus: 5 sources, 2,550 words | done (`sources/`) |
-| Candidate requirement lists: 87 kept (88 lines), every quote verbatim in its source | AI-drafted, AI-reviewed twice (revision logs in each file); **awaiting human approval** (`review/`) |
+| Candidate requirement lists: 88 kept (89 lines), every quote verbatim in its source | AI-drafted, AI-reviewed three times (revision logs in each file); **awaiting human approval** (`review/`) |
 | Freeze tool (`scripts/lab/fidelity_freeze.py`) | done |
 | Preservation and introduction scorer (`scripts/lab/fidelity_score.py`) | done; smoke-tested on candidates only |
 | Builds to score: `skillwren compile` and the skill, two models | after freezing |
@@ -71,7 +71,16 @@ py -3 scripts/lab/fidelity_score.py <source> <built SKILL.md> [--out result.json
 ```
 
 A model judge (Sonnet) rates each requirement and must quote the built
-skill; a quote not found verbatim makes the verdict `unverified`. Results
+skill; a quote not found verbatim makes the verdict `unverified`. The
+scorer refuses to run when the source or review file no longer matches the
+frozen digests. The same judge scores both build paths, so its errors may
+be correlated: `--adjudication FILE` lists every weakened, missing or
+unverified verdict and every widening introduction for the human reviewer
+to confirm or overturn before a comparison is reported.
+
+A verified quote shows the cited text exists in the source; it does not
+show that the requirement states it faithfully. That is what the human
+review is for. Results
 say which basis they used (frozen, with reviewer and date, or
 `--candidates`, unreviewed). A sample of judgments goes back to the human
 reviewer for spot-checking before any result is reported as measured.

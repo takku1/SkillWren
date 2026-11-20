@@ -1,6 +1,23 @@
 # Changelog
 
-## Unreleased
+## 0.13.2 (2026-11-20)
+
+- `coverage --fidelity` maps requirements conservatively: a quote spanning
+  several elements gets the weakest of their tiers (it took the strongest),
+  a quote found more than once or not at all is `ambiguous`, and each
+  mapped tier says it belongs to the element, not that the element
+  enforces the whole requirement (external review).
+- Fidelity benchmark integrity: `fidelity_score.py` refuses a source or
+  review file whose bytes differ from the frozen digests (a changed source
+  would have been scored against the old answer key); `--adjudication`
+  writes every weakened, missing or unverified verdict and every widening
+  introduction for a human to confirm or overturn (the same model judges
+  both build paths); the freeze tool accepts multi-passage quotes joined by
+  ` ... `, each verified verbatim.
+- Candidate requirements, revision 3 (88 kept): FS-27 split, TF-3 quoted
+  across all four steps, IC-3/IC-5 marked as interpretations, CR-23 notes
+  that a tool allowlist is not host isolation. Still not human-approved.
+- 4 new code mutants (41/41 killed).
 
 - Enforcement closure probe (`scripts/lab/closure_probe.py`,
   `docs/current/research/enforcement-closure/`): seven attacks through the

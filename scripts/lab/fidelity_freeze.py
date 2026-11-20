@@ -9,7 +9,10 @@ requirement is one line:
     - [x] CR-3 | obligation | Read the PR description first. | "Read PR description"
 
 `[x]` keeps the line, `[ ]` drops it. Kinds: obligation, prohibition, exception, ordering,
-authority, output. The quote must appear verbatim in the source (whitespace-normalized);
+authority, output. The quote must appear verbatim in the source (whitespace-normalized); a
+requirement supported by several passages joins them with " ... ", each checked verbatim.
+A verified quote proves the text exists, not that the requirement represents it: that is
+the human reviewer's judgment;
 a line whose quote is `inferred` records something the reviewer accepts without a source
 span. Freezing refuses a file without `Reviewed by:` and `Date:` filled in, writes
 frozen/<source>.json with the source and review digests, and never overwrites a frozen
@@ -63,8 +66,9 @@ def parse(review):
         if not inferred:
             if not (quote.startswith('"') and quote.endswith('"')):
                 problems.append(f"line {number}: {rid} quote must be \"...\" or inferred")
-            elif body is not None and norm(quote[1:-1]) not in body:
-                problems.append(f"line {number}: {rid} quote not found verbatim in the source")
+            elif body is not None and any(norm(span) not in body for span in quote[1:-1].split(" ... ")):
+                problems.append(f"line {number}: {rid} quote not found verbatim in the source"
+                                " (each span of a ' ... '-joined quote must be)")
         items.append({"id": rid, "kept": keep == "x", "kind": kind, "requirement": requirement.strip(),
                       "quote": None if inferred else quote[1:-1], "inferred": inferred})
     return header, items, problems

@@ -1,10 +1,10 @@
 # Status
 
-**Last Updated**: 2026-11-20 (0.13.1: coverage binds writes to the flow; enforced states its isolation assumption)
+**Last Updated**: 2026-11-20 (0.13.2: conservative requirement mapping; benchmark bound to its frozen bytes)
 
 ## Current Phase
 
-Package 0.13.1, release candidate for supervised skill authoring: the `skillwren` skill installs as a self-contained Claude Code plugin
+Package 0.13.2, release candidate for supervised skill authoring: the `skillwren` skill installs as a self-contained Claude Code plugin
 (`/plugin install skillwren --marketplace takku1/SkillWren`, no pip), builds
 a new skill from a request or converts one, and a headless agent with only
 the plugin built a checked skill end to end. Runtime pieces (guard, ledger)
@@ -21,7 +21,7 @@ runtime comparison. Current verification results are recorded in CI.
   (`research/fidelity-benchmark/`) scores preservation and introduction
   against human-reviewed requirements, and `coverage --fidelity` gives each
   preserved requirement its enforcement tier. Waiting on the owner's
-  review of the 87 candidate requirements (AI-drafted, AI-reviewed twice). After that: score builds from
+  review of the 88 candidate requirements (AI-drafted, AI-reviewed three times). After that: score builds from
   both paths, then the bypass experiment (skip a prerequisite, stale
   evidence, forged approval, a prohibited push, and an alternate tool,
   the last needing a credential in the isolation container).
@@ -235,7 +235,7 @@ real-host harness, adapters, and model-measurement tools.
   not filesystem auditing.
 - Built skills are smoke-checked, not semantically verified: the fidelity
   benchmark (`research/fidelity-benchmark/`) awaits the owner's approval of
-  its 87 candidate requirements.
+  its 88 candidate requirements.
 
 ## Documents
 
