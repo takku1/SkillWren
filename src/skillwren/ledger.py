@@ -1,10 +1,10 @@
 """Run ledger: record what a run did, then check its order rules on the trace.
 
-    skillwren ledger start <flow-file> [--label TEXT] [--dir DIR]
+    skillwren ledger start <flow-file> [--label TEXT] [--require NAME]... [--package DIR] [--dir DIR]
     skillwren ledger exec  <run> --step TEXT [--cwd DIR] [--readonly --sandbox-image IMG] [--dir DIR] -- <command> [args...]
     skillwren ledger note  <run> --step TEXT [--artifact PATH]... [--detail TEXT] [--dir DIR]
     skillwren ledger attempt <run> --step TEXT [--detail TEXT] [--dir DIR]
-    skillwren ledger check <run> [--require-evidence] [--require-completeness] [--json] [--dir DIR]
+    skillwren ledger check <run> [--require-evidence] [--require-completeness] [--loaded DIR] [--json] [--dir DIR]
     skillwren ledger show  <run> [--dir DIR]
 
 `<run>` is the id `start` printed, or `latest`. Records live in
@@ -23,6 +23,12 @@ Design (docs/current/research/game-theory-2026-11.md):
   edited, inserted, or deleted record breaks the chain on `check`. This makes
   manipulation detectable, not impossible: whoever controls the file can
   rewrite the whole chain.
+- Exclusions: `never A before B` rules (SPEC 23) are committed at start too;
+  a recorded A (step or attempt) before a recorded B is a violation.
+- Provenance (field report 2026-11-19): `start --package DIR` records the
+  enforcing package's tree digest; `check --loaded DIR` fails when the copy
+  the host actually loaded differs, so instructions and enforcement cannot
+  silently come from different versions.
 - Ex post checking suffices when evidence is verifiable (evidence games): a
   required step with no record is a violation, not an unknown.
 
@@ -34,7 +40,6 @@ import argparse
 import datetime
 import hashlib
 import json
-import re
 import secrets
 import subprocess
 import sys
@@ -42,6 +47,7 @@ import time
 from pathlib import Path
 
 from .validator.files import Document, looks_like_fragment
+from .validator import refs
 from .validator.ordering import matches
 
 DEFAULT_DIR = Path(".skillwren") / "ledger"
@@ -111,20 +117,68 @@ def _append(path, record):
     return sealed
 
 
-def start(flow_file, directory=DEFAULT_DIR, label=None, required=()):
+def package_identity(directory):
+    """{path, tree_sha256, manifest_sha256} for a skill or plugin directory.
+
+    The tree digest covers every file (not only Markdown), so hooks and
+    scripts count; a `build` artifact and its source directory agree."""
+    from .compiler import tree_digest, tree_files
+    root = Path(directory)
+    if not root.is_dir():
+        raise LedgerError(f"no package directory {root}")
+    files = tree_files(root)
+    if not files:
+        raise LedgerError(f"package directory {root} is empty")
+    manifest = root / "manifest.json"
+    return {"path": str(root), "tree_sha256": tree_digest(files), "files": len(files),
+            "manifest_sha256": _digest_file(manifest) if manifest.is_file() else None}
+
+
+def _package_copy(flow_file, package):
+    """The package's copy of flow_file, matched by the longest relative path
+    the package holds that ends the flow file's path, or None."""
+    from .compiler import tree_files
+    flow_parts = Path(flow_file).resolve().parts
+    best = None
+    for name, raw in tree_files(package).items():
+        parts = tuple(name.split("/"))
+        if flow_parts[-len(parts):] == parts and (best is None or len(parts) > len(best[0])):
+            best = (parts, raw)
+    return None if best is None else best[1]
+
+
+def start(flow_file, directory=DEFAULT_DIR, label=None, required=(), package=None):
     flow_file = Path(flow_file)
     if not flow_file.is_file():
         raise LedgerError(f"no flow file {flow_file}")
     fragment = looks_like_fragment(flow_file)
     doc = Document(flow_file, fragment)
     rules = [{"line": r.line, "first": r.first, "then": r.then} for r in doc.contract.order]
+    exclusions = [{"line": r.line, "first": r.first, "then": r.then}
+                  for r in doc.contract.exclusions]
+    identity = None
+    if package is not None:
+        identity = package_identity(package)
+        copy = _package_copy(flow_file, package)
+        if copy is None:
+            raise LedgerError(f"package {package} holds no copy of {flow_file.name}")
+        if _digest_bytes(copy) != _digest_file(flow_file):
+            raise LedgerError(f"{flow_file} differs from the package's copy in {package}:"
+                              " the flow being committed to is not the one the package ships")
     run = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M%S-") + secrets.token_hex(3)
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
-    record = _seal({"type": "start", "seq": 0, "time": _now(), "run": run,
-                    "file": str(flow_file), "file_sha256": _digest_file(flow_file),
-                    "layout": "fragment" if fragment else "skill", "rules": rules,
-                    "label": label, "required": list(required)}, None)
+    head = {"type": "start", "seq": 0, "time": _now(), "run": run,
+            "file": str(flow_file), "file_sha256": _digest_file(flow_file),
+            "layout": "fragment" if fragment else "skill", "rules": rules,
+            "label": label, "required": list(required)}
+    # Optional keys are omitted when empty, so older readers and digests of
+    # runs that use neither feature are unchanged.
+    if exclusions:
+        head["exclusions"] = exclusions
+    if identity:
+        head["package"] = identity
+    record = _seal(head, None)
     path = directory / f"{run}.jsonl"
     with path.open("x", encoding="utf-8") as stream:
         stream.write(json.dumps(record, sort_keys=True) + "\n")
@@ -230,9 +284,9 @@ def step_matches(pattern, text):
     """
     if matches(pattern, text):
         return True
-    reference = pattern.strip()
-    if not re.fullmatch(r"[a-z]+#[a-z][a-z0-9-]*", reference):
+    if not refs.reference(pattern):
         return False
+    reference = pattern.strip()
     step = text.strip()
     return step == reference or step.startswith(reference + " ")
 
@@ -241,11 +295,45 @@ def completed(event):
     return event.get("class") != "evidence" or event.get("exit") == 0
 
 
-def check(path, require_evidence=False):
+def _check_exclusions(head, records):
+    """`never A before B`: a recorded A (any step or attempt, completed or
+    not: a failed write still happened) before a recorded B is a violation."""
+    events = [r for r in records[1:] if r.get("type") in ("step", "attempt")]
+    results = []
+    for rule in head.get("exclusions", []):
+        earlier, violations, exercised = None, [], False
+        for event in events:
+            text = event.get("step", "")
+            if step_matches(rule["then"], text) and event.get("type") == "step":
+                exercised = True
+                if earlier is not None:
+                    violations.append({"seq": event["seq"], "step": text,
+                                       "reason": f"excluded earlier step at {earlier}"})
+            if step_matches(rule["first"], text) and earlier is None:
+                earlier = event["seq"]
+        results.append({"rule": f"never {rule['first']} before {rule['then']}",
+                        "line": rule.get("line"), "exercised": exercised,
+                        "violations": violations})
+    return results
+
+
+def _check_package(head, loaded):
+    """None when no loaded copy was given; else {recorded, loaded, match}."""
+    if loaded is None:
+        return None
+    recorded = (head.get("package") or {}).get("tree_sha256")
+    actual = package_identity(loaded)["tree_sha256"]
+    return {"recorded": recorded, "loaded": actual, "loaded_path": str(loaded),
+            "match": recorded is not None and recorded == actual}
+
+
+def check(path, require_evidence=False, loaded=None):
     records = load(path)
     head = records[0]
     report = {"run": head.get("run"), "file": head.get("file"), "integrity": verify_chain(records),
               "file_changed": None, "rules": [], "steps": len(records) - 1}
+    report["exclusions"] = _check_exclusions(head, records)
+    report["package"] = _check_package(head, loaded)
     flow_file = Path(head.get("file", ""))
     if flow_file.is_file():
         report["file_changed"] = _digest_file(flow_file) != head.get("file_sha256")
@@ -268,9 +356,11 @@ def check(path, require_evidence=False):
                                 "line": rule.get("line"), "exercised": exercised,
                                 "satisfied_by": sorted(set(satisfied)),
                                 "violations": violations})
-    report["valid"] = not report["integrity"] and not any(r["violations"] for r in report["rules"])
+    excluded = any(r["violations"] for r in report["exclusions"])
+    report["valid"] = (not report["integrity"] and not excluded
+                       and not any(r["violations"] for r in report["rules"]))
     report["ok"] = report["valid"]
-    report["ordering_valid"] = not any(
+    report["ordering_valid"] = not excluded and not any(
         v["reason"] == "earlier step not completed"
         for r in report["rules"] for v in r["violations"])
     report["evidence_valid"] = (not any(
@@ -284,7 +374,11 @@ def check(path, require_evidence=False):
         not report["missing_milestones"] and not report["integrity"]
         if required else None)
     report["ok"] = report["ok"] and not report["missing_milestones"]
-    if report["integrity"] or any(r["violations"] for r in report["rules"]):
+    report["package_consistent"] = (None if report["package"] is None
+                                    else report["package"]["match"])
+    if report["package_consistent"] is False:
+        report["ok"] = False
+    if not report["valid"]:
         report["completeness"] = "violations"
     elif not required:
         report["completeness"] = "unassessed"
@@ -294,6 +388,8 @@ def check(path, require_evidence=False):
         report["completeness"] = "complete"
     report["outcome"] = ("complete" if report["completeness"] == "complete"
                          else report["completeness"])
+    if report["package_consistent"] is False:
+        report["outcome"] = "package-mismatch"
     return report
 
 
@@ -311,6 +407,20 @@ def _print_check(report):
             print("    warning: the earlier step was only self-reported")
         for v in rule["violations"]:
             print(f"    violation at step {v['seq']} {v['step']!r}: {v['reason']}")
+    for rule in report["exclusions"]:
+        state = "exercised" if rule["exercised"] else "not exercised"
+        print(f"  exclusion (line {rule['line']}) {rule['rule']!r}: {state}")
+        for v in rule["violations"]:
+            print(f"    violation at step {v['seq']} {v['step']!r}: {v['reason']}")
+    package = report["package"]
+    if package is not None:
+        if package["recorded"] is None:
+            print(f"  package: the run recorded no package; cannot vouch for {package['loaded_path']}")
+        elif not package["match"]:
+            print(f"  package mismatch: run committed to {package['recorded'][:12]},"
+                  f" host loaded {package['loaded'][:12]} from {package['loaded_path']}")
+        else:
+            print(f"  package: host-loaded copy matches ({package['loaded'][:12]})")
     print(f"ordering_valid={report['ordering_valid']}; execution_complete={report['execution_complete']};"
           f" completeness={report['completeness']} (valid={report['valid']})")
     for name in report["missing_milestones"]:
@@ -338,6 +448,9 @@ def main(argv):
     p_start.add_argument("--label")
     p_start.add_argument("--require", action="append", default=[], dest="required",
                          help="exact required milestone name (repeatable)")
+    p_start.add_argument("--package", metavar="DIR",
+                         help="the skill or plugin directory enforcing this run; records its"
+                              " tree digest and refuses a flow file that differs from its copy")
     p_exec = sub.add_parser("exec", help="run a command (no shell) and record its result as evidence")
     p_exec.add_argument("run")
     p_exec.add_argument("--step", required=True)
@@ -360,6 +473,9 @@ def main(argv):
     p_check.add_argument("--require-evidence", action="store_true")
     p_check.add_argument("--require-completeness", action="store_true",
                          help="fail when no required milestones were configured (unassessed)")
+    p_check.add_argument("--loaded", metavar="DIR",
+                         help="the copy the host actually loaded (e.g. a plugin cache);"
+                              " fail unless it matches the package recorded at start")
     p_check.add_argument("--json", action="store_true")
     p_show = sub.add_parser("show", help="list the recorded steps")
     p_show.add_argument("run")
@@ -374,7 +490,8 @@ def main(argv):
     args = parser.parse_args(argv)
     try:
         if args.action == "start":
-            run, path, rules = start(args.flow_file, args.dir, args.label, args.required)
+            run, path, rules = start(args.flow_file, args.dir, args.label, args.required,
+                                     args.package)
             if not rules:
                 print("skillwren ledger: the flow file has no order rules; steps are recorded,"
                       " nothing is checked", file=sys.stderr)
@@ -408,7 +525,7 @@ def main(argv):
             print(f"recorded attempt {record['seq']}; satisfies nothing")
             return 0
         if args.action == "check":
-            report = check(path, args.require_evidence)
+            report = check(path, args.require_evidence, args.loaded)
             if args.json:
                 print(json.dumps(report, indent=2))
             else:

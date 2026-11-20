@@ -16,6 +16,7 @@ from .flowgraph import (END, build_cfg, dominators, enclosing_foreach_source,
                         is_run, is_terminal, must_facts,
                         predecessors, reachable_nodes, rebound_before, walk)
 from .ordering import check_order, order_facts
+from .refs import RETURN_RE
 from .syntax import (ASSIGN_RE, INTERP_RE, VAR_ONLY, WITH_RE, Diag, as_target,
                      content_words, from_source, match_resource, norm,
                      run_target, strip_as_clause, valid_type)
@@ -43,8 +44,7 @@ def collect_flow_facts(root, produces):
     returned, calls = set(), []
     for node in walk(root):
         if node.kind == "action" and node.data == "return":
-            m = re.fullmatch(r"return\s+(?:#[a-z][a-z0-9-]*\s+)?(\S+)\s+as\s+([A-Za-z_][\w-]*)\s*",
-                             node.text)
+            m = RETURN_RE.fullmatch(node.text)
             if m and declared(m.group(2)):
                 returned.add(m.group(2))
         elif node.kind == "action" and node.data == "run":
@@ -440,7 +440,7 @@ class FlowAnalysis:
             self.run_calls.append((node, target))
 
     def _verb_return(self, node, rest, tgt):
-        m = re.fullmatch(r"return\s+(?:#[a-z][a-z0-9-]*\s+)?(\S+)\s+as\s+([A-Za-z_][\w-]*)\s*", node.text)
+        m = RETURN_RE.fullmatch(node.text)
         if not m:
             self.error(node.line, "V1", f"malformed return {node.text!r}",
                        "Use `return <binding> as <name>` or a `return:` block.")

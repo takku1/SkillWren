@@ -429,6 +429,34 @@ checks` rule. Record pre-fix runs under a different step name (for
 example `exec reproduction checks`) so the acceptance rule keeps its
 meaning; the authoring intent is two phases, so write two step names.
 
+**Say what a later gate refuses (0.10).** When a step's runtime gate
+refuses some earlier effect (a guard that will not start over unseen
+edits), write that as an exclusion in the gate's file: `never write#code
+before exec#guard`. Make the earlier step as narrow as the gate is: full-
+stack's guard accepts design notes, so `never write before exec#guard`
+would be wrong. `check` then flags any flow that runs this file's flows
+after such a write (P3), including two fragments that are each clean
+alone. Compose them with `run` in some flow, or P3 cannot see them.
+
+**Bind the run to the package the host loaded (0.10).** A host can load a
+cached skill while newer scripts write the ledger. Start with
+`ledger start FLOW --package <skill dir>`, and have whoever closes the
+run pass the host-loaded copy: `ledger check RUN --loaded <cache dir>`.
+A mismatch fails as `package-mismatch` even when every order rule held.
+
+**Require the entry step of a fragment that must not be skipped.** Order
+rules inside a fragment the model never enters hold vacuously; full-
+stack's stack flow was skipped 3/3 when the model judged no technology
+choice existed. Require the fragment's first step as a milestone so a
+skip reads `incomplete`.
+
+**Define an identifier grammar once.** When a static check and a runtime
+matcher share an identifier (row IDs, step names, typed references),
+define the pattern in one place and test both against one table of
+accepted and rejected examples. Full-stack's checker took `[A-Z]+-n` and
+its guard `A-n`; SkillWren's own renderer accepted `#Deps` that the
+validator ignored, until both moved to `validator/refs.py`.
+
 ## Golden discipline
 
 Golden means validator-clean plus manually semantic-reviewed plus

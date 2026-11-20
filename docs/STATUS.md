@@ -1,6 +1,6 @@
 # Status
 
-**Last Updated**: 2026-11-18 (0.10 work on `main`, unreleased)
+**Last Updated**: 2026-11-19 (0.10 work; field-report response on branch `field-report-2026-11-19`)
 
 ## Current Phase
 
@@ -12,6 +12,16 @@ corpus review, a 72-run skill-form comparison, and the model A/B/C
 runtime comparison. Current verification results are recorded in CI.
 
 ## Active Focus
+
+- Response to the full-stack field report of 2026-11-19
+  ([design](current/design/field-response-2026-11-19.md),
+  [three-tier results](current/research/field-response-2026-11-19.md)):
+  exclusion rules (`never A before B`, P3), ledger package provenance
+  (`--package` / `--loaded`), one typed-ID grammar (`validator/refs.py`).
+  The work passes all three tiers: 404 tests, 33/33 spec mutants and
+  14/14 code mutants killed, and live Sonnet runs. In those runs, agents
+  read P3 correctly 3/3 but fixed it minimally 0/3, and provenance caught
+  a stale copy 3/3.
 
 - Empirical sufficiency selector: `skillwren select` evaluates a fixed
   candidate-router set under the frozen v23 router-certification spec:
@@ -69,6 +79,13 @@ real-host harness, adapters, and model-measurement tools.
 
 ## Key Decisions
 
+- 2026-11-19: exclusion rules are an `order:` form (`never A before B`)
+  and not `exec` preconditions: no new statement syntax, and they bind
+  every caller through `run`. Composition written in prose stays out of
+  static reach; the ledger checks the same rule on traces.
+- 2026-11-19: package identity is a tree digest over every file (not
+  only Markdown) so hook drift counts; a mismatch fails `ok` but leaves
+  the order verdict `valid` separate.
 - 2026-11-18: NL-to-SkillWren compilation is organized around a
   per-requirement inventory checked mechanically (every source line
   covered, every requirement landed), because measured draft loss is
@@ -110,6 +127,10 @@ real-host harness, adapters, and model-measurement tools.
 
 ## Known Gaps
 
+- P3's repair hint did not lead live agents to the minimal fix (move the
+  effect after the later step); 2/3 stopped to ask. P3 cannot see
+  composition written in prose. Provenance needs the caller to name the
+  host-loaded path.
 - NL compiler: one run per arm, model judge only, no human review of
   compiled output; over-asking persists; fragment layout unmeasured.
 - Every real-agent run complied, so the form comparison hit a ceiling;

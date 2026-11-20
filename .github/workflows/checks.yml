@@ -25,6 +25,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: python -m unittest discover -s tests -q
       - run: python tests/mutation_sweep.py
+      - run: python tests/field_mutation_sweep.py
       - run: python -m pip wheel . --no-deps --wheel-dir dist
       - name: Install wheel and smoke test outside checkout
         shell: bash

@@ -94,6 +94,18 @@ class WorkflowGuardTests(unittest.TestCase):
         self.assertEqual(status['unenforced_rules'],
                          ['exec dependency check before write#report'])
 
+    def test_exclusion_rules_are_listed_unenforced(self):
+        """SPEC 23: the guard does not enforce `never A before B`; it says so."""
+        text = self.flow.read_text(encoding='utf-8').replace(
+            '  exec dependency check before write#report',
+            '  exec dependency check before write#report\n'
+            '  never write#report before verify#deps')
+        self.flow.write_bytes(text.encode('utf-8'))
+        approve(self.flow, True, 'host-admin', None, self.approvals)
+        self.policy['workflow']['flow_sha256'] = file_digest(self.flow)
+        status = Controller(self.policy).handle({'action': 'status'})
+        self.assertIn('never write#report before verify#deps', status['unenforced_rules'])
+
     def test_workflow_shape_validated(self):
         self.policy['workflow']['flow'] = 'flow.md'
         with self.assertRaises(Denied):

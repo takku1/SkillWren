@@ -15,7 +15,9 @@ from .analysis import analyze_flow, collect_flow_facts, direct_mutation
 from .document import parse_fences, read_contract
 from .flowgraph import build_cfg, build_tree, predecessors, reachable_nodes, walk
 from .evidence import classify
+from .exclusion import Exclusions, check_exclusions
 from .ordering import guarantees, matches
+from .refs import statement_id
 from .schema import check_schema
 from .syntax import (APPENDIX_HEADING_RE, Diag, content_words, find_key_line,
                      has_tab_indent, match_resource, norm, parse_block,
@@ -106,6 +108,7 @@ class Workspace:
         self.docs = {}
         self._mutates, self._guarantees = {}, {}
         self._loading = set()
+        self.exclusions = Exclusions(self)
 
     def document(self, path, fragment=None):
         key = Path(path).resolve()
@@ -455,13 +458,15 @@ def _check_evidence_anchors(doc, workspace, warnings):
                                  " an exec, a written artifact, or a user decision."))
 
 
-def _check_order_coverage(doc, infos, warnings):
+def _check_order_coverage(doc, infos, warnings, exclusions_seen=frozenset()):
     seen = set().union(*[i.get("order_seen", set()) for i in infos.values()]) if infos else set()
-    for k, rule in enumerate(doc.contract.order):
-        if k not in seen:
-            warnings.append(Diag(rule.line, "W13",
-                                 f"order rule never applies: no statement starts with {rule.then!r}",
-                                 "Fix the pattern so it matches the later statement, or drop the rule."))
+    unused = [rule for k, rule in enumerate(doc.contract.order) if k not in seen]
+    unused += [rule for k, rule in enumerate(doc.contract.exclusions)
+               if k not in exclusions_seen]
+    for rule in sorted(unused, key=lambda r: r.line):
+        warnings.append(Diag(rule.line, "W13",
+                             f"order rule never applies: no statement starts with {rule.then!r}",
+                             "Fix the pattern so it matches the later statement, or drop the rule."))
 
 
 def _check_budget(doc, errors):
@@ -498,9 +503,9 @@ def analyze_document(doc, workspace):
     identifiers = {}
     for root in doc.trees.values():
         for node in walk(root):
-            identity = re.match(r"([a-z]+)\s+#([a-z][a-z0-9-]*)(?=[\s:]|$)", node.text)
+            identity = statement_id(node.text)
             if identity:
-                verb, ident = identity[1], identity[2]
+                verb, ident = identity
                 shared_exit = verb == "return" and identifiers.get(ident) == "return"
                 if ident in identifiers and not shared_exit:
                     errors.append(Diag(node.line, "P2", "duplicate operation ID " + ident,
@@ -547,7 +552,8 @@ def analyze_document(doc, workspace):
     _check_guidance(doc, infos, warnings)
     _check_unused(infos, warnings)
     _check_recursion(infos, errors)
-    _check_order_coverage(doc, infos, warnings)
+    exclusions_seen = check_exclusions(doc, workspace, errors) if doc.trees else set()
+    _check_order_coverage(doc, infos, warnings, exclusions_seen)
     _check_evidence_anchors(doc, workspace, warnings)
     if doc.header:
         _check_budget(doc, errors)

@@ -564,6 +564,10 @@ Errors:
   dismissible `ask`.
 - P1 order (0.6): a statement matching an order rule's later step is
   reachable on a path where the earlier step has not completed (Section 20).
+- P3 exclusion (0.10): a statement matching a `never A before B` rule's
+  later step, or a `run` whose callee may start it, is reachable on a path
+  where the earlier step may already have run, in the declaring file or in
+  any flow that runs its flows (Section 23).
 - F2 also covers malformed `order:` entries and an `inputs:` section in a
   complete skill (fragments only).
 
@@ -746,6 +750,16 @@ are checked without a SkillWren header (Section 20). Order rule: an
 `A before B` contract entry checked over every path (Section 20).
 
 ## 19. Amendment log
+
+### Unreleased (0.10): exclusion rules, package provenance, one ID grammar
+
+Additive: every file that validated clean still does, and ledger start
+records gain keys only when the new options are used. From the full-stack
+field report of 2026-11-19 (findings 5-8): `never A before B` order
+entries and error P3 (Section 23); `ledger start --package` and `ledger
+check --loaded`; `build` manifests carry `tree_sha256`; the typed-reference
+grammar is defined once (`validator/refs.py`), which also stops
+`explain-workflow` from calling `#Deps` an addressable ID.
 
 ### v0.6 (format change, 2026-11-12): fragments, cross-file runs, order rules
 
@@ -1032,7 +1046,8 @@ order:
 ```
 
 Each entry is `<earlier> before <later>`, with `before` exactly once
-(F2 otherwise). Both sides are statement prefixes, compared after
+(F2 otherwise). From 0.10, an entry may instead be `never <earlier> before
+<later>`, an exclusion rule (Section 23). Both sides are statement prefixes, compared after
 lowercasing and collapsing spaces; `*` matches any text. The rule holds
 when, on every path through a flow, a statement matching the earlier step
 has completed before any statement matching the later step starts (P1).
@@ -1109,6 +1124,51 @@ What this does not do: it does not interpret branches, prose steps, or
 `exec` steps outside the policy, and it does not make an approval grant
 anything beyond starting the controller. The host must still keep policy,
 verifiers, targets, approvals and checkpoint out of the agent's reach.
+
+## 23. Exclusion rules and package provenance (0.10)
+
+**Exclusion rules.** An `order:` entry `never <earlier> before <later>`
+says the later step must not start once the earlier step may have run.
+Patterns follow Section 20 (prefixes, `*`, typed references). It is a
+may-analysis, the dual of P1: one path that runs the earlier step and then
+reaches the later step is an error (P3). It exists for a later runtime gate
+that refuses an earlier effect: a guard that will not start over writes it
+did not see, a lock that must be taken before a file is touched.
+
+A rule declared in file F binds F's flows and every flow that runs a flow
+of F, directly or transitively. A `run` counts as the later step when its
+callee may start it, and as the earlier step when its callee may run it.
+Callee summaries over-approximate: a matching statement reachable only on
+a path that aborts still counts. A callee's internal order is checked by
+the rules in scope for the callee. A rule whose later step matches no
+statement in its file warns (W13). `build` refuses a fragment set with P3.
+
+What this does not see: composition written in prose (a `SKILL.md` that
+says "read design, then implement") is not a `run`, so P3 applies only
+once some flow composes the two. `ledger check` applies exclusion rules
+to the recorded trace: a recorded earlier step, including an `attempt`,
+before a recorded later step is a violation. Steps taken before `ledger
+start` are not recorded. The guard (Section 22) does not enforce
+exclusions and lists them in `unenforced_rules`.
+
+**Package provenance.** `ledger start FLOW --package DIR` records DIR's
+tree digest: sha256 over sorted `<sha256> <name>` lines for every file
+under DIR (not only Markdown, so hooks and scripts count), skipping VCS,
+caches, run state and `manifest.json`. A `build` artifact and its source
+have the same digest, and `build` writes it to the manifest as
+`tree_sha256`. Start refuses when DIR holds no copy of FLOW or a copy with
+other bytes. `ledger check RUN --loaded DIR` recomputes the digest of the
+copy the host actually loaded (for example, a plugin cache) and fails,
+with outcome `package-mismatch`, when it differs or when the run recorded
+no package. The order verdict (`valid`) is reported separately, because
+the rules can hold while the instructions came from other bytes. The
+ledger binds files, not context: the caller must name the loaded path, and
+nothing here proves what the host put in the model's context.
+
+**Entering a fragment.** Order rules inside a fragment hold vacuously when
+the fragment is never entered. Where skipping it matters, require its
+entry step as a milestone (`ledger start --require exec#stack-profiles`):
+a skipped fragment is then `incomplete`, not `valid, complete`.
 
 ## Runtime interface (0.7+)
 

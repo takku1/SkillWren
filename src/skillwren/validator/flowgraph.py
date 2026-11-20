@@ -6,6 +6,7 @@ Rules emitted here are purely structural: V1 (unknown statements), O1
 """
 import re
 
+from .refs import TYPED_RETURN_BLOCK_RE
 from .syntax import (ACTIONS, ASSIGN_RE, BRANCH, GATES, VAR_ONLY, Diag)
 
 
@@ -18,7 +19,7 @@ def classify_flow_line(text):
         return ("else", None)
     if text == "return:":
         return ("returnblock", None)
-    typed_block = re.fullmatch(r"return\s+#([a-z][a-z0-9-]*):", text)
+    typed_block = TYPED_RETURN_BLOCK_RE.fullmatch(text)
     if typed_block:
         return ("returnblock", typed_block.group(1))
     if text == "retry":

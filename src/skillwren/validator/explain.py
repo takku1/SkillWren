@@ -96,6 +96,11 @@ RULE_EXPLAIN = {
     "P1": "An order rule `A before B` says B may start only after A has"
           " completed on every path, so a path that reaches B without A (or"
           " only through a failed A gate) is an error (SPEC Section 20).",
+    "P3": "An exclusion rule `never A before B` says B must not start once A"
+          " may have run on some path, so a later gate cannot refuse an earlier"
+          " effect. It also binds every flow that runs the declaring file's"
+          " flows, so two fragments that are each clean cannot be composed"
+          " into a runtime deadlock (SPEC Section 23).",
     "W13": "An order rule whose later step matches no statement never"
            " constrains anything, which usually means the pattern is"
            " misspelled (SPEC Section 20).",

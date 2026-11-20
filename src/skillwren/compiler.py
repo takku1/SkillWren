@@ -112,12 +112,34 @@ def fragment_set(source):
     root = Path(source).resolve()
     if not (root / "SKILL.md").is_file():
         raise BuildError(f"fragment set needs SKILL.md at its root: {root}")
+    return tree_files(root)
+
+
+def tree_files(root):
+    """Every file under root as {relative posix path: bytes}, skipping VCS,
+    caches and SkillWren run state."""
+    root = Path(root).resolve()
     files = {}
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root)
         if path.is_file() and not SKIP_PARTS & set(relative.parts):
             files[relative.as_posix()] = path.read_bytes()
     return files
+
+
+def tree_digest(sources):
+    """Package identity (field report 2026-11-19, finding 6): sha256 over
+    sorted `<sha256> <name>` lines, `manifest.json` excluded so a built
+    artifact and its source directory agree. `sources` maps names to bytes
+    or to manifest records carrying `sha256`."""
+    lines = []
+    for name in sorted(sources):
+        if name == "manifest.json":
+            continue
+        value = sources[name]
+        digest = value["sha256"] if isinstance(value, dict) else hashlib.sha256(value).hexdigest()
+        lines.append(f"{digest} {name}\n")
+    return hashlib.sha256("".join(lines).encode("utf-8")).hexdigest()
 
 
 def expanded_text(source):
@@ -159,6 +181,7 @@ def build_fragments(source, output):
                 "checked_fragments": checked,
                 "expanded_sha256": hashlib.sha256(expanded).hexdigest(),
                 "expanded_bytes": len(expanded),
+                "tree_sha256": tree_digest(files),
                 "sources": {name: {"sha256": hashlib.sha256(raw).hexdigest(),
                                    "bytes": len(raw)} for name, raw in files.items()},
                 "contexts": [], "deferred_contexts": [], "warnings": warnings}

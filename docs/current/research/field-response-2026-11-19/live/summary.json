@@ -1,0 +1,32 @@
+{
+  "author": {
+    "runs": 3,
+    "pass": 1,
+    "cost_usd": 0.508,
+    "saw_p3": 3
+  },
+  "run": {
+    "runs": 3,
+    "pass": 3,
+    "cost_usd": 0.301,
+    "stack_entered": 0,
+    "stale_caught": 3,
+    "exclusion_violations": 0
+  },
+  "skip-plain": {
+    "runs": 3,
+    "pass": 1,
+    "cost_usd": 0.237,
+    "stack_entered": 0,
+    "stale_caught": 1,
+    "exclusion_violations": 0
+  },
+  "skip-required": {
+    "runs": 3,
+    "pass": 3,
+    "cost_usd": 0.344,
+    "stack_entered": 3,
+    "stale_caught": 3,
+    "exclusion_violations": 0
+  }
+}

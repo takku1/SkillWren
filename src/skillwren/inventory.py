@@ -251,7 +251,7 @@ class Candidate:
                     self.statements.append(Statement(name, node.line, node.text, node.kind,
                                                      node.data, cls))
             if doc.contract is not None:
-                for rule in doc.contract.order:
+                for rule in (*doc.contract.order, *doc.contract.exclusions):
                     self.rules.append((name, rule.line, rule.text))
         self.flat = _norm(self.text)
 

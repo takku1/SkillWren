@@ -2,6 +2,31 @@
 
 ## Unreleased (0.10)
 
+- Response to the full-stack field report of 2026-11-19 (design note
+  `design/field-response-2026-11-19.md`, three-tier report
+  `research/field-response-2026-11-19.md`):
+  - Exclusion rules: `order:` entries `never A before B`, new error P3, a
+    may-analysis that binds the declaring file and every flow that runs its
+    flows, so two fragments that are each clean cannot be composed into a
+    runtime deadlock unseen. `ledger check` applies them to the trace
+    (attempts count); `build` refuses a set with P3; the guard lists them
+    as unenforced (SPEC 23).
+  - Package provenance: `ledger start --package DIR` records a tree digest
+    over every file and refuses a flow file that differs from the
+    package's copy; `ledger check --loaded DIR` fails as
+    `package-mismatch` when the host-loaded copy differs. `build`
+    manifests carry `tree_sha256`.
+  - One typed-reference grammar (`validator/refs.py`) shared by P2, order
+    matching, the ledger, return parsing and `explain-workflow`; the
+    renderer had accepted `#Deps` and `#de_ps`, which the validator ignores.
+  - Authoring guide: exclusion rules, package binding, required entry
+    milestones for fragments that must not be skipped, one grammar per
+    shared identifier.
+  - Tests: `tests/test_field_2026_11_19.py` (tier 1), two exclusion
+    mutants in the catalog and `tests/field_mutation_sweep.py` (14 code
+    mutants, tier 2), `scripts/lab/field_live.py` with the
+    `examples/field-live/` skills (real agents, tier 3).
+
 - NL compiler: `skillwren compile` turns a full-context prose source into
   a checked skill through a phased model adapter (inventory, lower,
   repair, judge), with a bounded repair loop and no publication on

@@ -18,10 +18,10 @@ from pathlib import Path
 
 from .files import Document, looks_like_fragment, summarize
 from .flowgraph import walk
+from .refs import statement_id
 
 DUMP_VERSION = 1
 
-TYPED_ID_RE = re.compile(r"#[A-Za-z][\w-]*")
 RUN_RE = re.compile(r"^run\s+(\S+)\s+from\s+(\S+)")
 
 # Verbs a guard policy operation can bind. Anything else is advisory-only:
@@ -50,6 +50,8 @@ def dump_workflow(path, fragment=None):
         flows[flow] = [_dump_node(child) for child in root.children]
     rules = [{"line": rule.line, "first": rule.first, "then": rule.then}
              for rule in doc.contract.order]
+    exclusions = [{"line": rule.line, "first": rule.first, "then": rule.then}
+                  for rule in doc.contract.exclusions]
     declared = list(getattr(doc.contract, "inputs", None) or [])
     touches = summarize(str(path), fragment)
     inferred_inputs = sorted(
@@ -57,6 +59,7 @@ def dump_workflow(path, fragment=None):
         - set(declared))
     return {"version": DUMP_VERSION, "file": str(path), "fragment": fragment,
             "flows": flows, "order_rules": rules,
+            "exclusion_rules": exclusions,
             "declared_inputs": declared,
             "inferred": {"inputs": inferred_inputs,
                          "note": "inferred from use, not declared; "
@@ -66,7 +69,7 @@ def dump_workflow(path, fragment=None):
 
 
 def _typed_ids(text):
-    return TYPED_ID_RE.findall(text)
+    return statement_id(text)
 
 
 def _describe(node, depth):
@@ -142,6 +145,11 @@ def explain_workflow(path, fragment=None):
                          f"(line {rule['line']})")
     else:
         lines.append("Ordering: no order rules; steps may run in any order.")
+    if dump["exclusion_rules"]:
+        lines.append("Exclusions (must not happen on any path, here or in any caller):")
+        for rule in dump["exclusion_rules"]:
+            lines.append(f"  - never {rule['first']!r} before {rule['then']!r} "
+                         f"(line {rule['line']})")
     asks = [node for root in doc.trees.values() for node in walk(root)
             if node.kind == "action" and node.data == "ask"]
     if asks:

@@ -14,8 +14,10 @@ from collections import namedtuple
 from .syntax import (ACCESS_VALUES, RESOURCE_KEYS, STRICT_OPEN_RE, VAR_ONLY,
                      Diag, has_tab_indent, is_kebab, strip_quotes)
 
-Contract = namedtuple("Contract", ["resources", "always", "nevers", "order", "inputs"])
-OrderRule = namedtuple("OrderRule", ["line", "first", "then", "text"])
+Contract = namedtuple("Contract", ["resources", "always", "nevers", "order", "inputs",
+                                   "exclusions"], defaults=((),))
+OrderRule = namedtuple("OrderRule", ["line", "first", "then", "text", "kind"],
+                       defaults=("before",))
 
 SECTION_ORDER = ("resources", "always", "never", "inputs", "order")
 SKILL_SECTIONS = {"resources", "always", "never", "order"}
@@ -215,17 +217,25 @@ def parse_fences(body_lines, first_lineno, fragment=False):
 
 
 def _read_order(entries, diags):
-    rules = []
+    """Returns (rules, exclusions). `A before B` is a rule (P1); `never A before
+    B` is an exclusion (P3, SPEC 23). No statement starts with `never`, so the
+    prefix is unambiguous."""
+    rules, exclusions = [], []
     for ln, _ind, text in entries:
         body = text[2:].strip() if text.startswith("- ") else text
-        parts = re.split(r"\s+before\s+", body)
+        kind, rest = "before", body
+        if body.startswith("never "):
+            kind, rest = "never", body[len("never "):]
+        parts = re.split(r"\s+before\s+", rest)
         if len(parts) != 2 or not parts[0].strip() or not parts[1].strip():
             diags.append(Diag(ln, "F2", f"malformed order entry {body!r}",
-                              "Use `<earlier statement> before <later statement>`,"
+                              "Use `<earlier statement> before <later statement>`"
+                              " or `never <earlier> before <later>`,"
                               " with `before` exactly once."))
             continue
-        rules.append(OrderRule(ln, parts[0].strip(), parts[1].strip(), body))
-    return rules
+        rule = OrderRule(ln, parts[0].strip(), parts[1].strip(), body, kind)
+        (exclusions if kind == "never" else rules).append(rule)
+    return rules, exclusions
 
 
 def _read_inputs(entries, diags):
@@ -326,9 +336,10 @@ def read_contract(contract, diags, fragment=False):
         always = [t for _, _, t in sections["always"][1]]
     if "never" in sections:
         nevers = [t for _, _, t in sections["never"][1]]
-    order = _read_order(sections["order"][1], diags) if "order" in sections else []
+    order, exclusions = (_read_order(sections["order"][1], diags)
+                         if "order" in sections else ([], []))
     inputs = _read_inputs(sections["inputs"][1], diags) if "inputs" in sections else None
-    return Contract(resources, always, nevers, order, inputs)
+    return Contract(resources, always, nevers, order, inputs, exclusions)
 
 
 def parse_contract(contract, diags):

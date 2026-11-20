@@ -114,6 +114,8 @@ class Controller:
                 self.rules.append((first, then))
             else:
                 self.unenforced.append(f'{first} before {then}')
+        for rule in dump.get('exclusion_rules', []):
+            self.unenforced.append(f"never {rule['first']} before {rule['then']}")
 
     def _check_workflow(self):
         from .validator.approval import check

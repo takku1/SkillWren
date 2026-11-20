@@ -14,6 +14,7 @@ BASES = {
     "else": "tests/fixtures/valid-else.md",
     "exec": "tests/fixtures/valid-exec.md",
     "order": "tests/fixtures/valid-order.md",
+    "exclusion": "tests/fixtures/valid-exclusion.md",
 }
 
 
@@ -183,4 +184,17 @@ MUTANTS = [
          "      abort with \"Checks failed; nothing returned.\"\n",
          "      show output\n")},
      "rules": {"P1"}},
+    # --- exclusion base (SPEC 23; field report 2026-11-19, finding 5: an
+    # earlier effect that a later gate refuses) ---
+    {"name": "exclusion-effect-before-gate",
+     "edits": {"exclusion": sub(
+         "  exec acceptance checks from checks as results\n",
+         "  save output as output\n  exec acceptance checks from checks as results\n")},
+     "rules": {"P3"}},
+    {"name": "exclusion-effect-on-one-branch",
+     "edits": {"exclusion": sub(
+         "  exec acceptance checks from checks as results\n",
+         "  if a draft is wanted:\n    save output as output\n"
+         "  exec acceptance checks from checks as results\n")},
+     "rules": {"P3"}},
 ]
