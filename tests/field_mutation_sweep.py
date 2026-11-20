@@ -100,8 +100,11 @@ MUTANTS = {
     "coverage-no-prerequisites": ("src/skillwren/coverage.py",
                                   "            if op in prerequisites:", "            if False:"),
     "coverage-unmediated-write-enforced": ("src/skillwren/coverage.py",
-                                           '            if op in ops and "target" in ops[op]:',
+                                           '            if bound and op in ops and "target" in ops[op]:',
                                            "            if True:"),
+    "coverage-write-ignores-binding": ("src/skillwren/coverage.py",
+                                       '            if bound and op in ops and "target" in ops[op]:',
+                                       '            if op in ops and "target" in ops[op]:'),
     "coverage-unmatched-rule-instructed": ("src/skillwren/coverage.py",
                                            "        if not classes:\n            return \"unverifiable\"",
                                            "        if False:\n            return \"unverifiable\""),
@@ -156,11 +159,15 @@ def run(name, rel, old, new):
             text = "import re\n" + text
         path.write_text(text, encoding="utf-8")
         # unittest, not pytest: CI installs nothing beyond the standard library.
-        proc = subprocess.run([sys.executable, "-m", "unittest", "-q", "test_field_2026_11_19",
-                               "test_guard_workflow", "test_mutations",
-                               "test_guard_skill_load", "test_coverage"],
-                              cwd=root / "tests", capture_output=True, text=True, timeout=300,
-                              env={**os.environ, "PYTHONPATH": str(root / "src")})
+        try:
+            proc = subprocess.run([sys.executable, "-m", "unittest", "-q", "test_field_2026_11_19",
+                                   "test_guard_workflow", "test_mutations",
+                                   "test_guard_skill_load", "test_coverage"],
+                                  cwd=root / "tests", capture_output=True, text=True, timeout=300,
+                                  env={**os.environ, "PYTHONPATH": str(root / "src")})
+        except subprocess.TimeoutExpired:
+            # A hang is not a kill: report it as a survivor and keep sweeping.
+            return {"mutant": name, "killed": False, "tail": ["TIMEOUT after 300 s"]}
         out = proc.stdout + proc.stderr
         # A syntax or import failure is not a valid kill: the mutant never ran.
         broken = any(word in out for word in ("SyntaxError", "ImportError",

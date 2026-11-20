@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.13.1 (2026-11-20)
+
+- `coverage`: a write is enforced only when the policy is bound to the
+  analyzed flow, as order rules already required. A policy for another
+  flow that names the same operation protects some other target, and was
+  labelling this skill's write enforced (found by external review;
+  regression test and mutant added).
+- Every enforced row states its assumption: the agent reaches the
+  protected target only through the guard (host isolation), which a
+  policy cannot show. Declared enforcement, not demonstrated enforcement.
+- The code mutation sweep reports a hung mutant as a survivor instead of
+  crashing (one run timed out once; 37/37 killed on rerun).
+
 ## 0.13.0 (2026-11-20)
 
 - `skillwren coverage` (SPEC 25): each order rule, exclusion rule, gate,

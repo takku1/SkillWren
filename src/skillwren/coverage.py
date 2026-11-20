@@ -3,7 +3,8 @@
     skillwren coverage FILE... [--complete] [--policy POLICY.json] [--fidelity SCORE.json] [--json]
 
 Tiers, strongest first:
-- enforced: a trusted host blocks the violation. An order or exclusion rule whose two steps
+- enforced: a trusted host blocks the violation, given the deployment assumption that the
+  agent reaches the protected target only through the guard (declared, not demonstrated). An order or exclusion rule whose two steps
   are guard operations of a policy bound to this flow (the guard's own test), a write that
   can only happen through a guard operation, and a gate or command that is the earlier step
   of an enforced rule (a prerequisite the protected write cannot skip).
@@ -30,6 +31,8 @@ from .validator.ordering import matches
 from .validator.refs import reference, statement_id
 
 TIERS = ("enforced", "recorded", "instructed", "unverifiable")
+ASSUMPTION = ("the agent reaches the protected target only through the guard "
+              "(host isolation; not shown by the policy)")
 
 
 def _op(text):
@@ -97,13 +100,20 @@ def analyze(path, fragment=True, policy=None):
                 tier, why = "instructed", "the model's own judgment"
         elif node.kind == "action" and node.data in ("write", "save"):
             kind = "write"
-            if op in ops and "target" in ops[op]:
-                tier, why = "enforced", f"only through guard operation {op} (pinned verifier, exact bytes)"
+            if bound and op in ops and "target" in ops[op]:
+                tier, why = "enforced", f"guard operation {op} of the policy bound to this flow (pinned verifier, exact bytes)"
+            elif op in ops and "target" in ops[op]:
+                tier, why = "instructed", f"policy names {op} but is not bound to this flow"
             else:
                 tier, why = "instructed", "not mediated: nothing outside the model blocks or records it"
         else:
             continue
         rows.append({"line": node.line, "kind": kind, "text": node.text, "tier": tier, "why": why})
+    for row in rows:
+        if row["tier"] == "enforced":
+            # Declared, not demonstrated: the policy alone cannot show that the agent has no
+            # other way to the target (SPEC 22, 24: host isolation).
+            row["assumes"] = ASSUMPTION
     rows.sort(key=lambda r: r["line"])
     return rows
 
@@ -165,8 +175,11 @@ def main(argv=None):
         return 0
     for path, entry in report.items():
         for r in entry["items"]:
-            print(f"{path}:{r['line']}: {r['tier']:<12} {r['kind']}: {r['text']} -- {r['why']}")
+            print(f"{path}:{r['line']}: {r['tier']:<12} {r['kind']}: {r['text']} -- {r['why']}"
+                  + (" [assumes isolation]" if r.get("assumes") else ""))
         print(f"{path}: " + ", ".join(f"{n} {t}" for t, n in entry["counts"].items()))
+        if entry["counts"]["enforced"]:
+            print(f"{path}: enforced assumes {ASSUMPTION}")
         for r in entry.get("requirements", []):
             print(f"  {r['id']} ({r['kind']}): {r['tier'] or 'absent'} -- {r['why']}")
         if "requirement_counts" in entry:

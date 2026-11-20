@@ -1,10 +1,10 @@
 # Status
 
-**Last Updated**: 2026-11-20 (0.13.0: enforcement coverage; fidelity benchmark awaiting review)
+**Last Updated**: 2026-11-20 (0.13.1: coverage binds writes to the flow; enforced states its isolation assumption)
 
 ## Current Phase
 
-Package 0.13.0, release candidate for supervised skill authoring: the `skillwren` skill installs as a self-contained Claude Code plugin
+Package 0.13.1, release candidate for supervised skill authoring: the `skillwren` skill installs as a self-contained Claude Code plugin
 (`/plugin install skillwren --marketplace takku1/SkillWren`, no pip), builds
 a new skill from a request or converts one, and a headless agent with only
 the plugin built a checked skill end to end. Runtime pieces (guard, ledger)

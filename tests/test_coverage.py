@@ -69,6 +69,23 @@ class CoverageTests(unittest.TestCase):
         self.assertEqual(rule["tier"], "recorded")
         self.assertIn("not bound", rule["why"])
 
+    def test_policy_for_another_flow_does_not_enforce_writes(self):
+        # 0.13.1 (external review): a policy bound to another flow that happens to name the
+        # same operation protects some other target, not this skill's write.
+        other = dict(self.policy, workflow=dict(self.policy["workflow"], flow=str(self.root / "other.md")))
+        rows = analyze(self.flow, policy=other)
+        write = by_text(rows, "write #report")
+        self.assertEqual(write["tier"], "instructed")
+        self.assertIn("not bound", write["why"])
+        self.assertNotIn("enforced", {r["tier"] for r in rows})
+
+    def test_enforced_rows_state_the_isolation_assumption(self):
+        rows = analyze(self.flow, policy=self.policy)
+        enforced = [r for r in rows if r["tier"] == "enforced"]
+        self.assertTrue(enforced)
+        self.assertTrue(all("only through the guard" in r["assumes"] for r in enforced))
+        self.assertFalse(any("assumes" in r for r in rows if r["tier"] != "enforced"))
+
     def test_rule_missing_an_operation_is_not_enforced(self):
         policy = dict(self.policy, operations={"write#report": self.policy["operations"]["write#report"]})
         rows = analyze(self.flow, policy=policy)

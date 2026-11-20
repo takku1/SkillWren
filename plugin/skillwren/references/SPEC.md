@@ -1,7 +1,7 @@
 # SkillWren — Skill Logic Architecture (Contract-Header + Logic-Body)
 
 - Date: 2026-10-01; last revised 2026-11-17
-- Status: format 0.10 (package 0.13.0, 2026-11-20); 0.11 adds skill-load
+- Status: format 0.10 (package 0.13.1, 2026-11-20); 0.11 adds skill-load
   assurance for the guard (Section 24); 0.10 adds the
   workflow-bound guard (Section 22) and exclusion rules with package
   provenance (Section 23); 0.9 added typed return anchors and declared
@@ -1270,7 +1270,7 @@ command and write. It adds no syntax and changes no verdict of `check`.
 
 | Tier | Meaning | Assigned to |
 |---|---|---|
-| enforced | a trusted host blocks the violation | an order or exclusion rule whose two steps are operations of a guard policy bound to this flow, by the guard's own test (Section 22; for an order rule the later operation must be a write); a write typed as such an operation; a gate or command that is the earlier step of an enforced rule |
+| enforced | a trusted host blocks the violation | an order or exclusion rule whose two steps are operations of a guard policy bound to this flow, by the guard's own test (Section 22; for an order rule the later operation must be a write); a write typed as an operation of that bound policy; a gate or command that is the earlier step of an enforced rule |
 | recorded | not blocked, but observable outside the model, so `ledger check` detects a violation after the run | a rule whose earlier step leaves a command result, artifact or user decision; a gate resting on evidence or a user decision; a command |
 | instructed | rests on the model's own judgment | a rule whose earlier step is only self-report (W15); a self-judged gate; an unmediated write |
 | unverifiable | cannot be checked as written | a rule whose earlier step matches no statement |
@@ -1281,8 +1281,11 @@ step eventually, so a required step is enforced only as the prerequisite of
 a protected write. With `--fidelity`, each preserved requirement of a
 fidelity-benchmark score takes the strongest tier of the element on the
 lines its quote occupies; a quote in prose outside the semantic blocks is
-instructed. Enforced still assumes the guard's deployment conditions
-(Sections 22 and 24): the agent cannot reach the target any other way.
+instructed. Enforced is declared, not demonstrated: it assumes the
+guard's deployment conditions (Sections 22 and 24), that the agent can
+reach the protected target only through the guard. Every enforced row
+carries that assumption (`assumes`), because a policy cannot show it; a
+same-account agent with an unmediated tool can bypass the boundary.
 
 ## Runtime interface (0.7+)
 
