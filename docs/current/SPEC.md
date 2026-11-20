@@ -589,7 +589,11 @@ Warnings:
   line outside the semantic blocks counts as appendix text.
 - W13 order rule that never applies: its later step matches no statement.
 - W14 fragment without a `logic` block: nothing was checked.
-- W16 a file names, outside `run`, another file whose exclusion rules P3 therefore cannot apply (Section 23).
+- W15 order rule resting on self-report: every statement matching its
+  earlier step is the model's own judgment (no exec, evidence-backed
+  verify, artifact or user decision).
+- W16 a file names, outside `run`, another file whose exclusion rules
+  P3 therefore cannot apply (Section 23).
 
 Output is a file/line list with one-line fixes.
 
