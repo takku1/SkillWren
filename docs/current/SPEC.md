@@ -1,8 +1,10 @@
 # SkillWren — Skill Logic Architecture (Contract-Header + Logic-Body)
 
 - Date: 2026-10-01; last revised 2026-11-17
-- Status: format 0.9 (package 0.9.0, 2026-11-17); 0.9 adds typed
-  return anchors and declared read-only `exec` (Section 21)
+- Status: format 0.10 (package 0.10.0, 2026-11-20); 0.10 adds the
+  workflow-bound guard (Section 22) and exclusion rules with package
+  provenance (Section 23); 0.9 added typed return anchors and declared
+  read-only `exec` (Section 21)
 - Source idea: `brainstorm - to be deleted.md` (theme-factory agent-DSL sketch)
 - Direction: contract-header + logic-body (direction 1 of 3 proposed;
   user-approved). From 0.6 the checked unit is the `logic` block, which can

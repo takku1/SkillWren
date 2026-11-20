@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased (0.10)
+## 0.10.0 (2026-11-20)
 
 - Response to the full-stack field report of 2026-11-19 (design note
   `design/field-response-2026-11-19.md`, three-tier report

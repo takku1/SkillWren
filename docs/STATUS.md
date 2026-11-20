@@ -1,10 +1,10 @@
 # Status
 
-**Last Updated**: 2026-11-20 (0.10 work; field-report response and follow-up on branch `field-report-2026-11-19`)
+**Last Updated**: 2026-11-20 (0.10.0 released: NL compiler and field-report response, PR #5)
 
 ## Current Phase
 
-Package 0.9.0, piloted beta with real-host evidence. A real coding agent
+Package 0.10.0, piloted beta with real-host evidence. A real coding agent
 (headless Claude Code) loads a packaged SkillWren skill from a one-line
 request and leaves an evidence chain the host verifies independently.
 The first model measurements are in: draft fidelity, an independent
@@ -58,8 +58,9 @@ runtime comparison. Current verification results are recorded in CI.
 - 0.10 work merged to `main` (PR #2; `next-0.10` is behind `main`): corpus
   v2 (frozen), drafter evidence check and prompt 2 (requirement defects
   19 -> 7 on v2), runtime benchmark protocol 2 (written up in
-  `model-evaluation-plan.md`), inline-form example. Package version is
-  still 0.9.0; the 0.10 release has not been cut.
+  `model-evaluation-plan.md`), inline-form example. Released as 0.10.0
+  on 2026-11-20 with the NL compiler and the field-report response
+  (PR #5).
 - Still open, needs a decision or resources: a task hard enough to
   separate skill forms; an OS-isolated host run (the agent needs
   credentials inside the isolated account or container); a human review

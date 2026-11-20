@@ -204,8 +204,15 @@ observed behavior).
 
 ## Status
 
-v0.9.0 (2026-11-17). See [docs/STATUS.md](docs/STATUS.md) and
-[CHANGELOG.md](CHANGELOG.md). 0.9 shows a real coding agent (headless
+v0.10.0 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
+[CHANGELOG.md](CHANGELOG.md). 0.10 adds the natural-language compiler
+(`compile`, `inventory`, `check --json`), the empirical deployment
+selector (`select`, `certgate`) with guard enforcement, and the response
+to a field report from real use: exclusion rules (`never A before B`,
+P3) that catch two clean fragments composing into a runtime deadlock,
+package provenance on the ledger (including a host hook that records
+which copy of a skill was loaded), and one shared identifier grammar.
+0.9 shows a real coding agent (headless
 Claude Code) loading a packaged skill and leaving a host-checkable
 evidence chain ([host demo](docs/current/research/host-demo/README.md)),
 adds typed return anchors and declared read-only `exec`, packages
