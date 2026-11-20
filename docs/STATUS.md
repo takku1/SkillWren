@@ -1,10 +1,10 @@
 # Status
 
-**Last Updated**: 2026-11-20 (0.11 in progress: guard skill-load assurance, SPEC 24)
+**Last Updated**: 2026-11-20 (0.11.0 released: guard skill-load assurance, SPEC 24)
 
 ## Current Phase
 
-Package 0.10.0, piloted beta with real-host evidence. A real coding agent
+Package 0.11.0, piloted beta with real-host evidence. A real coding agent
 (headless Claude Code) loads a packaged SkillWren skill from a one-line
 request and leaves an evidence chain the host verifies independently.
 The first model measurements are in: draft fidelity, an independent
@@ -13,7 +13,7 @@ runtime comparison. Current verification results are recorded in CI.
 
 ## Active Focus
 
-- Skill-load assurance (0.11, SPEC 24, branch `skill-load-assurance`): a
+- Skill-load assurance (0.11.0, SPEC 24, PR #6): a
   guard policy `skill: {name, tree_sha256, loads}` plus `guard --run-id`
   denies every protected operation unless the host-owned load file holds
   an unambiguous load of that exact package tree in this run (fails closed,
@@ -27,8 +27,7 @@ runtime comparison. Current verification results are recorded in CI.
   full-stack 0.9.0 adopted exclusion rules (P3 caught its F-4 order on
   paper) and package binding; a MochiOS build ran clean on it; fed back
   as `record-load --package DIR` here and `widen` / `--section` in
-  full-stack. Open: merge PR #6 and full-stack#2, release, update the
-  installed plugin.
+  full-stack. Released as 0.11.0 with full-stack 0.9.0 (full-stack#2).
 
 - Response to the full-stack field report of 2026-11-19
   ([design](current/design/field-response-2026-11-19.md),

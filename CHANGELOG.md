@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased (0.11.0)
+## 0.11.0 (2026-11-20)
 
 - Skill-load assurance (SPEC 24): a guard policy may require
   `skill: {name, tree_sha256, loads}`; with `guard --run-id ID`, every

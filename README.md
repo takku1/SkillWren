@@ -204,8 +204,11 @@ observed behavior).
 
 ## Status
 
-v0.10.0 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
-[CHANGELOG.md](CHANGELOG.md). 0.10 adds the natural-language compiler
+v0.11.0 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
+[CHANGELOG.md](CHANGELOG.md). 0.11 adds skill-load assurance: a guard
+policy can refuse every protected operation in a run where the host did
+not record a load of the approved skill package (SPEC 24), checked end to
+end through full-stack and a MochiOS build. 0.10 adds the natural-language compiler
 (`compile`, `inventory`, `check --json`), the empirical deployment
 selector (`select`, `certgate`) with guard enforcement, and the response
 to a field report from real use: exclusion rules (`never A before B`,

@@ -1,7 +1,8 @@
 # SkillWren — Skill Logic Architecture (Contract-Header + Logic-Body)
 
 - Date: 2026-10-01; last revised 2026-11-17
-- Status: format 0.10 (package 0.10.0, 2026-11-20); 0.10 adds the
+- Status: format 0.10 (package 0.11.0, 2026-11-20); 0.11 adds skill-load
+  assurance for the guard (Section 24); 0.10 adds the
   workflow-bound guard (Section 22) and exclusion rules with package
   provenance (Section 23); 0.9 added typed return anchors and declared
   read-only `exec` (Section 21)
