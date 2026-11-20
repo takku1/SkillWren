@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.12.0 (2026-11-20)
+
+- The `skillwren` skill builds skills. It now creates a new skill from a
+  request as well as converting an existing `SKILL.md`: requirement
+  inventory, user confirmation of the inventory before any file is
+  written (dismissal-safe, M1), draft, check-and-repair loop, requirement
+  landing check, deterministic explanation, `build`. The skill is written
+  in SkillWren (inline form) and checks clean with no warnings; its
+  language card (`references/language.md`) carries a worked example that
+  CI checks.
+- Installable without pip: `plugin/` is a self-contained Claude Code
+  plugin (skill, language card, full references, and the checker bundled
+  as `lib/`, standard library only). `/plugin install skillwren
+  --marketplace takku1/SkillWren`; other hosts copy `plugin/skillwren/`.
+  `scripts/build_plugin.py` generates it from `skills/skillwren/`,
+  `src/skillwren/` and `docs/current/`; `--check` (in the test suite)
+  fails when it is stale. Plugin files are LF on every checkout
+  (`.gitattributes`).
+- `.agents/skills/skillwren` is now a pointer to `skills/skillwren/`
+  instead of a second, drifting copy.
+- Live proof (`docs/current/research/skill-build-live/`): a headless
+  agent with only the plugin built a new skill from a one-line request.
+  Turn 1 showed the inventory and wrote nothing; after "confirmed", the
+  built skill checked clean with no warnings ($0.25, one task, one model).
+
 ## 0.11.1 (2026-11-20)
 
 - Package identity ignores line endings in text files: a tree digest

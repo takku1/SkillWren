@@ -1,68 +1,136 @@
 ---
 name: skillwren
-description: Convert an existing SKILL.md into checked SkillWren logic (a complete skill, or flow files with logic blocks) while preserving its requirements; validate the flow and its ordering, review parity, and measure the complete loaded prompt.
+description: Build a new agent skill, or convert an existing SKILL.md, as checked SkillWren logic - explicit steps, gates and ordering rules that a validator checks before the skill ships. Use when asked to create, write, convert, check or package a skill.
 ---
 
-# SkillWren conversion
+# SkillWren
 
-Produce a smaller, logically structured skill from an existing skill. Keep the
-original intact. Use this repository's compiler and validator; do not substitute
-token deletion or an expanded copy of the original for a semantic conversion.
+SkillWren is a small, closed language for agent procedures: a `logic` block
+of explicit steps, gates (`require`, `verify`) with owned repairs, and
+`order:` rules, checked statically before anyone relies on them. The
+`logic` block below is this skill's procedure; follow it in order. Each
+`exec` step runs a command from the table; the sections after it define the
+other steps. Language reference: [references/language.md](references/language.md)
+(read it before drafting). Full grammar: `references/SPEC.md`; authoring
+advice: `references/authoring-guide.md`.
 
-1. Read the original and its relevant local references. Establish which files
-   belong to the comparison. Inventory obligations, prohibitions, conditions,
-   exceptions, examples that affect decisions, evidence standards, and outputs.
-   Mark every "do X before Y" the original states or implies.
-   Choose the target layout: flow files (a small `SKILL.md` with only `name`,
-   `description`, and a core, plus `logic` blocks in `flows/*.md`; start from
-   `docs/current/fragment-template.md`) unless a tool you run reads the
-   SkillWren header, in which case a complete skill
-   (`docs/current/skill-template.md`).
-2. Rewrite the procedure using the grammar in `docs/current/SPEC.md`: explicit branches,
-   require/verify gates, bindings, effects, and bounded repairs. Put repeated
-   cross-cutting rules once in the contract. Keep specialized facts/examples
-   only where they change decisions. The report appendix may define output
-   shape; a second procedural glossary should not repeat the flow.
-   Write each marked ordering as an `order:` rule, and gate the earlier step
-   on every path rather than only inside a conditionally called flow.
-3. Preserve authority and failure behavior. Do not turn review into editing,
-   optional advice into a requirement, a conditional task into unconditional
-   work, or an unavailable check into a passing result. Retain concrete values,
-   scope boundaries, and exceptions. A new name alone does not preserve a rule.
-4. Run `skillwren check candidate.md` (flow files: `skillwren check
-   --fragment --summary flows/*.md`, and review the inferred inputs for
-   typos). Without installing, use `PYTHONPATH=src` and the interpreter that
-   works: `python3`, `python`, or `py -3` on Windows. Repair the represented control flow,
-   rather than weakening requirements just to silence a rule. Consult
-   `docs/current/authoring-guide.md` for the conversion workflow and current limits.
-5. Create a reviewed map in the format documented in `docs/current/compiler.md`.
-   Bind the original and candidate hashes; map every original nonblank line to
-   instructions that preserve its intent. Explicitly include relevant original
-   reference files. Review the mapping semantically; anchor matching only
-   checks bookkeeping. Update the rewrite if anything is lost or invented.
-6. Run `skillwren measure original.md candidate.md --json`, adding one
-   `--original-context FILE` for each selected original reference. Measure the
-   complete expanded prompt using the same tokenizer on both sides. Character
-   counts require an explicit metric and must not be called token savings.
-7. Complete skills: run `skillwren build candidate.md --original original.md
-   --review review.json --out compiled-skill` with the same context selection.
-   This optimized build validates the flow, passes the review checks, and
-   publishes only a strictly smaller candidate. Flow-file sets: `skillwren
-   build skill-dir --out compiled-skill` checks every logic file and packages
-   the set; compare sizes with `skillwren measure`. If the candidate cannot
-   be made smaller without losing required behavior, keep the behavior: do
-   not publish it as an optimized build, package it plainly (without
-   `--original`/`--review`), and report the tradeoff. Never silently drop
-   content or hide it in deferred files.
+```contract
+inputs:
+  request, source
+order:
+  ask user to confirm the requirement inventory before write draft
+  verify the draft has no errors before exec skill build
+  exec workflow explanation before exec skill build
+```
 
-To have a model do steps 1-5 with mechanical accounting, run `skillwren
-compile original.md --context ref.md ... --out candidate -- <adapter>`
-(`docs/current/compiler.md`, last section). It inventories every source
-line, lowers, checks, repairs, and writes `audit/inventory.json` and
-`audit/review.json`; review its open findings, questions, and judge results
-exactly as you would review your own conversion.
+```logic
+skillwren:
+  require request exists
+    otherwise:
+      abort with "Say what the skill should do, or name the SKILL.md to convert."
 
-Return the compiled skill, retained-source manifest, requirement map, exact
-comparison metric and counts, and material limits. Structural validation and
-source retention do not prove semantic equivalence or model adherence. Do not
-run paid model evaluations or install the result unless requested.
+  if request is ambiguous on outcome, inputs, or authority:
+    ask user to clarify the outcome, inputs, and authority as clarification
+    apply update with clarification as request
+
+  if request names an existing skill to convert:
+    read original skill and its references from source as original
+    generate requirement inventory from original as requirements
+  else:
+    generate requirement inventory from request as requirements
+
+  label confirming:
+  show requirements
+  ask user to confirm the requirement inventory
+  require user confirms the requirement inventory
+    otherwise:
+      ask user for the missing or wrong requirements as corrections
+      apply inventory revision with corrections as requirements
+      return to confirming
+
+  read language reference from references as language
+  generate skill draft from requirements as draft
+  apply language rules with language as draft
+  write draft with workdir
+
+  label checking:
+  exec skill check from launcher as checked
+  verify the draft has no errors and every warning is fixed or explained from checked
+    otherwise:
+      apply check repair with checked as draft
+      write draft with workdir
+      exec skill check from launcher as checked
+      retry
+
+  verify every requirement lands in a step, gate, order rule, or step meaning from requirements
+    otherwise:
+      apply requirement repair with requirements as draft
+      write draft with workdir
+      return to checking
+
+  exec workflow explanation from launcher as explanation
+  exec skill build from launcher as package
+  verify the package built without errors from package
+    otherwise:
+      apply check repair with package as draft
+      write draft with workdir
+      return to checking
+
+  return:
+    skill = package
+    explanation
+```
+
+## Commands
+
+`SW` = `python3 <this skill's directory>/scripts/skillwren.py` (Windows:
+`py -3 ...`). Python 3.9+, standard library only, nothing to install.
+Pass explicit file names, not shell globs.
+
+| Step | Command |
+|---|---|
+| `exec skill check` | flow files: `SW check --fragment --summary --audit SKILL.md flows/*.md`; a complete skill (contract header): `SW check SKILL.md` |
+| `exec workflow explanation` | `SW explain-workflow <file>` for each file with a `logic` block |
+| `exec skill build` | `SW build <draft dir> --out <destination>` (a complete skill: `SW build <file> --out <destination>`) |
+
+Exit 0 means no errors, 1 means errors, 2 means a usage failure. A warning
+is not a pass: fix it or say why it is acceptable.
+
+## Step meanings
+
+- **workdir**: a new draft folder the user names, else `<name>-draft/` in
+  the working directory. Never edit the original skill in place.
+- **source**: the skill to convert: its `SKILL.md` and every file it links
+  to that changes a decision.
+- **references**: `references/language.md` in this skill's directory.
+- **launcher**: `scripts/skillwren.py` in this skill's directory.
+- **update**: fold the user's answer into the request.
+- **requirement inventory**: one line per obligation, prohibition,
+  condition, exception, ordering ("do X before Y"), evidence standard and
+  output, quoted from the source or the request. Nothing is merged or
+  dropped silently; mark anything you infer as inferred.
+- **skill draft**: a `SKILL.md` with `name` and `description` frontmatter,
+  a `contract` block (`inputs:`, and `order:` for every ordering in the
+  inventory), one `logic` block per procedure, a command table for every
+  `exec`, and a step meaning for every `apply`. Split into `flows/*.md`
+  only when parts load at different times.
+- **language rules**: the rules in `references/language.md`: closed
+  vocabulary, gates with owned repairs, a signal outside the model behind
+  every order rule, `ask` followed by `require user ...`.
+- **check repair**: fix what the checker reported in the represented
+  control flow. Never weaken a requirement or delete a rule to silence it.
+- **requirement repair**: add the missing requirement where it belongs, or
+  ask the user whether to drop it. A requirement may not disappear.
+- **inventory revision**: add, correct or remove the lines the user named,
+  then show the whole inventory again.
+
+## Output
+
+Return the built skill's path, the workflow explanation, the requirement
+inventory with where each line landed, and limits: a clean check proves
+the written procedure is well formed and ordered, not that a model will
+follow it or that it does what the user meant beyond the inventory they
+confirmed. The explanation is generated from the logic itself, so ask the
+user to read it; if they accept it, they record that with `SW approve
+<file>` (a human step: never run `approve` on their behalf). Do not
+install the skill or run paid model evaluations unless asked.

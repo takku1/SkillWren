@@ -11,3 +11,7 @@ docs/current/research/nl-fidelity-v2/*-facts.json -text
 docs/current/research/lifecycle/** -text
 examples/host-demo/dep-audit/flow.md -text
 docs/current/research/nl-compiler/** -text
+# The plugin is generated with LF and installed from git: keep its bytes
+# identical on every checkout so `build_plugin.py --check` and package digests hold.
+plugin/** -text
+.claude-plugin/marketplace.json -text

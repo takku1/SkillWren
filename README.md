@@ -10,6 +10,33 @@ the clearest demonstrated value: on full-stack's real flows it found a
 conditional path that skipped the assurance step and two mutations before
 a dismissible ask that prose review had missed.
 
+## Install the skill
+
+The `skillwren` skill builds new agent skills from a request, or converts an
+existing `SKILL.md`, as checked SkillWren logic. It drafts the procedure,
+has you confirm the requirement inventory before writing anything, runs
+the checker until the draft is clean, shows the deterministic explanation,
+and packages the result. The checker is bundled: Python 3.9+, standard
+library only, nothing else to install.
+
+Claude Code:
+
+```text
+/plugin install skillwren --marketplace takku1/SkillWren
+```
+
+(Older Claude Code: `/plugin marketplace add takku1/SkillWren`, then
+`/plugin install skillwren@skillwren`.) Then ask "use skillwren to build a
+skill that ..." or run `/skillwren:skillwren`. To try it from a checkout
+without installing: `claude --plugin-dir ./plugin`.
+
+Other hosts (Codex and any agent that reads `SKILL.md` folders): copy
+`plugin/skillwren/` into the host's skills folder (Codex:
+`~/.agents/skills/skillwren`). The folder is self-contained.
+
+`plugin/` is generated from `skills/skillwren/`, `src/skillwren/` and
+`docs/current/` by `scripts/build_plugin.py`; CI fails if it is stale.
+
 What it does **not** show yet: that writing a procedure in this syntax
 makes a model follow it better than concise prose. Every controlled
 comparison so far is a tie at the ceiling (see [Evidence](#evidence)).
@@ -70,8 +97,8 @@ it; see [Evidence](#evidence).
   the mutation tripwire over `mutation_catalog.py` (31 one-break mutants on
   four bases) and the `mutation_sweep.py` kill-matrix runner.
 - `benchmarks/` — two pilot rounds (summaries plus frozen `archive/`).
-- `skills/skillwren/SKILL.md` — reusable procedure for converting and
-  checking a skill.
+- `skills/skillwren/` — the skill's sources (procedure, language card,
+  launcher); `plugin/` — the generated, self-contained plugin.
 
 ## Quickstart
 
@@ -130,7 +157,7 @@ skillwren build examples/optimization/SKILL.md --out built-skill \
 An optimized build requires a strictly smaller expanded prompt and a
 complete, hash-bound review map. The map checks review bookkeeping, not
 semantic parity. See the [compiler guide](docs/current/compiler.md) and the
-[conversion skill](skills/skillwren/SKILL.md).
+[skillwren skill](skills/skillwren/SKILL.md).
 
 Run a skill once headless and compare what it changed and ran with what it
 declared (needs the Claude Code CLI; spends model usage):
@@ -204,8 +231,10 @@ observed behavior).
 
 ## Status
 
-v0.11.1 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
-[CHANGELOG.md](CHANGELOG.md). 0.11 adds skill-load assurance: a guard
+v0.12.0 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
+[CHANGELOG.md](CHANGELOG.md). 0.12 ships the `skillwren` skill as a
+self-contained plugin that builds new skills from a request (see
+[Install the skill](#install-the-skill)). 0.11 adds skill-load assurance: a guard
 policy can refuse every protected operation in a run where the host did
 not record a load of the approved skill package (SPEC 24), checked end to
 end through full-stack and a MochiOS build. 0.10 adds the natural-language compiler
@@ -375,7 +404,8 @@ to a negligible window (host file ownership remains the real boundary).
 
 ## Codex
 
-This checkout includes a Codex skill at `.agents/skills/skillwren/SKILL.md`.
+This checkout includes a Codex pointer at `.agents/skills/skillwren/SKILL.md`
+to the skill in `skills/skillwren/`; elsewhere, copy `plugin/skillwren/`.
 Start a new Codex session in this repository and ask:
 `Use $skillwren to check tests/fixtures/fragments/skill/flows/build-fixed.md`.
 The skill uses the same checker and ledger as other hosts. See the

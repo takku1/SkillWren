@@ -1,0 +1,500 @@
+# SkillWren Authoring Guide for Logic-First Skills (v0.6)
+
+Two ways to use SkillWren. **Complete skills** carry the contract header
+and are checked with `skillwren check`; the 12 steps below build one.
+**Flow files** keep `SKILL.md` to the host fields and put `logic` blocks
+in on-demand Markdown files, checked with `skillwren check --fragment`
+(see "Flow files and order rules" below). Full-stack, the one skill in
+long-term use, moved to flow files in its 0.4.0 because hosts ignore the
+header and it cost about 400 tokens per run. Choose flow files unless a
+tool you run reads the header.
+
+Companion to `SPEC.md` (the contract).
+This guide is the procedure: follow it top to bottom to produce a conforming
+skill. Audience: humans and agents authoring new skills or converting prose
+skills. Prerequisite: read spec Sections 4-8 before your first skill; keep
+`../../examples/theme-factory.golden.md` open beside you.
+
+## The 12 steps
+
+### 1. Name and description
+
+Pick the skill id and `name`, then write a `description` using job verbs and
+phrases requesters actually use. Hosts route on the description alone. Add an
+optional `purpose` only when it clarifies the goal; keep it to one sentence.
+
+### 2. List flows
+
+Name each runnable flow (verb-phrase, kebab-case). Most skills need 1-3. Each
+flow ends in `return` or `abort`. Write the list in the header `flows`.
+
+### 3. Declare inputs and outputs
+
+Fill `accepts` (name, closed-set type, required flag) and `produces`. Every
+`required: true` input must be checked by a leading `require` in each flow that
+needs it. Every `produces` entry must be returned by at least one flow.
+
+### 4. Duplicate entry preconditions into `requires`
+
+Copy each entry flow's leading `require` conditions into header `requires`
+under the flow's name (exact wording; labels and blank lines don't break the
+leading run). This is what lets the router check preconditions without loading
+your body. Every `required: true` input a flow uses must be gated by a
+leading `require <name> exists` (R4) — gate what you consume.
+
+### 5. Write trigger conditions
+
+Add 1-4 `owns-when` lines in plain requester language ("user wants to ...").
+Use words a requester would actually type; routing scores content-word overlap
+after dropping stopwords.
+
+### 6. Declare authority
+
+Fill the four lists. Rule of thumb: anything with taste or consequence the
+user decides; anything checkable the system decides; discretion goes in
+`system-may` with explicit bounds; approvals live in `system-must-not`.
+Structure is enforced, not just suggested: every `require user ...` must be
+dominated by a decision `ask` (no `as`), every decision `ask` must be
+followed by a confirmation, and bare `require confirmation` needs a
+preceding `ask` (A2). Never write a user gate the flow never asks for.
+Decision-`ask` lines must also share at least two content words with a
+`user-decides` entry, so phrase entries in the same vocabulary as your asks
+(e.g. entry "whether to approve the output" for `ask user to approve
+output`). Input-`ask` lines (with `as`) fill `accepts` or locals and need
+no mapping. Never mutate before a dismissible ask: writes and mutating
+calls belong after the confirmation, or dismissal is not mutation-free
+(M1). Derive before asking: for optional inputs, `generate` a candidate
+from the supplied inputs and prior conversation first, and `ask` only
+`if` the candidate cannot be derived. State derived values in the
+flow's outputs so the user can correct them after the fact instead of
+before it.
+
+### 7. Declare resources and effects
+
+List every file, path pattern, or artifact the skill touches as a resource in
+the `contract` block, with `access` and `immutable` flags. Summarize the union
+in header `effects`. When in doubt, declare more: undeclared writes are
+validation errors, and `mutates` must never be left implicit.
+
+### 8. Write flows in logic blocks
+
+One fenced `logic` block per flow (info string exactly `logic`). Allowed words
+only (see reference below). Order each flow: `label` declarations, leading
+`require` gates, happy-path actions, `verify` gates before `return`. Keep
+conditions one line; push explanation to the appendix. Anchor every
+`apply` spec to an appendix subsection that says what the transform
+must do; an `apply` whose spec names no appendix guidance leaves the
+runner guessing whether the step is mandatory or advisory.
+
+### 9. Attach local recovery
+
+Every `require`, `verify`, `read`, and `open` that can fail gets an
+`otherwise:` block nested directly beneath it (O1) and ending in `retry`,
+`return to <label>`, `abort`, or `return` (W9 when it falls through).
+`retry` lives only inside such repair blocks (L3) and re-executes the
+failed gate. Incorporate accepted repairs into the values they repair
+before retrying — a correction that is shown and approved but never
+applied is the classic silent bug. Name the failure, repair or re-ask,
+never leave a half-mutated artifact: `discard` derived work on the abort
+path.
+
+### 10. State invariants
+
+Write the file's `contract` block (`resources:`, `always:`, `never:` in that
+order) after you have seen every path. Each invariant must hold on happy
+paths, error paths, and dismissals alike. If one needs an exception, add a
+scoped `allow` inside the flow, quoting it. Skills that mutate shared
+repositories add one more invariant: `confirm target files have no
+concurrent uncommitted edits` — the effects model assumes a single
+actor (SPEC Section 8).
+
+### 11. Set risk, cost, and budgets
+
+Grade `risk`/`cost` honestly (a skill that creates files is at least medium
+risk). Keep the default ceilings (header 400, body 2500 cl100k tokens); raise
+them only with a comment justifying why, and expect review pushback.
+Ceilings are tokens, not bytes or words: the validator counts
+ceil(chars/4) per tier, so estimate usage in tokens — a 3700-byte body
+is roughly 930 tokens, well under budget. A passing check prints no
+usage; only overruns print the count.
+
+### 12. Validate and review
+
+Run `skillwren check <file>`, fix every error, justify or fix every warning. Then run
+the pre-submit checklist below and diff behavior against the prose original
+when converting.
+
+## Verb quick reference
+
+Actions: `open, read, write, save, show, ask, generate, apply, run, return,
+abort, discard, exec`. Conditions: `if, unless, when, for each`. Gates: `require,
+verify, allow`. Invariants: `always, never`. References: `as, with, from`.
+Structure: `label, return to, retry, otherwise, else, return:`.
+`{name}` interpolates a bound value into paths.
+
+- `open <resource> as <var>` — open a declared resource for viewing.
+- `read <path or description> [from <source>] as <var>` — load content or a
+  listing into a binding.
+- `write <binding> with <path>` — replace file bytes at a path. `save
+  <binding> as <path>` — persist a named artifact.
+- `show <binding>` — present a value to the user.
+- `ask <whom> to <decision> [as <var>]` — without `as`, transfers a decision:
+  pair with a confirmation `require` and a matching `user-decides` entry
+  (at least two shared content words). With `as`, binds the answer; the name
+  must be an `accepts` entry or a local.
+- `generate <description> from <input> as <var>` — creative/semantic step;
+  give it appendix guidance when taste matters.
+- `apply <spec> with <target> as <result>` — pure in-memory transform of
+  a binding, binding the outcome. Never names a resource (read it into a
+  binding first); performs no effects.
+- `run <flow> with:` / `run <skill>.<flow> with:` — invoke by name with
+  `name = value` lines; same-skill calls bind the callee flow's returned
+  names into same-named caller bindings. Cross-skill calls are an
+  unverified boundary (W8): keep argument names aligned with the callee's
+  `accepts`, but know the single-file validator cannot check them.
+- `require <condition>` — block until true; aborts quoting the condition
+  unless `otherwise:` says otherwise.
+- `verify <condition>` — check now and establish evidence; on failure discards
+  derived artifacts and aborts unless `otherwise:` repairs.
+- `return <binding> as <name>` — single-value return. Multi-value flows use a
+  `return:` block with one `name` or `name = binding` line per value. Every
+  returned name must be a skill `produces` entry.
+- `for each <source> as <var>:` — iterates a `List`-typed binding; the
+  variable is read-only and the source collection must not be rebound or
+  written inside the loop.
+- `retry` — re-executes the failed `require`/`verify` after the repair steps.
+- `else:` (0.5) — the other arm of an `if`/`unless`/`when` at the same
+  indentation; bind a name in both arms to use it afterwards.
+- `exec <command> from <resource> as <var>` (0.5) — run a command; declare
+  the resource under `effects.executes`. Counts as a mutation for
+  dismissal safety.
+- `verify <condition> from <var>` (0.5) — name the binding (usually an
+  `exec` result) that holds the gate's evidence.
+- `label <name>:` — declares a jump target; `return to <name>` names one in
+  the same flow. Labels don't break the leading-`require` run.
+
+## Header checklist
+
+skill, name, description, version, accepts, produces, owns-when, requires, flows,
+authority (all four lists), effects (reads/creates/mutates), risk, cost,
+budget. `purpose` and `release` are optional in 0.5; `purpose` defaults to description.
+Hosts route on description, so include job verbs and realistic trigger phrases there.
+
+## Checked template and conversion procedure
+
+Use [skill-template.md](skill-template.md) for a checkable skeleton; do not
+duplicate the header and body as guidance in the delivered skill.
+
+Before converting, inventory every obligation, prohibition, gate, branch,
+exception, severity grade, recovery, and appendix/reference requirement. Bind
+the inventory to exact source bytes. Keep control in logic and global rules in
+the contract; use the appendix for compact action specifications. Preserve
+qualifiers even when they appear redundant. Do not hide necessary context in
+an archive that the reader will not load.
+
+After rewriting, compare inventories, review every changed rule, and check all
+paths. Use native `check`, then `measure original.md SKILL.md`, then `build`
+with `--original` and `--review`. See [compiler.md](compiler.md) for the review
+schema and explicit reference inputs. Measure expanded output, not only source.
+Exact token counts require the optional tokenizer; character counts are separate.
+Reduce the declared body budget to its honest validator count when possible.
+That budget is a static approximation, distinct from exact token measurement.
+
+Hash-bound maps reject stale or incomplete bookkeeping, but cannot prove
+semantic equivalence. Behavioral trials must record wrong turns, repair loops,
+coverage, and verified outcomes, with costs unavailable when not exposed.
+
+## Flow files and order rules
+
+Start from [fragment-template.md](fragment-template.md). Layout:
+
+- `SKILL.md`: `name`, `description`, a short core of always-on rules, and a
+  table saying which flow file to read when. Keep it small; instruction
+  volume costs adherence as well as tokens.
+- `flows/<name>.md`: prose, one or more `logic` blocks, and a
+  `## Step meanings` list that defines every `apply` step. Code fences in
+  other languages are fine; they are treated as examples.
+- Calls between files: `run design from flows/design.md with:`. Paths
+  resolve beside the file, then up to the folder holding `SKILL.md`.
+
+Check with `skillwren check --fragment flows/*.md`. Add `--summary` to
+see each flow's inputs, writes, and runs: inputs are inferred from names
+the flow uses but never binds and names it presence-tests (`require
+request exists`, `unless design is known:`), so a typo can show up there
+as an "input". To make that strict, list inputs in the contract:
+
+```text
+inputs:
+  request, design, subject
+```
+
+**Order rules: make the skipped step impossible to skip silently.** If a
+step must happen before another, write it as a rule:
+
+```text
+order:
+  apply assurance screen before write implementation
+```
+
+The checker then follows every path. The usual way this breaks is the one
+field report 3 found: the earlier step lives inside a called flow, and the
+caller calls it only on some paths (`unless design is known: run design`).
+A supplied design skips the screen, and P1 points at the write. Fix it by
+putting a gate on every path, with a repair that does the step:
+
+```text
+verify design has an assurance table
+  otherwise:
+    apply assurance screen with design as design
+    retry
+```
+
+A gate counts only when it passes, and a `run` counts only when the
+callee does the step on every path that returns. Use the full statement
+prefix as the pattern; W13 warns when the later step matches nothing,
+which is how misspelled rules show up.
+
+Order rules check the procedure as written. They do not make a model
+follow it. For that, pair the rule with runtime evidence: a guard script
+whose log shows the earlier step ran, a hook, or a `conform` run.
+
+**Anchoring the end of a flow (0.9).** Give the exit an ID to constrain
+what must happen before it returns: `return #result report as report`
+(or a `return #result:` block) with `verify#final before return#result`.
+Every return of that exit may carry the same ID, and P1 then checks each.
+
+**Observations before a question (0.9).** An `exec` normally counts as a
+mutation, so it may not precede a dismissible `ask` (M1). If the command
+only looks, write `exec readonly git status from repo as status`. That is
+a claim; prove it at run time with `ledger exec --readonly`, which fails
+the step on any write.
+
+**Recording steps for order rules.** Name ledger steps after the typed
+reference in the rule (`--step "verify#deps"`), and record the gate with
+`ledger exec` rather than `ledger note` so the rule is satisfied by
+evidence, not a self-report. A step that matches nothing leaves the rule
+`exercised: false`, which `ledger check` shows.
+
+**One source of truth for the agent (measured 2026-11-17).** Real agents
+followed logic-only, prose-only, and logic-plus-prose skills equally well
+on a guarded task (72 runs, `research/skill-forms/`), and when both were
+present they executed the prose and never opened the flow file. Do not
+hand-maintain a prose copy of the logic: nothing checks that the two
+agree. Put the `contract` and `logic` blocks in `SKILL.md` itself with a
+short step-to-command table (`check --fragment SKILL.md` checks it), and
+keep prose for step meanings, taste, and examples.
+
+## Piloting a conversion side-by-side
+
+For a side-by-side pilot, use a distinct skill id (the original id plus a
+`-logic` suffix, with `name` following `skill`) so both can be selected
+independently. Run them against the same real tasks and starting states; record
+correct outcomes, misses, false-fires, repairs, coverage, and available costs.
+Keep the prose source for provenance outside the loaded prompt. Promote the
+logic version when repeated results support it; attach the report to the
+conversion.
+
+## Common mistakes
+
+1. Prose in logic blocks outside conditions — move it to the appendix.
+2. `ask` without `require confirmation` — the decision never lands.
+3. `requires` wording drifting from flow-entry `require` — copy exactly.
+4. Undeclared reads/writes — declare first, write second.
+5. `user-decides` entries no flow exercises — delete or use them.
+6. Catch-all `owns-when` ("user wants help") — triggers must discriminate.
+7. Missing `otherwise` on fallible gates — decide the failure path now.
+8. Appendix doing control work — if it branches, it belongs in a flow.
+9. `return to` without a `label` in the same flow — declare the target.
+10. Multi-value flow with a single-line return — use a `return:` block.
+11. `require user ...` with no preceding decision `ask` — ask, then gate.
+12. Decision `ask` with no following confirmation — the decision never lands.
+13. Write or mutating call before a dismissible `ask` — confirm first.
+14. Accepted correction never applied to the value it repairs — apply, then
+    `retry`.
+15. Required input used but never gated — add the leading `require`.
+16. `for each` over a non-`List` binding — iterate lists only.
+17. Writing the iterated collection inside the loop — use a new binding.
+18. `generate` source over-constrained to one input — draw hypotheses
+    from evidence plus comparisons, not the diff alone.
+19. Escalation on a bare attempt count — qualify with the failure
+    pattern (coupling? new symptoms?) or verified step-by-step
+    progress false-fires.
+20. Asking for derivable input — generate a candidate from supplied
+    inputs and conversation first; ask only if derivation fails, and
+    state derived values in outputs for after-the-fact correction.
+21. `apply` spec with no appendix anchor — the runner cannot tell
+    mandatory from advisory; define each spec in the appendix (W12
+    checks this; a step-meanings list is the cheapest anchor).
+22. Treating a decline like a dismissal — the `otherwise:` under a
+    confirmation runs when the user says no, not when they walk away
+    (SPEC §12). If independent work should survive a no, repair by
+    marking the dependent work and continuing; abort only when nothing
+    useful remains.
+23. A required step reachable only through a conditional call — when the
+    step that matters runs inside a flow that is called only on some
+    paths, every other path skips it. State it as an `order:` rule and
+    gate it on every path (field report 3, G1).
+24. Quoted or piped commands in an `exec` line or a guard's `--each` —
+    commands run as argument lists without a shell, so inner quotes are
+    lost; put anything beyond plain arguments in a script file
+    (SPEC Section 6; field report 3, D3).
+25. Writing `python` for a script call — on Windows it can be a
+    Microsoft Store stub (exit 49); say "the interpreter that works:
+    `python3`, `python`, or `py -3`" (field report 3, D2).
+
+## Report-producing skills (round-2 learnings)
+
+Report-shaped skills (reviews, audits, summaries) need four content pieces
+beyond the generic flow, or runners under-grade and under-report:
+
+1. Severity rubric in the appendix with explicit buckets and examples.
+2. A `verify ... rubric ...` gate so grading is enforced, not suggested.
+3. Report-shape requirements: fixed section order plus an exact verdict
+   taxonomy, enforced by a `verify report contains ...` gate.
+4. Praise and question generation as explicit steps, or runners skip them.
+
+## Optional resources (live-fire pattern)
+
+Some resources may legitimately be absent — a subject repo with no work
+tracker, no notes file, no issue log. The format has no optional-resource
+marker (see SPEC Section 17); until it does, resolve the resource to the
+nearest existing candidate and guard every read and write to it with a
+natural-language presence condition:
+
+````markdown
+```contract
+resources:
+  registry:
+    path: subject work tracker nearest the changed component, if any
+```
+
+```logic
+  if subject has a work tracker:
+    apply registry update with design as entry
+    write entry with registry
+```
+````
+
+Pair the guard with `never: create a new registry file without
+authorization`: silently creating the missing tracker collides with
+project rules that forbid unrequested files, and an `effects.creates`
+entry is a claim of intent, not a grant of permission.
+
+## Live-use patterns (full-stack)
+
+Patterns from the first skill maintained in this format under real use.
+
+**Step-meanings glossary.** Give every `apply` spec one line in an
+appendix list (`- **grounding**: separate current state, target state,
+and migration`). The runner reads `apply grounding` as a pointer to that
+line; without it, the transform is a guess (mistake 21). The glossary
+costs body tokens, so declare a body ceiling that fits it (W11 explains
+the overage).
+
+**Subject precedence.** A skill that writes into someone else's
+repository should yield to that repository's rules:
+
+```contract
+always:
+  follow subject instructions over this package's defaults
+```
+
+Pair it with a resource path that names a fallback chain, as an interim
+practice until optional resources land: `path: the subject's existing
+design note, else its documented design location, else docs/design/<slug>.md`.
+
+**Parallel workers.** The effects model assumes one actor. When several
+workers edit one repository, give each work package a disjoint write set
+and give each shared file (manifest, lockfile, registry, generated code)
+one owning package that integrates last. Wait for a process that holds a
+build or run resource; never kill it. Static validation cannot check
+any of this; a runtime guard can (full-stack's `scripts/run_guard.py`
+refuses overlapping claims and flags edits outside the write set).
+
+**Headers hosts can read.** Hosts read `name` and `description` and drop
+a header they cannot parse. Quote inline values containing `[ ] { }`, and
+write `description` as the routing text, including what the skill is not
+for.
+
+**Record a step when it completes, not when it is attempted.** A failed
+`close` noted as `exec guard close` before its prerequisites leaves a
+violation no later step can clear, because order rules judge completed
+steps. Note premature or exploratory runs with `ledger attempt`, which
+satisfies nothing, and record the step again (as `exec`/`note`) when it
+really completes.
+
+**Separate reproduction from acceptance.** Running a failing check before
+the fix is good practice but violates a `write ... before exec ...
+checks` rule. Record pre-fix runs under a different step name (for
+example `exec reproduction checks`) so the acceptance rule keeps its
+meaning; the authoring intent is two phases, so write two step names.
+
+**Say what a later gate refuses (0.10).** When a step's runtime gate
+refuses some earlier effect (a guard that will not start over unseen
+edits), write that as an exclusion in the gate's file: `never write#code
+before exec#guard`. Make the earlier step as narrow as the gate is: full-
+stack's guard accepts design notes, so `never write before exec#guard`
+would be wrong. `check` then flags any flow that runs this file's flows
+after such a write (P3), including two fragments that are each clean
+alone. Compose them with `run` in some flow, or P3 cannot see them; a
+file that names such a fragment in prose without `run` warns (W16). P3's
+hint names the statement to move: do the effect after the later step.
+Under a workflow-bound guard whose policy has both steps as operations,
+the rule is also enforced at runtime.
+
+**Bind the run to the package the host loaded (0.10).** A host can load a
+cached skill while newer scripts write the ledger. Start with
+`ledger start FLOW --package <skill dir>`, and have whoever closes the
+run pass the host-loaded copy: `ledger check RUN --loaded <cache dir>`.
+A mismatch fails as `package-mismatch` even when every order rule held.
+In Claude Code, add a `PostToolUse` hook on `Skill` that runs
+`skillwren ledger record-load`; `check` then compares against the copy
+the host loaded without `--loaded`. To refuse protected writes in a run
+that never loaded the skill, put a `skill` requirement in the guard policy
+and point the hook at a host-owned file with `--out` (SPEC 24): a skipped
+load becomes a denied write instead of a silent gap.
+
+**Require the entry step of a fragment that must not be skipped, and
+order it.** Order rules inside a fragment the model never enters hold
+vacuously; full-stack's stack flow was skipped 3/3 when the model judged
+no technology choice existed. Require the fragment's first step as a
+milestone so a skip reads `incomplete`. In live runs, agents that skipped
+a required stack step all went back once `ledger check` named it, but
+after the code was written, and completeness still read `complete`. Add
+an order rule too (`exec#stack-profiles before write#code`) so a late
+recovery is a violation, not a pass.
+
+**Define an identifier grammar once.** When a static check and a runtime
+matcher share an identifier (row IDs, step names, typed references),
+define the pattern in one place and test both against one table of
+accepted and rejected examples. Full-stack's checker took `[A-Z]+-n` and
+its guard `A-n`; SkillWren's own renderer accepted `#Deps` that the
+validator ignored, until both moved to `validator/refs.py`.
+
+## Golden discipline
+
+Golden means validator-clean plus manually semantic-reviewed plus
+scenario-tested — never validator-clean alone. The validator proves
+structure; it cannot prove that a repair reaches the value it repairs,
+that a rubric grades what it claims, or that a report says what happened.
+Before blessing an example as golden: read every path for provenance and
+authority, confirm each repair is incorporated before its `retry`, and
+walk at least one happy path and one failure path by hand.
+
+## Pre-submit checklist
+
+- [ ] Validator clean (zero errors; warnings justified in comments)
+- [ ] Header within 400 tokens; body within its declared ceiling (2500 by
+  default; above that warns W11, so say why)
+- [ ] Every flow returns or aborts on every path
+- [ ] Dismissal of any `ask` mutates nothing
+- [ ] Every accepted repair is applied before its `retry`
+- [ ] Golden diff (conversions): same behavior as prose original
+- [ ] Reviewer can answer what it touches, requires, and who decides
+- [ ] Same task class behaves the same across flows (early-return
+  branches agree on side effects such as registry writes)
+- [ ] Flow files: `check --fragment` clean, `--summary` inputs reviewed
+  for typos
+- [ ] Every "must happen before" in the prose is an `order:` rule, and
+  no rule warns W13
+

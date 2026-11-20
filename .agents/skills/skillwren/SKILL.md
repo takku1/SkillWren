@@ -1,35 +1,18 @@
 ---
 name: skillwren
-description: Check SkillWren procedures and ordering rules, convert existing skills to checked logic, or record command evidence with the SkillWren ledger.
+description: Build a new agent skill, or convert an existing SKILL.md, as checked SkillWren logic - explicit steps, gates and ordering rules that a validator checks before the skill ships. Use when asked to create, write, convert, check or package a skill.
 ---
 
 # SkillWren in this checkout
 
-Resolve the repository root three directories above this skill directory.
-Use its `scripts/skillwren.py` launcher with Python 3.9+ (`py -3` on Windows,
-`python3` on macOS/Linux). It needs no package installation. Use an absolute
-launcher path when working in another directory; target paths resolve from
-that working directory. Pass explicit filenames rather than shell globs on
-Windows.
+This is a pointer for Codex working inside the SkillWren repository. The
+skill lives at `skills/skillwren/` (three directories above this one):
+read [its SKILL.md](../../../skills/skillwren/SKILL.md) and follow it,
+resolving "this skill's directory" to `skills/skillwren/`. Its launcher,
+`skills/skillwren/scripts/skillwren.py`, runs this checkout's `src/` with
+Python 3.9+ (`py -3` on Windows, `python3` elsewhere) and needs no
+installation.
 
-For ordinary Markdown flow files, run `check --fragment --summary --audit
-<file>`. For complete SkillWren contract-header skills, run `check <file>`.
-Exit 0 means no errors, 1 means validation errors, and 2 means usage failure.
-Warnings still require interpretation. Do not validate a plain Codex skill
-as a complete SkillWren skill just because it is named SKILL.md.
-
-For conversion, read [the conversion procedure](../../../skills/skillwren/SKILL.md)
-using the linked path from this directory.
-Resolve its `docs/current/` references from the repository root. Preserve
-source behavior and authority; passing validation does not prove parity.
-
-For runtime evidence, use `ledger start <flow-file>` and retain the printed
-run ID. Use `ledger exec <id> --step "<named step>" -- <command> <args>` for
-command evidence, `ledger note` for self-reports or artifact hashes, then
-`ledger check <id> --require-evidence`. Failed commands do not establish a
-prerequisite. Record only actions actually performed. The ledger is an
-offline trace check, not enforcement or proof of omitted actions.
-
-`conform` is Claude-only; do not present it as a Codex evaluation. Static
-checks, builds, measurements, and ledger operations do not require Claude.
-
+Outside this repository, install the plugin instead (README, "Install the
+skill"), or copy `plugin/skillwren/` into a skills folder: it bundles the
+checker.
