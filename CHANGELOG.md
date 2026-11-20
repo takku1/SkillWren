@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- Enforcement closure probe (`scripts/lab/closure_probe.py`,
+  `docs/current/research/enforcement-closure/`): seven attacks through the
+  guard (skipped and failing prerequisite, stale evidence, replay, flow
+  edited after approval, swapped verifier) are all denied; in a shared OS
+  account a direct write and a forged approval record both succeed, and a
+  real agent (Haiku) wrote the protected file with its Write tool, "nothing
+  to bypass", while `coverage` labelled that write enforced with its
+  isolation assumption; in the container the scripted adversary is denied.
+  14/14 as expected. The scripted rows run in the suite
+  (`tests/test_closure_probe.py`).
+
 ## 0.13.1 (2026-11-20)
 
 - `coverage`: a write is enforced only when the policy is bound to the

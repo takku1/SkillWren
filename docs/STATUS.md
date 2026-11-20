@@ -138,6 +138,13 @@ real-host harness, adapters, and model-measurement tools.
 
 ## Key Decisions
 
+- 2026-11-20: four properties are kept separate and reported separately:
+  faithful translation, declared enforcement (`coverage`), demonstrated
+  enforcement (the guard denies violations sent through it) and enforcement
+  closure (no other path reaches the protected effect). Closure belongs to
+  the host; the probe shows it missing in a shared account (direct write,
+  forged approval, a real agent's Write tool) and holding in the container
+  for a scripted adversary.
 - 2026-11-20, 0.12: the skill ships as a generated, committed plugin with
   the checker bundled (stdlib only), so installing needs no pip; the
   generator's `--check` in the test suite prevents drift. The human
@@ -217,7 +224,11 @@ real-host harness, adapters, and model-measurement tools.
   2 states it and ties at 30/30 per arm, a ceiling that cannot show a
   syntax effect either way (`research/model-evaluation-plan.md`).
 - The host demo shares one OS account between agent and host; isolation
-  is proved separately (`scripts/isolation_probe.py`).
+  is proved separately (`scripts/isolation_probe.py`). The closure probe
+  shows what that means: in one account a real agent writes the protected
+  file with its own tool, and approval records can be forged (they are
+  plain files). Closure against a real agent inside the container is
+  untested (needs a credential in the container, by owner authorization).
 - Order rules check the written procedure, not what the model does.
 - Live harness snapshots files after each turn, so a file changed and
   restored within one turn is not seen; command logs narrow this but are

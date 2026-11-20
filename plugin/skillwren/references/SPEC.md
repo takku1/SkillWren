@@ -1286,6 +1286,12 @@ guard's deployment conditions (Sections 22 and 24), that the agent can
 reach the protected target only through the guard. Every enforced row
 carries that assumption (`assumes`), because a policy cannot show it; a
 same-account agent with an unmediated tool can bypass the boundary.
+Four properties stay separate: faithful translation (the requirement is in
+the skill), declared enforcement (this tier), demonstrated enforcement (the
+guard denies violations sent through it) and enforcement closure (every
+path that can produce the protected effect passes through the guard).
+Closure is a property of the host, not of any policy
+(`research/enforcement-closure/`).
 
 ## Runtime interface (0.7+)
 
