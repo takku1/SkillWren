@@ -15,7 +15,7 @@ from .analysis import analyze_flow, collect_flow_facts, direct_mutation
 from .document import parse_fences, read_contract
 from .flowgraph import build_cfg, build_tree, predecessors, reachable_nodes, walk
 from .evidence import classify
-from .exclusion import Exclusions, check_exclusions
+from .exclusion import Exclusions, check_exclusions, check_prose_composition
 from .ordering import guarantees, matches
 from .refs import statement_id
 from .schema import check_schema
@@ -554,6 +554,7 @@ def analyze_document(doc, workspace):
     _check_recursion(infos, errors)
     exclusions_seen = check_exclusions(doc, workspace, errors) if doc.trees else set()
     _check_order_coverage(doc, infos, warnings, exclusions_seen)
+    check_prose_composition(doc, workspace, warnings)
     _check_evidence_anchors(doc, workspace, warnings)
     if doc.header:
         _check_budget(doc, errors)

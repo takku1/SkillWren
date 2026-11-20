@@ -6,6 +6,7 @@
     skillwren ledger attempt <run> --step TEXT [--detail TEXT] [--dir DIR]
     skillwren ledger check <run> [--require-evidence] [--require-completeness] [--loaded DIR] [--json] [--dir DIR]
     skillwren ledger show  <run> [--dir DIR]
+    skillwren ledger record-load            (PostToolUse hook on the Skill tool; event on stdin)
 
 `<run>` is the id `start` printed, or `latest`. Records live in
 DIR/<run>.jsonl (default `.skillwren/ledger`).
@@ -28,7 +29,8 @@ Design (docs/current/research/game-theory-2026-11.md):
 - Provenance (field report 2026-11-19): `start --package DIR` records the
   enforcing package's tree digest; `check --loaded DIR` fails when the copy
   the host actually loaded differs, so instructions and enforcement cannot
-  silently come from different versions.
+  silently come from different versions. Without `--loaded`, `check` uses
+  the host-load record a `record-load` hook wrote (hostload.py).
 - Ex post checking suffices when evidence is verifiable (evidence games): a
   required step with no record is a violation, not an unknown.
 
@@ -46,6 +48,7 @@ import sys
 import time
 from pathlib import Path
 
+from .hostload import LOADS, latest_load, skill_name
 from .validator.files import Document, looks_like_fragment
 from .validator import refs
 from .validator.ordering import matches
@@ -177,6 +180,9 @@ def start(flow_file, directory=DEFAULT_DIR, label=None, required=(), package=Non
     if exclusions:
         head["exclusions"] = exclusions
     if identity:
+        name = skill_name(package)
+        if name:
+            identity["name"] = name
         head["package"] = identity
     record = _seal(head, None)
     path = directory / f"{run}.jsonl"
@@ -317,14 +323,26 @@ def _check_exclusions(head, records):
     return results
 
 
-def _check_package(head, loaded):
-    """None when no loaded copy was given; else {recorded, loaded, match}."""
-    if loaded is None:
+def _check_package(head, loaded, loads_file=None, before=None):
+    """None when no loaded copy is known; else {recorded, loaded, match, source}.
+    An explicit --loaded DIR wins; otherwise the host-load record a
+    PostToolUse(Skill) hook wrote (hostload.py) for the package's skill name."""
+    package = head.get("package") or {}
+    recorded = package.get("tree_sha256")
+    if loaded is not None:
+        actual = package_identity(loaded)["tree_sha256"]
+        return {"recorded": recorded, "loaded": actual, "loaded_path": str(loaded),
+                "source": "--loaded", "ambiguous": False,
+                "match": recorded is not None and recorded == actual}
+    if not package.get("name") or loads_file is None:
         return None
-    recorded = (head.get("package") or {}).get("tree_sha256")
-    actual = package_identity(loaded)["tree_sha256"]
-    return {"recorded": recorded, "loaded": actual, "loaded_path": str(loaded),
-            "match": recorded is not None and recorded == actual}
+    load = latest_load(loads_file, package["name"], before)
+    if load is None:
+        return None
+    return {"recorded": recorded, "loaded": load["tree_sha256"], "loaded_path": load["path"],
+            "source": "host-load record", "loaded_at": load.get("time"),
+            "ambiguous": bool(load.get("ambiguous")),
+            "match": recorded is not None and recorded == load["tree_sha256"]}
 
 
 def check(path, require_evidence=False, loaded=None):
@@ -333,7 +351,8 @@ def check(path, require_evidence=False, loaded=None):
     report = {"run": head.get("run"), "file": head.get("file"), "integrity": verify_chain(records),
               "file_changed": None, "rules": [], "steps": len(records) - 1}
     report["exclusions"] = _check_exclusions(head, records)
-    report["package"] = _check_package(head, loaded)
+    report["package"] = _check_package(head, loaded, Path(path).parent.parent / LOADS,
+                                       records[-1].get("time"))
     flow_file = Path(head.get("file", ""))
     if flow_file.is_file():
         report["file_changed"] = _digest_file(flow_file) != head.get("file_sha256")
@@ -421,6 +440,12 @@ def _print_check(report):
                   f" host loaded {package['loaded'][:12]} from {package['loaded_path']}")
         else:
             print(f"  package: host-loaded copy matches ({package['loaded'][:12]})")
+        if package.get("source") == "host-load record":
+            print(f"    (from the host-load record of {package['loaded_path']}"
+                  f" at {package.get('loaded_at')})")
+        if package.get("ambiguous"):
+            print("    warning: several installed copies of this skill differ; the"
+                  " record assumes the host's documented precedence")
     print(f"ordering_valid={report['ordering_valid']}; execution_complete={report['execution_complete']};"
           f" completeness={report['completeness']} (valid={report['valid']})")
     for name in report["missing_milestones"]:
@@ -479,6 +504,8 @@ def main(argv):
     p_check.add_argument("--json", action="store_true")
     p_show = sub.add_parser("show", help="list the recorded steps")
     p_show.add_argument("run")
+    sub.add_parser("record-load", help="PostToolUse(Skill) hook: record which copy of a"
+                                       " skill the host loaded (reads the hook event on stdin)")
     for p in (p_start, p_exec, p_note, p_attempt, p_check, p_show):
         p.add_argument("--dir", default=str(DEFAULT_DIR))
     # The command after `--` is passed through untouched, so its own flags and
@@ -488,6 +515,9 @@ def main(argv):
         cut = argv.index("--")
         argv, command = argv[:cut], argv[cut + 1:]
     args = parser.parse_args(argv)
+    if args.action == "record-load":
+        from .hostload import hook_main
+        return hook_main()
     try:
         if args.action == "start":
             run, path, rules = start(args.flow_file, args.dir, args.label, args.required,

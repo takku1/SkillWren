@@ -436,19 +436,30 @@ before exec#guard`. Make the earlier step as narrow as the gate is: full-
 stack's guard accepts design notes, so `never write before exec#guard`
 would be wrong. `check` then flags any flow that runs this file's flows
 after such a write (P3), including two fragments that are each clean
-alone. Compose them with `run` in some flow, or P3 cannot see them.
+alone. Compose them with `run` in some flow, or P3 cannot see them; a
+file that names such a fragment in prose without `run` warns (W16). P3's
+hint names the statement to move: do the effect after the later step.
+Under a workflow-bound guard whose policy has both steps as operations,
+the rule is also enforced at runtime.
 
 **Bind the run to the package the host loaded (0.10).** A host can load a
 cached skill while newer scripts write the ledger. Start with
 `ledger start FLOW --package <skill dir>`, and have whoever closes the
 run pass the host-loaded copy: `ledger check RUN --loaded <cache dir>`.
 A mismatch fails as `package-mismatch` even when every order rule held.
+In Claude Code, add a `PostToolUse` hook on `Skill` that runs
+`skillwren ledger record-load`; `check` then compares against the copy
+the host loaded without `--loaded`.
 
-**Require the entry step of a fragment that must not be skipped.** Order
-rules inside a fragment the model never enters hold vacuously; full-
-stack's stack flow was skipped 3/3 when the model judged no technology
-choice existed. Require the fragment's first step as a milestone so a
-skip reads `incomplete`.
+**Require the entry step of a fragment that must not be skipped, and
+order it.** Order rules inside a fragment the model never enters hold
+vacuously; full-stack's stack flow was skipped 3/3 when the model judged
+no technology choice existed. Require the fragment's first step as a
+milestone so a skip reads `incomplete`. In live runs, agents that skipped
+a required stack step all went back once `ledger check` named it, but
+after the code was written, and completeness still read `complete`. Add
+an order rule too (`exec#stack-profiles before write#code`) so a late
+recovery is a violation, not a pass.
 
 **Define an identifier grammar once.** When a static check and a runtime
 matcher share an identifier (row IDs, step names, typed references),

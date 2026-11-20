@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 import skillwren
-from skillwren import compiler, ledger
+from skillwren import compiler, hostload, ledger
 from skillwren.validator import refs
 from skillwren.validator.flowgraph import classify_flow_line
 from skillwren.validator.ordering import matches
@@ -93,6 +93,44 @@ class TestExclusionRules(unittest.TestCase):
         self.assertIn("run implement from flows/implement.md", errors[0].msg)
         self.assertIn("implement.md", errors[0].msg)
         self.assertEqual(errors[0].line, 7)
+
+    def test_hint_names_the_minimal_move(self):
+        """Tier 3 found agents never moved the effect after the later step
+        when the hint only said "reorder, narrow, or remove"."""
+        errors, _ = self.frag("build.md")
+        fix = errors[0].fix
+        self.assertIn("'run design from flows/design.md with:' (line 5) reaches", fix)
+        self.assertIn("(design.md line", fix)
+        self.assertIn("after 'run implement from flows/implement.md with:' (line 7)", fix)
+
+    def test_hint_names_the_earliest_branch_effect(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            flow = write(Path(tmp) / "f.md", "```contract\norder:\n"
+                         "  never write before exec guard start\n```\n\n```logic\nmain:\n"
+                         "  if notes are wanted:\n    write request with notes\n"
+                         "  write request with log\n"
+                         "  exec guard start from guard as started\n"
+                         "  return started as started\n```\n")
+            errors, _ = skillwren.validate_fragment(str(flow))
+            self.assertIn("Move 'write request with notes' (line 9)", errors[0].fix)
+
+    def test_prose_composition_warns_w16(self):
+        """P3 cannot see "then follow implement.md"; W16 names the gap."""
+        with tempfile.TemporaryDirectory() as tmp:
+            shutil.copytree(FLOWS, Path(tmp) / "flows")
+            flow = write(Path(tmp) / "flows" / "prose.md",
+                         "# Prose build\n\nDesign first, then follow flows/implement.md.\n"
+                         "See flows/design.md for the note.\n\n```logic\nmain:\n"
+                         "  run design from flows/design.md with:\n    request = request\n"
+                         "  return design as design\n```\n")
+            errors, warnings = skillwren.validate_fragment(str(flow))
+            w16 = [w for w in warnings if w.rule == "W16"]
+            self.assertEqual([(w.line, "implement.md" in w.msg) for w in w16], [(3, True)])
+            self.assertEqual(rules(errors), [])
+
+    def test_run_composition_does_not_warn_w16(self):
+        errors, warnings = self.frag("build.md")
+        self.assertNotIn("W16", rules(warnings))
 
     def test_rule_two_runs_down_still_binds(self):
         """Rules export transitively: implement.md's rule reaches outer.md
@@ -303,6 +341,90 @@ class TestPackageProvenance(unittest.TestCase):
             ledger.main(["check", run, "--loaded", str(self.cache), "--json",
                          "--dir", str(self.dir)])
         self.assertFalse(json.loads(out.getvalue())["package_consistent"])
+
+
+class TestHostLoadRecord(unittest.TestCase):
+    """Without --loaded, check uses what a PostToolUse(Skill) hook recorded."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        base = Path(self.tmp.name)
+        self.home, self.project = base / "home", base / "project"
+        self.skill = self.project / ".claude" / "skills" / "deadlock-demo"
+        shutil.copytree(DEADLOCK, self.skill)
+        for name in ("build.md", "same-file.md", "outer.md"):
+            (self.skill / "flows" / name).unlink()
+        self.dir = self.project / ".skillwren" / "ledger"
+        self.flow = self.skill / "flows" / "implement.md"
+
+    def event(self, skill="deadlock-demo"):
+        return {"hook_event_name": "PostToolUse", "tool_name": "Skill",
+                "tool_input": {"skill": skill}, "cwd": str(self.project),
+                "tool_response": {"success": True, "commandName": skill}}
+
+    def test_unchanged_load_matches_without_loaded_flag(self):
+        record = hostload.record_load(self.event(), home=self.home)
+        self.assertEqual(Path(record["path"]), self.skill)
+        path = ledger.start(self.flow, self.dir, package=self.skill)[1]
+        report = ledger.check(path)
+        self.assertEqual(report["package"]["source"], "host-load record")
+        self.assertTrue(report["package_consistent"])
+        self.assertTrue(report["ok"])
+
+    def test_personal_copy_shadows_project_and_skew_is_caught(self):
+        """The field case: the host loaded another copy than the one enforcing."""
+        personal = self.home / ".claude" / "skills" / "deadlock-demo"
+        shutil.copytree(self.skill, personal)
+        write(personal / "SKILL.md", "---\nname: deadlock-demo\ndescription: old\n---\n")
+        record = hostload.record_load(self.event(), home=self.home)
+        self.assertEqual(Path(record["path"]), personal)
+        self.assertTrue(record["ambiguous"])
+        path = ledger.start(self.flow, self.dir, package=self.skill)[1]
+        report = ledger.check(path)
+        self.assertFalse(report["package_consistent"])
+        self.assertEqual(report["outcome"], "package-mismatch")
+        self.assertTrue(report["package"]["ambiguous"])
+
+    def test_digest_is_taken_at_load_time(self):
+        hostload.record_load(self.event(), home=self.home)
+        path = ledger.start(self.flow, self.dir, package=self.skill)[1]
+        write(self.skill / "hooks.py", "# changed after the load\n")
+        report = ledger.check(path)
+        self.assertTrue(report["package_consistent"])
+
+    def test_plugin_skill_resolves_through_install_path(self):
+        install = self.home / "cache" / "demo-plugin" / "1.0.0"
+        shutil.copytree(self.skill, install / "skills" / "deadlock-demo")
+        registry = self.home / ".claude" / "plugins" / "installed_plugins.json"
+        registry.parent.mkdir(parents=True)
+        registry.write_text(json.dumps({"version": 2, "plugins": {"demo-plugin@market": [
+            {"scope": "project", "projectPath": str(self.home / "elsewhere"),
+             "installPath": str(self.home / "nowhere")},
+            {"scope": "user", "installPath": str(install)}]}}), encoding="utf-8")
+        record = hostload.record_load(self.event("demo-plugin:deadlock-demo"), home=self.home)
+        self.assertEqual(Path(record["path"]), install / "skills" / "deadlock-demo")
+        self.assertEqual(record["name"], "deadlock-demo")
+
+    def test_no_record_and_no_flag_leaves_package_unchecked(self):
+        path = ledger.start(self.flow, self.dir, package=self.skill)[1]
+        self.assertIsNone(ledger.check(path)["package"])
+
+    def test_explicit_loaded_flag_wins(self):
+        hostload.record_load(self.event(), home=self.home)
+        path = ledger.start(self.flow, self.dir, package=self.skill)[1]
+        stale = Path(self.tmp.name) / "stale"
+        shutil.copytree(self.skill, stale)
+        write(stale / "SKILL.md", "---\nname: deadlock-demo\ndescription: old\n---\n")
+        self.assertEqual(ledger.check(path, loaded=stale)["package"]["source"], "--loaded")
+        self.assertFalse(ledger.check(path, loaded=stale)["package_consistent"])
+
+    def test_hook_entry_never_fails_the_host(self):
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            self.assertEqual(hostload.hook_main(io.StringIO("not json")), 0)
+        self.assertEqual(hostload.hook_main(io.StringIO(json.dumps(
+            {"tool_name": "Read", "tool_input": {}}))), 0)
 
 
 # --- Finding 7: a skipped fragment is incomplete, not vacuously valid ---------------

@@ -1,0 +1,32 @@
+{
+  "skip-plain": {
+    "runs": 6,
+    "pass": 6,
+    "cost_usd": 0.596,
+    "skill_used": 6,
+    "stack_entered": 0,
+    "saw_missing_milestone": 0,
+    "stale_caught": 6,
+    "exclusion_violations": 0
+  },
+  "skip-required": {
+    "runs": 6,
+    "pass": 6,
+    "cost_usd": 0.642,
+    "skill_used": 6,
+    "stack_entered": 6,
+    "saw_missing_milestone": 0,
+    "stale_caught": 6,
+    "exclusion_violations": 0
+  },
+  "skip-hidden": {
+    "runs": 6,
+    "pass": 6,
+    "cost_usd": 0.636,
+    "skill_used": 6,
+    "stack_entered": 6,
+    "saw_missing_milestone": 6,
+    "stale_caught": 6,
+    "exclusion_violations": 0
+  }
+}

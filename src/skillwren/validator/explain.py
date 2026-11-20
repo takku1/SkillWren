@@ -112,4 +112,8 @@ RULE_EXPLAIN = {
            " exec, no evidence-backed verify, no artifact, no user"
            " decision), nothing outside the model can observe it, so the"
            " rule is a self-report (SPEC Section 20; game-theory review).",
+    "W16": "P3 sees composition only through `run`. A file that names another"
+           " file with exclusion rules in prose (\"then follow implement.md\")"
+           " composes them where no check can see it, which is how two clean"
+           " fragments deadlocked in the field (SPEC Section 23).",
 }

@@ -16,7 +16,7 @@ spelled out in full (the host permits only commands starting with `py`;
 no shell variables, `&&`, `;`, or pipes). `S` = `.claude/skills/build-notes`,
 `SW` = `py -3 {SKILLWREN}`. Edit files with Write or Edit.
 
-Before any flow: `SW ledger start S/flows/implement.md --package S --label build{REQUIRES}`
+Before any flow: `{START}`
 and remember the run id it prints.
 
 | Flow step | Command |
@@ -25,4 +25,4 @@ and remember the run id it prints.
 | `exec #stack-profiles` | `SW ledger exec <run> --step "exec#stack-profiles" -- py -3 S/stack_profiles.py` |
 | `exec #guard` | `SW ledger exec <run> --step "exec#guard" -- py -3 S/guard.py` |
 | `write #code` | edit the code with Write or Edit, then `SW ledger note <run> --step "write#code" --artifact <file>` (once per file) |
-| finish | `SW ledger check <run>`; report its last line |
+| finish | `SW ledger check <run>`. If it lists missing milestones, complete those steps and check again; report the last line |

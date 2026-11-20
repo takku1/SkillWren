@@ -1,0 +1,18 @@
+{
+  "skip-plain": {
+    "runs": 4,
+    "pass": 1,
+    "cost_usd": 0.306,
+    "stack_entered": 0,
+    "stale_caught": 1,
+    "exclusion_violations": 0
+  },
+  "skip-required": {
+    "runs": 4,
+    "pass": 4,
+    "cost_usd": 0.444,
+    "stack_entered": 4,
+    "stale_caught": 4,
+    "exclusion_violations": 0
+  }
+}

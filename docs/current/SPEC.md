@@ -589,6 +589,7 @@ Warnings:
   line outside the semantic blocks counts as appendix text.
 - W13 order rule that never applies: its later step matches no statement.
 - W14 fragment without a `logic` block: nothing was checked.
+- W16 a file names, outside `run`, another file whose exclusion rules P3 therefore cannot apply (Section 23).
 
 Output is a file/line list with one-line fixes.
 
@@ -1110,8 +1111,12 @@ verifier accepts a candidate; a write operation completes when it writes. A
 failed check revokes its earlier completion. Rules with an untyped side, or
 a side that is not a policy operation, are not enforced by the guard;
 `status` lists them as `unenforced_rules`, and they remain static (`check`)
-or recorded (`ledger`) properties. Session state does not survive restart,
-like approvals.
+or recorded (`ledger`) properties. Exclusion rules (Section 23) whose two
+steps are both policy operations are enforced the other way round: once A
+has run in this session, B is denied with the rule named. A check has run
+once its verifier is invoked, even when it fails, as the ledger counts
+attempts; a write has run once it commits. Session state does not survive
+restart, like approvals.
 
 Every operation's executable and every absolute path argument must be
 pinned; relative path arguments are refused. `skillwren policy FLOW
@@ -1145,11 +1150,19 @@ statement in its file warns (W13). `build` refuses a fragment set with P3.
 
 What this does not see: composition written in prose (a `SKILL.md` that
 says "read design, then implement") is not a `run`, so P3 applies only
-once some flow composes the two. `ledger check` applies exclusion rules
+once some flow composes the two. A file that names, outside a `run` line,
+another file declaring exclusion rules, and that no flow of the file
+reaches with `run`, warns (W16). Router `SKILL.md` files that list such
+fragments will see W16; it marks the composition no check covers. The P3
+repair hint names the earliest earlier-step statement with a path to the
+later step and, when that statement is a `run`, the effect inside the
+callee, and suggests moving that effect after the later step.
+`ledger check` applies exclusion rules
 to the recorded trace: a recorded earlier step, including an `attempt`,
 before a recorded later step is a violation. Steps taken before `ledger
-start` are not recorded. The guard (Section 22) does not enforce
-exclusions and lists them in `unenforced_rules`.
+start` are not recorded. The guard (Section 22) enforces an exclusion
+whose two steps are policy operations (it refuses the later step once the
+earlier one has run) and lists the others in `unenforced_rules`.
 
 **Package provenance.** `ledger start FLOW --package DIR` records DIR's
 tree digest: sha256 over sorted `<sha256> <name>` lines for every file
@@ -1161,9 +1174,22 @@ other bytes. `ledger check RUN --loaded DIR` recomputes the digest of the
 copy the host actually loaded (for example, a plugin cache) and fails,
 with outcome `package-mismatch`, when it differs or when the run recorded
 no package. The order verdict (`valid`) is reported separately, because
-the rules can hold while the instructions came from other bytes. The
-ledger binds files, not context: the caller must name the loaded path, and
-nothing here proves what the host put in the model's context.
+the rules can hold while the instructions came from other bytes.
+
+**Host-load records.** `skillwren ledger record-load` is a Claude Code
+`PostToolUse` hook on the `Skill` tool. The hook event names the skill but
+not its directory, so it resolves the name in the host's documented order
+(personal `~/.claude/skills` before project `.claude/skills`; `plugin:skill`
+through `installPath` in `installed_plugins.json`, a project-scoped install
+for the working directory before a user-scoped one) and appends the
+directory and its tree digest, taken at load time, to
+`.skillwren/loaded.jsonl`. When several candidates exist with different
+digests the record is `ambiguous`. `ledger check` without `--loaded` uses
+the latest load, made no later than the run's last record, of the skill
+whose `name:` the recorded package's `SKILL.md` carries; `--loaded` still
+wins. The ledger binds files, not context: the resolution mirrors the
+host's order rather than reading it, and nothing here proves what the host
+put in the model's context.
 
 **Entering a fragment.** Order rules inside a fragment hold vacuously when
 the fragment is never entered. Where skipping it matters, require its

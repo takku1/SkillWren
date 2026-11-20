@@ -17,11 +17,18 @@ Arms (each rep is a fresh disposable git repository):
   ("standard library only") with the stack milestone absent or required
   (finding 7). Host checks: did the agent enter the stack fragment, and did
   the ledger ever call a skipped required fragment complete.
+- skip-hidden: the requirement sits in a host wrapper (`start_run.py`), so
+  only the closing `ledger check` can reveal a skip.
+
+`--invoke` names the skill in skip prompts, measuring after host routing.
+Temporary directories use a neutral prefix: arm names in the path cued
+skill use in the first attempts.
 
 Spends provider usage; the agent and host share one OS account (see
 scripts/host_demo.py for the isolation caveat).
 """
 import argparse
+import shlex
 from concurrent.futures import ThreadPoolExecutor
 import json
 from pathlib import Path
@@ -72,8 +79,27 @@ REQUIRES = {
     "skip-plain": ' --require "exec#guard" --require "write#code"',
     "skip-required": (' --require "exec#guard" --require "write#code"'
                       ' --require "exec#stack-profiles"'),
+    # Item 7 follow-up: the requirement lives in a host wrapper, so the start
+    # command the agent copies no longer names the stack step. Only the
+    # closing `ledger check` (missing milestones) can send it back.
+    "skip-hidden": ' --require "exec#guard" --require "write#code" --require "exec#stack-profiles"',
 }
-ARMS = ("author", "run", "skip-plain", "skip-required")
+START = "SW ledger start S/flows/implement.md --package S --label build{REQUIRES}"
+WRAPPER = """import subprocess
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.exit(subprocess.call([sys.executable, {sw!r}, "ledger", "start",
+                          str(HERE / "flows" / "implement.md"), "--package", str(HERE),
+                          "--label", "build", *{requires!r}]))
+"""
+ARMS = ("author", "run", "skip-plain", "skip-required", "skip-hidden")
+# --invoke names the skill in skip prompts, so the measurement starts after
+# host routing (whether the agent loads the skill at all) and isolates the
+# field's finding 7: a loaded skill whose stack fragment is skipped.
+INVOKE = " Use the build-notes skill."
+OPTIONS = {"invoke": False}
 
 
 def git(subject, *args):
@@ -110,8 +136,15 @@ def make_subject(arm, base, sw):
     skill = subject / ".claude" / "skills" / "build-notes"
     shutil.copytree(LIVE / "build-notes", skill)
     text = (skill / "SKILL.md").read_text(encoding="utf-8")
-    (skill / "SKILL.md").write_text(text.replace("{SKILLWREN}", sw)
-                                    .replace("{REQUIRES}", REQUIRES[arm]), encoding="utf-8")
+    if arm == "skip-hidden":
+        requires = shlex.split(REQUIRES[arm])
+        (skill / "start_run.py").write_text(WRAPPER.format(sw=sw, requires=requires),
+                                            encoding="utf-8")
+        start = "py -3 S/start_run.py"
+    else:
+        start = START.replace("{REQUIRES}", REQUIRES[arm])
+    (skill / "SKILL.md").write_text(text.replace("{START}", start).replace("{SKILLWREN}", sw),
+                                    encoding="utf-8")
     return subject, skill
 
 
@@ -187,7 +220,7 @@ def check_author(subject, results, sw):
     return out
 
 
-def check_run(subject, skill, arm, base):
+def check_run(subject, skill, arm, base, results=()):
     runs = sorted((subject / ".skillwren" / "ledger").glob("*.jsonl"),
                   key=lambda p: p.stat().st_mtime)
     out = {"ledger_runs": len(runs)}
@@ -219,7 +252,13 @@ def check_run(subject, skill, arm, base):
     out["guard_refusals"] = sum(1 for r in records[1:] if r.get("step") == "exec#guard"
                                 and r.get("exit") not in (0, None))
     out["stack_entered"] = "exec#stack-profiles" in steps
-    out["skip_reported_complete"] = (arm == "skip-required" and not out["stack_entered"]
+    # Did a closing check report the skip, and did the agent then recover?
+    out["saw_missing_milestone"] = any("missing milestone" in r or "completeness=incomplete" in r
+                                       for r in results)
+    stack_at = steps.index("exec#stack-profiles") if out["stack_entered"] else None
+    out["stack_after_code"] = (stack_at is not None and "write#code" in steps[:stack_at])
+    out["skip_reported_complete"] = (arm in ("skip-required", "skip-hidden")
+                                     and not out["stack_entered"]
                                      and good["completeness"] == "complete")
     out["pass"] = (out["package_recorded"] and good["package_consistent"] is True
                    and out["stale_caught"] and not out["skip_reported_complete"])
@@ -235,18 +274,25 @@ def one(arm, rep, model, budget, keep):
 
 
 def _one(arm, rep, model, budget, keep):
-    with tempfile.TemporaryDirectory(prefix=f"sw-live-{arm}-",
+    # The prefix must not name the arm: the agent sees its working directory,
+    # and "sw-live-skip-plain-..." vs "sw-live-skip-required-..." cued skill
+    # use (skip-required 10/10 vs skip-plain 1/10 with identical listings).
+    with tempfile.TemporaryDirectory(prefix="sw-live-",
                                      ignore_cleanup_errors=True) as tmp:
         base = Path(tmp)
         sw = vendor(base)
         subject, skill = make_subject(arm, base, sw)
         prompt = PROMPTS["skip" if arm.startswith("skip") else arm].replace("{SW}", sw)
+        if OPTIONS["invoke"] and arm.startswith("skip"):
+            prompt += INVOKE
         events, code, seconds, stderr = run_agent(subject, model, budget, prompt, arm)
         tools, results, meta = digest(events)
         host = (check_author(subject, results, sw) if arm == "author"
-                else check_run(subject, skill, arm, base))
+                else check_run(subject, skill, arm, base, results))
         record = {"arm": arm, "rep": rep, "model": model, "exit": code, "seconds": seconds,
                   **meta, "tool_calls": len(tools),
+                  "tool_sequence": [t["tool"] + (":" + str(t["input"].get("skill")) if t["tool"] == "Skill" else "")
+                                    for t in tools],
                   "read": sorted({Path(t["input"].get("file_path", "")).name for t in tools
                                   if t["tool"] == "Read"} - {""}),
                   "host": host,
@@ -272,7 +318,10 @@ def main(argv):
     parser.add_argument("--keep", action="store_true", help="copy each subject to OUT/subjects")
     parser.add_argument("--jobs", help="explicit ARM:REP list (rerun interrupted reps);"
                                        " results merge into OUT/results.jsonl by (arm, rep)")
+    parser.add_argument("--invoke", action="store_true",
+                        help="name the skill in skip prompts (measure after host routing)")
     args = parser.parse_args(argv)
+    OPTIONS["invoke"] = args.invoke
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     keep = out / "subjects" if args.keep else None
@@ -298,7 +347,11 @@ def main(argv):
         if arm == "author":
             summary[arm]["saw_p3"] = sum(1 for r in rows if r["host"].get("saw_p3"))
         else:
+            summary[arm]["skill_used"] = sum(1 for r in rows if any(
+                t.startswith("Skill") for t in r.get("tool_sequence", [])))
             summary[arm]["stack_entered"] = sum(1 for r in rows if r["host"].get("stack_entered"))
+            summary[arm]["saw_missing_milestone"] = sum(
+                1 for r in rows if r["host"].get("saw_missing_milestone"))
             summary[arm]["stale_caught"] = sum(1 for r in rows if r["host"].get("stale_caught"))
             summary[arm]["exclusion_violations"] = sum(
                 r["host"].get("exclusion_violations", 0) for r in rows)

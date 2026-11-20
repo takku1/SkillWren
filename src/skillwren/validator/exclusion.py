@@ -14,6 +14,8 @@ one reached only before an abort), so P3 can report a conflict on a path
 that never returns; it never misses one written as `run`. A callee's
 internal order is checked by the rules in scope for the callee itself.
 """
+import re
+
 from .flowgraph import build_cfg, is_run, predecessors, reachable_nodes, walk
 from .ordering import matches
 from .syntax import Diag, run_target
@@ -34,6 +36,50 @@ def may_facts(reach, preds, gen):
                 in_facts[node], out_facts[node] = new_in, new_out
                 changed = True
     return in_facts
+
+
+def culprit(node, gen, preds):
+    """The earliest earlier-step statement with a path to node, or None."""
+    seen, stack, found = set(), list(preds[node]), []
+    while stack:
+        prev = stack.pop()
+        if prev in seen:
+            continue
+        seen.add(prev)
+        if prev in gen:
+            found.append(prev)
+        stack.extend(preds.get(prev, ()))
+    return min(found, key=lambda n: n.line) if found else None
+
+
+def _effect(node, gen, preds, runs, summaries, pattern):
+    """(earlier statement, (doc, effect) inside its callee or None)."""
+    earlier = culprit(node, gen, preds)
+    target = runs.get(earlier) if earlier is not None else None
+    if target and not matches(pattern, earlier.text):
+        return earlier, summaries.first_start(*target, pattern)
+    return earlier, None
+
+
+def repair_hint(node, earlier, inner=None):
+    """Name the minimal repair first: move the effect after the later step.
+    Live agents given only "reorder, narrow, or remove" never found it
+    (field response 2026-11-19, tier 3). When the effect is inside a called
+    flow, name the effect itself: moving the whole run would often break the
+    data the later step needs."""
+    later = f"{node.text!r} (line {node.line})"
+    tail = " If the effect is allowed here, narrow the rule's earlier step instead."
+    if earlier is None:
+        return ("Move the earlier step after this one, narrow the rule's earlier"
+                " step, or remove the conflicting effect.")
+    if inner is not None and inner[1] is not earlier:
+        where, effect = inner
+        return (f"{earlier.text!r} (line {earlier.line}) reaches {effect.text!r}"
+                f" ({where.path.name} line {effect.line}). Take that step out of the"
+                f" called flow and do it after {later}, so the effect happens once the"
+                " later step has started." + tail)
+    return (f"Move {earlier.text!r} (line {earlier.line}) after {later}, so the"
+            " effect happens once the later step has started." + tail)
 
 
 def _skip(node):
@@ -90,6 +136,26 @@ class Exclusions:
         self._starts[key] = result
         return result
 
+    def first_start(self, doc, flow, pattern, depth=0):
+        """(doc, node) of the earliest statement matching pattern in flow or
+        a flow it runs, for repair hints; None when there is none."""
+        if depth > 8:
+            return None
+        root = doc.trees[flow]
+        succ, _ = build_cfg(root, None, None)
+        reach = reachable_nodes(root, succ)
+        for node in sorted(reach, key=lambda n: n.line):
+            if _skip(node):
+                continue
+            if matches(pattern, node.text):
+                return doc, node
+            if is_run(node):
+                target = self.callee(doc, node)
+                found = target and self.first_start(*target, pattern, depth + 1)
+                if found:
+                    return found
+        return None
+
     def exported(self, doc, flow):
         """Exclusion rules a caller of flow must respect: the callee file's
         own, plus those of everything it runs. Items are (doc, rule)."""
@@ -108,6 +174,48 @@ class Exclusions:
         unique = list({(d.path, r.line): (d, r) for d, r in found}.values())
         self._exports[key] = unique
         return unique
+
+
+MD_PATH = re.compile(r"(?<![\w/.-])((?:\.{1,2}/)?[\w.-]+(?:/[\w.-]+)*\.md)\b")
+
+
+def check_prose_composition(doc, workspace, warnings):
+    """W16: the file names another file whose exclusion rules P3 would apply,
+    but no flow here reaches that file with `run`. P3 sees composition only
+    through `run`; a "then follow implement.md" in prose escapes it."""
+    if not doc.readable:
+        return
+    ran = set()
+    for root in doc.trees.values():
+        for node in walk(root):
+            if is_run(node):
+                rt = run_target(node.text)
+                if rt and rt[1]:
+                    found = workspace.resolve_path(doc, rt[1])
+                    if found:
+                        ran.add(found.resolve())
+    warned = set()
+    for idx, raw in enumerate(doc.body_lines):
+        if raw.lstrip().startswith("run "):
+            continue
+        for rel in MD_PATH.findall(raw):
+            found = workspace.resolve_path(doc, rel)
+            if not found:
+                continue
+            key = found.resolve()
+            if key == doc.path.resolve() or key in ran or key in warned:
+                continue
+            other = workspace.document(found)
+            if not (other.readable and other.contract and other.contract.exclusions):
+                continue
+            warned.add(key)
+            rule = other.contract.exclusions[0]
+            warnings.append(Diag(doc.body_first + idx, "W16",
+                                 f"names {rel} without `run`; its exclusion rules"
+                                 f" (e.g. never {rule.first} before {rule.then}) are not"
+                                 " checked against this file",
+                                 f"Compose it as `run <flow> from {rel}` so P3 can check"
+                                 " the order, or remove the reference."))
 
 
 def check_exclusions(doc, workspace, errors):
@@ -149,8 +257,8 @@ def check_exclusions(doc, workspace, errors):
                 errors.append(Diag(node.line, "P3",
                                    f"{node.text!r} can start after {rule.first!r} has run"
                                    f" (exclusion rule, line {rule.line}{where})",
-                                   "Reorder so the later step runs first, narrow the rule's"
-                                   " earlier step, or remove the conflicting effect."))
+                                   repair_hint(node, *_effect(node, gen, preds, runs,
+                                                               summaries, rule.first))))
     for k, rule in enumerate(own):
         for root in doc.trees.values():
             succ, _ = build_cfg(root, None, None)

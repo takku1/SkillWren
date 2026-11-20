@@ -1,6 +1,6 @@
 # Status
 
-**Last Updated**: 2026-11-19 (0.10 work; field-report response on branch `field-report-2026-11-19`)
+**Last Updated**: 2026-11-20 (0.10 work; field-report response and follow-up on branch `field-report-2026-11-19`)
 
 ## Current Phase
 
@@ -18,10 +18,15 @@ runtime comparison. Current verification results are recorded in CI.
   [three-tier results](current/research/field-response-2026-11-19.md)):
   exclusion rules (`never A before B`, P3), ledger package provenance
   (`--package` / `--loaded`), one typed-ID grammar (`validator/refs.py`).
-  The work passes all three tiers: 404 tests, 33/33 spec mutants and
-  14/14 code mutants killed, and live Sonnet runs. In those runs, agents
-  read P3 correctly 3/3 but fixed it minimally 0/3, and provenance caught
-  a stale copy 3/3.
+  Follow-up (2026-11-20): P3's hint names the statement to move (live:
+  2 of the 2 agents that could keep checking applied it, against 0/3
+  before); W16 flags prose composition P3 cannot see; a `record-load`
+  hook records the host-loaded copy so `ledger check` needs no
+  `--loaded`; the workflow guard enforces exclusions between policy
+  operations. A harness confound (arm names in temp paths) invalidated
+  the first skip results; rerun with the skill loaded: unrequired stack
+  step entered 0/6, required 6/6, hidden requirement recovered 6/6 after
+  `ledger check` named it. 417 tests, 33/33 spec and 20/20 code mutants.
 
 - Empirical sufficiency selector: `skillwren select` evaluates a fixed
   candidate-router set under the frozen v23 router-certification spec:
@@ -127,10 +132,16 @@ real-host harness, adapters, and model-measurement tools.
 
 ## Known Gaps
 
-- P3's repair hint did not lead live agents to the minimal fix (move the
-  effect after the later step); 2/3 stopped to ask. P3 cannot see
-  composition written in prose. Provenance needs the caller to name the
-  host-loaded path.
+- P3 sees composition only through `run`; W16 flags prose references but
+  cannot check them. The host-load hook resolves the skill directory from
+  the host's documented order (the hook event names only the skill), so a
+  changed order would make records wrong; ambiguity is flagged.
+- A required milestone proves the step happened, not that it came first:
+  agents recovered a hidden stack requirement after writing code. Pair it
+  with an order rule. Agents ran the stack command without reading
+  `stack.md`.
+- With the field's prompt and neutral paths, 16/18 agents never loaded
+  the skill: host routing, upstream of anything SkillWren checks.
 - NL compiler: one run per arm, model judge only, no human review of
   compiled output; over-asking persists; fragment layout unmeasured.
 - Every real-agent run complied, so the form comparison hit a ceiling;
@@ -139,16 +150,17 @@ real-host harness, adapters, and model-measurement tools.
   approval remains a human step.
 - Reviews of the corpus and drafts are by model sessions, not humans.
 - Model A/B/C (90 trials): zero unauthorized write attempts in every arm,
-  so enforcement value against a cooperating model is unmeasured; the
-  prose arm's 4/30 completion comes from an unstated candidate format,
-  and the protocol needs fixing before any syntax claim.
+  so enforcement value against a cooperating model is unmeasured. The
+  protocol-1 prose gap (4/30) was the unstated candidate format; protocol
+  2 states it and ties at 30/30 per arm, a ceiling that cannot show a
+  syntax effect either way (`research/model-evaluation-plan.md`).
 - The host demo shares one OS account between agent and host; isolation
   is proved separately (`scripts/isolation_probe.py`).
 - Order rules check the written procedure, not what the model does.
 
 ## Documents
 
-- `docs/current/SPEC.md` (normative, Section 21 for 0.9),
+- `docs/current/SPEC.md` (normative; Section 21 for 0.9, Sections 22-23 for 0.10),
   `authoring-guide.md`, `skill-template.md`, `fragment-template.md`,
   `compiler.md`, `language-design.md`, `quickstart-runtime.md`
 - `docs/current/design/`: fragments and ordering, compact conversion,

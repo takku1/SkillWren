@@ -68,7 +68,8 @@ class Controller:
                 self._check_dpcc(op)
         self.approvals = {}
         self.completed = set()
-        self.rules, self.unenforced = [], []
+        self.ran = set()  # every operation that ran, failed checks included
+        self.rules, self.exclusions, self.unenforced = [], [], []
         self.workflow = self.policy.get('workflow')
         if self.workflow is not None:
             self._load_workflow()
@@ -114,8 +115,16 @@ class Controller:
                 self.rules.append((first, then))
             else:
                 self.unenforced.append(f'{first} before {then}')
+        # SPEC 23: `never A before B` is enforced when both steps are policy
+        # operations: once A has run, B is refused. A check counts as run
+        # when its verifier is invoked, even if it fails (the ledger counts
+        # attempts too); a write counts once it commits.
         for rule in dump.get('exclusion_rules', []):
-            self.unenforced.append(f"never {rule['first']} before {rule['then']}")
+            first, then = rule['first'], rule['then']
+            if first in self.operations and then in self.operations:
+                self.exclusions.append((first, then))
+            else:
+                self.unenforced.append(f'never {first} before {then}')
 
     def _check_workflow(self):
         from .validator.approval import check
@@ -236,7 +245,8 @@ class Controller:
                 raise Denied('request must be an object')
             if request == {'action': 'status'}:
                 return {'approved': sorted(self.approvals), 'completed': sorted(self.completed),
-                        'enforced_rules': [f'{a} before {b}' for a, b in self.rules],
+                        'enforced_rules': [f'{a} before {b}' for a, b in self.rules]
+                        + [f'never {a} before {b}' for a, b in self.exclusions],
                         'unenforced_rules': self.unenforced,
                         'coverage': 'controller requests only'}
             if set(request) != {'action', 'operation', 'content'}:
@@ -252,7 +262,9 @@ class Controller:
             if 'target' not in op:
                 if action != 'verify':
                     raise Denied('check operations only verify')
+                self._check_exclusions(name)
                 self.completed.discard(name)  # a failed check revokes earlier success
+                self.ran.add(name)
                 self._run_verifier(op, data)
                 self.completed.add(name)
                 return {'checked': name, 'input_sha256': digest(data)}
@@ -276,6 +288,7 @@ class Controller:
                 if missing:
                     raise Denied('order rule not satisfied: ' + ', '.join(
                         f'{first} before {name}' for first in missing))
+                self._check_exclusions(name)
             if snapshot is not None:
                 self._confirm_dpcc_snapshot(op, data, snapshot)
             fd, temporary = tempfile.mkstemp(prefix='.skillwren-', dir=target.parent)
@@ -289,7 +302,16 @@ class Controller:
                 if os.path.exists(temporary):
                     os.unlink(temporary)
             self.completed.add(name)
+            self.ran.add(name)
             return {'written': name, 'sha256': binding[0]}
+
+    def _check_exclusions(self, name):
+        if self.workflow is None:
+            return
+        ran = [first for first, then in self.exclusions if then == name and first in self.ran]
+        if ran:
+            raise Denied('exclusion rule: ' + ', '.join(
+                f'{first} already ran; never {first} before {name}' for first in ran))
 
     def _run_verifier(self, op, data):
         # Verifiers are trusted administrator programs, not agent scripts.

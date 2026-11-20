@@ -94,17 +94,48 @@ class WorkflowGuardTests(unittest.TestCase):
         self.assertEqual(status['unenforced_rules'],
                          ['exec dependency check before write#report'])
 
-    def test_exclusion_rules_are_listed_unenforced(self):
-        """SPEC 23: the guard does not enforce `never A before B`; it says so."""
+    def with_order(self, *lines):
         text = self.flow.read_text(encoding='utf-8').replace(
+            'order:\n  verify#deps before write#report\n'
             '  exec dependency check before write#report',
-            '  exec dependency check before write#report\n'
-            '  never write#report before verify#deps')
+            'order:\n' + '\n'.join('  ' + line for line in lines))
         self.flow.write_bytes(text.encode('utf-8'))
         approve(self.flow, True, 'host-admin', None, self.approvals)
         self.policy['workflow']['flow_sha256'] = file_digest(self.flow)
-        status = Controller(self.policy).handle({'action': 'status'})
-        self.assertIn('never write#report before verify#deps', status['unenforced_rules'])
+        return Controller(self.policy)
+
+    def test_exclusion_between_operations_is_enforced(self):
+        """SPEC 23: once A has run, B is refused (the field's runtime refusal,
+        now named by the rule instead of discovered)."""
+        guard = self.with_order('verify#deps before write#report',
+                                'never write#report before verify#deps',
+                                'never write#notes before verify#deps')
+        status = guard.handle({'action': 'status'})
+        self.assertIn('never write#report before verify#deps', status['enforced_rules'])
+        self.assertEqual(status['unenforced_rules'], ['never write#notes before verify#deps'])
+        guard.handle(self.req('verify', 'verify#deps'))
+        guard.handle(self.req('verify', 'write#report'))
+        guard.handle(self.req('write', 'write#report'))
+        with self.assertRaises(Denied) as caught:
+            guard.handle(self.req('verify', 'verify#deps'))
+        self.assertIn('write#report already ran', str(caught.exception))
+
+    def test_failed_check_counts_as_run_for_exclusions(self):
+        guard = self.with_order('never verify#deps before write#report')
+        with self.assertRaises(Denied):
+            guard.handle(self.req('verify', 'verify#deps', BLOCKED))
+        guard.handle(self.req('verify', 'write#report'))
+        with self.assertRaises(Denied) as caught:
+            guard.handle(self.req('write', 'write#report'))
+        self.assertIn('never verify#deps before write#report', str(caught.exception))
+        self.assertFalse(self.target.exists())
+
+    def test_exclusion_allows_the_later_step_first(self):
+        guard = self.with_order('never verify#deps before write#report')
+        guard.handle(self.req('verify', 'write#report'))
+        guard.handle(self.req('write', 'write#report'))
+        guard.handle(self.req('verify', 'verify#deps'))
+        self.assertTrue(self.target.exists())
 
     def test_workflow_shape_validated(self):
         self.policy['workflow']['flow'] = 'flow.md'

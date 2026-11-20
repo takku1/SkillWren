@@ -26,6 +26,22 @@
     mutants in the catalog and `tests/field_mutation_sweep.py` (14 code
     mutants, tier 2), `scripts/lab/field_live.py` with the
     `examples/field-live/` skills (real agents, tier 3).
+  - P3's repair hint now names the earliest conflicting statement (and,
+    for a `run`, the effect inside the callee) and says to move it after
+    the later step. Live rerun: 2 of the 2 agents that could keep checking
+    applied that fix, against 0/3 with the old hint.
+  - W16: a file names, outside `run`, another file with exclusion rules,
+    so P3 cannot check that composition.
+  - `skillwren ledger record-load`: a Claude Code `PostToolUse(Skill)` hook
+    that records which copy of a skill the host loaded, with its digest at
+    load time; `ledger check` uses it when `--loaded` is not given.
+  - The workflow guard enforces `never A before B` when both steps are
+    policy operations (refuses B once A has run; a failed check counts).
+  - Live harness: temporary directories no longer carry the arm name
+    (it cued skill use and invalidated the first skip results); new
+    `skip-hidden` arm and `--invoke` flag. Rerun: an unrequired stack step
+    was entered 0/6, a required one 6/6, and a requirement hidden in a host
+    wrapper was recovered 6/6 after `ledger check` named it.
 
 - NL compiler: `skillwren compile` turns a full-context prose source into
   a checked skill through a phased model adapter (inventory, lower,
