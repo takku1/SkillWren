@@ -317,11 +317,14 @@ class TestPackageProvenance(unittest.TestCase):
         with self.assertRaises(ledger.LedgerError):
             ledger.start(other, self.dir, package=self.repo)
 
-    def crlf(self, tree):
+    def crlf(self, tree, ending=b"\r\n"):
+        # Set both copies explicitly: a Windows CI checkout may already be CRLF.
+        for other in ((self.repo,) if tree is not self.repo else ()):
+            self.crlf(other, b"\n")
         for path in tree.rglob("*"):
             if path.is_file():
                 data = path.read_bytes().replace(b"\r\n", b"\n")
-                path.write_bytes(data.replace(b"\n", b"\r\n"))
+                path.write_bytes(data.replace(b"\n", ending))
 
     def test_line_endings_do_not_change_identity(self):
         """full-stack 0.9.0: the plugin cache (CRLF checkout) and the repository
