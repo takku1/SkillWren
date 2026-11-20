@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.11.1 (2026-11-20)
+
+- Package identity ignores line endings in text files: a tree digest
+  hashes text (no NUL byte) with CRLF normalized to LF, and `ledger start
+  --package` compares the flow copy the same way. Found releasing
+  full-stack 0.9.0: the installed plugin (CRLF checkout) and the
+  repository (LF) held one commit but 27 files differed byte for byte, so
+  `close` would report a false package mismatch. Binary files stay
+  byte-exact. Digests recorded by 0.10.0-0.11.0 for CRLF text change.
+  One more code mutant (31/31).
+
 ## 0.11.0 (2026-11-20)
 
 - Skill-load assurance (SPEC 24): a guard policy may require

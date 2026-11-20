@@ -165,7 +165,8 @@ def start(flow_file, directory=DEFAULT_DIR, label=None, required=(), package=Non
         copy = _package_copy(flow_file, package)
         if copy is None:
             raise LedgerError(f"package {package} holds no copy of {flow_file.name}")
-        if _digest_bytes(copy) != _digest_file(flow_file):
+        from .compiler import identity_bytes
+        if _digest_bytes(identity_bytes(copy)) != _digest_bytes(identity_bytes(flow_file.read_bytes())):
             raise LedgerError(f"{flow_file} differs from the package's copy in {package}:"
                               " the flow being committed to is not the one the package ships")
     run = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M%S-") + secrets.token_hex(3)

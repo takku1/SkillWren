@@ -317,6 +317,33 @@ class TestPackageProvenance(unittest.TestCase):
         with self.assertRaises(ledger.LedgerError):
             ledger.start(other, self.dir, package=self.repo)
 
+    def crlf(self, tree):
+        for path in tree.rglob("*"):
+            if path.is_file():
+                data = path.read_bytes().replace(b"\r\n", b"\n")
+                path.write_bytes(data.replace(b"\n", b"\r\n"))
+
+    def test_line_endings_do_not_change_identity(self):
+        """full-stack 0.9.0: the plugin cache (CRLF checkout) and the repository
+        (LF) held one commit but had different byte-exact digests, a false mismatch."""
+        self.crlf(self.cache)
+        self.assertNotEqual((self.cache / "SKILL.md").read_bytes(), (self.repo / "SKILL.md").read_bytes())
+        self.assertEqual(ledger.package_identity(self.cache)["tree_sha256"],
+                         ledger.package_identity(self.repo)["tree_sha256"])
+        path = ledger.start(self.flow, self.dir, package=self.repo)[1]
+        self.assertTrue(ledger.check(path, loaded=self.cache)["package_consistent"])
+
+    def test_flow_copy_with_other_line_endings_is_the_same_flow(self):
+        self.crlf(self.cache)
+        ledger.start(self.flow, self.dir, package=self.cache)  # does not raise
+
+    def test_binary_files_stay_byte_exact(self):
+        write_bytes = lambda p, b: (p.parent.mkdir(parents=True, exist_ok=True), p.write_bytes(b))
+        write_bytes(self.repo / "assets" / "icon.bin", b"\x00\x01\r\n\x02")
+        write_bytes(self.cache / "assets" / "icon.bin", b"\x00\x01\n\x02")
+        self.assertNotEqual(ledger.package_identity(self.cache)["tree_sha256"],
+                            ledger.package_identity(self.repo)["tree_sha256"])
+
     def test_flow_missing_from_package_is_refused(self):
         stray = write(Path(self.tmp.name) / "stray.md", "```logic\nmain:\n  return x as x\n```\n")
         with self.assertRaises(ledger.LedgerError):

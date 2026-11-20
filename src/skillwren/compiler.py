@@ -127,17 +127,27 @@ def tree_files(root):
     return files
 
 
+def identity_bytes(data):
+    """Bytes as package identity sees them: a text file (no NUL byte) with
+    CRLF line endings normalized to LF, so one commit checked out with
+    different line-ending settings (a plugin cache vs a working tree) has one
+    identity. Binary files are unchanged."""
+    return data if b"\0" in data else data.replace(b"\r\n", b"\n")
+
+
 def tree_digest(sources):
     """Package identity (field report 2026-11-19, finding 6): sha256 over
     sorted `<sha256> <name>` lines, `manifest.json` excluded so a built
     artifact and its source directory agree. `sources` maps names to bytes
-    or to manifest records carrying `sha256`."""
+    (hashed through `identity_bytes`) or to records carrying an identity
+    `sha256`."""
     lines = []
     for name in sorted(sources):
         if name == "manifest.json":
             continue
         value = sources[name]
-        digest = value["sha256"] if isinstance(value, dict) else hashlib.sha256(value).hexdigest()
+        digest = (value["sha256"] if isinstance(value, dict)
+                  else hashlib.sha256(identity_bytes(value)).hexdigest())
         lines.append(f"{digest} {name}\n")
     return hashlib.sha256("".join(lines).encode("utf-8")).hexdigest()
 

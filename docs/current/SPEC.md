@@ -1,7 +1,7 @@
 # SkillWren — Skill Logic Architecture (Contract-Header + Logic-Body)
 
 - Date: 2026-10-01; last revised 2026-11-17
-- Status: format 0.10 (package 0.11.0, 2026-11-20); 0.11 adds skill-load
+- Status: format 0.10 (package 0.11.1, 2026-11-20); 0.11 adds skill-load
   assurance for the guard (Section 24); 0.10 adds the
   workflow-bound guard (Section 22) and exclusion rules with package
   provenance (Section 23); 0.9 added typed return anchors and declared
@@ -1174,7 +1174,11 @@ earlier one has run) and lists the others in `unenforced_rules`.
 **Package provenance.** `ledger start FLOW --package DIR` records DIR's
 tree digest: sha256 over sorted `<sha256> <name>` lines for every file
 under DIR (not only Markdown, so hooks and scripts count), skipping VCS,
-caches, run state and `manifest.json`. A `build` artifact and its source
+caches, run state and `manifest.json`. A text file (no NUL byte) is hashed
+with CRLF normalized to LF (0.11.1), so one commit checked out with
+different line-ending settings has one digest; binary files are hashed
+as is. Digests recorded by 0.10.0 to 0.11.0 for CRLF text differ from
+0.11.1's. A `build` artifact and its source
 have the same digest, and `build` writes it to the manifest as
 `tree_sha256`. Start refuses when DIR holds no copy of FLOW or a copy with
 other bytes. `ledger check RUN --loaded DIR` recomputes the digest of the

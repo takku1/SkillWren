@@ -88,6 +88,9 @@ MUTANTS = {
     "hostload-package-ignored": ("src/skillwren/hostload.py",
                                  "([Path(package)] if package else candidates(skill, cwd, home))",
                                  "candidates(skill, cwd, home)"),
+    "package-identity-eol-sensitive": ("src/skillwren/compiler.py",
+                                       'return data if b"\\0" in data else data.replace(b"\\r\\n", b"\\n")',
+                                       "return data"),
     # Finding 5, ledger
     "ledger-exclusions-ignored": ("src/skillwren/ledger.py",
                                   "    excluded = any(r[\"violations\"] for r in report[\"exclusions\"])",
@@ -106,7 +109,7 @@ MUTANTS = {
                               "        if name == \"manifest.json\":\n            continue",
                               "        if name == \"manifest.json\" or not name.endswith(\".md\"):\n            continue"),
     "package-flow-copy-unchecked": ("src/skillwren/ledger.py",
-                                    "if _digest_bytes(copy) != _digest_file(flow_file):",
+                                    "if _digest_bytes(identity_bytes(copy)) != _digest_bytes(identity_bytes(flow_file.read_bytes())):",
                                     "if False:"),
     # Finding 8
     "grammar-renderer-drift": ("src/skillwren/validator/workflow.py",

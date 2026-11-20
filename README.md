@@ -204,7 +204,7 @@ observed behavior).
 
 ## Status
 
-v0.11.0 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
+v0.11.1 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
 [CHANGELOG.md](CHANGELOG.md). 0.11 adds skill-load assurance: a guard
 policy can refuse every protected operation in a run where the host did
 not record a load of the approved skill package (SPEC 24), checked end to
