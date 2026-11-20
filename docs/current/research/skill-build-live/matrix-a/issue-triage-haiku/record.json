@@ -1,0 +1,45 @@
+{
+  "scenario": "issue-triage",
+  "model": "haiku",
+  "cost_usd": 0.0185,
+  "score": {
+    "nothing_written_before_confirmation": true,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-3bg0oag2\\issue-triage\\SKILL.md: flow issue-triage: inputs issue; writes triage_file; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "bug": true,
+      "triage": true
+    }
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to build a new skill named issue-triage, in ./issue-triage. Given ",
+      "result": "I've read the language reference and worked out the requirement inventory. The procedure requires your confirmation before I draft anything, so I'm stopping here.\n\n**Requirement inventory for `issue-triage`**\n\n| # | Line | Source |\n|---|---|---|\n| R1 | Input: the text of one issue. If there is no issue text, stop and say what is needed. | request |\n| R2 | Classify the issue as exactly one label: `bug`, `feature`, or `question`. | request |\n| R3 | If the label is unclear, ask the user which label applies, then use their answer. | request |\n| R4 | Write the label and a one-line reason to `triage.md`. | request |\n| R5 | Never close the issue. | request |\n| R6 | Never edit the issue. | request |\n| R7 | Output location: `triage.md` in the working directory. | **inferred**: the request names no path |\n| R8 | Skill location: `./issue-triage`, under `C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-3bg0oag2`. | request |\n| R9 | Each triage run writes the label and reason for one issue. Whether a later run replaces or appends to `triage.md` is not specified. | **inferred**: I'd default to append, one line per issue |\n\nPlease confirm this inventory, or tell me what to change. Specifically:\n\n1. Is `triage.md` in the working directory the right place (R7)?\n2. Should repeat runs append to `triage.md` or replace it (R9)?\n3. Is the reason meant to be a single sentence, and should the label be written in a particular format, such as `label: bug`?\n\nOnce you confirm, I'll draft the skill, check it, and build it into `./issue-triage`.",
+      "num_turns": 4,
+      "is_error": false,
+      "new_files": []
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "I built `issue-triage` and it passes the SkillWren check and build. The draft is in `./issue-triage/SKILL.md` and the packaged output is in `./issue-triage-build/`.\n\n**What the skill does**\n- Takes one issue's text. If there's no text, it stops and asks for it.\n- Generates a label of `bug`, `feature` or `question`.\n- If the label is unclear, it asks you for the label. If your answer isn't one of the three, it stops without writing.\n- Appends one line, `<label>: <reason>`, to `triage.md` in the working directory. Existing lines are kept.\n\n**Checks**\n- `check` came back clean, with no errors or warnings. It flagged one issue on the first pass: the user-decision step had no matching ask on the clear-label path. I changed the clarification to an input question followed by a validity check.\n- The build used the draft-directory form. The single-file form needs a complete-skill header, which this skill doesn't have.\n- `explain-workflow` produced the readable flow above. It's worth reading before you approve it.\n\n**Limits**\n- Not closing or editing the issue (R5, R6) is only stated in the step meanings. The checker cannot enforce it, and the skill has no step that touches the issue on the host. If you want a hard guarantee, the skill must be run in a context without issue-write tools.\n- The append-versus-replace behaviour and the `triage.md` location are enforced only by the prose in the step meanings.\n- I haven't run the skill on a real issue.\n- Approval is yours to give: run `SW approve` on the file yourself once you've read the explanation. I haven't run it.",
+      "num_turns": 16,
+      "is_error": false,
+      "new_files": [
+        "issue-triage-build/SKILL.md",
+        "issue-triage-build/manifest.json",
+        "issue-triage/SKILL.md"
+      ]
+    }
+  ]
+}

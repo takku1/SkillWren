@@ -1,0 +1,51 @@
+{
+  "scenario": "convert-code-reviewer",
+  "model": "haiku",
+  "cost_usd": 0.0322,
+  "score": {
+    "nothing_written_before_confirmation": true,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 6,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ioibyokv\\code-reviewer-logic\\SKILL.md:12: warning W15: order rule rests on self-report: every statement matching 'verify#intent' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ioibyokv\\code-reviewer-logic\\SKILL.md:13: warning W15: order rule rests on self-report: every statement matching 'apply structure review' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ioibyokv\\code-reviewer-logic\\SKILL.md:14: warning W15: order rule rests on self-report: every statement matching 'apply detail review' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ioibyokv\\code-reviewer-logic\\SKILL.md:15: warning W15: order rule rests on self-report: every statement matching 'apply detail review' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ioibyokv\\code-reviewer-logic\\SKILL.md:16: warning W15: order rule rests on self-report: every statement matching 'apply test review' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ioibyokv\\code-reviewer-logic\\SKILL.md:17: warning W15: order rule rests on self-report: every statement matching 'apply review report' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ioibyokv\\code-reviewer-logic\\SKILL.md: flow code-reviewer: inputs request; writes -; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "review": true
+    },
+    "no_write_statements": true
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to convert the existing skill at ./source/code-reviewer/SKILL.md i",
+      "result": "I've stopped before drafting because the SkillWren procedure requires your confirmation of the requirement inventory first. I haven't written anything yet, and the original `source/code-reviewer/SKILL.md` is untouched.\n\n**One gap first:** `SKILL.md` links to six reference files (`references/review-checklist.md`, `common-issues.md`, `feedback-examples.md`, `report-template.md`, `spec-compliance-review.md`, `receiving-feedback.md`), but only `SKILL.md` exists in `source/code-reviewer/`. Those files may hold decisions the converted logic needs.\n\n## Requirement inventory (draft, from `source/code-reviewer/SKILL.md`)\n\n| # | Requirement | Source |\n|---|---|---|\n| R1 | Analyze diffs and files for bugs, security issues (SQL injection, XSS, insecure deserialization), code smells, N+1 queries, naming, and architecture; produce a prioritized report | frontmatter description |\n| R2 | Use for PR reviews, quality audits, refactoring opportunities, security checks, and architecture validation | When to Use |\n| R3 | **Context:** read the PR description; summarize intent in one sentence before proceeding; if you can't, ask the author to clarify | Workflow 1 |\n| R4 | **Structure:** check architecture and design against existing patterns; justify new abstractions | Workflow 2 |\n| R5 | **Details:** check quality, security, performance using the checks in the Reference Guide; look for N+1, hardcoded secrets, injection | Workflow 3 |\n| R6 | **Tests:** check coverage and quality; edge cases covered; tests assert behavior, not implementation | Workflow 4 |\n| R7 | **Feedback:** produce a categorized report; critical issues found in step 3 are noted immediately, not at the end | Workflow 5 |\n| R8 | If the author explained a non-obvious choice, acknowledge it before suggesting an alternative; never block on style when a linter or formatter is configured | Disagreement handling |\n| R9 | Load a reference file by context (checklist, common issues, feedback examples, report template, spec compliance, receiving feedback) | Reference Guide (files missing, see above) |\n| R10 | Flag the bad patterns shown: N+1 queries, magic numbers, string-interpolated SQL | Review Patterns |\n| R11 | MUST DO: summarize intent first; specific, actionable feedback with code examples; praise good patterns; prioritize critical\u2192minor; review tests as thoroughly as code; OWASP Top 10 as baseline | Constraints |\n| R12 | MUST NOT DO: condescension; style nitpicks when linters exist; blocking on preferences; demanding perfection; reviewing without understanding the why; skipping praise | Constraints |\n| R13 | Report sections, in order: Summary, Critical, Major, Minor, Positive feedback, Questions for author, Verdict (Approve / Request Changes / Comment) | Output Template |\n| R14 | Knowledge base: SOLID, DRY, KISS, YAGNI, design patterns, OWASP Top 10, language idioms, testing patterns | Knowledge Reference |\n| R15 *(inferred)* | The review is read-only and does not modify the code under review (from `allowed-tools: Read, Grep, Glob`) | frontmatter |\n| R16 *(inferred)* | Workflow steps 1\u21925 run in that order (Context before Structure before Details before Tests before Feedback) | Workflow numbering |\n| R17 *(inferred)* | Step 1's \"ask the author\" is a decision for the user, so it should pause for an answer, not guess | Workflow 1 |\n\n## What I need from you\n\n1. **Reference files:** Should I convert `SKILL.md` alone (the logic would refer to reference files that aren't there), or can you add the six files to `source/code-reviewer/references/`?\n2. **Inventory:** Confirm R1\u2013R14, or correct them. Also confirm the inferred lines R15\u2013R17, especially whether the Workflow order is strict.\n3. **Output location:** Is `./code-reviewer-logic` the right folder? I'd write there and leave the original alone.\n\nOnce you confirm, I'll draft the logic, run `check`, repair until it passes (or report what's blocking), build the package, and show the workflow explanation for your review.",
+      "num_turns": 6,
+      "is_error": false,
+      "new_files": []
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The package is built, but not at `./code-reviewer-logic`. That folder holds my draft, and I couldn't move or delete it: the shell blocked the rename, and `build` won't write into an existing folder. The built package is at **`./code-reviewer-build`**. The draft is at `./code-reviewer-logic/SKILL.md`. The original `source/code-reviewer/SKILL.md` is unchanged.\n\n**Result**\n- `check --fragment --audit`: no errors. The six warnings are explained below.\n- `build`: succeeded, 1 fragment, 1 file, 6 warnings.\n- `explain-workflow`: the rendered workflow matches the procedure. Please read it before approving.\n\n**What the logic does**\n1. Requires a review target. Reads the code under review from the request, and aborts if it can't.\n2. Generates the PR intent in one sentence. If the check fails, asks you for clarification and retries.\n3. Loads the matching reference file, or aborts if it's missing.\n4. Runs the structure, detail, and test reviews in order. Shows critical issues as soon as the detail review finds them.\n5. Writes the report in the seven-section template and returns it with a verdict.\n\n**Choices I made that you should check**\n- **Reference files:** Only `SKILL.md` was provided, so the six linked references are not in the package. The reference-load step aborts when they're missing. As built, the skill will stop at that step until you add the files to a `references/` folder.\n- **Read-only:** The logic has no write or exec steps, matching the `Read, Grep, Glob` tools.\n- **Order warnings (W15):** The six order rules rest on the model's own judgment, since nothing outside the model confirms the review phases ran in order. The only way to anchor them is a written artifact, and that conflicts with the read-only requirement. I left the rules in place because you confirmed them. Say if you'd rather drop them or allow a notes file.\n- **Bindings:** The reviews chain their outputs (`structure` \u2192 `details` \u2192 `tests` \u2192 `report`). The report's summary uses the intent bound earlier, which the checker can't see.\n\n**Next steps**\n- Approve moving the draft out of the way, or move it yourself. Then I can rebuild into `./code-reviewer-logic`.\n- Decide whether to add the reference files.\n- Review the workflow explanation. If you accept it, run `py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py approve code-reviewer-build/SKILL.md` yourself. I won't record approval for you.",
+      "num_turns": 17,
+      "is_error": false,
+      "new_files": [
+        "code-reviewer-build/SKILL.md",
+        "code-reviewer-build/manifest.json",
+        "code-reviewer-logic/SKILL.md"
+      ]
+    }
+  ]
+}

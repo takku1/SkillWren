@@ -1,10 +1,10 @@
 # Status
 
-**Last Updated**: 2026-11-20 (0.12.0: the skill ships as a self-contained plugin and builds new skills)
+**Last Updated**: 2026-11-20 (0.12.1: bounded repairs, scenario matrix on two models)
 
 ## Current Phase
 
-Package 0.12.0, release candidate for production use of the skill-building
+Package 0.12.1, release candidate for production use of the skill-building
 path: the `skillwren` skill installs as a self-contained Claude Code plugin
 (`/plugin install skillwren --marketplace takku1/SkillWren`, no pip), builds
 a new skill from a request or converts one, and a headless agent with only
@@ -24,8 +24,17 @@ runtime comparison. Current verification results are recorded in CI.
   `scripts/build_plugin.py` (checker bundled, standard library only) and
   checked for drift in the test suite. Live proof:
   `research/skill-build-live/` (one task, one model, $0.25 per build).
-  Next: more tasks and a second model; publish to PyPI if wanted (needs
-  the owner's account).
+  0.12.1 bounds the skill's repair loops (`return #blocked`) and ran a
+  scenario matrix (correction, two new skills, a conversion; Sonnet and
+  Haiku): nothing written before confirmation in every run, 11/12 built
+  with 0 errors, the twelfth stopped correctly at the blocked exit. Next:
+  real users correcting inventories, human review of built skills against
+  intent; PyPI if wanted (needs the owner's account).
+- Compiler vs. compression (external review, 2026-11-20): `compile` and
+  the skill translate prose into checked structure; they do not compress
+  it (inline output measured ~5x the prose entry, fragments did not cut
+  load). Treat semantic preservation and context size as separate
+  problems, preservation first.
 
 - Skill-load assurance (0.11.0, SPEC 24, PR #6): a
   guard policy `skill: {name, tree_sha256, loads}` plus `guard --run-id`

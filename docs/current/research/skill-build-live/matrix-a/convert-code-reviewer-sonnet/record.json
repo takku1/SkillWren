@@ -1,0 +1,45 @@
+{
+  "scenario": "convert-code-reviewer",
+  "model": "sonnet",
+  "cost_usd": 0.3608,
+  "score": {
+    "nothing_written_before_confirmation": true,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-y5yds5ib\\code-reviewer-logic\\SKILL.md: flow code-reviewer: inputs change, references, request; writes -; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "review": true
+    },
+    "no_write_statements": true
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to convert the existing skill at ./source/code-reviewer/SKILL.md i",
+      "result": "The source is a single `SKILL.md`. It links six `references/*.md` files, but none of them exist in `./source/code-reviewer/`. Here is the requirement inventory, taken from the source. Nothing has been written yet.\n\n## Requirement inventory\n\n**Inputs and scope**\n- R1. The task is to review a PR, diff or files. The source says \"Senior engineer conducting thorough, constructive code reviews\".\n- R2. Tools are limited to Read, Grep and Glob (`allowed-tools`). The review is read-only. *(inferred as a constraint)*\n\n**Workflow (ordered)**\n- R3. Context: read the PR description and understand the problem.\n- R4. Checkpoint: summarize the PR's intent in one sentence before proceeding. If you can't, ask the author to clarify.\n- R5. Structure: review architecture and design. Does the change follow existing patterns? Are new abstractions justified?\n- R6. Details: check quality, security and performance, applying the Reference Guide checks. Look for N+1 queries, hardcoded secrets and injection risks.\n- R7. Tests: validate coverage and quality. Are edge cases covered? Do tests assert behavior rather than implementation?\n- R8. Feedback: produce a categorized report using the Output Template.\n- R9. If critical issues are found in step 3 (Details), note them immediately instead of waiting until the end.\n- R10. Order: Context, then Structure, then Details, then Tests, then Feedback.\n\n**Disagreement handling**\n- R11. If the author left comments explaining a non-obvious choice, acknowledge their reasoning before suggesting an alternative.\n- R12. Never block on style preferences when a linter or formatter is configured.\n\n**Reference loading (conditional)**\n- R13. Load `review-checklist.md` when starting a review or choosing categories.\n- R14. Load `common-issues.md` for N+1 queries, magic numbers and patterns.\n- R15. Load `feedback-examples.md` when writing feedback.\n- R16. Load `report-template.md` when writing the final report.\n- R17. Load `spec-compliance-review.md` when reviewing implementations, PRs or spec verification.\n- R18. Load `receiving-feedback.md` when responding to review comments.\n\n**Review patterns**\n- R19. Flag a query inside a loop (N+1) and suggest bulk prefetch.\n- R20. Flag magic numbers and suggest named constants.\n- R21. Flag string-interpolated SQL and suggest parameterized queries.\n\n**MUST DO**\n- R22. Summarize PR intent before reviewing (same as R4).\n- R23. Give specific, actionable feedback.\n- R24. Include code examples in suggestions.\n- R25. Praise good patterns.\n- R26. Prioritize feedback from critical to minor.\n- R27. Review tests as thoroughly as code.\n- R28. Check for security issues, using the OWASP Top 10 as the baseline.\n\n**MUST NOT DO**\n- R29. Be condescending or rude.\n- R30. Nitpick style when linters exist.\n- R31. Block on personal preferences.\n- R32. Demand perfection.\n- R33. Review without understanding the why.\n- R34. Skip praising good work.\n\n**Output**\n- R35. The report must include seven sections: Summary (intent recap plus overall assessment), Critical issues (must fix before merge: bugs, security, data loss), Major issues (should fix: performance, design, maintainability), Minor issues (nice to have: naming, readability), Positive feedback (specific patterns done well), Questions for author, and Verdict.\n- R36. The Verdict is one of Approve, Request Changes or Comment.\n\n**Dropped as metadata or non-procedural**\n- The frontmatter fields: license, author, version, triggers and related-skills.\n- The \"When to Use\" list and the Knowledge Reference list (SOLID, DRY and so on). I'll keep these in the description or a step meaning. Say so if you'd rather drop them.\n- The documentation link.\n\n**Open points (inferred)**\n- I'll model the reference files as optional reads: if a file is missing, continue without it.\n- Nothing outside the model can verify \"praise\" or \"politeness\". I'll express these as `verify` gates on the draft report, backed by `generate` and `apply` steps, and the checker will warn about them.\n\n**Please confirm.** Is this inventory right, or should I add, correct or remove any lines? Once you confirm, I'll draft the logic, run the checker and build to `./code-reviewer-logic`.",
+      "num_turns": 6,
+      "is_error": false,
+      "new_files": []
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The converted skill is built at `./code-reviewer-logic` (one `SKILL.md`). The check and build are clean, with 0 errors and 0 warnings. `./source/code-reviewer/SKILL.md` is untouched, and the working draft is in `./code-reviewer-draft/`.\n\n**How the requirements landed**\n- **R1\u2013R2, scope and read-only:** these are in the description and the `change` step meaning. Read-only is a stated constraint only. The checker can't enforce which tools are allowed.\n- **R3\u2013R10, workflow:**\n  - The five steps run in the order Context, Structure, Details, Tests, Feedback.\n  - The intent checkpoint (R4) is a `verify #intent` gate.\n  - If the intent can't be stated, it asks the author for clarification and loops back.\n  - Critical findings from Details are shown immediately (R9).\n- **R11\u2013R12, R30\u2013R32, disagreement handling and style restraint:** these are the `author reasoning` and `style restraint` step meanings.\n- **R13\u2013R18, reference loading:** each of the six is an optional `read` under a condition. A missing file is skipped. This matters because none of the six reference files exist in the source folder.\n- **R19\u2013R21, R23\u2013R24, R27\u2013R28, review patterns and security:** these are in the `security baseline` step meaning. It covers the OWASP Top 10, N+1 queries, magic numbers, SQL injection, code examples and reviewing tests as thoroughly as code.\n- **R25\u2013R26, R29, R33\u2013R36, report and tone:** these are in `report rules`. They are also enforced by the final `verify #report` gate, which retries until the report passes.\n\n**Differences from the source**\n- **Extra confirmation step:** I added a gate where the user confirms the one-sentence intent summary. The checker only accepts an order rule when something outside the model backs it, and the source's own rule was model-judged. This is stricter than the source, which only asks when the intent is unclear. Say so if you'd rather drop it and accept the warnings.\n- **Step order instead of order rules:** the Structure \u2192 Details \u2192 Tests \u2192 Report order is kept by the sequence of steps. It has no `order:` rule, because those rules would only rest on the model's own judgment.\n- **Non-procedural material dropped:** the license, version and author fields, the knowledge-reference list and the documentation link are not carried over.\n\nA clean check proves the procedure is well formed. It doesn't prove a model will follow it, and it doesn't check tone, praise or politeness. The plain-language workflow explanation is above. Please read it, and if you accept it, record that yourself with `SW approve <file>`. I haven't run it for you.",
+      "num_turns": 22,
+      "is_error": false,
+      "new_files": [
+        "code-reviewer-draft/SKILL.md",
+        "code-reviewer-logic/SKILL.md",
+        "code-reviewer-logic/manifest.json"
+      ]
+    }
+  ]
+}

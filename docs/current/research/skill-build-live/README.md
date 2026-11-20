@@ -41,3 +41,48 @@ agent told the user to run `approve` themselves and did not run it.
   plugin directory allowed (`--add-dir`), or the user approves the prompt.
 - Not shown: that the built skill, when used, makes a model follow it;
   other models; other tasks.
+
+## Scenario matrix (0.12.1, 2026-11-20)
+
+Harness: `scripts/lab/skill_build_live.py` (committed). Four scenarios, two
+models, one session each: an inventory **correction** (the user rejects
+part of the inventory, then confirms), two new skills of different shapes
+(`release-gate`: tests, version decision, tag, never push;
+`issue-triage`: classify, ask when unclear, write a file, never touch the
+issue), and a **conversion** of the prose `code-reviewer` skill
+(read-only tools, so its logic must contain no `write`). Scored
+mechanically; checks run on the folder `build` wrote, in that skill's
+own mode.
+
+**Matrix A** (`matrix-a/`, $1.29, before the destination fix). The
+first scorer checked the wrong folder in one mode; `rescore.jsonl` is the
+corrected score. During this matrix the plugin folder held the
+pre-budget skill for about two seconds (a test of the new loop check);
+the scored behavior is the same in both versions.
+
+| Scenario | Sonnet | Haiku |
+|---|---|---|
+| correction: nothing written before confirm; revised inventory shown | yes | yes |
+| correction: built, corrections present | 0 errors, 1 W15 (explained) | 0 errors (complete-skill form) |
+| release-gate | 0 errors, 0 warnings, order rule present | 0 / 0, order rule present |
+| issue-triage | 0 / 0 | 0 / 0 |
+| convert code-reviewer | 0 / 0, no `write` | 0 errors, 6 W15 (explained), no `write` |
+| package at the requested path | 4/4 | **0/4** (`-pkg`/`-build` siblings) |
+
+Every run wrote nothing before confirmation and left the project's files
+untouched. Finding: Haiku drafted into the requested folder or passed a
+file to `build`, then had to put the package beside it. Fixed in 0.12.1:
+the draft is always `<name>-draft/`, the requested path is the build
+destination only, and `build` takes the draft folder.
+
+**Matrix B, Haiku after the fix** (`matrix-b-haiku/`, $0.09): package at
+the requested path in 3/3 builds. `release-gate` did not build, correctly:
+the confirmed order ("run tests, then ask for the version") puts a
+possibly-writing command before a dismissible question (M1), Haiku would
+not mislabel the test run `exec readonly`, and it stopped with the draft,
+the conflict and three options, the blocked exit added in 0.12.1. Sonnet
+resolved the same scenario in matrix A.
+
+Limits: one run per cell, author-scored, synthetic tasks; corrections were
+scripted, not a real user; no human review of the built skills' fidelity
+to intent beyond the expected-phrase and no-write checks.

@@ -21,6 +21,7 @@ order:
   ask user to confirm the requirement inventory before write draft
   verify the draft has no errors before exec skill build
   exec workflow explanation before exec skill build
+  verify the package built before return#built
 ```
 
 ```logic
@@ -57,6 +58,8 @@ skillwren:
   exec skill check from launcher as checked
   verify the draft has no errors and every warning is fixed or explained from checked
     otherwise:
+      if the repair budget is spent:
+        return #blocked checked as blocker
       apply check repair with checked as draft
       write draft with workdir
       exec skill check from launcher as checked
@@ -64,6 +67,8 @@ skillwren:
 
   verify every requirement lands in a step, gate, order rule, or step meaning from requirements
     otherwise:
+      if the repair budget is spent:
+        return #blocked requirements as blocker
       apply requirement repair with requirements as draft
       write draft with workdir
       return to checking
@@ -72,11 +77,13 @@ skillwren:
   exec skill build from launcher as package
   verify the package built without errors from package
     otherwise:
+      if the repair budget is spent:
+        return #blocked package as blocker
       apply check repair with package as draft
       write draft with workdir
       return to checking
 
-  return:
+  return #built:
     skill = package
     explanation
 ```
@@ -91,15 +98,19 @@ Pass explicit file names, not shell globs.
 |---|---|
 | `exec skill check` | flow files: `SW check --fragment --summary --audit SKILL.md flows/*.md`; a complete skill (contract header): `SW check SKILL.md` |
 | `exec workflow explanation` | `SW explain-workflow <file>` for each file with a `logic` block |
-| `exec skill build` | `SW build <draft dir> --out <destination>` (a complete skill: `SW build <file> --out <destination>`) |
+| `exec skill build` | `SW build <name>-draft --out <destination>`: pass the draft folder, not a file, for the inline form and flow files (only a complete skill with a contract header is built from its file) |
 
 Exit 0 means no errors, 1 means errors, 2 means a usage failure. A warning
 is not a pass: fix it or say why it is acceptable.
 
 ## Step meanings
 
-- **workdir**: a new draft folder the user names, else `<name>-draft/` in
-  the working directory. Never edit the original skill in place.
+- **workdir**: `<name>-draft/` in the working directory, always. Never edit
+  the original skill in place.
+- **destination**: where the user asked for the skill ("in ./x"), else
+  `./<name>/`. It is the `build` output only: never draft into it, and do
+  not invent another folder because it exists; `build` writes a new folder,
+  so remove an earlier build there only with the user's consent.
 - **source**: the skill to convert: its `SKILL.md` and every file it links
   to that changes a decision.
 - **references**: `references/language.md` in this skill's directory.
@@ -121,12 +132,21 @@ is not a pass: fix it or say why it is acceptable.
   control flow. Never weaken a requirement or delete a rule to silence it.
 - **requirement repair**: add the missing requirement where it belongs, or
   ask the user whether to drop it. A requirement may not disappear.
+- **repair budget**: spent when a check reports the same problems as the
+  attempt before it (no progress), or after five repairs in this run across
+  all three repair loops. Count them; this is your own count, not a
+  mechanical limit.
 - **inventory revision**: add, correct or remove the lines the user named,
   then show the whole inventory again.
 
 ## Output
 
-Return the built skill's path, the workflow explanation, the requirement
+**Blocked** (`return #blocked`): stop editing, keep the draft, and report
+the last checker output or the unlanded requirements, what each repair
+tried, and what you need from the user. Never present a blocked draft as a
+built skill.
+
+**Built**: return the built skill's path, the workflow explanation, the requirement
 inventory with where each line landed, and limits: a clean check proves
 the written procedure is well formed and ordered, not that a model will
 follow it or that it does what the user meant beyond the inventory they

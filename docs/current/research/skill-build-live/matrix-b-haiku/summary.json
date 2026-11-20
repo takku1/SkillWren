@@ -1,0 +1,54 @@
+[
+  {
+    "scenario": "changelog-correct",
+    "model": "haiku",
+    "cost": 0.0316,
+    "pre_confirm_clean": true,
+    "at_destination": true,
+    "untouched": true,
+    "built": true,
+    "errors": 0,
+    "warnings": 0,
+    "expected": true,
+    "built_equals_a_draft": true
+  },
+  {
+    "scenario": "release-gate",
+    "model": "haiku",
+    "cost": 0.0174,
+    "pre_confirm_clean": true,
+    "at_destination": false,
+    "untouched": true,
+    "built": false,
+    "errors": null,
+    "warnings": null,
+    "expected": null
+  },
+  {
+    "scenario": "issue-triage",
+    "model": "haiku",
+    "cost": 0.0181,
+    "pre_confirm_clean": true,
+    "at_destination": true,
+    "untouched": true,
+    "built": true,
+    "errors": 0,
+    "warnings": 0,
+    "expected": true,
+    "built_equals_a_draft": true
+  },
+  {
+    "scenario": "convert-code-reviewer",
+    "model": "haiku",
+    "cost": 0.0278,
+    "pre_confirm_clean": true,
+    "at_destination": true,
+    "untouched": true,
+    "built": true,
+    "errors": 0,
+    "warnings": 4,
+    "expected": true,
+    "no_write_statements": true,
+    "built_equals_a_draft": true
+  }
+]

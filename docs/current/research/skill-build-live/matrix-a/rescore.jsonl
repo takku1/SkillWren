@@ -1,0 +1,8 @@
+{"run": "changelog-correct-haiku", "packages": ["changelog-entry-pkg"], "mode": "complete", "exit": 0, "errors": 0, "warnings": 0, "warning_codes": [], "cost": 0.05}
+{"run": "changelog-correct-sonnet", "packages": ["changelog-entry"], "mode": "fragment", "exit": 0, "errors": 0, "warnings": 1, "warning_codes": ["W15"], "cost": 0.3182}
+{"run": "convert-code-reviewer-haiku", "packages": ["code-reviewer-build"], "mode": "fragment", "exit": 0, "errors": 0, "warnings": 6, "warning_codes": ["W15"], "cost": 0.0322}
+{"run": "convert-code-reviewer-sonnet", "packages": ["code-reviewer-logic"], "mode": "fragment", "exit": 0, "errors": 0, "warnings": 0, "warning_codes": [], "cost": 0.3608}
+{"run": "issue-triage-haiku", "packages": ["issue-triage-build"], "mode": "fragment", "exit": 0, "errors": 0, "warnings": 0, "warning_codes": [], "cost": 0.0185}
+{"run": "issue-triage-sonnet", "packages": ["issue-triage"], "mode": "fragment", "exit": 0, "errors": 0, "warnings": 0, "warning_codes": [], "cost": 0.245}
+{"run": "release-gate-haiku", "packages": ["release-gate-build"], "mode": "fragment", "exit": 0, "errors": 0, "warnings": 0, "warning_codes": [], "cost": 0.0262}
+{"run": "release-gate-sonnet", "packages": ["release-gate"], "mode": "fragment", "exit": 0, "errors": 0, "warnings": 0, "warning_codes": [], "cost": 0.2432}

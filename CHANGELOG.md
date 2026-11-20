@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.12.1 (2026-11-20)
+
+- Bounded repairs in the `skillwren` skill: each of its three model repair
+  loops has a `return #blocked` exit, taken when a check reports the same
+  problems as the attempt before or after five repairs in a run; a
+  blocked run keeps the draft and reports instead of presenting it as
+  built. An order rule puts the verified build before `return#built`. The
+  budget is the model's own count (the checker shows it as a model branch),
+  per the bounded-retry design (option A, no new syntax).
+  `tests/test_plugin.py` fails if a looping repair lacks a blocked exit.
+- The draft always goes in `<name>-draft/` and the requested path is the
+  `build` destination only; `build` takes the draft folder. Haiku had
+  drafted into the destination and packaged beside it (0/4 at the
+  requested path; 3/3 after).
+- `scripts/lab/skill_build_live.py`: live scenario harness (inventory
+  correction, two new-skill shapes, a conversion; two models), scored on
+  the folder `build` wrote. Results in
+  `docs/current/research/skill-build-live/`: every run wrote nothing
+  before confirmation and left project files untouched; 11 of 12 built
+  with 0 errors; the twelfth stopped correctly at the new blocked exit on
+  an M1 conflict in the user's confirmed order ($1.38 total).
+
 ## 0.12.0 (2026-11-20)
 
 - The `skillwren` skill builds skills. It now creates a new skill from a

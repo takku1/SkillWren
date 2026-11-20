@@ -1,0 +1,53 @@
+{
+  "scenario": "changelog-correct",
+  "model": "sonnet",
+  "cost_usd": 0.3182,
+  "score": {
+    "nothing_written_before_confirmation": true,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 1,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-rm8vn8h7\\changelog-entry\\SKILL.md:14: warning W15: order rule rests on self-report: every statement matching 'show entry' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-rm8vn8h7\\changelog-entry\\SKILL.md: flow changelog-entry: inputs pr_number, request; writes changelog_file; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "Changed": true,
+      "pull request|PR number|\\(#": true
+    }
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to build a new skill named changelog-entry, in ./changelog-entry. ",
+      "result": "Here is the requirement inventory for `changelog-entry`. Lines marked \"inferred\" are my additions, not yours.\n\n1. Add exactly one entry to `CHANGELOG.md` for a change the user describes. (request)\n2. Read the current `CHANGELOG.md` before doing anything else. (request)\n3. If the description doesn't make it clear whether the entry belongs under Added or Fixed, ask the user which one. (request)\n4. Never edit any file other than `CHANGELOG.md`. (request)\n5. Show the user the new entry before writing it. (request)\n6. Inferred: if the user gives no change description, stop and ask for one.\n7. Inferred: write the entry only after the user approves it. If they reject it, revise it and show it again.\n8. Inferred: put the entry under the existing Added or Fixed heading you read in step 2. Don't rewrite other entries.\n9. Inferred: output is the updated `CHANGELOG.md` and a short confirmation of what was added and where.\n\nOutput location: `./changelog-entry`, as you specified.\n\nDoes this inventory look right? Tell me what to add, change or remove. If it's fine, I'll write the draft, check it and build it.",
+      "num_turns": 3,
+      "is_error": false,
+      "new_files": []
+    },
+    {
+      "prompt": "Not quite. Changes to the inventory: the skill must also allow a Changed section",
+      "result": "Here is the revised inventory. Changed or new lines are marked.\n\n1. Add exactly one entry to `CHANGELOG.md` for a change the user describes. (request)\n2. Read the current `CHANGELOG.md` before doing anything else. (request)\n3. **Revised:** If the description doesn't make it clear whether the entry belongs under Added, Changed or Fixed, ask the user which one. (request, revised)\n4. Never edit any file other than `CHANGELOG.md`. (request)\n5. Show the user the new entry before writing it. (request)\n6. **New:** Every entry must end with the pull request number in parentheses, like `(#123)`. (revision)\n7. **New:** If the user gives no PR number, ask for it. Don't write an entry without one. (revision)\n8. Inferred: if the user gives no change description, stop and ask for one.\n9. Inferred: write the entry only after the user approves it. If they reject it, revise it and show it again. The approved entry includes the PR number.\n10. Inferred: put the entry under the existing Added, Changed or Fixed heading you read in step 2. Don't rewrite other entries. If the heading is missing, add it.\n11. Inferred: output is the updated `CHANGELOG.md` and a short confirmation of what was added and where.\n\nOutput location: `./changelog-entry`.\n\nIs this right now? If so, I'll write the draft, check it and build it.",
+      "num_turns": 1,
+      "is_error": false,
+      "new_files": []
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "I built `changelog-entry` at `./changelog-entry`. The package built with one warning, and that warning is explained below. The draft it came from is in `./changelog-entry-draft/`.\n\n**How the skill works**\n1. It asks for the change description if you didn't give one.\n2. It reads `CHANGELOG.md` (`cat CHANGELOG.md`, read-only). If that fails, it stops without writing anything.\n3. If the description doesn't make clear whether the entry is Added, Changed or Fixed, it asks you which one. If you don't choose, it stops without writing.\n4. It asks for the PR number if you didn't give one.\n5. It drafts the entry in the changelog's existing style, under the right heading, ending with `(#123)`.\n6. It shows you the entry and asks for approval. If you want changes, it revises the entry and shows it again.\n7. It writes the entry to `CHANGELOG.md` only after you approve.\n\n**Where each requirement landed**\n\n| # | Requirement | Where it landed |\n|---|---|---|\n| 1 | One entry added to `CHANGELOG.md` | The single `write entry` step |\n| 2 | Read the changelog first | The `exec readonly changelog read` step, plus order rules that put it before the section question and before drafting the entry |\n| 3 | Ask for Added, Changed or Fixed when unclear | The `if` branch, with an `ask` and a `require user` gate |\n| 4 | Edit no file but `CHANGELOG.md` | The `changelog_file` step meaning, which sets `CHANGELOG.md` as the only write target |\n| 5 | Show the entry before writing | The `show entry` step and the order rule `show entry before write entry` |\n| 6 | Every entry ends with `(#123)` | The `pull request suffix` step, plus the entry revision meaning, which keeps the suffix |\n| 7 | Ask for the PR number if missing | The `require pr_number exists` gate, with an `ask` and a retry |\n| 8 | Ask for the description if missing | The first `require` gate, with an `ask` and a retry |\n| 9 | No write without approval, and revise if rejected | The approval gate, which loops back to `show entry` after a revision |\n| 10 | Use the existing heading, add it if missing, leave other entries alone | The `entry format` step meaning |\n| 11 | Return the entry as the output | The `return` step |\n\n**Limits**\n- **Warning:** the order rule `show entry before write entry` produced warning W15. A display has no signal outside the model. The approval decision after it does have one, and a separate order rule checks that decision before the write. I kept the show rule because you asked for it.\n- **Enforcement:** the \"only `CHANGELOG.md`\" rule rests on the skill's wording. The checker can't enforce it mechanically.\n- **Retries:** the two `retry` steps (description and PR number) have no retry limit.\n- **What the check proves:** a clean check shows the written procedure is well formed and ordered. It doesn't prove a model will follow it.\n- **Your review:** please read the workflow explanation above. If you accept it, record that yourself with `SW approve <file>`, where `SW` is `py -3 Z:\\SkillWren\\plugin\\skillwren\\scripts\\skillwren.py`. I haven't run `approve`, and I haven't installed the skill.",
+      "num_turns": 15,
+      "is_error": false,
+      "new_files": [
+        "changelog-entry-draft/SKILL.md",
+        "changelog-entry/SKILL.md",
+        "changelog-entry/manifest.json"
+      ]
+    }
+  ]
+}

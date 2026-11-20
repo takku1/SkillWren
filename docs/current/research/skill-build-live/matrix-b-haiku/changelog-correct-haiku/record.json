@@ -1,0 +1,56 @@
+{
+  "scenario": "changelog-correct",
+  "model": "haiku",
+  "cost_usd": 0.0316,
+  "score": {
+    "packages": [
+      "changelog-entry"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-bi6n8jua\\changelog-entry\\SKILL.md: flow changelog-entry: inputs request; writes changelog_file; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "Changed": true,
+      "pull request|PR number|\\(#": true
+    }
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to build a new skill named changelog-entry, in ./changelog-entry. ",
+      "result": "I've drafted the requirement inventory for `changelog-entry`. Please confirm it, or tell me what's missing or wrong, before I write the skill draft.\n\n**Requirement inventory**\n\n1. Purpose: add one entry to `CHANGELOG.md` for a change the user describes. (quoted from request)\n2. Input: the user's description of the change. (inferred)\n3. Input: the current `CHANGELOG.md`, read before anything else. (quoted from request: \"Read the current CHANGELOG.md first\")\n4. Target file: `CHANGELOG.md` in the project directory `C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-bi6n8jua`. (inferred from the file found there)\n5. Ordering: read `CHANGELOG.md` before asking any question or writing anything. (quoted from request)\n6. Condition: if the description does not make clear whether the entry belongs under Added or Fixed, ask the user which one. (quoted from request)\n7. Ordering: resolve the Added/Fixed question before drafting the entry. (inferred)\n8. Prohibition: never edit any file other than `CHANGELOG.md`. (quoted from request)\n9. Ordering: show the user the new entry before writing it. (quoted from request)\n10. Output: the entry goes under the `## Unreleased` section, under `### Added` or `### Fixed`, matching the existing layout. (inferred)\n11. Output: each entry is one bullet line. (inferred from the existing file, which has no entries yet)\n12. Destination: the skill is built into `./changelog-entry`. (quoted from request)\n\n**Questions for you**\n\n- Item 4 and 10 are my inferences. Should the entry always go under `## Unreleased`, or might you want a version heading?\n- Item 11: is one bullet per entry the right format?",
+      "num_turns": 5,
+      "is_error": false,
+      "new_files": []
+    },
+    {
+      "prompt": "Not quite. Changes to the inventory: the skill must also allow a Changed section",
+      "result": "Revised inventory below. I changed items 6, 10 and 13, and added item 14. Items 4 and 11 are still my inferences and need your confirmation.\n\n**Requirement inventory (revision 2)**\n\n1. Purpose: add one entry to `CHANGELOG.md` for a change the user describes. (quoted from request)\n2. Input: the user's description of the change. (inferred)\n3. Input: the current `CHANGELOG.md`, read before anything else. (quoted from request: \"Read the current CHANGELOG.md first\")\n4. Target file: `CHANGELOG.md` in the project directory `C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-bi6n8jua`. (inferred from the file found there)\n5. Ordering: read `CHANGELOG.md` before asking any question or writing anything. (quoted from request)\n6. Condition: if the description does not make clear which section the entry belongs under (Added, Changed or Fixed), ask the user which one. (revised: the request named Added and Fixed; Changed was added by the user)\n7. Ordering: resolve the section question before drafting the entry. (inferred)\n8. Prohibition: never edit any file other than `CHANGELOG.md`. (quoted from request)\n9. Ordering: show the user the new entry before writing it. (quoted from request)\n10. Output: the entry goes under the `## Unreleased` section, under `### Added`, `### Changed` or `### Fixed` as chosen, matching the existing layout. (revised: Changed added)\n11. Output: each entry is one bullet line. (inferred from the existing file, which has no entries yet)\n12. Destination: the skill is built into `./changelog-entry`. (quoted from request)\n13. Requirement: every entry ends with the pull request number in parentheses, such as `(#123)`. (quoted from user, revision)\n14. Condition: if the user gives no pull request number, ask for it before drafting the entry. (quoted from user, revision)\n\n**Still open**\n\n- Item 4 and 10: should the entry always go under `## Unreleased`, or might you sometimes want a version heading?\n- Item 11: is one bullet per entry the right format?\n\nConfirm this inventory, or correct it, and I'll write the skill draft.",
+      "num_turns": 1,
+      "is_error": false,
+      "new_files": []
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The `changelog-entry` skill is built at `C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-bi6n8jua\\changelog-entry\\` (`SKILL.md` and `manifest.json`). The checker reports no errors and no warnings.\n\n**What the skill does, in order**\n1. Aborts if no change description was given.\n2. Reads `CHANGELOG.md` before any question or write. It aborts if the file has no `## Unreleased` heading.\n3. Takes the PR number from the description, or asks for it if none is given. It requires the form `#123`.\n4. Takes the section from the description, or asks whether it is Added, Changed or Fixed.\n5. Shows the PR number and section, then shows the new entry.\n6. Waits for your approval. Only then does it write the file, and the only file it writes is `CHANGELOG.md`.\n\n**Where I went beyond the confirmed inventory**\n- The entry is written in the past tense (for example, `- Added retry on timeout (#123)`). The inventory didn't specify tense.\n- The `## Unreleased` heading must exist. If it's missing, the skill aborts rather than creating it.\n- If a section heading is missing under Unreleased, the skill adds it, in the order Added, Changed, Fixed.\n- The skill shows the PR number and section before the entry so you can check them.\n\n**Limits**\n- \"Never edit any file other than CHANGELOG.md\" is a written instruction in the skill. The checker does not enforce it.\n- A clean check shows the procedure is well formed and in the right order. It does not show that the model will follow it.\n\n**Next steps**\n- Please read the workflow explanation and approve it if it matches your intent. Run `py -3 Z:\\SkillWren\\plugin\\skillwren\\scripts\\skillwren.py approve changelog-entry\\SKILL.md` yourself; I haven't run it.\n- The working draft is in `changelog-entry-draft/` in the project directory. You can delete it.",
+      "num_turns": 19,
+      "is_error": false,
+      "new_files": [
+        "changelog-entry-draft/SKILL.md",
+        "changelog-entry/SKILL.md",
+        "changelog-entry/manifest.json"
+      ]
+    }
+  ]
+}

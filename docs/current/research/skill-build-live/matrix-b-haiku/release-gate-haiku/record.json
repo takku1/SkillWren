@@ -1,0 +1,30 @@
+{
+  "scenario": "release-gate",
+  "model": "haiku",
+  "cost_usd": 0.0174,
+  "score": {
+    "packages": [],
+    "at_destination": false,
+    "nothing_written_before_confirmation": true,
+    "project_files_untouched": true,
+    "built": false
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to build a new skill named release-gate, in ./release-gate. Before",
+      "result": "I've read the language reference and drafted the requirement inventory. Per the SkillWren procedure, I need your confirmation before I write the skill draft.\n\n**Requirement inventory for `release-gate`**\n\nDestination: `./release-gate/`. Quoted lines come from your request. Lines marked *inferred* are my additions, so please check them.\n\n1. **Trigger:** \"Before tagging a release\" (quoted). The gate applies whenever this skill is used to tag a release.\n2. **Obligation:** \"it must run the test suite\" (quoted). *Inferred:* the test command is not specified, so I need to know how to find it.\n3. **Condition:** \"refuse to continue if any test fails\" (quoted). Any failing test stops the run before the version prompt and before any tag.\n4. **Decision:** \"ask the user to confirm the version number\" (quoted). The user must confirm the exact version before anything is tagged.\n5. **Ordering:** \"only then create the git tag\" (quoted). Tests pass, then version confirmed, then tag. Tagging never happens earlier.\n6. **Prohibition:** \"It must never push to a remote\" (quoted). The skill runs no `git push` and no other remote-publishing command.\n7. **Inferred:** the tag is created locally, named with the confirmed version, and the run reports the tag name and that nothing was pushed.\n8. **Inferred:** if the version tag already exists, the run stops rather than overwriting it.\n9. **Inferred:** if the working tree has uncommitted changes, the run stops and asks.\n\n**Questions before I draft:**\n\n- **Test command:** should the skill auto-detect it (for example from `package.json`, `pyproject.toml`, or a Makefile), or should it take a fixed command you name?\n- **Tag format:** is it `vX.Y.Z` with an annotated tag, or some other convention?\n- **Inferred items 8 and 9:** keep them, or drop them?\n\nReply with confirmations or corrections, and I'll revise the inventory, show it again, and then write the draft.",
+      "num_turns": 4,
+      "is_error": false,
+      "new_files": []
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "I stopped before building `release-gate`. The draft is at `./release-gate-draft/SKILL.md`, but the checker rejects it, and I didn't write `./release-gate/`.\n\n**What's blocking it:** the checker reports two M1 errors. Running the test suite is a non-readonly `exec` that happens before the version prompts. The checker's rule is that a dismissed prompt must leave nothing changed. Your ordering requires tests to run before the version is confirmed, so I can't move the test run after the prompts. Running tests can also write build or cache files, so I didn't mark the run `exec readonly`, since that would misstate what it does.\n\n**Options, pick one:**\n1. **Accept the test run as read-only.** I mark it `exec readonly` and note the limit: the test command may write caches or build artifacts, but it never creates a tag, commit, or push. Then the checker should pass and I can build.\n2. **Reorder the gates.** Ask for the version first, then run tests, then confirm the version. This gets past the checker, but it reverses the order you confirmed, and tests would run after the version is chosen.\n3. **Drop the dismissal guarantee for the version prompt.** I'd keep the procedure as drafted and treat the M1 error as a known exception. The checker won't accept that, so this means building without a clean check.\n\n**Choices I made in the draft, so you can redirect:**\n- **Test command:** taken from the repo's `package.json` `test` script, or `pytest` or `make test`. If none is declared, the run asks you for the command before running anything.\n- **Tag:** annotated, named `vX.Y.Z`, created locally with `git tag -a`.\n- **Stops:** the run stops on uncommitted changes, on failing tests, on a malformed version, or when the tag already exists, and it never runs `git push` or any other command that contacts a remote.\n\nOnce you choose an option, I'll finish the repair, re-run the check, and build the skill to `./release-gate/`.",
+      "num_turns": 8,
+      "is_error": false,
+      "new_files": [
+        "release-gate-draft/SKILL.md"
+      ]
+    }
+  ]
+}

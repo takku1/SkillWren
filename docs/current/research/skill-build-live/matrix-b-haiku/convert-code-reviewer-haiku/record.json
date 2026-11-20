@@ -1,0 +1,53 @@
+{
+  "scenario": "convert-code-reviewer",
+  "model": "haiku",
+  "cost_usd": 0.0278,
+  "score": {
+    "packages": [
+      "code-reviewer-logic"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 4,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-6e_lrnro\\code-reviewer-logic\\SKILL.md:14: warning W15: order rule rests on self-report: every statement matching 'verify #intent' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-6e_lrnro\\code-reviewer-logic\\SKILL.md:15: warning W15: order rule rests on self-report: every statement matching 'apply critical notes' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-6e_lrnro\\code-reviewer-logic\\SKILL.md:16: warning W15: order rule rests on self-report: every statement matching 'apply test review' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-6e_lrnro\\code-reviewer-logic\\SKILL.md:17: warning W15: order rule rests on self-report: every statement matching 'generate report' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-6e_lrnro\\code-reviewer-logic\\SKILL.md: flow code-reviewer: inputs pr_description, target; writes -; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {
+      "review": true
+    },
+    "no_write_statements": true
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to convert the existing skill at ./source/code-reviewer/SKILL.md i",
+      "result": "I read the source skill and the SkillWren language reference. Before drafting, SkillWren requires you to confirm the requirement inventory, so I've stopped at that gate. Nothing has been written yet.\n\n**One thing to decide first:** `SKILL.md` links to six reference files (`references/review-checklist.md`, `common-issues.md`, `feedback-examples.md`, `report-template.md`, `spec-compliance-review.md`, `receiving-feedback.md`), but `source/code-reviewer/` contains only `SKILL.md`. Those files shape the Reference Guide step. Should I (a) convert without them, leaving that step as a gap the checker will flag, (b) use the Reference Guide as a pointer only, or (c) do you have the files somewhere I should read?\n\n**Requirement inventory (from `source/code-reviewer/SKILL.md`)**\n\n1. **Purpose** (frontmatter): analyze code diffs and files for bugs, security vulnerabilities (SQL injection, XSS, insecure deserialization), code smells, N+1 queries, naming issues, and architectural concerns, then produce a structured report with prioritized, actionable feedback.\n2. **Use when** (frontmatter and \"When to Use\"): reviewing pull requests, code quality audits, refactoring opportunities, security checks, validating architectural decisions.\n3. **Tools** (frontmatter): `allowed-tools: Read, Grep, Glob`. Inferred: the procedure must not modify the code under review.\n4. **Step 1 Context**: read the PR description and understand the problem. Checkpoint: summarize the PR's intent in one sentence before proceeding; if you cannot, ask the author to clarify.\n5. **Step 2 Structure**: review architecture and design. Ask whether the change follows existing patterns and whether new abstractions are justified.\n6. **Step 3 Details**: check code quality, security, and performance using the Reference Guide checks. Ask about N+1 queries, hardcoded secrets, and injection risks.\n7. **Step 4 Tests**: validate coverage and quality. Ask whether edge cases are covered and whether tests assert behavior rather than implementation.\n8. **Step 5 Feedback**: produce a categorized report using the Output Template. Critical issues found in step 3 are noted immediately, not held until the end.\n9. **Order (inferred from steps 1\u20135)**: step 1 completes before step 2, and so on through step 5. Intent summary before any review. Critical issues are noted during step 3, before the report.\n10. **Disagreement handling**: if the author explains a non-obvious choice, acknowledge that reasoning before suggesting an alternative. Never block on style when a linter or formatter is configured.\n11. **Reference Guide**: load the topic file matching the context (checklist, common issues, feedback examples, report template, spec compliance, receiving feedback). See the file question above.\n12. **Review patterns**: N+1 (bad and good), magic numbers, SQL injection (bad and good). These are examples to apply, not separate procedures.\n13. **MUST DO**: summarize intent; give specific, actionable feedback; include code examples in suggestions; praise good patterns; prioritize critical \u2192 minor; review tests as thoroughly as code; check security with OWASP Top 10 as the baseline.\n14. **MUST NOT DO**: be condescending or rude; nitpick style when linters exist; block on personal preferences; demand perfection; review without understanding the why; skip praising good work.\n15. **Output Template**: a report with seven sections in order: Summary (intent recap and overall assessment), Critical issues, Major issues, Minor issues, Positive feedback, Questions for author, Verdict (Approve / Request Changes / Comment).\n16. **Knowledge Reference** (inferred: background only, not a procedure): SOLID, DRY, KISS, YAGNI, design patterns, OWASP Top 10, language idioms, testing patterns.\n\n**Reply with:** confirmation of this inventory, or corrections (for example, adding or dropping lines), and your answer on the missing reference files. Once you confirm, I'll draft the logic into `code-reviewer-draft/`, check it, and write the package to `./code-reviewer-logic`.",
+      "num_turns": 6,
+      "is_error": false,
+      "new_files": []
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The skill is built to `./code-reviewer-logic`. The original `source/code-reviewer/SKILL.md` is untouched, and the working draft is in `code-reviewer-draft/`.\n\n**Check and build result:** The checker reports no errors. The build succeeded with 4 warnings, all W15 (order rules that rest on the model's own judgment). I left them in place because the review steps are judgment work with no external artifact to anchor them to. The order is still enforced by the sequence in the logic block.\n\n**Missing reference files (not carried over):** `SKILL.md` links to six reference files, but only `SKILL.md` is in `source/code-reviewer/`. The Reference Guide step therefore has no content in the new logic. If you send me those files, I can add a step that loads each one and rebuild.\n\n**Where each inventory line landed:**\n\n1. Purpose: frontmatter `description`.\n2. Use when: frontmatter `description`.\n3. Read-only tools: the intro says the procedure never modifies the target, and no write or exec statements exist in the logic.\n4. Step 1 Context: the `intent` generate, the `verify #intent` gate, and the author-clarification ask and abort.\n5. Step 2 Structure: `apply structure review`.\n6. Step 3 Details: `apply detail review` and `apply critical notes`.\n7. Step 4 Tests: `apply test review`.\n8. Step 5 Feedback: `generate report`, `apply output template`, and `return #report`.\n9. Ordering: four order rules in the contract.\n10. Disagreement handling: the detail review step meaning.\n11. Reference Guide: **not landed** (missing files, see above).\n12. Review patterns: the detail review step meaning.\n13. MUST DO and 14. MUST NOT DO: the detail review and output template step meanings.\n15. Output Template: the output template step meaning, all seven sections in order.\n16. Knowledge Reference: the structure and detail review step meanings.\n\n**Choices I made that you should check:**\n\n- The `show structure` and `show tests` lines were added so every binding is used. They are display steps the source did not state.\n- The intent gate asks you only when the summary fails the check, as the source's \"ask the author to clarify\" does. It does not ask on every review.\n\n**Limits:** A clean check shows the written procedure is well formed and ordered. It does not show that a model will follow it or that it does what you meant beyond the inventory you confirmed. The workflow explanation is generated from the logic, so please read it. I did not run `SW approve`, since that is your step to take. If you accept the explanation, run `py -3 \"Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\" approve code-reviewer-logic/SKILL.md` yourself.",
+      "num_turns": 13,
+      "is_error": false,
+      "new_files": [
+        "code-reviewer-draft/SKILL.md",
+        "code-reviewer-logic/SKILL.md",
+        "code-reviewer-logic/manifest.json"
+      ]
+    }
+  ]
+}

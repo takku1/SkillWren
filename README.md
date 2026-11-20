@@ -231,7 +231,7 @@ observed behavior).
 
 ## Status
 
-v0.12.0 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
+v0.12.1 (2026-11-20). See [docs/STATUS.md](docs/STATUS.md) and
 [CHANGELOG.md](CHANGELOG.md). 0.12 ships the `skillwren` skill as a
 self-contained plugin that builds new skills from a request (see
 [Install the skill](#install-the-skill)). 0.11 adds skill-load assurance: a guard

@@ -60,6 +60,29 @@ class PluginTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertNotIn("warning", result.stdout)
 
+    def test_every_model_repair_loop_has_a_blocked_exit(self):
+        # 0.12.1: a repair that loops back (retry / return to) must also be able to stop and
+        # report, so an unfixable draft cannot burn model calls forever. A loop driven by a
+        # user answer (it asks) ends when the user stops.
+        text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        logic = re.search(r"```logic\n(.*?)```", text, re.S).group(1).splitlines()
+        loops = 0
+        for i, line in enumerate(logic):
+            if line.strip() != "otherwise:":
+                continue
+            indent = len(line) - len(line.lstrip())
+            body = []
+            for nxt in logic[i + 1:]:
+                if nxt.strip() and len(nxt) - len(nxt.lstrip()) <= indent:
+                    break
+                body.append(nxt.strip())
+            loops_back = any(b == "retry" or b.startswith("return to ") for b in body)
+            if loops_back and not any(b.startswith("ask user") for b in body):
+                loops += 1
+                self.assertTrue(any(b.startswith("return #blocked") for b in body),
+                                f"repair at logic line {i + 1} loops without a blocked exit")
+        self.assertGreaterEqual(loops, 3)
+
     def test_skill_links_resolve_inside_the_plugin(self):
         text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
         for target in re.findall(r"\]\(([^)#]+)\)", text) + re.findall(r"`(references/[^`]+\.md)`", text):
