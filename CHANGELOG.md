@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Process exception, recorded: commit `1146e4c` (fidelity round 1 scores,
+  research data only) was pushed directly to `main`, bypassing the 14
+  required checks. History is not rewritten; changes return to PR-only.
 - `scripts/lab/fidelity_report.py`: fidelity comparisons are published only
   after human adjudication is complete (every doubtful verdict and widening
   introduction marked agree or overturn); overturns are applied, candidate-
