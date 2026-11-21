@@ -25,9 +25,15 @@ runtime comparison. Current verification results are recorded in CI.
   compiler only, 0.13.3 anchor fix, I7 unchanged, AI-adjudicated 6 agree /
   6 overturn): I13 gone; 1/5 published (webapp-testing, 13/14), not
   attributable to the fix; 84/88 preserved across all five, 2 widening;
-  I7 still refuses three. Proposed next: examine those I7 refusals as a
-  language-semantics question (does the compiler demand external evidence
-  the source never claimed?), not by loosening checks.
+  I7 still refuses three.
+- I7 investigation (`research/fidelity-benchmark/i7-investigation/`): all
+  18 benchmark I7 findings are `effect` tags on procedural instructions
+  (read, load, show, produce the reply), one a user-verification step;
+  I7's check is right for its tags, but tags are frozen after the
+  inventory phase, so the only exits are refusal or an invented write.
+  Proposed: narrower evidence classification, retag or reject
+  unsatisfiable tags, a precise I7 message, keep inventories on failure.
+  Awaiting decision; compiler unchanged.
 
 - Translation, enforcement and behavior are measured separately (0.13):
   `skillwren coverage` labels every rule, gate and write enforced,

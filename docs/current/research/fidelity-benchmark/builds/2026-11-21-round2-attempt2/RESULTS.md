@@ -27,7 +27,8 @@ Read the provenance before the numbers:
 | Weakened | 5 | 4 |
 | Missing | 0 | 0 |
 | Widening introductions | 2 | 2 |
-| Enforcement tiers (enforced / recorded / instructed / ambiguous) | 0 / 13 / 65 / 2 | 0 / 8 / 73 / 1 |
+| Enforcement tiers of classified requirements (enforced / recorded / instructed / ambiguous) | 0 / 13 / 65 / 2 (80 classified) | 0 / 8 / 73 / 1 (82 classified) |
+| Preserved but unclassified (no tier mapped; not zero enforcement) | 3 (CR-10, CR-19, FS-12) | 2 (FS-2, WT-3) |
 
 The all-five row mixes four refused drafts with one published build, for
 comparison with round 1 only. The four refused drafts are diagnostics
@@ -77,9 +78,14 @@ them.
 
 One run per cell, one model, five sources, AI-reviewed ground truth and AI
 adjudication, the same judge as round 1. Enforcement tiers were mapped at
-scoring time for the requirements the judge called preserved; the two
+scoring time for the requirements the judge called preserved. The two
 requirements the adjudication moved from weakened to preserved (FS-2,
-WT-3) carry no tier, so tier counts sum to 82 of 84. No result here
+WT-3) have **missing coverage classification**: no tier was ever mapped.
+They are not counted as enforced, recorded, instructed or zero
+enforcement. The 82 classified and 2 unclassified preserved requirements
+are different populations, and the tier counts describe only the 82.
+Classifying the two would mean rerunning coverage on the artifacts, which
+this round does not do. No result here
 supports a claim about semantic equivalence or about agent behavior using
 the output (the execution score is not yet run).
 

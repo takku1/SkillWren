@@ -27,6 +27,7 @@ Without it the benchmark would grade a model against a model.
 | Report gate (`scripts/lab/fidelity_report.py`): no numbers until adjudication is complete | done |
 | Round 1 builds (Sonnet, both paths), scores, AI adjudication, report | done: `builds/2026-11-20/RESULTS.md` |
 | Round 2 (compiler only, I13 anchor fix, I7 unchanged), scores, AI adjudication, report | done: `builds/2026-11-21-round2-attempt2/RESULTS.md` |
+| I7 investigation (no builds, no compiler change) | done: `i7-investigation/README.md`; correction proposed, not decided |
 | Execution scenarios | after freezing |
 
 ## Corpus

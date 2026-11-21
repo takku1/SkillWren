@@ -23,6 +23,7 @@ provenance before the numbers:
 | Missing | 0 | 0 |
 | Widening introductions | 0 | 2 |
 | Enforcement tiers (enforced / recorded / instructed / ambiguous) | 0 / 7 / 77 / 0 | 0 / 13 / 65 / 2 |
+| Preserved but unclassified (no tier mapped; not zero enforcement) | 1 (FS-9) | 3 (CR-10, CR-19, FS-12) |
 
 The compiler's fidelity is a diagnostic of drafts it refused to publish;
 it is never combined with its 0/5 publication rate.
@@ -63,8 +64,10 @@ One run per cell, one model, five sources, AI-reviewed ground truth and AI
 adjudication, the same judge for both paths. Enforcement tiers were mapped
 at scoring time for the requirements the judge called preserved; the four
 requirements the adjudication moved from weakened to preserved (CR-10,
-CR-19, FS-12 on compiler drafts; FS-9 on the skill build) carry no tier, so
-tier counts sum to less than the preserved counts. No result here supports
+CR-19, FS-12 on compiler drafts; FS-9 on the skill build) have **missing
+coverage classification**: no tier was mapped, which is not the same as
+zero enforcement. Tier counts describe only the classified populations
+(compiler drafts 80 of 83 preserved, skill builds 84 of 85). No result here supports
 a claim about semantic equivalence or about how an agent behaves when using
 either output (the execution score is not yet run).
 
