@@ -1,0 +1,159 @@
+{
+  "source": "theme-factory",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-21-round2-attempt2/compiler/theme-factory-failed/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "refused (diagnostic)",
+  "preservation": {
+    "total": 13,
+    "preserved": 13,
+    "weakened": 0,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 1.0
+  },
+  "introduction": {
+    "total": 5,
+    "widening": 1,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "TF-1",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify#showcase before ask user",
+      "reason": "Showcase is shown and verified displayed before asking the user."
+    },
+    {
+      "id": "TF-2",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "modify theme_showcase",
+      "reason": "Contract 'never' forbids modifying the showcase; the step meaning says view only."
+    },
+    {
+      "id": "TF-3",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "ask user to choose the theme to apply to artifact\n    require confirmation",
+      "reason": "The sequence is show, ask, confirm, read, apply, with no skipping."
+    },
+    {
+      "id": "TF-4",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "ask user to choose the theme to apply to artifact\n    require confirmation\n      otherwise:\n        return artifact as styled_artifact",
+      "reason": "Applying happens only after confirmation. Otherwise the artifact is returned unchanged."
+    },
+    {
+      "id": "TF-5",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read theme file from themes as theme",
+      "reason": "The theme file is read before apply, and the apply step uses the loaded theme."
+    },
+    {
+      "id": "TF-6",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "apply the specified colors and fonts consistently throughout the artifact",
+      "reason": "This is in the contract's always list and in the apply step."
+    },
+    {
+      "id": "TF-7",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify #contrast styled has proper contrast and readability from contrast",
+      "reason": "Contrast is checked, fixed and retried."
+    },
+    {
+      "id": "TF-8",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "maintain the theme's visual identity across all slides",
+      "reason": "This is in the contract's always list."
+    },
+    {
+      "id": "TF-9",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "if none of the existing themes work for artifact:\n    generate custom theme from description as custom_theme",
+      "reason": "A custom theme is generated when no preset fits."
+    },
+    {
+      "id": "TF-10",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "using any basic description provided to choose colors and fonts",
+      "reason": "The step meaning says to use the description, and the logic passes description to generation."
+    },
+    {
+      "id": "TF-11",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Give it a similar-style name describing what the font/color combination represents.",
+      "reason": "The naming requirement is in the step meaning for custom theme, which the generate step points to."
+    },
+    {
+      "id": "TF-12",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "show custom_theme\n    ask user to review and verify the custom theme\n    require confirmation",
+      "reason": "The custom theme is shown and reviewed before it is read and applied."
+    },
+    {
+      "id": "TF-13",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "1. **Ocean Depths** - professional and calming maritime",
+      "reason": "All ten themes are listed with the same names."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "If the showcase display check fails, the skill aborts and returns the artifact unstyled.",
+      "quote": "verify #showcase theme_showcase was displayed for viewing from showcase\n    otherwise:\n      return artifact as styled_artifact",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Writes the styled result to the artifact, which is an explicit file-write effect. The source only said to apply the theme.",
+      "quote": "write #styled styled with artifact",
+      "widens": true,
+      "quote_found": true
+    },
+    {
+      "behavior": "Adds a check that a custom theme has a hex palette and font pairings, and aborts if it doesn't.",
+      "quote": "verify #custom custom_theme has a hex palette and font pairings from custom_check",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Adds a check that the loaded theme has a hex palette and font pairings, and aborts if it doesn't.",
+      "quote": "verify #theme theme has hex palette and font pairings from themeload",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Runs contrast-fix and retry loops that automatically adjust colors.",
+      "quote": "apply contrast fix with styled as styled",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0347
+}

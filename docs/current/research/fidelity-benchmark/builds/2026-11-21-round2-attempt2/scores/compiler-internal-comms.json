@@ -1,0 +1,97 @@
+{
+  "source": "internal-comms",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-21-round2-attempt2/compiler/internal-comms-failed/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "refused (diagnostic)",
+  "preservation": {
+    "total": 6,
+    "preserved": 5,
+    "weakened": 1,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 0.833
+  },
+  "introduction": {
+    "total": 4,
+    "widening": 1,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "IC-1",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "apply identify type with request as comm_type",
+      "reason": "Type is identified from the request first, and the order block enforces it before reading examples."
+    },
+    {
+      "id": "IC-2",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "apply follow guideline with guideline as draft",
+      "reason": "The guideline is read and checked as loaded before the follow/draft step. The order block also requires verify#loaded before follow."
+    },
+    {
+      "id": "IC-3",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read examples/general-comms.md as guideline",
+      "reason": "The branches route 3P, newsletter and FAQ to their files. Everything else falls through to general-comms.md."
+    },
+    {
+      "id": "IC-4",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "follow the specific instructions in the loaded guideline file for formatting, tone, and content gathering",
+      "reason": "The follow guideline step requires the loaded file's instructions to be followed."
+    },
+    {
+      "id": "IC-5",
+      "kind": "exception",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "if comm_type is unclear or matches no existing guideline:",
+      "reason": "Clarification is asked only before routing. The general-comms fallback means nothing is unsupported after routing, so the source's ask-when-unmatched case is narrowed. The built skill also falls back to returning a gap if the user does not confirm."
+    },
+    {
+      "id": "IC-6",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Use when asked to write any internal communication. Not for external or customer-facing writing.",
+      "reason": "The scope covers the listed internal communication types in the description and the step meanings."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Requires a confirmation from the user, and if none is given it aborts with a gap result instead of proceeding",
+      "quote": "require confirmation\n      otherwise:\n        apply record unresolved format with request as gap\n        return gap as result",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Runs a check command from a `checks` collection to verify the guideline was loaded, and aborts if it fails",
+      "quote": "exec guideline load check from checks as loaded",
+      "widens": true,
+      "quote_found": true
+    },
+    {
+      "behavior": "Explicit prohibition on external or customer-facing writing",
+      "quote": "Not for external or customer-facing writing.",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Failure to load a guideline file returns a gap report instead of drafting",
+      "quote": "apply record missing guideline with comm_type as gap\n        return gap as result",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0243
+}

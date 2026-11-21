@@ -1,0 +1,59 @@
+Workflow in SKILL.md:
+flow `webtest`:
+  - 'if target is static HTML:' (line 38) -- branch
+    - 'read html file from target as html' (line 39)
+      - otherwise (line 40)
+        - return to 'return to dynamic' (line 41)
+    - 'generate Playwright script from html as script' (line 42)
+    - 'return script as result' (line 43)
+  - label 'label dynamic:' (line 44)
+  - 'if server is already running:' (line 45) -- branch
+    - 'apply navigate and wait for networkidle with target as ready_page' (line 46)
+    - 'apply inspect rendered state with ready_page as inspection' (line 47)
+    - 'write #shot inspection with inspect_png' (line 48)
+    - 'apply identify selectors with inspection as selectors' (line 49)
+    - 'apply execute actions with selectors as result' (line 50)
+    - 'apply close browser with result as closed' (line 51)
+    - 'return closed as result' (line 52)
+  - 'else:' (line 53) [else]
+    - 'exec #help with_server help from checks as help' (line 54)
+    - 'verify #usage help output shows enough usage to run the helper from help' (line 55) -- gate; failure follows its otherwise branch
+      - otherwise (line 56)
+        - 'read helper source from scripts as source' (line 57)
+          - otherwise (line 58)
+            - 'apply record source gap with help as gap' (line 59)
+            - return to 'return to launch' (line 60)
+        - 'apply customized solution with source as helper_plan' (line 61)
+        - return to 'return to launch' (line 62)
+    - label 'label launch:' (line 63)
+    - 'generate simplified Playwright script from target as automation_script' (line 64)
+    - 'write #script automation_script with automation_file' (line 65)
+    - 'if multiple servers are needed:' (line 66) -- branch
+      - 'exec #multi with_server multiple servers from checks as run_result' (line 67)
+    - 'else:' (line 68) [else]
+      - 'exec #single with_server single server from checks as run_result' (line 69)
+    - 'return run_result as result' (line 70)
+Ordering (must hold on every path):
+  - 'exec#help' before 'write#script' (line 24)
+  - 'exec#help' before 'exec#single' (line 25)
+  - 'exec#help' before 'exec#multi' (line 26)
+  - 'write#script' before 'exec#single' (line 27)
+  - 'write#script' before 'exec#multi' (line 28)
+  - 'apply navigate and wait for networkidle' before 'apply inspect rendered state' (line 29)
+  - 'apply navigate and wait for networkidle' before 'write#shot' (line 30)
+  - 'apply inspect rendered state' before 'apply identify selectors' (line 31)
+  - 'apply identify selectors' before 'apply execute actions' (line 32)
+  - 'apply execute actions' before 'apply close browser' (line 33)
+Authority: no ask steps; nothing requires a human decision.
+Effects (files written or flows run):
+  - flow `webtest` writes automation_file
+  - flow `webtest` writes inspect_png
+Enforcement:
+  - 'write #shot inspection with inspect_png' (line 48) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec #help with_server help from checks as help' (line 54) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'verify #usage help output shows enough usage to run the helper from help' (line 55) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'write #script automation_script with automation_file' (line 65) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec #multi with_server multiple servers from checks as run_result' (line 67) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+  - 'exec #single with_server single server from checks as run_result' (line 69) is addressable by order rules and eligible for guard enforcement, but only if the guard policy defines that operation.
+Calls: no cross-file runs; the meaning above is complete.
+What this text cannot show: the prose meaning of untyped steps is not machine-checked, so rewording can silently change intent; correlated branch conditions are not recognized; approval here is not a guard policy and grants no capabilities. Run `check` for rule compliance. Deterministic from the AST: no model paraphrased this text.

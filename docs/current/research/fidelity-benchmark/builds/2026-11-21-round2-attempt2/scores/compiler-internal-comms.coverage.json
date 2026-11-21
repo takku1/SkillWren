@@ -1,0 +1,93 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-21-round2-attempt2/compiler/internal-comms-failed/SKILL.md": {
+    "items": [
+      {
+        "line": 14,
+        "kind": "order rule",
+        "text": "apply identify type before read examples/",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 15,
+        "kind": "order rule",
+        "text": "verify#loaded before apply follow guideline",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 24,
+        "kind": "gate",
+        "text": "require confirmation",
+        "tier": "recorded",
+        "why": "a user decision backs it"
+      },
+      {
+        "line": 53,
+        "kind": "command",
+        "text": "exec guideline load check from checks as loaded",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 54,
+        "kind": "gate",
+        "text": "verify #loaded the guideline file matching the type was loaded from loaded",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 4,
+      "instructed": 1,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "IC-1",
+        "kind": "obligation",
+        "tier": "ambiguous",
+        "why": "quote occurs more than once"
+      },
+      {
+        "id": "IC-2",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 59), not a checked element"
+      },
+      {
+        "id": "IC-3",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 48), not a checked element"
+      },
+      {
+        "id": "IC-4",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 66), not a checked element"
+      },
+      {
+        "id": "IC-5",
+        "kind": "exception",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "IC-6",
+        "kind": "authority",
+        "tier": "instructed",
+        "why": "prose (line 3), not a checked element"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 0,
+      "instructed": 4,
+      "unverifiable": 0,
+      "ambiguous": 1,
+      "null": 1
+    }
+  }
+}

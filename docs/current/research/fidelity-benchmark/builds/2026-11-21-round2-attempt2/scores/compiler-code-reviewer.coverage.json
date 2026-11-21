@@ -1,0 +1,196 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-21-round2-attempt2/compiler/code-reviewer-failed/SKILL.md": {
+    "items": [
+      {
+        "line": 27,
+        "kind": "order rule",
+        "text": "apply context reading before generate intent summary",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 28,
+        "kind": "order rule",
+        "text": "generate intent summary before apply structure review",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 29,
+        "kind": "order rule",
+        "text": "apply structure review before apply details review",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 30,
+        "kind": "order rule",
+        "text": "apply details review before apply test review",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 31,
+        "kind": "order rule",
+        "text": "apply test review before apply report assembly",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 40,
+        "kind": "gate",
+        "text": "require confirmation",
+        "tier": "recorded",
+        "why": "a user decision backs it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 1,
+      "instructed": 5,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "CR-1",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "order rule line 28: earlier step is the model's own judgment (W15); tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "CR-2",
+        "kind": "exception",
+        "tier": "instructed",
+        "why": "prose (line 39), not a checked element"
+      },
+      {
+        "id": "CR-3",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 69), not a checked element"
+      },
+      {
+        "id": "CR-4",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 72), not a checked element"
+      },
+      {
+        "id": "CR-5",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 73), not a checked element"
+      },
+      {
+        "id": "CR-6",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 74), not a checked element"
+      },
+      {
+        "id": "CR-7",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 75), not a checked element"
+      },
+      {
+        "id": "CR-8",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 13), not a checked element"
+      },
+      {
+        "id": "CR-9",
+        "kind": "ordering",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "CR-10",
+        "kind": "exception",
+        "tier": "instructed",
+        "why": "prose (line 71), not a checked element"
+      },
+      {
+        "id": "CR-11",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 20), not a checked element"
+      },
+      {
+        "id": "CR-13",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 21), not a checked element"
+      },
+      {
+        "id": "CR-14",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 19), not a checked element"
+      },
+      {
+        "id": "CR-15",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 21), not a checked element"
+      },
+      {
+        "id": "CR-16",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 22), not a checked element"
+      },
+      {
+        "id": "CR-17",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 14), not a checked element"
+      },
+      {
+        "id": "CR-18",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 14), not a checked element"
+      },
+      {
+        "id": "CR-19",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 23), not a checked element"
+      },
+      {
+        "id": "CR-20",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 16), not a checked element"
+      },
+      {
+        "id": "CR-21",
+        "kind": "output",
+        "tier": "instructed",
+        "why": "prose (line 55), not a checked element"
+      },
+      {
+        "id": "CR-22",
+        "kind": "output",
+        "tier": "instructed",
+        "why": "prose (line 55), not a checked element"
+      },
+      {
+        "id": "CR-23",
+        "kind": "authority",
+        "tier": "instructed",
+        "why": "prose (line 12), not a checked element"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 0,
+      "instructed": 21,
+      "unverifiable": 0,
+      "ambiguous": 0,
+      "null": 1
+    }
+  }
+}

@@ -1,0 +1,370 @@
+{
+  "original_sha256": "51b7349e77ec63b7744a6f63647e7566a0b4d2e301121cc10e8c2113af6556a2",
+  "logic_sha256": "520eb7911b0840e3f46a6b58fabe80f0e1bd07d89a82f8c69a5b1b15e34a519b",
+  "review": "Generated from a compiler inventory; anchors are bookkeeping, not an equivalence proof.",
+  "requirements": [
+    {
+      "id": "R1",
+      "original_lines": [
+        9,
+        9
+      ],
+      "logic_contains": [
+        "To test local web applications, write native Python Playwright scripts."
+      ]
+    },
+    {
+      "id": "R2",
+      "original_lines": [
+        11,
+        12
+      ],
+      "logic_contains": [
+        "`scripts/with_server.py` manages server lifecycle and supports multiple servers."
+      ]
+    },
+    {
+      "id": "R3.1",
+      "original_lines": [
+        14,
+        14
+      ],
+      "logic_contains": [
+        "exec#help before write#script",
+        "exec#help before exec#single",
+        "exec#help before exec#multi",
+        "exec #help with_server help from checks as help",
+        "verify #usage help output shows enough usage to run the helper from help"
+      ]
+    },
+    {
+      "id": "R3.2",
+      "original_lines": [
+        37,
+        37
+      ],
+      "logic_contains": [
+        "exec#help before write#script",
+        "exec#help before exec#single",
+        "exec#help before exec#multi",
+        "exec #help with_server help from checks as help",
+        "verify #usage help output shows enough usage to run the helper from help"
+      ]
+    },
+    {
+      "id": "R3.3",
+      "original_lines": [
+        85,
+        85
+      ],
+      "logic_contains": [
+        "exec#help before write#script",
+        "exec#help before exec#single",
+        "exec#help before exec#multi",
+        "exec #help with_server help from checks as help",
+        "verify #usage help output shows enough usage to run the helper from help"
+      ]
+    },
+    {
+      "id": "R4",
+      "original_lines": [
+        14,
+        14
+      ],
+      "logic_contains": [
+        "read helper script source before running it with --help",
+        "read helper source from scripts as source",
+        "return to launch",
+        "return to launch"
+      ]
+    },
+    {
+      "id": "R5.1",
+      "original_lines": [
+        14,
+        14
+      ],
+      "logic_contains": [
+        "treat bundled scripts as black boxes and invoke them directly"
+      ]
+    },
+    {
+      "id": "R5.2",
+      "original_lines": [
+        85,
+        85
+      ],
+      "logic_contains": [
+        "treat bundled scripts as black boxes and invoke them directly"
+      ]
+    },
+    {
+      "id": "R6",
+      "original_lines": [
+        19,
+        20
+      ],
+      "logic_contains": [
+        "if target is static HTML:"
+      ]
+    },
+    {
+      "id": "R7",
+      "original_lines": [
+        21,
+        22
+      ],
+      "logic_contains": [
+        "generate Playwright script from html as script",
+        "return to dynamic"
+      ]
+    },
+    {
+      "id": "R8",
+      "original_lines": [
+        24,
+        26
+      ],
+      "logic_contains": [
+        "exec #help with_server help from checks as help",
+        "write #script automation_script with automation_file",
+        "generate simplified Playwright script from target as automation_script"
+      ]
+    },
+    {
+      "id": "R9.1",
+      "original_lines": [
+        24,
+        24
+      ],
+      "logic_contains": [
+        "if server is already running:"
+      ]
+    },
+    {
+      "id": "R9.2",
+      "original_lines": [
+        28,
+        28
+      ],
+      "logic_contains": [
+        "if server is already running:"
+      ]
+    },
+    {
+      "id": "R10.1",
+      "original_lines": [
+        28,
+        32
+      ],
+      "logic_contains": [
+        "apply navigate and wait for networkidle before apply inspect rendered state",
+        "apply inspect rendered state before apply identify selectors",
+        "apply identify selectors before apply execute actions"
+      ]
+    },
+    {
+      "id": "R10.2",
+      "original_lines": [
+        65,
+        76
+      ],
+      "logic_contains": [
+        "apply navigate and wait for networkidle before apply inspect rendered state",
+        "apply inspect rendered state before apply identify selectors",
+        "apply identify selectors before apply execute actions"
+      ]
+    },
+    {
+      "id": "R11",
+      "original_lines": [
+        39,
+        42
+      ],
+      "logic_contains": [
+        "exec #single with_server single server from checks as run_result",
+        "write#script before exec#single"
+      ]
+    },
+    {
+      "id": "R12",
+      "original_lines": [
+        44,
+        50
+      ],
+      "logic_contains": [
+        "if multiple servers are needed:",
+        "exec #multi with_server multiple servers from checks as run_result",
+        "write#script before exec#multi"
+      ]
+    },
+    {
+      "id": "R13",
+      "original_lines": [
+        52,
+        52
+      ],
+      "logic_contains": [
+        "keep automation scripts to Playwright logic only, since with_server manages servers",
+        "inputs:\n  target, automation_file, inspect_png"
+      ]
+    },
+    {
+      "id": "R14",
+      "original_lines": [
+        53,
+        57
+      ],
+      "logic_contains": [
+        "launch chromium in headless mode"
+      ]
+    },
+    {
+      "id": "R15",
+      "original_lines": [
+        53,
+        63
+      ],
+      "logic_contains": [
+        "apply execute actions before apply close browser",
+        "apply navigate and wait for networkidle before apply inspect rendered state"
+      ]
+    },
+    {
+      "id": "R16",
+      "original_lines": [
+        67,
+        72
+      ],
+      "logic_contains": [
+        "write #shot inspection with inspect_png"
+      ]
+    },
+    {
+      "id": "R17",
+      "original_lines": [
+        78,
+        81
+      ],
+      "logic_contains": [
+        "apply navigate and wait for networkidle with target as ready_page",
+        "apply navigate and wait for networkidle before write#shot"
+      ]
+    },
+    {
+      "id": "R18",
+      "original_lines": [
+        86,
+        86
+      ],
+      "logic_contains": [
+        "use sync_playwright for synchronous scripts"
+      ]
+    },
+    {
+      "id": "R19",
+      "original_lines": [
+        87,
+        87
+      ],
+      "logic_contains": [
+        "close the browser when done"
+      ]
+    },
+    {
+      "id": "R20",
+      "original_lines": [
+        88,
+        88
+      ],
+      "logic_contains": [
+        "use descriptive selectors: text=, role=, CSS selectors, or IDs"
+      ]
+    },
+    {
+      "id": "R21",
+      "original_lines": [
+        89,
+        89
+      ],
+      "logic_contains": [
+        "add appropriate waits with wait_for_selector or wait_for_timeout"
+      ]
+    },
+    {
+      "id": "R22",
+      "original_lines": [
+        91,
+        96
+      ],
+      "logic_contains": [
+        "## Reference examples"
+      ]
+    }
+  ],
+  "non_requirements": [
+    {
+      "original_lines": [
+        1,
+        5
+      ],
+      "reason": "frontmatter metadata: name, description, license"
+    },
+    {
+      "original_lines": [
+        7,
+        7
+      ],
+      "reason": "heading"
+    },
+    {
+      "original_lines": [
+        16,
+        18
+      ],
+      "reason": "heading and code fence delimiter"
+    },
+    {
+      "original_lines": [
+        23,
+        23
+      ],
+      "reason": "decision-tree connector line with no text"
+    },
+    {
+      "original_lines": [
+        27,
+        27
+      ],
+      "reason": "decision-tree connector line with no text"
+    },
+    {
+      "original_lines": [
+        33,
+        35
+      ],
+      "reason": "fence close and heading"
+    },
+    {
+      "original_lines": [
+        65,
+        66
+      ],
+      "reason": "heading/blank"
+    },
+    {
+      "original_lines": [
+        78,
+        78
+      ],
+      "reason": "heading"
+    },
+    {
+      "original_lines": [
+        83,
+        84
+      ],
+      "reason": "heading"
+    }
+  ]
+}

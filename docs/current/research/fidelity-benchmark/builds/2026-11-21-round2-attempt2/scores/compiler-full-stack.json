@@ -1,0 +1,325 @@
+{
+  "source": "full-stack",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-21-round2-attempt2/compiler/full-stack-failed/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "refused (diagnostic)",
+  "preservation": {
+    "total": 33,
+    "preserved": 31,
+    "weakened": 2,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 0.939
+  },
+  "introduction": {
+    "total": 6,
+    "widening": 2,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "FS-1",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "planning is the default; only a request to build or implement authorizes implementation, and only within that scope.",
+      "reason": "Same rule stated in authorization reading."
+    },
+    {
+      "id": "FS-2",
+      "kind": "authority",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "Follow existing task authorization without repeated approval.",
+      "reason": "Present, but the logic asks the user to authorize whenever authorization is unclear, which can ask even when existing authorization exists."
+    },
+    {
+      "id": "FS-3",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "deploy, publish, install tools, or delegate beyond their own applicable permissions",
+      "reason": "Contract prohibition plus a logic branch that asks for approval and holds dependent work."
+    },
+    {
+      "id": "FS-4",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "identify the subject repository, outcome, selected work IDs, constraints, and exclusions.",
+      "reason": "Ground scope step covers it."
+    },
+    {
+      "id": "FS-5",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "exec #inspect inspect applicable instructions, code, contracts, tests, and prototypes from checks as inspection",
+      "reason": "Inspection is required and ordered before design writing."
+    },
+    {
+      "id": "FS-6",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "preserve authoritative documents, IDs, and project vocabulary",
+      "reason": "Contract always rule."
+    },
+    {
+      "id": "FS-7",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "keep current state, target state, and migration distinct",
+      "reason": "Contract always rule, plus a never rule on treating documentation or mock data as working behavior."
+    },
+    {
+      "id": "FS-8",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "label each discovery and proposed mechanism as exactly one of required now, existing dependency, unresolved prerequisite, or deferred enhancement.",
+      "reason": "Classify discoveries step."
+    },
+    {
+      "id": "FS-9",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "expand or replace scope because of a discovery alone",
+      "reason": "Contract never rule."
+    },
+    {
+      "id": "FS-10",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "resolve from available evidence, state consequential assumptions, and use reversible ordinary choices to continue.",
+      "reason": "Resolve ambiguity step."
+    },
+    {
+      "id": "FS-11",
+      "kind": "ordering",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "apply commitment record with increments as commitment\n    write commitment with registry",
+      "reason": "The record is required, but no ordering constraint puts it before the commitment itself. It is only written to the registry."
+    },
+    {
+      "id": "FS-12",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "if a missing answer changes the outcome or authority and available evidence cannot resolve it:",
+      "reason": "Clarification is limited to that condition."
+    },
+    {
+      "id": "FS-13",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "preserve settled user decisions",
+      "reason": "Contract always rule."
+    },
+    {
+      "id": "FS-14",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "only when its condition holds.",
+      "reason": "Reference reads are conditional, from the References section."
+    },
+    {
+      "id": "FS-15",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "follow trigger, state transitions, and result, including relevant failure, retry, cancellation, and recovery",
+      "reason": "Trace behavior step."
+    },
+    {
+      "id": "FS-16",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "one authority per state set or an explicit coordination protocol",
+      "reason": "Allocate authority step."
+    },
+    {
+      "id": "FS-17",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "research uncertainty that could change the design; preserve valid existing choices",
+      "reason": "Resolve choices step."
+    },
+    {
+      "id": "FS-18",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "label doubles with their simulated guarantees, limits, and replacement conditions",
+      "reason": "Contract always rule, plus a never rule on treating doubles as operational integration."
+    },
+    {
+      "id": "FS-19",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "keep requirements, invariants, assumptions, source inspection, executed tests, measurements, and proof distinct, and mark unexecuted checks",
+      "reason": "Contract always rule."
+    },
+    {
+      "id": "FS-20",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "for the one authoritative work registry in the subject project.",
+      "reason": "Registry entries step, with write to the registry."
+    },
+    {
+      "id": "FS-21",
+      "kind": "output",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "assemble scope, linked design, ownership and contracts, research-backed choices, ordered increments, and blockers",
+      "reason": "Design assembly step. The planned return carries the readiness label for ready versus conditional."
+    },
+    {
+      "id": "FS-22",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "design readiness and a first working increment do not mean the milestone is complete.",
+      "reason": "Contract never rule, plus verify that every selected acceptance criterion passed."
+    },
+    {
+      "id": "FS-23",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "explain excluding any material concern without adding unrelated scope.",
+      "reason": "Exclusion explanation step."
+    },
+    {
+      "id": "FS-24",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "match consumer assumptions to provider guarantees or explicit unresolved conditions",
+      "reason": "Connect contracts step."
+    },
+    {
+      "id": "FS-25",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "resolve consequential reuse before detailing custom internals",
+      "reason": "Resolve choices step. Its position in the sequence puts it before the later design steps."
+    },
+    {
+      "id": "FS-26",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "stop at adopted providers' public boundaries and allocate required fit gaps.",
+      "reason": "Resolve choices step."
+    },
+    {
+      "id": "FS-27",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "screens, nouns, directories, and workflow steps do not dictate components",
+      "reason": "Bound components step."
+    },
+    {
+      "id": "FS-33",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "components do not dictate files, packages, services, processes, or teams.",
+      "reason": "Bound components step."
+    },
+    {
+      "id": "FS-28",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "split only where different decisions need hiding, authority changes hands, protection or lifecycle differs, or coupling prevents a coherent increment",
+      "reason": "Bound components step."
+    },
+    {
+      "id": "FS-29",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "resolve shared interface work before claiming independence.",
+      "reason": "Sequence work step."
+    },
+    {
+      "id": "FS-30",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "if new evidence changed the scope, behavior, or contracts:\n    return to iterate",
+      "reason": "The iterate loop covers it. No explicit statement not to freeze requirements, but the loop implements it."
+    },
+    {
+      "id": "FS-31",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "mark the increment ready; outcome, contracts, prerequisites, and checks are usable and consequential decisions resolved",
+      "reason": "Ready label step."
+    },
+    {
+      "id": "FS-32",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "separate prototype appearance and interaction requirements from simulated behavior.",
+      "reason": "Trace behavior step."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Asks the user to authorize implementation when authorization is unclear, which is a new question to the user.",
+      "quote": "ask user to authorize implementation within this scope",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Asks the user to approve deployment, publication, tool installation, or delegation. The source only said they follow their own permissions.",
+      "quote": "ask user to approve deployment, publication, tool installation, or delegation",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Writes design documents to the project. The source did not explicitly require this for design-only work.",
+      "quote": "write #design design with design_docs",
+      "widens": true,
+      "quote_found": true
+    },
+    {
+      "behavior": "Writes the commitment record to the registry.",
+      "quote": "write commitment with registry",
+      "widens": true,
+      "quote_found": true
+    },
+    {
+      "behavior": "Ends with a blocked return when a failure persists. The source has no such return.",
+      "quote": "return #blocked:",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Fixes a design-before-implementation order and requires acceptance checks to run before the built return.",
+      "quote": "write#design before write#implementation",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0613
+}

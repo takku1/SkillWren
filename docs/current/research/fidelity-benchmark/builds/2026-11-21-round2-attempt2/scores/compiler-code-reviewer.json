@@ -1,0 +1,225 @@
+{
+  "source": "code-reviewer",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-21-round2-attempt2/compiler/code-reviewer-failed/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "refused (diagnostic)",
+  "preservation": {
+    "total": 22,
+    "preserved": 21,
+    "weakened": 1,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 0.955
+  },
+  "introduction": {
+    "total": 4,
+    "widening": 0,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "CR-1",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "generate intent summary before apply structure review",
+      "reason": "Intent summary is ordered before structure, details, and tests."
+    },
+    {
+      "id": "CR-2",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "ask author to clarify PR intent",
+      "reason": "Asks the author and aborts if unconfirmed, so the review does not continue."
+    },
+    {
+      "id": "CR-3",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read the PR description and understand the problem being solved.",
+      "reason": "Context reading step covers it."
+    },
+    {
+      "id": "CR-4",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Does the change follow existing codebase patterns? Are new abstractions justified?",
+      "reason": "The structure review step covers both questions."
+    },
+    {
+      "id": "CR-5",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "check code quality, security, and performance using the references below. Look for N+1 queries, hardcoded secrets, and injection risks.",
+      "reason": "Same checks are required."
+    },
+    {
+      "id": "CR-6",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "check for security issues with the OWASP Top 10 as the baseline.",
+      "reason": "A dedicated OWASP step is in the logic."
+    },
+    {
+      "id": "CR-7",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Are edge cases covered? Do tests assert behavior rather than implementation?",
+      "reason": "The test review step covers both."
+    },
+    {
+      "id": "CR-8",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "review tests as thoroughly as code",
+      "reason": "Stated in the always block."
+    },
+    {
+      "id": "CR-9",
+      "kind": "ordering",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "if details_findings include critical issues:\n    show details_findings",
+      "reason": "Source says to note critical issues immediately once found. Built only shows them after the whole details review is complete, and it ignores critical issues from the structure review."
+    },
+    {
+      "id": "CR-10",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "acknowledge their reasoning before suggesting any alternative.",
+      "reason": "Conditional step runs before the reviews, with the same condition."
+    },
+    {
+      "id": "CR-11",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "block on style preferences when a linter or formatter is configured",
+      "reason": "Never-rule, plus skipping style nitpicks in the details step."
+    },
+    {
+      "id": "CR-13",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "block on personal preferences or demand perfection",
+      "reason": "Never-rule."
+    },
+    {
+      "id": "CR-14",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "be condescending or rude",
+      "reason": "Never-rule."
+    },
+    {
+      "id": "CR-15",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "block on personal preferences or demand perfection",
+      "reason": "Same never-rule covers it."
+    },
+    {
+      "id": "CR-16",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "review without understanding the why",
+      "reason": "Never-rule."
+    },
+    {
+      "id": "CR-17",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "keep feedback specific and actionable, with code examples",
+      "reason": "Always-rule."
+    },
+    {
+      "id": "CR-18",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "keep feedback specific and actionable, with code examples",
+      "reason": "Always-rule requires code examples."
+    },
+    {
+      "id": "CR-19",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "skip praising good work",
+      "reason": "Praise is required by an always-rule and the never-rule forbids skipping it. Also the Positive feedback section."
+    },
+    {
+      "id": "CR-20",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "order feedback from critical to minor",
+      "reason": "Always-rule."
+    },
+    {
+      "id": "CR-21",
+      "kind": "output",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "unless report has the seven sections in order",
+      "reason": "The seven sections are listed in the output template and enforced by a check."
+    },
+    {
+      "id": "CR-22",
+      "kind": "output",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "the verdict is exactly one of Approve, Request Changes, or Comment",
+      "reason": "Enforced in the logic."
+    },
+    {
+      "id": "CR-23",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "use only Read, Grep, and Glob tools",
+      "reason": "Tool restriction plus never writing files or running commands."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Aborts the review with a fixed message if the author does not clarify the intent.",
+      "quote": "abort with \"PR intent is unclear and the author did not clarify it; no review was performed.\"",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Requires confirmation from the author before continuing after the clarification request.",
+      "quote": "require confirmation",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Adds a report correction step that reruns assembly when the report is malformed.",
+      "quote": "apply report correction with report as report",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Fixes the order of the OWASP check, after the details review and before the test review.",
+      "quote": "apply OWASP security check with details_findings as security_findings",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0436
+}

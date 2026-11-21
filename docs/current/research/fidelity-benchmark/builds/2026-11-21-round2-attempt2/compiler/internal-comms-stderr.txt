@@ -1,0 +1,6 @@
+skillwren compile: candidate still invalid after repairs:
+  I7 R4: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Load the guideline file from examples/ matching the type: 3P/Progress-Plans-Problems team updates -> examples/3p-updates.md.
+  I7 R5: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Company-wide newsletters -> load examples/company-newsletter.md.
+  I7 R6: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Answering frequently asked questions -> load examples/faq-answers.md.
+  I7 R7: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Anything else that doesn't explicitly match the above (e.g., status reports, leadership updates, project updates, incident reports) -> load examples/general-comms.md.
+  I9 -: decision statement traces to no requirement (over-asking or permission restriction): SKILL.md:24: require confirmation

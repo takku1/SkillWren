@@ -1,0 +1,4 @@
+skillwren compile: candidate still invalid after repairs:
+  I7 R3: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Step 1: Show the theme showcase by displaying theme-showcase.pdf so the user can see all available themes visually.
+  I7 R11: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): After theme selected, read the corresponding theme file from themes/ directory.
+  I7 R17: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Custom theme: based on provided inputs, generate a new theme similar in form to the preset ones (palette with hex codes, font pairings); use any basic description provided to choose colors/fonts.

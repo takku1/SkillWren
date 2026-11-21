@@ -1,0 +1,218 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-21-round2-attempt2/compiler/webapp-testing/SKILL.md": {
+    "items": [
+      {
+        "line": 24,
+        "kind": "order rule",
+        "text": "exec#help before write#script",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 25,
+        "kind": "order rule",
+        "text": "exec#help before exec#single",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 26,
+        "kind": "order rule",
+        "text": "exec#help before exec#multi",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 27,
+        "kind": "order rule",
+        "text": "write#script before exec#single",
+        "tier": "recorded",
+        "why": "earlier step leaves effect; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 28,
+        "kind": "order rule",
+        "text": "write#script before exec#multi",
+        "tier": "recorded",
+        "why": "earlier step leaves effect; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 29,
+        "kind": "order rule",
+        "text": "apply navigate and wait for networkidle before apply inspect rendered state",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 30,
+        "kind": "order rule",
+        "text": "apply navigate and wait for networkidle before write#shot",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 31,
+        "kind": "order rule",
+        "text": "apply inspect rendered state before apply identify selectors",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 32,
+        "kind": "order rule",
+        "text": "apply identify selectors before apply execute actions",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 33,
+        "kind": "order rule",
+        "text": "apply execute actions before apply close browser",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 48,
+        "kind": "write",
+        "text": "write #shot inspection with inspect_png",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 54,
+        "kind": "command",
+        "text": "exec #help with_server help from checks as help",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 55,
+        "kind": "gate",
+        "text": "verify #usage help output shows enough usage to run the helper from help",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 65,
+        "kind": "write",
+        "text": "write #script automation_script with automation_file",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 67,
+        "kind": "command",
+        "text": "exec #multi with_server multiple servers from checks as run_result",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 69,
+        "kind": "command",
+        "text": "exec #single with_server single server from checks as run_result",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 9,
+      "instructed": 7,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "WT-1",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 75), not a checked element"
+      },
+      {
+        "id": "WT-2",
+        "kind": "ordering",
+        "tier": "recorded",
+        "why": "order rule line 24: earlier step leaves evidence; `ledger check` detects a violation after the run; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-3",
+        "kind": "prohibition",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "WT-4",
+        "kind": "obligation",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "WT-5",
+        "kind": "exception",
+        "tier": "instructed",
+        "why": "prose (line 39), not a checked element"
+      },
+      {
+        "id": "WT-6",
+        "kind": "exception",
+        "tier": "recorded",
+        "why": "command line 54: a command result backs it; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-7",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "order rule line 29: earlier step is the model's own judgment (W15); tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-8",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "order rule line 31: earlier step is the model's own judgment (W15); tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-9",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 18), not a checked element"
+      },
+      {
+        "id": "WT-10",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 13), not a checked element"
+      },
+      {
+        "id": "WT-11",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 15), not a checked element"
+      },
+      {
+        "id": "WT-12",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 14), not a checked element"
+      },
+      {
+        "id": "WT-13",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 16), not a checked element"
+      },
+      {
+        "id": "WT-14",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 17), not a checked element"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 2,
+      "instructed": 10,
+      "unverifiable": 0,
+      "ambiguous": 0,
+      "null": 2
+    }
+  }
+}

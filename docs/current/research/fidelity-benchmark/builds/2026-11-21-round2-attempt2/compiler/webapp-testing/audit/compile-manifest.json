@@ -1,0 +1,217 @@
+{
+  "format": "skillwren-compile-1",
+  "layout": "inline",
+  "sources": {
+    "SKILL.md": "51b7349e77ec63b7744a6f63647e7566a0b4d2e301121cc10e8c2113af6556a2"
+  },
+  "outputs": {
+    "SKILL.md": "520eb7911b0840e3f46a6b58fabe80f0e1bd07d89a82f8c69a5b1b15e34a519b"
+  },
+  "adapter": [
+    "C:\\Users\\<user>\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "Z:\\SkillWren\\scripts\\adapters\\claude_compile.py"
+  ],
+  "calls": [
+    {
+      "phase": "inventory",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.0284649,
+        "output_tokens": 2654,
+        "seconds": 14.774,
+        "phase": "inventory"
+      }
+    },
+    {
+      "phase": "inventory",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.0493487,
+        "output_tokens": 2831,
+        "seconds": 13.69,
+        "phase": "inventory"
+      }
+    },
+    {
+      "phase": "lower",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.12250770000000001,
+        "output_tokens": 9926,
+        "seconds": 68.026,
+        "phase": "lower"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.1070264,
+        "output_tokens": 5174,
+        "seconds": 31.576,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.031356,
+        "output_tokens": 1018,
+        "seconds": 8.957,
+        "phase": "judge"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.09189839999999999,
+        "output_tokens": 5320,
+        "seconds": 35.046,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "repair",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.0907124,
+        "output_tokens": 5189,
+        "seconds": 30.828,
+        "phase": "repair"
+      }
+    },
+    {
+      "phase": "judge",
+      "usage": {
+        "model": "sonnet",
+        "cost_usd": 0.0256826,
+        "output_tokens": 918,
+        "seconds": 8.029,
+        "phase": "judge"
+      }
+    }
+  ],
+  "requirements": 22,
+  "non_requirements": 9,
+  "check_warnings": [
+    {
+      "line": 29,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply navigate and wait for networkidle' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 30,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply navigate and wait for networkidle' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 31,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply inspect rendered state' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 32,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply identify selectors' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 33,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'apply execute actions' is the model's own judgment",
+      "fix": "Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 59,
+      "rule": "W5",
+      "message": "binding 'gap' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 61,
+      "rule": "W5",
+      "message": "binding 'helper_plan' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    },
+    {
+      "line": 64,
+      "rule": "W5",
+      "message": "binding 'automation_script' never referenced",
+      "fix": "Use it or drop the `as`.",
+      "file": "SKILL.md"
+    }
+  ],
+  "unbacked_verifies": [],
+  "open_findings": [
+    {
+      "rule": "I8",
+      "severity": "warning",
+      "message": "kept as prose, not checkable: Reference example files in examples/ (element_discovery.py, static_html_automation.py using file:// URLs, console_logging.py capturing console logs) are optional resources to consult.",
+      "id": "R22"
+    }
+  ],
+  "judge": {
+    "omission": [],
+    "invention": [
+      "R4: the added 'verify usage' gate after --help and the 'record source gap' step have no requirement behind them. They make reading the helper source depend on a usage-sufficiency check instead of the 'customized solution absolutely necessary' condition."
+    ],
+    "over_asking": [],
+    "permission_expansion": [],
+    "permission_restriction": [],
+    "control_flow_distortion": [],
+    "ordering_distortion": []
+  },
+  "questions": [
+    "Does 'run --help first' apply only to with_server.py (the only listed script) or to any script?",
+    "Where do console logs and screenshots need to be reported or checked? The skill doesn't define pass/fail criteria for tests.",
+    "The source does not say what to do if --help output is unavailable or the automation run fails. I made both record a gap and return it, with no abort. Is that what you want?",
+    "The source names no condition for choosing the multi-server command over the single-server one. I used 'multiple servers are needed'."
+  ],
+  "assumptions": [
+    "The decision tree's 'Fails/Incomplete' means the static HTML read didn't yield usable selectors.",
+    "Example files are optional references, so they are marked unrepresentable.",
+    "Code-template comments are treated as invariants.",
+    "Lines 23 and 27 are tree-drawing connector lines carrying no content, so they are non-requirements.",
+    "R22 stays unrepresentable because the example files are optional resources; the I8 warning is expected.",
+    "The `L43` and `L48` anchors are line numbers in the delivered SKILL.md, where the two `run dynamic with:` statements sit. I counted them by hand and did not run the checker.",
+    "`server_running` and `automation_script` are declared as inputs. The logic tests the server condition in prose, as `server is not running`.",
+    "If the static HTML path succeeds, the flow returns the generated script. The source does not say to run it.",
+    "Browser steps (navigate, inspect, act, close) are `apply` steps defined in Step meanings. The only logic-level write is the screenshot.",
+    "I put `contract` field ordering and the `resources` syntax together from the guide. I did not run `skillwren check --fragment`.",
+    "Merged the two flows into one flow, since multiple flows per logic block and run targets failed the check.",
+    "Removed the resources block (not allowed in contract); the screenshot path is an input named inspect_png, defined in prose as /tmp/inspect.png.",
+    "Dynamic-app branch is split on whether the server is already running, matching the source decision tree; the if-multiple-servers branch follows the source's single/multiple examples.",
+    "Static-HTML read failure uses return to dynamic, per the source's 'treat as dynamic' fallback.",
+    "The simplified automation script is written to an automation_file input path (declared input), since R8 says to write a simplified Playwright script.",
+    "A failed usage check leads to the R4 path (read helper source, customize) and then continues to run the helper, instead of aborting.",
+    "Removed the invented run-success gate and help-gap abort; the run result is returned as-is.",
+    "The static HTML path still ends by returning the generated script, as in the source tree's 'write Playwright script' leaf.",
+    "Order rules anchor on exec#help (the observable --help run) instead of verify#usage, because the source-reading repair path cannot guarantee a passing verify; verify#usage remains as a gate with a repair that continues to launch.",
+    "Remaining W15 warnings are self-report order rules for the reconnaissance steps, which have no observable evidence in the source."
+  ],
+  "review_map": {
+    "kind": "manual-requirement-review",
+    "requirements": 27,
+    "non_requirements": 9,
+    "original_files": [
+      "SKILL.md"
+    ],
+    "semantic_equivalence_proven": false
+  },
+  "reverse_enforced": true,
+  "traceability": [],
+  "approved": false,
+  "semantic_equivalence_proven": false
+}

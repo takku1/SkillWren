@@ -1,0 +1,346 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-21-round2-attempt2/compiler/full-stack-failed/SKILL.md": {
+    "items": [
+      {
+        "line": 27,
+        "kind": "order rule",
+        "text": "exec#inspect before write#design",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 28,
+        "kind": "order rule",
+        "text": "apply sequence work before write#design",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 29,
+        "kind": "order rule",
+        "text": "write#design before write#implementation",
+        "tier": "recorded",
+        "why": "earlier step leaves effect; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 30,
+        "kind": "order rule",
+        "text": "write#implementation before exec#acceptance",
+        "tier": "recorded",
+        "why": "earlier step leaves effect; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 31,
+        "kind": "order rule",
+        "text": "verify#accepted before return#built",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 40,
+        "kind": "gate",
+        "text": "require confirmation",
+        "tier": "recorded",
+        "why": "a user decision backs it"
+      },
+      {
+        "line": 46,
+        "kind": "gate",
+        "text": "require confirmation",
+        "tier": "recorded",
+        "why": "a user decision backs it"
+      },
+      {
+        "line": 52,
+        "kind": "gate",
+        "text": "require confirmation",
+        "tier": "recorded",
+        "why": "a user decision backs it"
+      },
+      {
+        "line": 56,
+        "kind": "command",
+        "text": "exec #inspect inspect applicable instructions, code, contracts, tests, and prototypes from checks as inspection",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 57,
+        "kind": "gate",
+        "text": "verify #inspected inspection covers applicable instructions and representative code, contracts, tests, and prototypes from inspection",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 100,
+        "kind": "write",
+        "text": "write commitment with registry",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 103,
+        "kind": "write",
+        "text": "write #design design with design_docs",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 105,
+        "kind": "write",
+        "text": "write work_entries with registry",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 118,
+        "kind": "write",
+        "text": "write #implementation implementation with subject",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 119,
+        "kind": "command",
+        "text": "exec #acceptance acceptance checks from checks as results",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 120,
+        "kind": "gate",
+        "text": "verify #accepted every selected acceptance criterion passed from results",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 128,
+        "kind": "write",
+        "text": "write implementation with subject",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 129,
+        "kind": "command",
+        "text": "exec acceptance checks from checks as results",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 12,
+      "instructed": 6,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "FS-1",
+        "kind": "authority",
+        "tier": "instructed",
+        "why": "prose (line 151), not a checked element"
+      },
+      {
+        "id": "FS-2",
+        "kind": "authority",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "FS-3",
+        "kind": "authority",
+        "tier": "instructed",
+        "why": "prose (line 23), not a checked element"
+      },
+      {
+        "id": "FS-4",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 156), not a checked element"
+      },
+      {
+        "id": "FS-5",
+        "kind": "obligation",
+        "tier": "recorded",
+        "why": "command line 56: a command result backs it; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "FS-6",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 12), not a checked element"
+      },
+      {
+        "id": "FS-7",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 13), not a checked element"
+      },
+      {
+        "id": "FS-8",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 157), not a checked element"
+      },
+      {
+        "id": "FS-9",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 21), not a checked element"
+      },
+      {
+        "id": "FS-10",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 158), not a checked element"
+      },
+      {
+        "id": "FS-11",
+        "kind": "ordering",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "FS-12",
+        "kind": "exception",
+        "tier": "instructed",
+        "why": "prose (line 44), not a checked element"
+      },
+      {
+        "id": "FS-13",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 15), not a checked element"
+      },
+      {
+        "id": "FS-14",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 147), not a checked element"
+      },
+      {
+        "id": "FS-15",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 162), not a checked element"
+      },
+      {
+        "id": "FS-16",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 163), not a checked element"
+      },
+      {
+        "id": "FS-17",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 164), not a checked element"
+      },
+      {
+        "id": "FS-18",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 16), not a checked element"
+      },
+      {
+        "id": "FS-19",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 17), not a checked element"
+      },
+      {
+        "id": "FS-20",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 174), not a checked element"
+      },
+      {
+        "id": "FS-21",
+        "kind": "output",
+        "tier": "instructed",
+        "why": "prose (line 173), not a checked element"
+      },
+      {
+        "id": "FS-22",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 177), not a checked element"
+      },
+      {
+        "id": "FS-23",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 171), not a checked element"
+      },
+      {
+        "id": "FS-24",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 165), not a checked element"
+      },
+      {
+        "id": "FS-25",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 164), not a checked element"
+      },
+      {
+        "id": "FS-26",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 164), not a checked element"
+      },
+      {
+        "id": "FS-27",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 166), not a checked element"
+      },
+      {
+        "id": "FS-33",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 166), not a checked element"
+      },
+      {
+        "id": "FS-28",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 166), not a checked element"
+      },
+      {
+        "id": "FS-29",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 167), not a checked element"
+      },
+      {
+        "id": "FS-30",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 90), not a checked element"
+      },
+      {
+        "id": "FS-31",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 175), not a checked element"
+      },
+      {
+        "id": "FS-32",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 162), not a checked element"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 1,
+      "instructed": 30,
+      "unverifiable": 0,
+      "ambiguous": 0,
+      "null": 2
+    }
+  }
+}

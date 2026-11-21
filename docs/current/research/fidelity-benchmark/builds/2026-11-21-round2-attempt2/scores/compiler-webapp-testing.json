@@ -1,0 +1,161 @@
+{
+  "source": "webapp-testing",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-21-round2-attempt2/compiler/webapp-testing/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "published",
+  "preservation": {
+    "total": 14,
+    "preserved": 12,
+    "weakened": 2,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 0.857
+  },
+  "introduction": {
+    "total": 4,
+    "widening": 2,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "WT-1",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "To test local web applications, write native Python Playwright scripts.",
+      "reason": "Stated in Context and the logic generates Playwright scripts."
+    },
+    {
+      "id": "WT-2",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "exec#help before write#script",
+      "reason": "Help must run before the helper is used (ordering with single and multi too)."
+    },
+    {
+      "id": "WT-3",
+      "kind": "prohibition",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "read helper source from scripts as source",
+      "reason": "Source read is gated only on help output being insufficient (verify usage), not on a customized solution being absolutely necessary; the 'only when necessary' is in step meaning but the gate differs."
+    },
+    {
+      "id": "WT-4",
+      "kind": "obligation",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "treat bundled scripts as black boxes and invoke them directly",
+      "reason": "Black-box use is present, but there is no step to consider whether a bundled script can do the job before writing custom code; the helper is used only in the not-running-server branch."
+    },
+    {
+      "id": "WT-5",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read html file from target as html\n      otherwise:\n        return to dynamic",
+      "reason": "Static HTML read directly, fallback to dynamic on failure."
+    },
+    {
+      "id": "WT-6",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "exec #help with_server help from checks as help",
+      "reason": "When server is not running, help runs then with_server single/multi is used."
+    },
+    {
+      "id": "WT-7",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "apply navigate and wait for networkidle before apply inspect rendered state",
+      "reason": "Wait precedes inspection in the dynamic path; static path doesn't wait."
+    },
+    {
+      "id": "WT-8",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "apply inspect rendered state before apply identify selectors",
+      "reason": "Inspect, identify, execute ordering is enforced."
+    },
+    {
+      "id": "WT-9",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "keep automation scripts to Playwright logic only, since with_server manages servers",
+      "reason": "Directly stated."
+    },
+    {
+      "id": "WT-10",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "launch chromium in headless mode",
+      "reason": "Directly stated."
+    },
+    {
+      "id": "WT-11",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "close the browser when done",
+      "reason": "Always rule, plus close browser step."
+    },
+    {
+      "id": "WT-12",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "use sync_playwright for synchronous scripts",
+      "reason": "Directly stated."
+    },
+    {
+      "id": "WT-13",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "use descriptive selectors: text=, role=, CSS selectors, or IDs",
+      "reason": "Directly stated."
+    },
+    {
+      "id": "WT-14",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "add appropriate waits with wait_for_selector or wait_for_timeout",
+      "reason": "Directly stated."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Writes a screenshot file to a fixed path as a required step",
+      "quote": "write #shot inspection with inspect_png",
+      "widens": true,
+      "quote_found": true
+    },
+    {
+      "behavior": "Skips the closing of browser/static path returns script without running it; also new fallback of continuing after source gap",
+      "quote": "apply record source gap with help as gap",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Windows-specific command substitution permission",
+      "quote": "On Windows use `py -3` when `python` is a Microsoft Store stub.",
+      "widens": true,
+      "quote_found": true
+    },
+    {
+      "behavior": "Scope restriction: not for remote or production sites",
+      "quote": "Not for testing remote or production sites.",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0351
+}

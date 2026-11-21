@@ -1,0 +1,83 @@
+{
+  "purpose": "fidelity benchmark builds, made before the requirement lists were frozen; not scored here",
+  "started": "2026-11-21T02:04:37+00:00",
+  "git_commit": "f1a87b4ab4e1a80c4f4f02fccb4936b2f3483da2",
+  "git_dirty": false,
+  "skillwren_version": "0.13.3",
+  "model": "sonnet",
+  "sources": {
+    "code-reviewer": "86b4fc6669ea82834f433617dd617ed1011cf7af5f3855c8d759b95690ac1e2a",
+    "full-stack": "359499366e2bd4e3a4c0223cd7d4c144d158cdf5ac5562d8f08b16267f90095c",
+    "webapp-testing": "51b7349e77ec63b7744a6f63647e7566a0b4d2e301121cc10e8c2113af6556a2",
+    "theme-factory": "c35893e221e28895c52143cc11bf30e41a44817796b39d4b15727dadc9796552",
+    "internal-comms": "067b7587a344a928fc6534ef66b1bcd591fc7c26d207ea7ca3334aeb678d6475"
+  },
+  "compiler": {
+    "command": "skillwren compile <source>/SKILL.md --layout inline --out <dir> --keep-failed <dir> -- python scripts/adapters/claude_compile.py",
+    "SW_COMPILE_MODEL": "sonnet",
+    "SW_JUDGE_MODEL": "sonnet",
+    "adapter_sha256": "6161b118ddda57ba27e038b52eb95ce1857edd1957f467fd75ab69c82a40d3de",
+    "context": "SKILL.md only (benchmark scope)"
+  },
+  "skill": {
+    "plugin_skill_sha256": "1a57d620e2aad6064f1f94f8210e5ed6d2783834b6f648ccb6c659ea9e83b603",
+    "harness_sha256": "97e9e1f5404c232d0e6f48e695541e066b9fb50eae1cfe718eb379bbe9029a96",
+    "turns": [
+      "Use skillwren to convert the existing skill at ./source/<source>/SKILL.md into checked SkillWren logic, written to ./<source>-logic. Keep the original unchanged.",
+      "Confirmed: the inventory is complete and correct. Go ahead and build it."
+    ]
+  },
+  "paths": [
+    "compiler"
+  ],
+  "rules": "one build per source and path; failures kept; no repair, rerun or scoring",
+  "finished": "2026-11-21T02:07:05+00:00",
+  "results": [
+    {
+      "path": "compiler",
+      "source": "code-reviewer",
+      "exit": 2,
+      "built": false,
+      "artifact": null,
+      "cost_usd": 0.1655,
+      "started": "2026-11-21T02:04:37+00:00"
+    },
+    {
+      "path": "compiler",
+      "source": "full-stack",
+      "exit": 2,
+      "built": false,
+      "artifact": null,
+      "cost_usd": 0.3216,
+      "started": "2026-11-21T02:04:37+00:00"
+    },
+    {
+      "path": "compiler",
+      "source": "webapp-testing",
+      "exit": 2,
+      "built": false,
+      "artifact": null,
+      "cost_usd": 0.1692,
+      "started": "2026-11-21T02:04:37+00:00"
+    },
+    {
+      "path": "compiler",
+      "source": "theme-factory",
+      "exit": 2,
+      "built": false,
+      "artifact": null,
+      "cost_usd": 0.1661,
+      "started": "2026-11-21T02:04:37+00:00"
+    },
+    {
+      "path": "compiler",
+      "source": "internal-comms",
+      "exit": 2,
+      "built": false,
+      "artifact": null,
+      "cost_usd": 0.2437,
+      "started": "2026-11-21T02:04:37+00:00"
+    }
+  ],
+  "cost_usd_total": 1.0661
+}

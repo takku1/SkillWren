@@ -1,0 +1,5 @@
+skillwren compile: candidate still invalid after repairs:
+  SKILL.md:68: U1: apply target 'terminology' may be unbound on some path
+  SKILL.md:73: U1: apply target 'existing_projects' may be unbound on some path
+  SKILL.md:78: U1: apply target 'design_method' may be unbound on some path
+  SKILL.md:116: U1: apply target 'implementation_guide' may be unbound on some path

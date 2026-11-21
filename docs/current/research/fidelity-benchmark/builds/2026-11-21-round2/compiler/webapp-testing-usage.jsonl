@@ -1,0 +1,2 @@
+{"model": "sonnet", "cost_usd": 0.046312, "output_tokens": 3032, "seconds": 16.721, "phase": "inventory"}
+{"model": "sonnet", "cost_usd": 0.1228937, "output_tokens": 9895, "seconds": 66.926, "phase": "lower"}
