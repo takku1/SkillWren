@@ -1,6 +1,6 @@
 # Status
 
-**Last Updated**: 2026-11-20 (0.13.2: conservative requirement mapping; benchmark bound to its frozen bytes)
+**Last Updated**: 2026-11-21 (fidelity round 2 adjudicated and published)
 
 ## Current Phase
 
@@ -20,20 +20,23 @@ runtime comparison. Current verification results are recorded in CI.
   preserved, 0 widening; compiler 0/5 published (its evidence rule and
   anchor checks refused all five), its drafts 83/88 preserved with 2
   widening introductions. Refusals did not track fidelity; the compiler's
-  drafts anchored more requirements to evidence. Next: fix the I13 anchor
-  issue on control-flow grounds, then a separately pinned compiler round 2
-  with the I7 evidence rule unchanged.
+  drafts anchored more requirements to evidence.
+- Fidelity round 2 published (`builds/2026-11-21-round2-attempt2/RESULTS.md`;
+  compiler only, 0.13.3 anchor fix, I7 unchanged, AI-adjudicated 6 agree /
+  6 overturn): I13 gone; 1/5 published (webapp-testing, 13/14), not
+  attributable to the fix; 84/88 preserved across all five, 2 widening;
+  I7 still refuses three. Proposed next: examine those I7 refusals as a
+  language-semantics question (does the compiler demand external evidence
+  the source never claimed?), not by loosening checks.
 
 - Translation, enforcement and behavior are measured separately (0.13):
   `skillwren coverage` labels every rule, gate and write enforced,
   recorded, instructed or unverifiable (SPEC 25); the fidelity benchmark
   (`research/fidelity-benchmark/`) scores preservation and introduction
   against human-reviewed requirements, and `coverage --fidelity` gives each
-  preserved requirement its enforcement tier. Waiting on the owner's
-  review of the 88 candidate requirements (AI-drafted, AI-reviewed three times). After that: score builds from
-  both paths, then the bypass experiment (skip a prerequisite, stale
-  evidence, forged approval, a prohibited push, and an alternate tool,
-  the last needing a credential in the isolation container).
+  preserved requirement its enforcement tier. The 88 requirements are
+  frozen as an AI-reviewed baseline (not human-approved). The
+  credential-dependent container bypass experiment is not authorized.
 
 - Skill-building product (0.12.0): `skills/skillwren/` is a skill that
   builds skills, written in SkillWren itself (inline form, clean with no

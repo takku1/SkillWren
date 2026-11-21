@@ -21,11 +21,12 @@ Without it the benchmark would grade a model against a model.
 | Step | State |
 |---|---|
 | Corpus: 5 sources, 2,550 words | done (`sources/`) |
-| Candidate requirement lists: 88 kept (89 lines), every quote verbatim in its source | AI-drafted, AI-reviewed three times (revision logs in each file); **awaiting human approval** (`review/`) |
+| Candidate requirement lists: 88 kept (89 lines), every quote verbatim in its source | AI-drafted, AI-reviewed three times (revision logs in each file); frozen as an **AI-reviewed baseline**, not human-approved (`review/`, `frozen/`) |
 | Freeze tool (`scripts/lab/fidelity_freeze.py`) | done |
 | Preservation and introduction scorer (`scripts/lab/fidelity_score.py`) | done; smoke-tested on candidates only |
 | Report gate (`scripts/lab/fidelity_report.py`): no numbers until adjudication is complete | done |
 | Round 1 builds (Sonnet, both paths), scores, AI adjudication, report | done: `builds/2026-11-20/RESULTS.md` |
+| Round 2 (compiler only, I13 anchor fix, I7 unchanged), scores, AI adjudication, report | done: `builds/2026-11-21-round2-attempt2/RESULTS.md` |
 | Execution scenarios | after freezing |
 
 ## Corpus
