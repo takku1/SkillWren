@@ -1,0 +1,5 @@
+{"model": "sonnet", "cost_usd": 0.055638, "output_tokens": 3715, "seconds": 19.733, "phase": "inventory"}
+{"model": "sonnet", "cost_usd": 0.15055000000000002, "output_tokens": 6949, "seconds": 45.138, "phase": "lower"}
+{"model": "sonnet", "cost_usd": 0.1261864, "output_tokens": 7688, "seconds": 45.07, "phase": "repair"}
+{"model": "sonnet", "cost_usd": 0.1131444, "output_tokens": 6413, "seconds": 37.168, "phase": "repair"}
+{"model": "sonnet", "cost_usd": 0.11088039999999999, "output_tokens": 6217, "seconds": 33.01, "phase": "repair"}

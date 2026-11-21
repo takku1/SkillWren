@@ -1,0 +1,71 @@
+{
+  "scenario": "theme-factory",
+  "model": "sonnet",
+  "cost_usd": 0.2976,
+  "score": {
+    "packages": [
+      "theme-factory-logic"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 4,
+    "repairs": 2,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 1,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ag4t8bb7\\theme-factory-logic\\SKILL.md:12: warning W15: order rule rests on self-report: every statement matching 'show showcase' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ag4t8bb7\\theme-factory-logic\\SKILL.md: flow theme-factory: inputs artifact; writes artifact; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {}
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to convert the existing skill at ./source/theme-factory/SKILL.md i",
+      "result": "I've read the source skill. It has only `SKILL.md`. The `themes/` directory and `theme-showcase.pdf` that it mentions aren't in `./source`. Here is the requirement inventory, quoted from the source. I marked anything I inferred.\n\n**Requirement inventory**\n\n| # | Requirement |\n|---|---|\n| R1 | Applies to a slide deck or other artifact (slides, docs, reports, HTML pages). |\n| R2 | Show `theme-showcase.pdf` so the user can see all themes. \"Do not make any modifications to it; simply show the file for viewing.\" |\n| R3 | Ask which theme to apply. |\n| R4 | \"Wait for selection\": get explicit confirmation of the chosen theme before applying it. |\n| R5 | The 10 preset themes are Ocean Depths, Sunset Boulevard, Forest Canopy, Modern Minimalist, Golden Hour, Arctic Frost, Desert Rose, Tech Innovation, Botanical Garden and Midnight Galaxy. |\n| R6 | After a theme is chosen, read its file from `themes/`. |\n| R7 | Apply the specified colors and fonts consistently throughout the artifact. |\n| R8 | Ensure proper contrast and readability. |\n| R9 | Maintain the theme's visual identity across all slides. |\n| R10 | Custom theme: if no existing theme works, create one from the provided inputs, in the style of the presets. |\n| R11 | The custom theme gets a similar descriptive name. Use any basic description given to choose the colors and fonts. |\n| R12 | After generating a custom theme, show it for review and verification, and only then apply it as in R6\u2013R9. |\n| R13 | (inferred) If the chosen theme file is missing, stop and say so. |\n| R14 | (inferred) Ordering: show the showcase before asking. Get confirmation before applying. Get review before applying a custom theme. |\n\nA few notes before I write the draft:\n- R2's \"do not modify\" will be an instruction only. Nothing outside the model can enforce it. I'll model it as a read-only display step, with no `write` to the PDF.\n- I'll write the draft in `./theme-factory-draft/`, build it to `./theme-factory-logic`, and leave `./source` untouched.\n\n**Do you confirm this inventory, or do you want changes?** For example, you could drop R13 or R14, or add lines.",
+      "num_turns": 6,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 4,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The theme-factory skill is now checked SkillWren logic in `./theme-factory-logic/` (`SKILL.md` and `manifest.json`). The check found no errors and one warning, explained below. The original `./source/theme-factory/SKILL.md` is untouched, and the working draft is in `./theme-factory-draft/`.\n\n**The procedure**\n1. Require an artifact, then read and show `theme-showcase.pdf`.\n2. Ask for a theme choice, either a preset name or \"custom\".\n   - **Custom:** ask for a description, generate the theme, and give it a descriptive name.\n   - **Preset:** require one of the 10 names, then read its file from `themes/`. If the file is missing, stop.\n3. Show the theme and ask the user to confirm it. If they don't, go back to the choice.\n4. Apply the colors and fonts to the artifact, and check contrast, readability and visual identity. If the check fails, fix and re-check.\n5. Write the styled artifact back and return it.\n\n**Where each requirement landed**\n- R1, R5: the artifact input and the preset-name check.\n- R2: the `read` and `show` steps for the showcase. The no-modification rule is respected by having no `write` to the PDF.\n- R3, R4, R12: the choice `ask` and the theme confirm gate. A custom theme goes through the same gate, so it is shown and approved before it is applied.\n- R6, R13: the `themes/` read with an abort `otherwise`.\n- R7\u2013R9: the apply step and the contrast/readability `verify`.\n- R10, R11: the custom-theme `generate` and naming steps.\n- R14: two `order:` rules. The showcase is shown before the choice is asked, and the user confirms before the theme is applied.\n\n**Warning**\n- The check warns (W15) that the order rule \"showcase shown before the choice is asked\" rests on the model's own judgment. A displayed PDF has no outside signal to anchor to, so I'm accepting this.\n\n**Coverage:** 0 enforced, 2 recorded, 5 instructed.\n- **Recorded:** the user-confirmation gate and its order rule. A user decision backs them, and a ledger check can detect a violation after the run.\n- **Instructed only:** nothing outside the model stops or records the artifact-exists gate, the preset-name gate, the contrast/readability check, the no-modify rule on the PDF, or the final write.\n\n**Changes and limits**\n- **Revisions:** a rejected custom theme restarts at the choice step. You describe it again instead of giving incremental edits. This simplified the flow to satisfy the order rules.\n- **Missing assets:** the real `themes/` files and `theme-showcase.pdf` weren't in `./source`. The logic refers to them by name, so they need to ship alongside the skill.\n- **Limits:** a clean check shows the procedure is well formed and ordered. It doesn't prove a model will follow it.\n\n**Your review:** please read the generated workflow explanation, which I ran above. If you accept it, record that yourself with `SW approve <file>`. I haven't run that step and I haven't installed the skill.",
+      "num_turns": 14,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "theme-factory-draft/.skillwren/budget.json",
+          "theme-factory-draft/SKILL.md",
+          "theme-factory-logic/SKILL.md",
+          "theme-factory-logic/manifest.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 13,
+      "commands": [
+        "cd theme-factory-draft && py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit SKILL.md",
+        "cd theme-factory-draft && python3 - <<'EOF'\np='SKILL.md'\ns=open(p,encoding='utf-8').read()\na=s.index(\"  label choosing:\")\nb=s.index(\"  apply theme to artifact\")\nnew='''  label choosing:\n  ask user for the theme choice (a preset name, or custom)\n\n  if the choice is custom:\n    ask user for a basic description of the look wanted as description\n    generate custom theme from description as theme\n    apply custom theme naming with theme as theme\n  else:\n    require the choice names one of the 10 preset themes\n      otherwise:\n        return to choosing\n    read theme file from themes as theme\n      otherwise:\n        abort with \"The chosen theme's file is missing from themes/.\"\n\n  label confirming:\n  show theme\n  ask user to confirm the theme\n  require user confirms the theme\n    otherwise:\n      if the choice is custom:\n        ask user for the changes wanted as corrections\n        apply theme revision with corrections as theme\n        return to confirming\n      else:\n        return to choosing\n\n'''\ns=s[:a]+new+s[b:]\ns=s.replace(\"\"\"  ask user to confirm the chosen theme before apply theme to artifact\n  ask user to approve the custom theme before apply theme to artifact\n\"\"\",\"\"\"  ask user to confirm the theme before apply theme to artifact\n\"\"\")\nopen(p,'w',encoding='utf-8').write(s)\nEOF\npy -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit SKILL.md",
+        "cd theme-factory-draft && py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit SKILL.md",
+        "cd theme-factory-draft && SW=\"py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\"; $SW check --fragment --summary --audit SKILL.md; echo ---; $SW explain-workflow SKILL.md; echo ---; $SW coverage SKILL.md; echo ---; cd .. && $SW build theme-factory-draft --out theme-factory-logic",
+        "cd theme-factory-draft && py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit SKILL.md; py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py explain-workflow SKILL.md; py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py coverage SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py build theme-factory-draft --out theme-factory-logic; ls -R theme-factory-logic | head -20"
+      ],
+      "check_calls": 4
+    }
+  ]
+}

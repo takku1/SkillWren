@@ -1,0 +1,186 @@
+{
+  "purpose": "fidelity benchmark builds, made before the requirement lists were frozen; not scored here",
+  "started": "2026-11-21T00:36:37+00:00",
+  "git_commit": "cc9b7852bace4edcc16da0f8b6aa0d0d1db04b38",
+  "git_dirty": false,
+  "skillwren_version": "0.13.2",
+  "model": "sonnet",
+  "sources": {
+    "code-reviewer": "86b4fc6669ea82834f433617dd617ed1011cf7af5f3855c8d759b95690ac1e2a",
+    "full-stack": "359499366e2bd4e3a4c0223cd7d4c144d158cdf5ac5562d8f08b16267f90095c",
+    "webapp-testing": "51b7349e77ec63b7744a6f63647e7566a0b4d2e301121cc10e8c2113af6556a2",
+    "theme-factory": "c35893e221e28895c52143cc11bf30e41a44817796b39d4b15727dadc9796552",
+    "internal-comms": "067b7587a344a928fc6534ef66b1bcd591fc7c26d207ea7ca3334aeb678d6475"
+  },
+  "compiler": {
+    "command": "skillwren compile <source>/SKILL.md --layout inline --out <dir> --keep-failed <dir> -- python scripts/adapters/claude_compile.py",
+    "SW_COMPILE_MODEL": "sonnet",
+    "SW_JUDGE_MODEL": "sonnet",
+    "adapter_sha256": "6161b118ddda57ba27e038b52eb95ce1857edd1957f467fd75ab69c82a40d3de",
+    "context": "SKILL.md only (benchmark scope)"
+  },
+  "skill": {
+    "plugin_skill_sha256": "1a57d620e2aad6064f1f94f8210e5ed6d2783834b6f648ccb6c659ea9e83b603",
+    "harness_sha256": "97e9e1f5404c232d0e6f48e695541e066b9fb50eae1cfe718eb379bbe9029a96",
+    "turns": [
+      "Use skillwren to convert the existing skill at ./source/<source>/SKILL.md into checked SkillWren logic, written to ./<source>-logic. Keep the original unchanged.",
+      "Confirmed: the inventory is complete and correct. Go ahead and build it."
+    ]
+  },
+  "rules": "one build per source and path; failures kept; no repair, rerun or scoring",
+  "finished": "2026-11-21T00:41:49+00:00",
+  "results": [
+    {
+      "path": "compiler",
+      "source": "code-reviewer",
+      "exit": 2,
+      "built": false,
+      "artifact": null,
+      "cost_usd": 0.5564,
+      "started": "2026-11-21T00:36:37+00:00"
+    },
+    {
+      "path": "compiler",
+      "source": "full-stack",
+      "exit": 2,
+      "built": false,
+      "artifact": null,
+      "cost_usd": 0.765,
+      "started": "2026-11-21T00:36:37+00:00"
+    },
+    {
+      "path": "compiler",
+      "source": "webapp-testing",
+      "exit": 2,
+      "built": false,
+      "artifact": null,
+      "cost_usd": 0.5517,
+      "started": "2026-11-21T00:36:37+00:00"
+    },
+    {
+      "path": "compiler",
+      "source": "theme-factory",
+      "exit": 2,
+      "built": false,
+      "artifact": null,
+      "cost_usd": 0.3466,
+      "started": "2026-11-21T00:36:37+00:00"
+    },
+    {
+      "path": "compiler",
+      "source": "internal-comms",
+      "exit": 2,
+      "built": false,
+      "artifact": null,
+      "cost_usd": 0.3641,
+      "started": "2026-11-21T00:36:37+00:00"
+    },
+    {
+      "path": "skill",
+      "source": "code-reviewer",
+      "built": true,
+      "artifact": "skill/code-reviewer-sonnet/files/code-reviewer-logic/SKILL.md",
+      "packages": [
+        "code-reviewer-logic"
+      ],
+      "nothing_written_before_confirmation": true,
+      "check": {
+        "exit": 0,
+        "errors": 0,
+        "warnings": 5,
+        "tail": [
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-u1dkub31\\code-reviewer-logic\\SKILL.md:24: warning W15: order rule rests on self-report: every statement matching 'verify #intent the intent is one sentence' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-u1dkub31\\code-reviewer-logic\\SKILL.md:25: warning W15: order rule rests on self-report: every statement matching 'verify #intent the intent is one sentence' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-u1dkub31\\code-reviewer-logic\\SKILL.md:26: warning W15: order rule rests on self-report: every statement matching 'verify #details quality' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-u1dkub31\\code-reviewer-logic\\SKILL.md:27: warning W15: order rule rests on self-report: every statement matching 'verify #tests tests were reviewed' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-u1dkub31\\code-reviewer-logic\\SKILL.md:28: warning W15: order rule rests on self-report: every statement matching 'verify #report the report has' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-u1dkub31\\code-reviewer-logic\\SKILL.md: flow code-reviewer: inputs request, target; writes -; runs -",
+          "clean"
+        ]
+      },
+      "cost_usd": 0.433
+    },
+    {
+      "path": "skill",
+      "source": "full-stack",
+      "built": true,
+      "artifact": "skill/full-stack-sonnet/files/full-stack-logic/SKILL.md",
+      "packages": [
+        "full-stack-logic"
+      ],
+      "nothing_written_before_confirmation": true,
+      "check": {
+        "exit": 0,
+        "errors": 0,
+        "warnings": 0,
+        "tail": [
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-myxelxun\\full-stack-logic\\SKILL.md: flow full-stack: inputs project, repository, request; writes project; runs -",
+          "clean"
+        ]
+      },
+      "cost_usd": 0.3993
+    },
+    {
+      "path": "skill",
+      "source": "webapp-testing",
+      "built": true,
+      "artifact": "skill/webapp-testing-sonnet/files/webapp-testing-logic/SKILL.md",
+      "packages": [
+        "webapp-testing-logic"
+      ],
+      "nothing_written_before_confirmation": true,
+      "check": {
+        "exit": 0,
+        "errors": 0,
+        "warnings": 0,
+        "tail": [
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-mkmkjkp4\\webapp-testing-logic\\SKILL.md: flow webapp-testing: inputs request, target; writes script_file; runs -",
+          "clean"
+        ]
+      },
+      "cost_usd": 0.3651
+    },
+    {
+      "path": "skill",
+      "source": "theme-factory",
+      "built": true,
+      "artifact": "skill/theme-factory-sonnet/files/theme-factory-logic/SKILL.md",
+      "packages": [
+        "theme-factory-logic"
+      ],
+      "nothing_written_before_confirmation": true,
+      "check": {
+        "exit": 0,
+        "errors": 0,
+        "warnings": 1,
+        "tail": [
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ag4t8bb7\\theme-factory-logic\\SKILL.md:12: warning W15: order rule rests on self-report: every statement matching 'show showcase' is the model's own judgment -- Anchor it to something observable: `verify ... from <exec result>`, an exec, a written artifact, or a user decision.",
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-ag4t8bb7\\theme-factory-logic\\SKILL.md: flow theme-factory: inputs artifact; writes artifact; runs -",
+          "clean"
+        ]
+      },
+      "cost_usd": 0.2976
+    },
+    {
+      "path": "skill",
+      "source": "internal-comms",
+      "built": true,
+      "artifact": "skill/internal-comms-sonnet/files/internal-comms-logic/SKILL.md",
+      "packages": [
+        "internal-comms-logic"
+      ],
+      "nothing_written_before_confirmation": true,
+      "check": {
+        "exit": 0,
+        "errors": 0,
+        "warnings": 0,
+        "tail": [
+          "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-a14gnk_3\\internal-comms-logic\\SKILL.md: flow internal-comms: inputs request; writes -; runs -",
+          "clean"
+        ]
+      },
+      "cost_usd": 0.3189
+    }
+  ],
+  "cost_usd_total": 4.3977
+}

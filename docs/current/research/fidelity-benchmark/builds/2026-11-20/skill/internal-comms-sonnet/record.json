@@ -1,0 +1,79 @@
+{
+  "scenario": "internal-comms",
+  "model": "sonnet",
+  "cost_usd": 0.3189,
+  "score": {
+    "packages": [
+      "internal-comms-logic"
+    ],
+    "at_destination": true,
+    "nothing_written_before_confirmation": true,
+    "check_calls": 9,
+    "repairs": 2,
+    "project_files_untouched": true,
+    "built": true,
+    "check": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "tail": [
+        "C:\\Users\\<user>\\AppData\\Local\\Temp\\sw-proj-a14gnk_3\\internal-comms-logic\\SKILL.md: flow internal-comms: inputs request; writes -; runs -",
+        "clean"
+      ]
+    },
+    "clean": true,
+    "built_equals_a_draft": true,
+    "expected_phrases": {}
+  },
+  "turns": [
+    {
+      "prompt": "Use skillwren to convert the existing skill at ./source/internal-comms/SKILL.md ",
+      "result": "The source skill is short. Here is the requirement inventory I extracted. Please confirm or correct it before I draft anything.\n\n**Source:** `./source/internal-comms/SKILL.md`. It links to four `examples/*.md` files, but **those files don't exist** in `source/internal-comms/`. Only `SKILL.md` is there.\n\n**Requirement inventory**\n\n| # | Requirement | Source |\n|---|---|---|\n| R1 | Use the skill whenever asked to write internal communications. These include 3P updates, company newsletters, FAQ responses, status reports, leadership updates, project updates and incident reports. | \"When to use\" and the description |\n| R2 | Step 1: identify the communication type from the request. | \"How to use\", step 1 |\n| R3 | Step 2: load the matching guideline file from `examples/`. | step 2 |\n| R3a | `3p-updates.md` is for Progress/Plans/Problems team updates. | step 2 |\n| R3b | `company-newsletter.md` is for company-wide newsletters. | step 2 |\n| R3c | `faq-answers.md` is for answering frequently asked questions. | step 2 |\n| R3d | `general-comms.md` is for anything else that doesn't explicitly match the above. | step 2 |\n| R4 | Step 3: follow that file's instructions for formatting, tone and content gathering. | step 3 |\n| R5 | If the type doesn't match any existing guideline, ask for clarification or more context about the desired format. | closing paragraph |\n| R6 | *(inferred)* The load in R3 must come before the writing in R4. | ordering of the steps |\n| R7 | *(inferred)* The keywords are discovery metadata: 3P updates, company newsletter, company comms, weekly update, faqs, common questions, updates, internal comms. They go in the description, not the logic. | \"Keywords\" |\n| R8 | *(inferred)* The `license: Complete terms in LICENSE.txt` frontmatter is kept as a note. `LICENSE.txt` is also missing from the source. | frontmatter |\n\n**Open tension:** R3d says `general-comms.md` handles anything that doesn't match, while R5 says to ask the user when nothing matches. My proposed reading is to use `general-comms.md` when the request is clearly internal comms of an unlisted kind. I would ask the user only when the request is too unclear to classify at all.\n\n**Missing guideline files:** I'll model the `examples/*.md` loads as `read ... otherwise: abort`, so a missing file stops the skill instead of being guessed at. Do you want that, or should I fall back to general guidance?\n\nReply \"confirmed\", or tell me what to change. I'll then draft in `./internal-comms-draft/`, run the checker, and build to `./internal-comms-logic`. The original stays untouched.",
+      "num_turns": 6,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 4,
+      "commands": [],
+      "check_calls": 0
+    },
+    {
+      "prompt": "Confirmed: the inventory is complete and correct. Go ahead and build it.",
+      "result": "The internal-comms skill is now checked SkillWren logic in `./internal-comms-logic`. The check came back clean and the build reported 0 warnings. The original `source/internal-comms/SKILL.md` was not touched, and the working draft is in `./internal-comms-draft/`.\n\nI did not run `SW approve`. That step is yours: read the workflow explanation below, and if it matches what you meant, record your approval yourself.\n\n**How the logic works**\n1. It aborts if there is no request.\n2. It classifies the request and shows the classification. If the request is too unclear to classify at all, it asks you for more context and classifies again.\n3. It loads the matching file from `examples/`:\n   - `3p-updates.md` for 3P updates\n   - `company-newsletter.md` for newsletters\n   - `faq-answers.md` for FAQ answers\n   - `general-comms.md` for everything else\n4. If a guideline file is missing, it aborts and names the file.\n5. It verifies that the guideline loaded and isn't empty.\n6. It writes the communication following the guideline's formatting, tone and content gathering, shows it, and returns it.\n\n**Where each requirement landed**\n\n| Requirement | Landed in |\n|---|---|\n| R1 (use for all internal comms) and R7 (keywords) | The `description` frontmatter. |\n| R2 (identify the type) | The classify step. |\n| R3 and R3a\u2013d (load the right file) | The four `read` branches. |\n| R4 (follow the guideline) | The `guideline instructions` step meaning and the final write. |\n| R5 (ask when unclear) | The `ask` branch. This is the tension I flagged earlier. I resolved it as agreed: unlisted but clear types go to `general-comms.md`, and only a request too unclear to classify triggers a question. |\n| R6 (load before writing) | An order rule: the guideline verify comes before generating the communication. |\n| R8 (license note) | A line in the description. |\n\n**Coverage**\n- **Recorded:** the order rule and the verify gate. A command result backs them, so a violation can be detected after a run.\n- **Instructed only:** `require request exists`. Only the model's own judgment enforces it.\n- **Enforced:** none. Only a guard policy would make a rule enforced.\n\n**Limits**\n- A clean check shows the procedure is well formed and ordered. It does not show that a model will follow it.\n- The classification and the branch conditions are the model's judgment, and the checker can't verify them.\n- The source's `examples/*.md` files and `LICENSE.txt` don't exist, so none of the guideline content is in the package. The skill aborts with a clear message until you add those files.\n- The checker flagged `comm_type` as unused when it only appeared in branch conditions. I added `show comm_type` after classifying to resolve that. I also dropped `comm_type` from the final generate step, so the guideline file is what shapes the output.",
+      "num_turns": 21,
+      "is_error": false,
+      "changes_since_start": {
+        "created": [
+          "internal-comms-draft/.skillwren/budget.json",
+          "internal-comms-draft/SKILL.md",
+          "internal-comms-logic/SKILL.md",
+          "internal-comms-logic/manifest.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "tool_calls": 20,
+      "commands": [
+        "mkdir -p internal-comms-draft && cat > internal-comms-draft/SKILL.md <<'EOF'\n---\nname: internal-comms\ndescription: Write internal communications in the company's preferred formats - 3P updates (Progress, Plans, Problems), company newsletters, FAQ answers, status reports, leadership updates, project updates and incident reports. Use whenever asked to write internal comms, a weekly update, company comms, FAQs or common questions. License terms are in LICENSE.txt in the original skill.\n---\n\n# Internal comms\n\n```contract\ninputs:\n  request\norder:\n  read guideline before generate communication\n```\n\n```logic\ninternal-comms:\n  require request exists\n    otherwise:\n      abort with \"Say which internal communication to write.\"\n\n  label classifying:\n  generate communication type from request as comm_type\n\n  if comm_type is too unclear to classify at all:\n    ask user for more context about the desired format as clarification\n    apply update with clarification as request\n    return to classifying\n\n  if comm_type is a 3P update (Progress, Plans, Problems):\n    read 3p updates guideline from examples as guideline\n      otherwise:\n        abort with \"examples/3p-updates.md is missing.\"\n  else if comm_type is a company newsletter:\n    read newsletter guideline from examples as guideline\n      otherwise:\n        abort with \"examples/company-newsletter.md is missing.\"\n  else if comm_type is an FAQ answer:\n    read faq guideline from examples as guideline\n      otherwise:\n        abort with \"examples/faq-answers.md is missing.\"\n  else:\n    read general guideline from examples as guideline\n      otherwise:\n        abort with \"examples/general-comms.md is missing.\"\n\n  generate communication from request and guideline as communication\n  apply guideline instructions with guideline as communication\n  show communication\n  return communication as communication\n```\n\n## Step meanings\n\n- **update**: fold the user's answer into the request.\n- **guideline instructions**: follow the loaded guideline file for formatting, tone and content gathering.\n- **examples**: the `examples/` directory of this skill.\nEOF\nSW=\"py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\"\n$SW check --fragment --summary --audit internal-comms-draft/SKILL.md; echo exit $?",
+        "cd internal-comms-draft && python3 - <<'EOF'\np='SKILL.md'\ns=open(p).read()\na=s.index(\"  if comm_type is a 3P\")\nb=s.index(\"  generate communication from\")\nnew='''  if comm_type is a 3P update (Progress, Plans, Problems):\n    read 3p updates guideline from examples as guideline\n      otherwise:\n        abort with \"examples/3p-updates.md is missing.\"\n  if comm_type is a company newsletter:\n    read newsletter guideline from examples as guideline\n      otherwise:\n        abort with \"examples/company-newsletter.md is missing.\"\n  if comm_type is an FAQ answer:\n    read faq guideline from examples as guideline\n      otherwise:\n        abort with \"examples/faq-answers.md is missing.\"\n  if comm_type is anything else:\n    read general guideline from examples as guideline\n      otherwise:\n        abort with \"examples/general-comms.md is missing.\"\n\n'''\nopen(p,'w').write(s[:a]+new+s[b:])\nEOF\ncd ..; py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit internal-comms-draft/SKILL.md; echo exit $?",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit internal-comms-draft/SKILL.md; echo exit $?",
+        "python3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit internal-comms-draft/SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit internal-comms-draft/SKILL.md",
+        "pwd; ls -la; ls -la internal-comms-draft",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit internal-comms-draft/SKILL.md",
+        "cd internal-comms-draft && py -3 - <<'EOF'\np='SKILL.md'\ns=open(p).read()\na=s.index(\"  label classifying:\")\nb=s.index(\"## Step meanings\")\nnew='''  label classifying:\n  generate request classification from request as comm_type\n\n  if comm_type is too unclear to classify at all:\n    ask user for more context about the desired format as clarification\n    apply update with clarification as request\n    return to classifying\n\n  if comm_type is a 3P update (Progress, Plans, Problems):\n    read 3p updates guideline from examples as guideline\n      otherwise:\n        abort with \"examples/3p-updates.md is missing.\"\n  else:\n    if comm_type is a company newsletter:\n      read newsletter guideline from examples as guideline\n        otherwise:\n          abort with \"examples/company-newsletter.md is missing.\"\n    else:\n      if comm_type is an FAQ answer:\n        read faq guideline from examples as guideline\n          otherwise:\n            abort with \"examples/faq-answers.md is missing.\"\n      else:\n        read general guideline from examples as guideline\n          otherwise:\n            abort with \"examples/general-comms.md is missing.\"\n\n  verify the guideline file was loaded and is not empty from guideline\n    otherwise:\n      abort with \"No guideline loaded; cannot write the communication.\"\n\n  generate communication from request, comm_type and guideline as communication\n  apply guideline instructions with guideline as communication\n  show communication\n  return communication as communication\n```\n\n'''\ns=s[:a]+new+s[b:]\ns=s.replace(\"  read guideline before generate communication\",\"  verify the guideline file was loaded before generate communication\")\nopen(p,'w').write(s)\nEOF\ncd .. && py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit internal-comms-draft/SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit internal-comms-draft/SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit internal-comms-draft/SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py check --fragment --summary --audit internal-comms-draft/SKILL.md",
+        "SW=\"py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py\"; $SW explain-workflow internal-comms-draft/SKILL.md; echo ----; $SW coverage internal-comms-draft/SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py build internal-comms-draft --out internal-comms-logic",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py explain-workflow internal-comms-draft/SKILL.md",
+        "py -3 Z:/SkillWren/plugin/skillwren/scripts/skillwren.py coverage internal-comms-draft/SKILL.md"
+      ],
+      "check_calls": 9
+    }
+  ]
+}

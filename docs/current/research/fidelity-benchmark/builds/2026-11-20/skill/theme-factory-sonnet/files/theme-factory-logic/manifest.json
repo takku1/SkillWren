@@ -1,0 +1,27 @@
+{
+  "format": "skillwren-build-1",
+  "mode": "fragments",
+  "entry": "SKILL.md",
+  "checked_fragments": [
+    "SKILL.md"
+  ],
+  "expanded_sha256": "7cc0cacbecd57bc1e79707cad9e8e1a827cb97a4da6f1764f1594dbbe406eae3",
+  "expanded_bytes": 2472,
+  "tree_sha256": "ce6e3942b146722df91a67a566d501dfa78da8e440d273e1260c9d4b9163ee78",
+  "sources": {
+    "SKILL.md": {
+      "sha256": "60dcebcfa5cd3325eba04b0b4b3d515059d4fe31e2c427370677383b8badef78",
+      "bytes": 2448
+    }
+  },
+  "contexts": [],
+  "deferred_contexts": [],
+  "warnings": [
+    {
+      "file": "SKILL.md",
+      "line": 12,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'show showcase' is the model's own judgment"
+    }
+  ]
+}

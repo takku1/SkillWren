@@ -1,0 +1,20 @@
+{
+ "checks": [
+  {
+   "draft": "4b09dbda500003838e21980da12122c8c3a002166406597e43b1ea989e1ca56a",
+   "result": "ab2256219e9cbaaf57e3932ce230fd9f067247fe9130a902adcf6aaf015ce9fa"
+  },
+  {
+   "draft": "4b09dbda500003838e21980da12122c8c3a002166406597e43b1ea989e1ca56a",
+   "result": "ab2256219e9cbaaf57e3932ce230fd9f067247fe9130a902adcf6aaf015ce9fa"
+  },
+  {
+   "draft": "319e0972851f64d58f03ed10bca29107412136cb9b8db52aa42ae2d9bd109981",
+   "result": "f1f9e2701c15e3f6bdc236ddaaf29504decdc71ef88ac80e015c83dfe4931586"
+  },
+  {
+   "draft": "5b556db6a11baedc845d786d972af9ff6687f99eec9dc417ad55fabb1741a5b7",
+   "result": "f1d1c1be3668f15bf977e4a864ba461608d2ec2af055f3c58c8dead2ae910f7e"
+  }
+ ]
+}

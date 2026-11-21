@@ -1,0 +1,2 @@
+skillwren compile: candidate still invalid after repairs:
+  I7 R22: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Label doubles with their simulated guarantees, limits, and replacement conditions; doubles do not establish operational integration.

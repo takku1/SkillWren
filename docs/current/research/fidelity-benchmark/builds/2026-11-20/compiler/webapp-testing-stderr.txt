@@ -1,0 +1,2 @@
+skillwren compile: candidate still invalid after repairs:
+  SKILL.md:59: U1: apply target 'source' may be unbound on some path

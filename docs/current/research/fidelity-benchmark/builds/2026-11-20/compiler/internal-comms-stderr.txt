@@ -1,0 +1,7 @@
+skillwren compile: candidate still invalid after repairs:
+  I5 R2: anchor not found in the candidate: 'L20'
+  I7 R3: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Step 2: Load the guideline file matching the type from examples/: 3P (Progress/Plans/Problems) team updates -> examples/3p-updates.md.
+  I7 R4: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Company-wide newsletters -> examples/company-newsletter.md.
+  I7 R5: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Answering frequently asked questions -> examples/faq-answers.md.
+  I7 R6: source demands effect evidence, but no landed statement records it (a `verify ... from` an exec result, an ask/confirmation, or a write): Anything else that doesn't explicitly match the above (e.g. status reports, leadership updates, project updates, incident reports) -> examples/general-comms.md.
+  I9 -: decision statement traces to no requirement (over-asking or permission restriction): SKILL.md:26: require confirmation

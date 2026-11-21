@@ -1,0 +1,16 @@
+{
+ "checks": [
+  {
+   "draft": "2c2835584ecec349e6d6c095901f9753821adeabad2c804d6eeba16fb134ee10",
+   "result": "1cf102b66281b1dce4f6b4ac2e14c61a6ad5a827c0fdb9cef6d9bbce4ede438a"
+  },
+  {
+   "draft": "f95d7960c8afbe6bc6b7dba0db523544ef2dc3b7ea58a14f0030a93c93f1a1af",
+   "result": "9ed76ac57bf84242f9d9bcf7e940e76b7567ab045ddd3331300fc707bd5874c1"
+  },
+  {
+   "draft": "5715aa3a345f4284bb3cccc73211102d4c44328df261b5db050376f36a99c0cc",
+   "result": "90a4a3e827740c30fa8370e83ca958703584b2dd94422ca9e6c5ad98d47e223c"
+  }
+ ]
+}

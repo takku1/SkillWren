@@ -1,0 +1,51 @@
+{
+  "format": "skillwren-build-1",
+  "mode": "fragments",
+  "entry": "SKILL.md",
+  "checked_fragments": [
+    "SKILL.md"
+  ],
+  "expanded_sha256": "f051fbf99bdd08b04941439b435e6ebbc62edb0bb5fbc2fed85b5cc388b20376",
+  "expanded_bytes": 5259,
+  "tree_sha256": "1fcd52e8241b56fe7ae99ae37ea4ffc478edbf448475be0bdd8497466084d322",
+  "sources": {
+    "SKILL.md": {
+      "sha256": "69fd0274b6103ddf0753a4e38020a402bd2ecf7f3ccf0d921fad36890f181546",
+      "bytes": 5235
+    }
+  },
+  "contexts": [],
+  "deferred_contexts": [],
+  "warnings": [
+    {
+      "file": "SKILL.md",
+      "line": 24,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'verify #intent the intent is one sentence' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 25,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'verify #intent the intent is one sentence' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 26,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'verify #details quality' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 27,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'verify #tests tests were reviewed' is the model's own judgment"
+    },
+    {
+      "file": "SKILL.md",
+      "line": 28,
+      "rule": "W15",
+      "message": "order rule rests on self-report: every statement matching 'verify #report the report has' is the model's own judgment"
+    }
+  ]
+}
