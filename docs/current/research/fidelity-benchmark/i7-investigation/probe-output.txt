@@ -1,0 +1,13 @@
+case                   tag     landed classes               findings
+IC-read-effect         effect  self                         I7
+IC-read-exec-verify    exec    evidence,self                pass
+IC-read-self           self    self                         pass
+IC-invented-exec       effect  evidence,self                I7
+IC-invented-write      effect  effect,self                  pass
+CR-show-effect         effect  self                         I7
+CR-invented-write      effect  effect,self                  pass
+CR-output-in-prose     effect                               I7
+TF-show-effect         effect  self                         I7
+X-exec-self-report     exec    self                         I7
+X-effect-lost          effect  self                         I7
+X-user-lost            user    self                         I7
