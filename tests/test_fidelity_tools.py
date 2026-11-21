@@ -24,7 +24,7 @@ def bench(tmp, line):
     (base / "review").mkdir()
     (base / "sources" / "demo" / "SKILL.md").write_text(SOURCE, encoding="utf-8")
     (base / "review" / "demo.md").write_text(
-        "# Requirement review: demo\n\nSource: sources/demo/SKILL.md\nReviewed by: Ada\nDate: 2026-11-20\n"
+        "# Requirement review: demo\n\nSource: sources/demo/SKILL.md\nReviewed by: Ada\nDate: 2026-11-20\nApproval: human\n"
         "Candidate status: AI-drafted.\n\n" + line + "\n", encoding="utf-8")
     return base
 
@@ -50,6 +50,22 @@ class FidelityToolTests(unittest.TestCase):
             self.assertEqual(frozen["source_sha256"], sha(fidelity_freeze.BENCH / "sources" / "demo" / "SKILL.md"))
             self.assertEqual(frozen["candidate_provenance"], "AI-drafted.")
             self.assertEqual(frozen["reviewed_by"], "Ada")
+
+    def test_freeze_requires_a_stated_approval_kind_and_carries_it(self):
+        line = '- [x] DM-1 | prohibition | Never write outside build/. | "Never write outside build/."'
+        with tempfile.TemporaryDirectory() as tmp:
+            base = bench(tmp, line)
+            review = base / "review" / "demo.md"
+            with mock.patch.object(fidelity_freeze, "BENCH", base), \
+                    mock.patch.object(fidelity_score, "BENCH", base):
+                review.write_text(review.read_text(encoding="utf-8").replace("Approval: human\n", ""),
+                                  encoding="utf-8")
+                self.assertEqual(fidelity_freeze.main([]), 1)  # no approval kind
+                review.write_text(review.read_text(encoding="utf-8").replace(
+                    "Date: 2026-11-20\n", "Date: 2026-11-20\nApproval: AI-reviewed baseline\n"), encoding="utf-8")
+                self.assertEqual(fidelity_freeze.main([]), 0)
+                _, _, basis = fidelity_score.requirements("demo", candidates=False)
+        self.assertTrue(basis.startswith("frozen (AI-reviewed baseline)"), basis)
 
     def test_scorer_refuses_a_source_or_review_changed_since_freezing(self):
         line = '- [x] DM-1 | prohibition | Never write outside build/. | "Never write outside build/."'

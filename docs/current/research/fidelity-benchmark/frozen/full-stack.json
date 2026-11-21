@@ -1,0 +1,276 @@
+{
+  "source": "sources/full-stack/SKILL.md",
+  "source_sha256": "359499366e2bd4e3a4c0223cd7d4c144d158cdf5ac5562d8f08b16267f90095c",
+  "review_sha256": "2334e210504fa479982c4b4892d077f2842e575e5b1c2800d9c1c8d4141eac2a",
+  "reviewed_by": "ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner",
+  "date": "2026-11-20",
+  "approval": "AI-reviewed baseline",
+  "candidate_provenance": "AI-drafted, AI-reviewed three times (drafting session; external AI reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human reviewer's name and date.",
+  "requirements": [
+    {
+      "id": "FS-1",
+      "kept": true,
+      "kind": "authority",
+      "requirement": "Planning is the default; a request to build or implement authorizes implementation only within that scope.",
+      "quote": "Planning is the default; a request to build or implement authorizes the implementation path within that scope.",
+      "inferred": false
+    },
+    {
+      "id": "FS-2",
+      "kept": true,
+      "kind": "authority",
+      "requirement": "Follow existing task authorization without asking for approval again.",
+      "quote": "Follow existing task authorization without repeated approval.",
+      "inferred": false
+    },
+    {
+      "id": "FS-3",
+      "kept": true,
+      "kind": "authority",
+      "requirement": "Deployment, publication, tool installation and delegation are not authorized by a build request; they need their own permission.",
+      "quote": "Deployment, publication, tool installation, and delegation follow their own applicable permissions.",
+      "inferred": false
+    },
+    {
+      "id": "FS-4",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Identify the subject repository, outcome, selected work IDs, constraints and exclusions.",
+      "quote": "Identify the subject repository, outcome, selected work IDs, constraints, and exclusions.",
+      "inferred": false
+    },
+    {
+      "id": "FS-5",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Inspect applicable instructions and representative code, contracts, tests and prototypes.",
+      "quote": "Inspect applicable instructions and representative code, contracts, tests, and prototypes.",
+      "inferred": false
+    },
+    {
+      "id": "FS-6",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Preserve authoritative documents, IDs and project vocabulary.",
+      "quote": "Preserve authoritative documents, IDs, and project vocabulary.",
+      "inferred": false
+    },
+    {
+      "id": "FS-7",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Keep current state, target state and migration distinct; documentation and mock data do not establish working behavior.",
+      "quote": "documentation and mock data do not establish working behavior",
+      "inferred": false
+    },
+    {
+      "id": "FS-8",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Classify discoveries and proposed mechanisms as required now, existing dependency, unresolved prerequisite or deferred enhancement.",
+      "quote": "Classify discoveries and proposed mechanisms as",
+      "inferred": false
+    },
+    {
+      "id": "FS-9",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "Discovery does not authorize expansion or replacement.",
+      "quote": "discovery does not authorize expansion or replacement",
+      "inferred": false
+    },
+    {
+      "id": "FS-10",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Resolve ambiguity from evidence, state consequential assumptions, and continue with reversible ordinary choices.",
+      "quote": "State consequential assumptions and use reversible ordinary choices to continue.",
+      "inferred": false
+    },
+    {
+      "id": "FS-11",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "Before a costly-to-reverse commitment, record its consequences, migration or reversal options, and affected work.",
+      "quote": "record consequences, migration/reversal options, and affected work before committing",
+      "inferred": false
+    },
+    {
+      "id": "FS-12",
+      "kept": true,
+      "kind": "exception",
+      "requirement": "Ask for clarification only when a missing answer changes the outcome or authority.",
+      "quote": "seek clarification only when a missing answer changes the outcome or authority",
+      "inferred": false
+    },
+    {
+      "id": "FS-13",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Preserve settled user decisions.",
+      "quote": "Preserve settled user decisions.",
+      "inferred": false
+    },
+    {
+      "id": "FS-14",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Load references only as needed.",
+      "quote": "Load references only as needed",
+      "inferred": false
+    },
+    {
+      "id": "FS-15",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Trace behavior from trigger through state transitions to result, including failure, retry, cancellation and recovery.",
+      "quote": "including relevant failure, retry, cancellation, and recovery",
+      "inferred": false
+    },
+    {
+      "id": "FS-16",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Use one authority per state set, or an explicit coordination protocol.",
+      "quote": "Use one authority per state set or an explicit coordination protocol.",
+      "inferred": false
+    },
+    {
+      "id": "FS-17",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Research uncertainty that could change the design; preserve valid existing choices.",
+      "quote": "Research uncertainty that could change the design",
+      "inferred": false
+    },
+    {
+      "id": "FS-18",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Label test doubles with their simulated guarantees, limits and replacement conditions; they do not establish operational integration.",
+      "quote": "Label doubles and their simulated guarantees, limits, and replacement conditions",
+      "inferred": false
+    },
+    {
+      "id": "FS-19",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Keep requirements, assumptions, inspection, executed tests, measurements and proof distinct, and mark unexecuted checks.",
+      "quote": "Mark unexecuted checks",
+      "inferred": false
+    },
+    {
+      "id": "FS-20",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Maintain one authoritative work registry in the subject project.",
+      "quote": "Maintain one authoritative work registry in the subject project.",
+      "inferred": false
+    },
+    {
+      "id": "FS-21",
+      "kept": true,
+      "kind": "output",
+      "requirement": "Design-only work delivers scope, linked design, ownership and contracts, research-backed choices, ordered increments and blockers, and says what is ready versus conditional.",
+      "quote": "Identify what is ready versus conditional.",
+      "inferred": false
+    },
+    {
+      "id": "FS-22",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Authorized implementation continues through the selected acceptance criteria; a first working increment does not complete the milestone.",
+      "quote": "Design readiness and a first working increment do not mean the milestone is complete.",
+      "inferred": false
+    },
+    {
+      "id": "FS-23",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Explain excluding a material quality concern, without adding unrelated scope.",
+      "quote": "Explain excluding a material concern without adding unrelated scope.",
+      "inferred": false
+    },
+    {
+      "id": "FS-24",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Match each consumer's assumptions to provider guarantees, or record them as explicit unresolved conditions.",
+      "quote": "Match consumer assumptions to provider guarantees or explicit unresolved conditions.",
+      "inferred": false
+    },
+    {
+      "id": "FS-25",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "Resolve consequential reuse before detailing custom internals.",
+      "quote": "resolve consequential reuse before detailing custom internals",
+      "inferred": false
+    },
+    {
+      "id": "FS-26",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Stop at adopted providers' public boundaries and allocate the required fit gaps.",
+      "quote": "Stop at adopted providers' public boundaries and allocate required fit gaps.",
+      "inferred": false
+    },
+    {
+      "id": "FS-27",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "Screens, nouns, directories and workflow steps do not dictate components.",
+      "quote": "Screens, nouns, directories, and workflow steps do not dictate components",
+      "inferred": false
+    },
+    {
+      "id": "FS-33",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "Components do not dictate files, packages, services, processes or teams.",
+      "quote": "components do not dictate files, packages, services, processes, or teams",
+      "inferred": false
+    },
+    {
+      "id": "FS-28",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Split components where different decisions need hiding, authority changes hands, protection or lifecycle differs, or coupling prevents a coherent increment.",
+      "quote": "Split where different decisions need hiding, authority changes hands, protection/lifecycle differs, or coupling prevents a coherent increment.",
+      "inferred": false
+    },
+    {
+      "id": "FS-29",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "Resolve shared interface work before claiming that increments are independent.",
+      "quote": "resolve shared interface work before claiming independence",
+      "inferred": false
+    },
+    {
+      "id": "FS-30",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "Do not freeze requirements before exploring architecture; iterate as evidence changes.",
+      "quote": "do not freeze requirements before exploring architecture",
+      "inferred": false
+    },
+    {
+      "id": "FS-31",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "An increment is design-ready only when its outcome, contracts, prerequisites and checks are usable and its consequential decisions are resolved.",
+      "quote": "A next increment is design-ready when its outcome, contracts, prerequisites, and checks are usable and consequential decisions resolved.",
+      "inferred": false
+    },
+    {
+      "id": "FS-32",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Separate prototype appearance and interaction requirements from simulated behavior.",
+      "quote": "Separate prototype appearance/interaction requirements from simulated behavior.",
+      "inferred": false
+    }
+  ],
+  "dropped": []
+}

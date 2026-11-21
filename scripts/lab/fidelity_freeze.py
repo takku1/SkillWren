@@ -14,7 +14,8 @@ requirement supported by several passages joins them with " ... ", each checked 
 A verified quote proves the text exists, not that the requirement represents it: that is
 the human reviewer's judgment;
 a line whose quote is `inferred` records something the reviewer accepts without a source
-span. Freezing refuses a file without `Reviewed by:` and `Date:` filled in, writes
+span. Freezing refuses a file without `Reviewed by:`, `Date:` and `Approval:` (`human` or
+`AI-reviewed baseline`) filled in, writes
 frozen/<source>.json with the source and review digests, and never overwrites a frozen
 file whose digests differ (re-freezing needs a new version).
 """
@@ -28,6 +29,9 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 BENCH = ROOT / "docs" / "current" / "research" / "fidelity-benchmark"
 KINDS = {"obligation", "prohibition", "exception", "ordering", "authority", "output"}
+# What kind of approval froze the list. It is recorded and shown with every score and report,
+# so an AI-reviewed baseline is never presented as human-approved ground truth.
+APPROVALS = ("human", "AI-reviewed baseline")
 LINE = re.compile(r"^- \[( |x)\] ([A-Z]{2}-\d+) \| (\w+) \| (.+?) \| (.+)$")
 
 
@@ -42,6 +46,7 @@ def parse(review):
               (("source", re.search(r"^Source: (\S+)", text, re.M)),
                ("reviewed_by", re.search(r"^Reviewed by:(.*)$", text, re.M)),
                ("date", re.search(r"^Date:(.*)$", text, re.M)),
+               ("approval", re.search(r"^Approval:(.*)$", text, re.M)),
                ("candidate_status", re.search(r"^Candidate status:(.*(?:\n(?![-#\n]).*)*)", text, re.M)))}
     source = BENCH / header["source"] if header["source"] else None
     body = norm(source.read_text(encoding="utf-8")) if source and source.is_file() else None
@@ -91,6 +96,9 @@ def main(argv=None):
             for field in ("reviewed_by", "date"):
                 if not header[field] or header[field].startswith("<"):
                     problems.append(f"'{field.replace('_', ' ')}' is not filled in")
+            if header["approval"] not in APPROVALS:
+                problems.append("'Approval:' must be one of: " + ", ".join(APPROVALS)
+                                + " (say which kind of review this is; it travels with every result)")
         status = "ok" if not problems else "PROBLEMS"
         print(f"{review.name}: {len(kept)} kept of {len(items)} ({status})")
         for p in problems:
@@ -101,7 +109,7 @@ def main(argv=None):
         out = BENCH / "frozen" / f"{review.stem}.json"
         record = {"source": header["source"], "source_sha256": digest(BENCH / header["source"]),
                   "review_sha256": digest(review), "reviewed_by": header["reviewed_by"],
-                  "date": header["date"],
+                  "date": header["date"], "approval": header["approval"],
                   "candidate_provenance": " ".join(header["candidate_status"].split()),
                   "requirements": kept,
                   "dropped": [i["id"] for i in items if not i["kept"]]}

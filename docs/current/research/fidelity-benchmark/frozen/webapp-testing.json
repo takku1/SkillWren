@@ -1,0 +1,124 @@
+{
+  "source": "sources/webapp-testing/SKILL.md",
+  "source_sha256": "51b7349e77ec63b7744a6f63647e7566a0b4d2e301121cc10e8c2113af6556a2",
+  "review_sha256": "bde1950fa548079b2f27e0afd9c4dae6b8841f13cce25ab21fd64a95f5fa7223",
+  "reviewed_by": "ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner",
+  "date": "2026-11-20",
+  "approval": "AI-reviewed baseline",
+  "candidate_provenance": "AI-drafted, AI-reviewed three times (drafting session; external AI reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human reviewer's name and date.",
+  "requirements": [
+    {
+      "id": "WT-1",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Test local web applications by writing native Python Playwright scripts.",
+      "quote": "write native Python Playwright scripts",
+      "inferred": false
+    },
+    {
+      "id": "WT-2",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "Run a helper script with `--help` before using it.",
+      "quote": "Always run scripts with `--help` first",
+      "inferred": false
+    },
+    {
+      "id": "WT-3",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "Do not read a helper script's source unless running it showed that a customized solution is absolutely necessary.",
+      "quote": "DO NOT read the source until you try running the script first",
+      "inferred": false
+    },
+    {
+      "id": "WT-4",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Before writing custom code, consider whether a bundled script in `scripts/` can do the job, and use it as a black box.",
+      "quote": "consider whether one of the scripts available in `scripts/` can help",
+      "inferred": false
+    },
+    {
+      "id": "WT-5",
+      "kept": true,
+      "kind": "exception",
+      "requirement": "For static HTML, read the HTML file directly to identify selectors; if that fails or is incomplete, treat the app as dynamic.",
+      "quote": "Read HTML file directly to identify selectors",
+      "inferred": false
+    },
+    {
+      "id": "WT-6",
+      "kept": true,
+      "kind": "exception",
+      "requirement": "For a dynamic app whose server is not running, use `scripts/with_server.py` (after `--help`) to manage the server.",
+      "quote": "Run: python scripts/with_server.py --help",
+      "inferred": false
+    },
+    {
+      "id": "WT-7",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "When inspecting a dynamic app (not static HTML), wait for `networkidle` before inspecting the DOM; the wait is not required for static HTML.",
+      "quote": "inspect the DOM before waiting for `networkidle` on dynamic apps",
+      "inferred": false
+    },
+    {
+      "id": "WT-8",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "Reconnaissance before action: inspect the rendered page (screenshot or DOM), identify selectors from it, then act with those selectors.",
+      "quote": "Identify selectors from rendered state",
+      "inferred": false
+    },
+    {
+      "id": "WT-9",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Automation scripts contain only Playwright logic; the helper manages servers.",
+      "quote": "include only Playwright logic (servers are managed automatically)",
+      "inferred": false
+    },
+    {
+      "id": "WT-10",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Launch Chromium in headless mode.",
+      "quote": "Always launch chromium in headless mode",
+      "inferred": false
+    },
+    {
+      "id": "WT-11",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Always close the browser when done.",
+      "quote": "Always close the browser when done",
+      "inferred": false
+    },
+    {
+      "id": "WT-12",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Use `sync_playwright()` for synchronous scripts.",
+      "quote": "Use `sync_playwright()` for synchronous scripts",
+      "inferred": false
+    },
+    {
+      "id": "WT-13",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Use descriptive selectors (`text=`, `role=`, CSS selectors or IDs).",
+      "quote": "Use descriptive selectors",
+      "inferred": false
+    },
+    {
+      "id": "WT-14",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Add appropriate waits (`wait_for_selector` or `wait_for_timeout`).",
+      "quote": "Add appropriate waits",
+      "inferred": false
+    }
+  ],
+  "dropped": []
+}

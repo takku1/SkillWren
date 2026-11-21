@@ -1,8 +1,9 @@
 # Requirement review: webapp-testing
 
 Source: sources/webapp-testing/SKILL.md
-Reviewed by: <your name>
-Date: <YYYY-MM-DD>
+Reviewed by: ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner
+Date: 2026-11-20
+Approval: AI-reviewed baseline
 Candidate status: AI-drafted, AI-reviewed three times (drafting session; external AI
 reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human
 reviewer's name and date.
@@ -36,3 +37,4 @@ be wrong? If not, drop it.
 
 - WT-7 states its condition explicitly: the `networkidle` wait applies to dynamic-app inspection only (external AI review).
 - Revision 3: no requirement changes (external AI review found it consistent with the source).
+- Approval: the owner relayed an AI reviewer's approval of revision 3 as an AI-reviewed baseline, explicitly not human-approved ground truth. The reviewer identity is as the review states it; it was not independently verified.

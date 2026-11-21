@@ -1,8 +1,9 @@
 # Requirement review: full-stack (0.2 prose)
 
 Source: sources/full-stack/SKILL.md
-Reviewed by: <your name>
-Date: <YYYY-MM-DD>
+Reviewed by: ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner
+Date: 2026-11-20
+Approval: AI-reviewed baseline
 Candidate status: AI-drafted, AI-reviewed three times (drafting session; external AI
 reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human
 reviewer's name and date.
@@ -56,3 +57,4 @@ most scrutiny from you, not from the drafter.
 - FS-24 (consumer/provider contracts), FS-25 (resolve reuse first) and FS-27 (components are not deployment units) added from the external AI review's list of missing architectural constraints.
 - FS-26, FS-28 to FS-32 added on a second reading of the source for the same reason: each can change a generated design (provider boundaries, split criteria, shared interfaces before independence, no early freeze, design readiness, prototype vs simulated behavior).
 - Revision 3: FS-27 split into FS-27 (what does not determine components) and FS-33 (what components do not determine); a compiler could keep one and lose the other (external AI review).
+- Approval: the owner relayed an AI reviewer's approval of revision 3 as an AI-reviewed baseline, explicitly not human-approved ground truth. The reviewer identity is as the review states it; it was not independently verified.

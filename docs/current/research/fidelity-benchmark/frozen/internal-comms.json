@@ -1,0 +1,60 @@
+{
+  "source": "sources/internal-comms/SKILL.md",
+  "source_sha256": "067b7587a344a928fc6534ef66b1bcd591fc7c26d207ea7ca3334aeb678d6475",
+  "review_sha256": "1dcb98009249333b5c61afea1abfcc606ec6c0a2fa31747e51d786a78dadbd0b",
+  "reviewed_by": "ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner",
+  "date": "2026-11-20",
+  "approval": "AI-reviewed baseline",
+  "candidate_provenance": "AI-drafted, AI-reviewed three times (drafting session; external AI reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human reviewer's name and date.",
+  "requirements": [
+    {
+      "id": "IC-1",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Identify the communication type from the request.",
+      "quote": "Identify the communication type",
+      "inferred": false
+    },
+    {
+      "id": "IC-2",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "Load the matching guideline file from `examples/` before writing.",
+      "quote": "Load the appropriate guideline file",
+      "inferred": false
+    },
+    {
+      "id": "IC-3",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Route by type: 3P updates to `3p-updates.md`, newsletters to `company-newsletter.md`, FAQs to `faq-answers.md`; `general-comms.md` is the fallback for any other internal communication (reviewer interpretation of an ambiguous source).",
+      "quote": "For anything else that doesn't explicitly match one of the above",
+      "inferred": false
+    },
+    {
+      "id": "IC-4",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Follow the loaded file's instructions for formatting, tone and content gathering.",
+      "quote": "Follow the specific instructions",
+      "inferred": false
+    },
+    {
+      "id": "IC-5",
+      "kept": true,
+      "kind": "exception",
+      "requirement": "When the desired format is still unclear or unsupported after routing (including the general fallback), ask for clarification or more context about it (reviewer interpretation of an ambiguous source).",
+      "quote": "ask for clarification or more context about the desired format",
+      "inferred": false
+    },
+    {
+      "id": "IC-6",
+      "kept": true,
+      "kind": "authority",
+      "requirement": "The skill applies to internal communications: 3P updates, newsletters, FAQ responses, status reports, leadership updates, project updates, incident reports.",
+      "quote": "To write internal communications, use this skill for:",
+      "inferred": false
+    }
+  ],
+  "dropped": []
+}

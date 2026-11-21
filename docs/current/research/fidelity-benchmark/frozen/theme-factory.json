@@ -1,0 +1,116 @@
+{
+  "source": "sources/theme-factory/SKILL.md",
+  "source_sha256": "c35893e221e28895c52143cc11bf30e41a44817796b39d4b15727dadc9796552",
+  "review_sha256": "29d0175a9a387b900946b10c3dc9c0fe837671d8ed28f9da4572ed77482a3598",
+  "reviewed_by": "ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner",
+  "date": "2026-11-20",
+  "approval": "AI-reviewed baseline",
+  "candidate_provenance": "AI-drafted, AI-reviewed three times (drafting session; external AI reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human reviewer's name and date.",
+  "requirements": [
+    {
+      "id": "TF-1",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "Show the theme showcase (`theme-showcase.pdf`) before asking for a choice.",
+      "quote": "Display the `theme-showcase.pdf` file to allow users to see all available themes visually.",
+      "inferred": false
+    },
+    {
+      "id": "TF-2",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "Never modify the showcase file; only show it.",
+      "quote": "Do not make any modifications to it; simply show the file for viewing.",
+      "inferred": false
+    },
+    {
+      "id": "TF-3",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "The sequence is showcase, then ask which theme to apply, then explicit confirmation of the choice, then apply; no step is skipped or reordered.",
+      "quote": "Display the `theme-showcase.pdf` file ... Ask which theme to apply to the deck ... Get explicit confirmation about the chosen theme ... Once a theme has been chosen, apply the selected theme's colors and fonts to the deck/artifact",
+      "inferred": false
+    },
+    {
+      "id": "TF-4",
+      "kept": true,
+      "kind": "authority",
+      "requirement": "Apply a theme only after the user explicitly confirms the choice.",
+      "quote": "Get explicit confirmation about the chosen theme",
+      "inferred": false
+    },
+    {
+      "id": "TF-5",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "After a theme is chosen, read its file from `themes/` before applying it.",
+      "quote": "Read the corresponding theme file from the `themes/` directory",
+      "inferred": false
+    },
+    {
+      "id": "TF-6",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Apply the theme's colors and fonts consistently throughout the artifact.",
+      "quote": "Apply the specified colors and fonts consistently throughout the deck",
+      "inferred": false
+    },
+    {
+      "id": "TF-7",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Ensure proper contrast and readability.",
+      "quote": "Ensure proper contrast and readability",
+      "inferred": false
+    },
+    {
+      "id": "TF-8",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Keep the theme's visual identity across all slides.",
+      "quote": "Maintain the theme's visual identity across all slides",
+      "inferred": false
+    },
+    {
+      "id": "TF-9",
+      "kept": true,
+      "kind": "exception",
+      "requirement": "When none of the existing themes fits, create a custom theme from the provided inputs.",
+      "quote": "To handle cases where none of the existing themes work for an artifact, create a custom theme.",
+      "inferred": false
+    },
+    {
+      "id": "TF-10",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "A custom theme uses any provided description to choose colors and fonts.",
+      "quote": "Use any basic description provided to choose appropriate colors/fonts.",
+      "inferred": false
+    },
+    {
+      "id": "TF-11",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Name a custom theme for what its font and color combination represents.",
+      "quote": "Give the theme a similar name describing what the font/color combinations represent.",
+      "inferred": false
+    },
+    {
+      "id": "TF-12",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "Show a custom theme for review and verification before applying it.",
+      "quote": "After generating the theme, show it for review and verification.",
+      "inferred": false
+    },
+    {
+      "id": "TF-13",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "The ten preset themes are Ocean Depths, Sunset Boulevard, Forest Canopy, Modern Minimalist, Golden Hour, Arctic Frost, Desert Rose, Tech Innovation, Botanical Garden and Midnight Galaxy.",
+      "quote": "The following 10 themes are available",
+      "inferred": false
+    }
+  ],
+  "dropped": []
+}

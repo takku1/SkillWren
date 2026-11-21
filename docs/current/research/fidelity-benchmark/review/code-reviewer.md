@@ -1,8 +1,9 @@
 # Requirement review: code-reviewer
 
 Source: sources/code-reviewer/SKILL.md
-Reviewed by: <your name>
-Date: <YYYY-MM-DD>
+Reviewed by: ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner
+Date: 2026-11-20
+Approval: AI-reviewed baseline
 Candidate status: AI-drafted, AI-reviewed three times (drafting session; external AI
 reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human
 reviewer's name and date.
@@ -46,3 +47,4 @@ be wrong? If not, drop it.
 - CR-11 now covers both blocking on and nitpicking style when a linter or formatter exists; CR-12 dropped as overlapping (external AI review: CR-11/12/13 overlap; CR-13, personal preferences in general, kept as distinct).
 - CR-23 states that it is derived from `allowed-tools`, not from the prose (external AI review).
 - Revision 3: CR-23 notes that a tool allowlist is not host-enforced isolation (external AI review).
+- Approval: the owner relayed an AI reviewer's approval of revision 3 as an AI-reviewed baseline, explicitly not human-approved ground truth. The reviewer identity is as the review states it; it was not independently verified.

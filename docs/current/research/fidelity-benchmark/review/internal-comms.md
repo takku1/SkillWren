@@ -1,8 +1,9 @@
 # Requirement review: internal-comms
 
 Source: sources/internal-comms/SKILL.md
-Reviewed by: <your name>
-Date: <YYYY-MM-DD>
+Reviewed by: ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner
+Date: 2026-11-20
+Approval: AI-reviewed baseline
 Candidate status: AI-drafted, AI-reviewed three times (drafting session; external AI
 reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human
 reviewer's name and date.
@@ -29,3 +30,4 @@ unsupported" (external AI review). Confirm or correct that reading.
 
 - IC-3 makes `general-comms.md` the fallback; IC-5 asks only when the format is still unclear or unsupported, resolving their overlap (external AI review). The reading is an interpretation: the human reviewer decides.
 - Revision 3: IC-3 and IC-5 are marked in the requirement text as reviewer interpretations, so the frozen key says so (external AI review agreed with the reading).
+- Approval: the owner relayed an AI reviewer's approval of revision 3 as an AI-reviewed baseline, explicitly not human-approved ground truth. The reviewer identity is as the review states it; it was not independently verified.

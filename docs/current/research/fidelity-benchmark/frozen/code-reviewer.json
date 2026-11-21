@@ -1,0 +1,190 @@
+{
+  "source": "sources/code-reviewer/SKILL.md",
+  "source_sha256": "86b4fc6669ea82834f433617dd617ed1011cf7af5f3855c8d759b95690ac1e2a",
+  "review_sha256": "5b1bab1c5ff58600a432a2ad00091b97174d184fc88377edf289a58bc6f9397f",
+  "reviewed_by": "ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner",
+  "date": "2026-11-20",
+  "approval": "AI-reviewed baseline",
+  "candidate_provenance": "AI-drafted, AI-reviewed three times (drafting session; external AI reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human reviewer's name and date.",
+  "requirements": [
+    {
+      "id": "CR-1",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "Summarize the PR's intent in one sentence before reviewing structure, details or tests.",
+      "quote": "Summarize the PR's intent in one sentence before proceeding.",
+      "inferred": false
+    },
+    {
+      "id": "CR-2",
+      "kept": true,
+      "kind": "exception",
+      "requirement": "If the intent cannot be summarized, ask the author to clarify instead of continuing the review.",
+      "quote": "If you cannot, ask the author to clarify.",
+      "inferred": false
+    },
+    {
+      "id": "CR-3",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Read the PR description and understand the problem being solved.",
+      "quote": "Read PR description, understand the problem being solved.",
+      "inferred": false
+    },
+    {
+      "id": "CR-4",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Review architecture and design: whether the change follows existing codebase patterns and whether new abstractions are justified.",
+      "quote": "Does this follow existing patterns in the codebase? Are new abstractions justified?",
+      "inferred": false
+    },
+    {
+      "id": "CR-5",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Check code quality, security and performance, including N+1 queries, hardcoded secrets and injection risks.",
+      "quote": "Are there N+1 queries, hardcoded secrets, or injection risks?",
+      "inferred": false
+    },
+    {
+      "id": "CR-6",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Check for security issues with the OWASP Top 10 as the baseline.",
+      "quote": "Check for security issues (OWASP Top 10 as baseline)",
+      "inferred": false
+    },
+    {
+      "id": "CR-7",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Validate tests: edge cases are covered and tests assert behavior, not implementation.",
+      "quote": "Are edge cases covered? Do tests assert behavior, not implementation?",
+      "inferred": false
+    },
+    {
+      "id": "CR-8",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Review tests as thoroughly as code.",
+      "quote": "Review tests as thoroughly as code",
+      "inferred": false
+    },
+    {
+      "id": "CR-9",
+      "kept": true,
+      "kind": "ordering",
+      "requirement": "Note critical issues as soon as they are found, not only at the end.",
+      "quote": "If critical issues are found in step 3, note them immediately and do not wait until the end.",
+      "inferred": false
+    },
+    {
+      "id": "CR-10",
+      "kept": true,
+      "kind": "exception",
+      "requirement": "When the author explained a non-obvious choice in comments, acknowledge that reasoning before suggesting an alternative.",
+      "quote": "acknowledge their reasoning before suggesting an alternative",
+      "inferred": false
+    },
+    {
+      "id": "CR-11",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "When a linter or formatter is configured, do not block on style preferences or nitpick style.",
+      "quote": "Never block on style preferences when a linter or formatter is configured.",
+      "inferred": false
+    },
+    {
+      "id": "CR-13",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "Do not block on personal preferences.",
+      "quote": "Block on personal preferences",
+      "inferred": false
+    },
+    {
+      "id": "CR-14",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "Do not be condescending or rude.",
+      "quote": "Be condescending or rude",
+      "inferred": false
+    },
+    {
+      "id": "CR-15",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "Do not demand perfection.",
+      "quote": "Demand perfection",
+      "inferred": false
+    },
+    {
+      "id": "CR-16",
+      "kept": true,
+      "kind": "prohibition",
+      "requirement": "Do not review without understanding why the change was made.",
+      "quote": "Review without understanding the why",
+      "inferred": false
+    },
+    {
+      "id": "CR-17",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Give specific, actionable feedback.",
+      "quote": "Provide specific, actionable feedback",
+      "inferred": false
+    },
+    {
+      "id": "CR-18",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Include code examples in suggestions.",
+      "quote": "Include code examples in suggestions",
+      "inferred": false
+    },
+    {
+      "id": "CR-19",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Praise good patterns; never skip praising good work.",
+      "quote": "Praise good patterns",
+      "inferred": false
+    },
+    {
+      "id": "CR-20",
+      "kept": true,
+      "kind": "obligation",
+      "requirement": "Prioritize feedback from critical to minor.",
+      "quote": "Prioritize feedback (critical \u2192 minor)",
+      "inferred": false
+    },
+    {
+      "id": "CR-21",
+      "kept": true,
+      "kind": "output",
+      "requirement": "The report contains a summary (one-sentence intent recap and overall assessment), critical, major and minor issues, positive feedback, questions for the author, and a verdict.",
+      "quote": "Code review report must include:",
+      "inferred": false
+    },
+    {
+      "id": "CR-22",
+      "kept": true,
+      "kind": "output",
+      "requirement": "The verdict is one of Approve, Request Changes or Comment.",
+      "quote": "Approve / Request Changes / Comment",
+      "inferred": false
+    },
+    {
+      "id": "CR-23",
+      "kept": true,
+      "kind": "authority",
+      "requirement": "Review only: read and search code; never edit files or run commands (derived from the tool allowlist, not stated in the prose; an allowlist limits the skill's tools, it is not host-enforced isolation).",
+      "quote": "allowed-tools: Read, Grep, Glob",
+      "inferred": false
+    }
+  ],
+  "dropped": [
+    "CR-12"
+  ]
+}

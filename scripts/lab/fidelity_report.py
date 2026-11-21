@@ -57,6 +57,7 @@ def row(result, coverage):
     reqs = result["requirements"]
     preserved = sum(r["verdict"] == "preserved" for r in reqs)
     out = {"source": result["source"], "built": result["built"],
+           "publication": result.get("publication", "published"), "basis": result["basis"],
            "preserved": f"{preserved}/{len(reqs)}",
            "weakened": sum(r["verdict"] == "weakened" for r in reqs),
            "missing": sum(r["verdict"] in ("missing", "unverified") for r in reqs),

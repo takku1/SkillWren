@@ -1,8 +1,9 @@
 # Requirement review: theme-factory
 
 Source: sources/theme-factory/SKILL.md
-Reviewed by: <your name>
-Date: <YYYY-MM-DD>
+Reviewed by: ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner
+Date: 2026-11-20
+Approval: AI-reviewed baseline
 Candidate status: AI-drafted, AI-reviewed three times (drafting session; external AI
 reviews 2026-11-20, revisions 2 and 3). Not human-approved: freezing needs the human
 reviewer's name and date.
@@ -35,3 +36,4 @@ be wrong? If not, drop it.
 
 - TF-3 restated as the full sequence (showcase, ask, explicit confirmation, apply); it was labelled ordering but only said to ask (external AI review).
 - Revision 3: TF-3's quote now covers all four steps of the sequence (multi-span quote, each span verified) instead of only the ask (external AI review).
+- Approval: the owner relayed an AI reviewer's approval of revision 3 as an AI-reviewed baseline, explicitly not human-approved ground truth. The reviewer identity is as the review states it; it was not independently verified.

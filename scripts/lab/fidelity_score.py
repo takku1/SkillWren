@@ -89,7 +89,9 @@ def requirements(source_id, candidates):
             sys.exit(f"{rel} changed since it was frozen ({key} differs): scoring would compare a "
                      "different text against the old answer key. Start a new benchmark revision: "
                      "move frozen/" + f"{source_id}.json aside, review again, and re-freeze.")
-    return data["source"], data["requirements"], f"frozen, reviewed by {data['reviewed_by']} on {data['date']}"
+    approval = data.get("approval", "unstated approval")
+    return data["source"], data["requirements"], \
+        f"frozen ({approval}), reviewed by {data['reviewed_by']} on {data['date']}"
 
 
 def judge(source_text, built_text, reqs, model):
@@ -131,6 +133,10 @@ def main(argv=None):
     parser.add_argument("built")
     parser.add_argument("--candidates", action="store_true", help="score against the unreviewed candidates")
     parser.add_argument("--model", default="sonnet")
+    parser.add_argument("--publication", default="published",
+                        choices=["published", "refused (diagnostic)"],
+                        help="whether the build path published this artifact; a refused draft is scored "
+                             "as a diagnostic and never counted as a successful build")
     parser.add_argument("--out")
     parser.add_argument("--adjudication", metavar="FILE",
                         help="write a Markdown sheet of every weakened, missing or unverified verdict and "
@@ -155,6 +161,7 @@ def main(argv=None):
     counts = {k: sum(r["verdict"] == k for r in rows) for k in ("preserved", "weakened", "missing", "unverified")}
     result = {
         "source": args.source_id, "built": str(args.built), "basis": basis, "judge": f"model ({args.model})",
+        "publication": args.publication,
         "preservation": {"total": len(rows), **counts,
                          "rate": round(counts["preserved"] / len(rows), 3) if rows else None},
         "introduction": {"total": len(introduced), "widening": sum(i["widens"] for i in introduced),
