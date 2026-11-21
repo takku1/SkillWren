@@ -272,7 +272,11 @@ class SkillLoadGuardTests(unittest.TestCase):
         args = [str(policy), '--audit', str(self.host / 'audit.jsonl'),
                 '--checkpoint', str(self.host / 'audit.ckpt')]
         err = io.StringIO()
-        with mock.patch('sys.stderr', err):
+        # Empty stdin: a guard that wrongly accepted the policy would read requests and must
+        # not block the suite waiting on the terminal (it hung the mutation sweep).
+        empty = io.TextIOWrapper(io.BytesIO(b''))
+        with mock.patch('sys.stderr', err), mock.patch('sys.stdin', empty), \
+                mock.patch('sys.stdout', io.StringIO()):
             self.assertEqual(guard_module.main(args), 2)
         self.assertIn('run id', err.getvalue())
         self.record()

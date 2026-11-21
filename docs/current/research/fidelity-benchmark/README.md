@@ -24,6 +24,7 @@ Without it the benchmark would grade a model against a model.
 | Candidate requirement lists: 88 kept (89 lines), every quote verbatim in its source | AI-drafted, AI-reviewed three times (revision logs in each file); **awaiting human approval** (`review/`) |
 | Freeze tool (`scripts/lab/fidelity_freeze.py`) | done |
 | Preservation and introduction scorer (`scripts/lab/fidelity_score.py`) | done; smoke-tested on candidates only |
+| Report gate (`scripts/lab/fidelity_report.py`): no numbers until adjudication is complete | done |
 | Builds to score: `skillwren compile` and the skill, two models | after freezing |
 | Execution scenarios | after freezing |
 
@@ -77,6 +78,11 @@ frozen digests. The same judge scores both build paths, so its errors may
 be correlated: `--adjudication FILE` lists every weakened, missing or
 unverified verdict and every widening introduction for the human reviewer
 to confirm or overturn before a comparison is reported.
+
+Comparisons are published only through `scripts/lab/fidelity_report.py`,
+which refuses while any adjudication line is unmarked or a result was scored
+against candidates, applies the reviewer's overturns, and reports `ambiguous`
+enforcement mappings in their own column (never as enforcement failures).
 
 A verified quote shows the cited text exists in the source; it does not
 show that the requirement states it faithfully. That is what the human

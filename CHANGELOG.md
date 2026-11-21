@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- `scripts/lab/fidelity_report.py`: fidelity comparisons are published only
+  after human adjudication is complete (every doubtful verdict and widening
+  introduction marked agree or overturn); overturns are applied, candidate-
+  basis results are refused, ambiguous enforcement mappings get their own
+  column. One more code mutant (42/42).
+- Mutation sweep made deterministic: one mutant (`skill-load-run-id-optional`)
+  let the guard read stdin, which the sweep inherited from the terminal, so
+  it hung until the 300 s timeout in full sweeps and was killed when run
+  alone. The test now gives that call an empty stdin and the sweep closes
+  stdin. This was the cause of the 0.13.1 "one-off" timeout, not load.
+
 ## 0.13.2 (2026-11-20)
 
 - `coverage --fidelity` maps requirements conservatively: a quote spanning

@@ -121,6 +121,8 @@ MUTANTS = {
     "coverage-duplicate-quote-accepted": ("src/skillwren/coverage.py",
                                           "        if at < 0 or flat.find(quote, at + 1) >= 0:",
                                           "        if at < 0:"),
+    "fidelity-report-skips-adjudication": ("scripts/lab/fidelity_report.py",
+                                           '        if mark not in ("x", "!"):', "        if False:"),
     # Finding 5, ledger
     "ledger-exclusions-ignored": ("src/skillwren/ledger.py",
                                   "    excluded = any(r[\"violations\"] for r in report[\"exclusions\"])",
@@ -177,6 +179,7 @@ def run(name, rel, old, new):
                                    "test_guard_workflow", "test_mutations",
                                    "test_guard_skill_load", "test_coverage", "test_fidelity_tools"],
                                   cwd=root / "tests", capture_output=True, text=True, timeout=300,
+                                  stdin=subprocess.DEVNULL,
                                   env={**os.environ, "PYTHONPATH": str(root / "src")})
         except subprocess.TimeoutExpired:
             # A hang is not a kill: report it as a survivor and keep sweeping.
