@@ -25,7 +25,7 @@ Without it the benchmark would grade a model against a model.
 | Freeze tool (`scripts/lab/fidelity_freeze.py`) | done |
 | Preservation and introduction scorer (`scripts/lab/fidelity_score.py`) | done; smoke-tested on candidates only |
 | Report gate (`scripts/lab/fidelity_report.py`): no numbers until adjudication is complete | done |
-| Builds to score: `skillwren compile` and the skill, two models | after freezing |
+| Round 1 builds (Sonnet, both paths), scores, AI adjudication, report | done: `builds/2026-11-20/RESULTS.md` |
 | Execution scenarios | after freezing |
 
 ## Corpus

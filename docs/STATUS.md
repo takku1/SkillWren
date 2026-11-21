@@ -15,6 +15,15 @@ runtime comparison. Current verification results are recorded in CI.
 
 ## Active Focus
 
+- Fidelity benchmark round 1 published (`research/fidelity-benchmark/builds/2026-11-20/RESULTS.md`;
+  AI-reviewed baseline, AI-adjudicated): skill agent 5/5 published, 85/88
+  preserved, 0 widening; compiler 0/5 published (its evidence rule and
+  anchor checks refused all five), its drafts 83/88 preserved with 2
+  widening introductions. Refusals did not track fidelity; the compiler's
+  drafts anchored more requirements to evidence. Next: fix the I13 anchor
+  issue on control-flow grounds, then a separately pinned compiler round 2
+  with the I7 evidence rule unchanged.
+
 - Translation, enforcement and behavior are measured separately (0.13):
   `skillwren coverage` labels every rule, gate and write enforced,
   recorded, instructed or unverifiable (SPEC 25); the fidelity benchmark

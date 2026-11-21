@@ -4,6 +4,9 @@ Built: `docs/current/research/fidelity-benchmark/builds/2026-11-20/skill/code-re
 
 Mark each line [x] agree or [!] overturn, with a reason.
 
+Adjudicated by: ChatGPT (GPT-6), AI adjudication, 2026-11-20, relayed by the repository owner. Not independent human validation.
+
+
 ## Requirement verdicts
 
 

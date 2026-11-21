@@ -4,9 +4,12 @@ Built: `docs/current/research/fidelity-benchmark/builds/2026-11-20/skill/interna
 
 Mark each line [x] agree or [!] overturn, with a reason.
 
+Adjudicated by: ChatGPT (GPT-6), AI adjudication, 2026-11-20, relayed by the repository owner. Not independent human validation.
+
+
 ## Requirement verdicts
 
-- [ ] IC-5 (exception): judge says weakened. The built skill asks for clarification only when the type cannot be classified at all, and that check happens before routing. Anything unclear goes to the general fallback with no question. The source asks when the format doesn't match any guideline. Quote: "if comm_type is too unclear to classify at all:"
+- [x] IC-5 (exception): judge says weakened. The built skill asks for clarification only when the type cannot be classified at all, and that check happens before routing. Anything unclear goes to the general fallback with no question. The source asks when the format doesn't match any guideline. Quote: "if comm_type is too unclear to classify at all:" -- Agree (#14): IC-5 is weakened. The generated skill asks only when classification fails entirely. It misses cases where the communication category is recognizable but the desired format remains unclear or unsupported.
 
 ## Introduced behavior that widens what the agent may do
 
