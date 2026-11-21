@@ -1,0 +1,18 @@
+[
+  {
+    "source": "webapp-testing",
+    "built": "docs/current/research/fidelity-benchmark/builds/2026-11-21-round2-attempt2/compiler/webapp-testing/SKILL.md",
+    "publication": "published",
+    "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+    "preserved": "13/14",
+    "weakened": 1,
+    "missing": 0,
+    "overturned": 1,
+    "widening_introductions": 1,
+    "enforced": 0,
+    "recorded": 2,
+    "instructed": 10,
+    "unverifiable": 0,
+    "ambiguous": 0
+  }
+]

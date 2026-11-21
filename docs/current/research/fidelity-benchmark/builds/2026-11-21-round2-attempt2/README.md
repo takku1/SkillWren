@@ -11,7 +11,7 @@ was rerun whole.
 |---|---|---|
 | code-reviewer | refused: 3x I7, 3x I13 | refused: 2x I7 |
 | full-stack | refused: 1x I7 | refused: 4x U1 |
-| webapp-testing | refused: U1 | **published** (exit 1: open items, "Not approved"; judge finding: an invented `verify usage` gate) |
+| webapp-testing | refused: U1 | **published** (exit 1: open items, "Not approved"; the judge's WT-3 "gated on usage" finding was overturned in adjudication) |
 | theme-factory | refused: P1, 1x I7 | refused: 3x I7 |
 | internal-comms | refused: 4x I7, I5, I9 | refused: 4x I7, I9 |
 | Published | 0/5 | 1/5 |
@@ -33,6 +33,13 @@ was rerun whole.
 
 `scores/`: the five artifacts scored once against the frozen AI-reviewed
 baseline (Sonnet judge, $0.20): webapp-testing as published, the other
-four as refused drafts (diagnostic). 12 judgments wait for adjudication in
-`scores/*.adjudication.md`; no fidelity comparison is published until they
-are marked and run through `scripts/lab/fidelity_report.py`.
+four as refused drafts (diagnostic). The 12 doubtful judgments were
+AI-adjudicated (ChatGPT, GPT-6, relayed by the owner, 2026-11-21: 6 agree,
+6 overturn) in `scores/*.adjudication.md`, then published:
+
+```text
+py -3 scripts/lab/fidelity_report.py scores/compiler-webapp-testing.json --coverage scores/compiler-webapp-testing.coverage.json --out report-compiler-published.json
+py -3 scripts/lab/fidelity_report.py scores/compiler-{code-reviewer,full-stack,theme-factory,internal-comms}.json --coverage scores/compiler-{code-reviewer,full-stack,theme-factory,internal-comms}.coverage.json --out report-compiler-diagnostic.json
+```
+
+Results and reading: `RESULTS.md`.
