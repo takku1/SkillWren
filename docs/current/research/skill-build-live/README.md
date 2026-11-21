@@ -140,7 +140,8 @@ packaged. The model can still delete the record; the skill tells it not to.
 Limits: one run per cell; synthetic tasks; scripted corrections; the
 expected-phrase, no-`write` and no-relabel checks are smoke tests, not a
 measure of whether a built skill means what its source meant (that needs
-human-reviewed requirements, the next research step).
+reviewed requirements; since run as the fidelity benchmark against an
+AI-reviewed baseline, `../fidelity-benchmark/`).
 
 ## 0.13.0 smoke: coverage in the skill (`smoke-0.13.0-coverage/`, $0.03)
 

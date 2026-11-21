@@ -4,7 +4,7 @@
 
 ## Current Phase
 
-Package 0.13.2, release candidate for supervised skill authoring: the `skillwren` skill installs as a self-contained Claude Code plugin
+Package 0.13.3, release candidate for supervised skill authoring: the `skillwren` skill installs as a self-contained Claude Code plugin
 (`/plugin install skillwren --marketplace takku1/SkillWren`, no pip), builds
 a new skill from a request or converts one, and a headless agent with only
 the plugin built a checked skill end to end. Runtime pieces (guard, ledger)
@@ -39,7 +39,7 @@ runtime comparison. Current verification results are recorded in CI.
   `skillwren coverage` labels every rule, gate and write enforced,
   recorded, instructed or unverifiable (SPEC 25); the fidelity benchmark
   (`research/fidelity-benchmark/`) scores preservation and introduction
-  against human-reviewed requirements, and `coverage --fidelity` gives each
+  against an AI-reviewed requirement baseline, and `coverage --fidelity` gives each
   preserved requirement its enforcement tier. The 88 requirements are
   frozen as an AI-reviewed baseline (not human-approved). The
   credential-dependent container bypass experiment is not authorized.
@@ -156,6 +156,13 @@ real-host harness, adapters, and model-measurement tools.
 
 ## Key Decisions
 
+- 2026-11-20/21: the fidelity benchmark's ground truth is an AI-reviewed
+  baseline and its adjudications are AI adjudications, labelled as such in
+  every sheet and report; neither is presented as human approval. Rounds
+  are pinned, failures kept, nothing rerun selectively, and the compiler
+  is not changed in response to scored answers without a separate pinned
+  round. Changes reach `main` through PRs only.
+
 - 2026-11-20: four properties are kept separate and reported separately:
   faithful translation, declared enforcement (`coverage`), demonstrated
   enforcement (the guard denies violations sent through it) and enforcement
@@ -251,15 +258,20 @@ real-host harness, adapters, and model-measurement tools.
 - Live harness snapshots files after each turn, so a file changed and
   restored within one turn is not seen; command logs narrow this but are
   not filesystem auditing.
-- Built skills are smoke-checked, not semantically verified: the fidelity
-  benchmark (`research/fidelity-benchmark/`) awaits the owner's approval of
-  its 88 candidate requirements.
+- Built skills are smoke-checked, not semantically verified. The fidelity
+  benchmark measures preservation against an AI-reviewed baseline with AI
+  adjudication, one run per cell; no human has approved the requirements
+  or validated a judgment, and the execution score is not yet run.
+- `compile` publishes few benchmark sources (0/5 in round 1, 1/5 in round
+  2): I7 refuses requirements whose inventory evidence tag is wrong and
+  frozen (`research/fidelity-benchmark/i7-investigation/`); a fix is
+  proposed, not decided.
 
 ## Documents
 
 - `skills/skillwren/` (the skill's sources) and `plugin/` (generated,
   installable); `docs/current/research/skill-build-live/` (live proof)
-- `docs/current/SPEC.md` (normative; Section 21 for 0.9, Sections 22-23 for 0.10, 24 for 0.11),
+- `docs/current/SPEC.md` (normative; Section 21 for 0.9, Sections 22-23 for 0.10, 24 for 0.11, 25 for 0.13),
   `authoring-guide.md`, `skill-template.md`, `fragment-template.md`,
   `compiler.md`, `language-design.md`, `quickstart-runtime.md`
 - `docs/current/design/`: fragments and ordering, compact conversion,

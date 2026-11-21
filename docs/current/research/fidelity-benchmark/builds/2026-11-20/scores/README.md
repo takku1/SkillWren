@@ -1,5 +1,9 @@
 # Round 1 scores: awaiting adjudication
 
+> Status (2026-11-21): adjudication is complete (AI-adjudicated, recorded in
+> each sheet) and the results are published in `../RESULTS.md`. The text
+> below is the record as written before adjudication.
+
 Ten artifacts scored once against the frozen **AI-reviewed baseline**
 (88 requirements; not human-approved), judge Sonnet, $0.38:
 
