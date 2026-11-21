@@ -1,0 +1,18 @@
+{
+ "source": "internal-comms",
+ "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+ "preservation": {
+  "total": 6,
+  "preserved": 5,
+  "weakened": 1,
+  "missing": 0,
+  "unverified": 0,
+  "rate": 0.833
+ },
+ "introduction": {
+  "total": 4,
+  "widening": 0,
+  "unquoted": 0
+ },
+ "cost_usd": 0.0256
+}

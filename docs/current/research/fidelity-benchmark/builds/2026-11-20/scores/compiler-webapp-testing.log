@@ -1,0 +1,18 @@
+{
+ "source": "webapp-testing",
+ "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+ "preservation": {
+  "total": 14,
+  "preserved": 11,
+  "weakened": 3,
+  "missing": 0,
+  "unverified": 0,
+  "rate": 0.786
+ },
+ "introduction": {
+  "total": 4,
+  "widening": 0,
+  "unquoted": 0
+ },
+ "cost_usd": 0.039
+}

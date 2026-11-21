@@ -1,0 +1,325 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-20/skill/full-stack-sonnet/files/full-stack-logic/SKILL.md": {
+    "items": [
+      {
+        "line": 14,
+        "kind": "order rule",
+        "text": "exec readonly repository inspection before generate scope",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 15,
+        "kind": "order rule",
+        "text": "exec readonly repository inspection before write work_registry",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 16,
+        "kind": "order rule",
+        "text": "write work_registry before write implementation",
+        "tier": "recorded",
+        "why": "earlier step leaves effect; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 17,
+        "kind": "order rule",
+        "text": "verify #accepted before return#implemented",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 22,
+        "kind": "gate",
+        "text": "require request exists",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 26,
+        "kind": "command",
+        "text": "exec readonly repository inspection from repository as inspection",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 32,
+        "kind": "gate",
+        "text": "require user clarifies the outcome or authority",
+        "tier": "recorded",
+        "why": "a user decision backs it"
+      },
+      {
+        "line": 40,
+        "kind": "write",
+        "text": "write commitment with project",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 46,
+        "kind": "gate",
+        "text": "verify #designready the next increment has usable outcome, contracts, prerequisites and checks, with consequential decisions resolved from design",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 54,
+        "kind": "write",
+        "text": "write work_registry with project",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 60,
+        "kind": "write",
+        "text": "write implementation with project",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 61,
+        "kind": "command",
+        "text": "exec acceptance checks from project as checks",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 62,
+        "kind": "gate",
+        "text": "verify #accepted every selected acceptance criterion is met from checks",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 67,
+        "kind": "write",
+        "text": "write implementation with project",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 68,
+        "kind": "command",
+        "text": "exec acceptance checks from project as checks",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 9,
+      "instructed": 6,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "FS-1",
+        "kind": "authority",
+        "tier": "instructed",
+        "why": "prose (line 56), not a checked element"
+      },
+      {
+        "id": "FS-2",
+        "kind": "authority",
+        "tier": "instructed",
+        "why": "prose (line 100), not a checked element"
+      },
+      {
+        "id": "FS-3",
+        "kind": "authority",
+        "tier": "instructed",
+        "why": "prose (line 100), not a checked element"
+      },
+      {
+        "id": "FS-4",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 86), not a checked element"
+      },
+      {
+        "id": "FS-5",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 80), not a checked element"
+      },
+      {
+        "id": "FS-6",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 86), not a checked element"
+      },
+      {
+        "id": "FS-7",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 86), not a checked element"
+      },
+      {
+        "id": "FS-8",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 86), not a checked element"
+      },
+      {
+        "id": "FS-9",
+        "kind": "prohibition",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "FS-10",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 87), not a checked element"
+      },
+      {
+        "id": "FS-11",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 88), not a checked element"
+      },
+      {
+        "id": "FS-12",
+        "kind": "exception",
+        "tier": "instructed",
+        "why": "prose (line 87), not a checked element"
+      },
+      {
+        "id": "FS-13",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 86), not a checked element"
+      },
+      {
+        "id": "FS-14",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 86), not a checked element"
+      },
+      {
+        "id": "FS-15",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 89), not a checked element"
+      },
+      {
+        "id": "FS-16",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 89), not a checked element"
+      },
+      {
+        "id": "FS-17",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 89), not a checked element"
+      },
+      {
+        "id": "FS-18",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 89), not a checked element"
+      },
+      {
+        "id": "FS-19",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 90), not a checked element"
+      },
+      {
+        "id": "FS-20",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 85), not a checked element"
+      },
+      {
+        "id": "FS-21",
+        "kind": "output",
+        "tier": "instructed",
+        "why": "prose (line 98), not a checked element"
+      },
+      {
+        "id": "FS-22",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 93), not a checked element"
+      },
+      {
+        "id": "FS-23",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 90), not a checked element"
+      },
+      {
+        "id": "FS-24",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 89), not a checked element"
+      },
+      {
+        "id": "FS-25",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 89), not a checked element"
+      },
+      {
+        "id": "FS-26",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 89), not a checked element"
+      },
+      {
+        "id": "FS-27",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 90), not a checked element"
+      },
+      {
+        "id": "FS-33",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 90), not a checked element"
+      },
+      {
+        "id": "FS-28",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 90), not a checked element"
+      },
+      {
+        "id": "FS-29",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 89), not a checked element"
+      },
+      {
+        "id": "FS-30",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 89), not a checked element"
+      },
+      {
+        "id": "FS-31",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "gate line 46: the model's own judgment; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "FS-32",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 89), not a checked element"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 0,
+      "instructed": 32,
+      "unverifiable": 0,
+      "ambiguous": 0,
+      "null": 1
+    }
+  }
+}

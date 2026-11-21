@@ -1,0 +1,325 @@
+{
+  "source": "full-stack",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-20/compiler/full-stack-failed/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "refused (diagnostic)",
+  "preservation": {
+    "total": 33,
+    "preserved": 31,
+    "weakened": 2,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 0.939
+  },
+  "introduction": {
+    "total": 6,
+    "widening": 0,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "FS-1",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Planning is the default; a request to build or implement authorizes the implementation path within that scope.",
+      "reason": "Same statement of default and scoped authorization."
+    },
+    {
+      "id": "FS-2",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Follow existing task authorization without repeated approval.",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-3",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "deploy, publish, install tools, or delegate without its own applicable permission",
+      "reason": "Never-rule requires own permission for all four."
+    },
+    {
+      "id": "FS-4",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "identify the subject repository, outcome, selected work IDs, constraints, and exclusions",
+      "reason": "Grounding step covers all."
+    },
+    {
+      "id": "FS-5",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "exec #inspect inspect applicable instructions, code, contracts, tests, and prototypes from subject as inspection",
+      "reason": "Inspection step with verify; representative coverage is implied."
+    },
+    {
+      "id": "FS-6",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "preserve authoritative documents, IDs, and project vocabulary",
+      "reason": "Always rule."
+    },
+    {
+      "id": "FS-7",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "treat documentation and mock data as not establishing working behavior",
+      "reason": "Together with the distinct state rule."
+    },
+    {
+      "id": "FS-8",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "label each discovery and proposed mechanism as exactly one of required now, existing dependency, unresolved prerequisite, or deferred enhancement",
+      "reason": "Same categories."
+    },
+    {
+      "id": "FS-9",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "let discovery authorize expansion or replacement",
+      "reason": "Never rule."
+    },
+    {
+      "id": "FS-10",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "resolve ambiguity from available evidence; state consequential assumptions and use reversible ordinary choices to continue.",
+      "reason": "Assumptions step."
+    },
+    {
+      "id": "FS-11",
+      "kind": "ordering",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "if a commitment is costly to reverse:\n    apply commitment record with design as design\n    write #costly design with registry",
+      "reason": "Source requires recording before committing; built only orders the record as a step, with no explicit before-commitment ordering."
+    },
+    {
+      "id": "FS-12",
+      "kind": "exception",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "if a missing answer changes the outcome or authority:\n    ask user to settle the missing outcome or authority decision",
+      "reason": "Condition matches, but it also adds another ask when design-only vs implementation is ambiguous, which widens asking beyond the source."
+    },
+    {
+      "id": "FS-13",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "preserve settled user decisions",
+      "reason": "Always rule."
+    },
+    {
+      "id": "FS-14",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Consult references only as needed: references/terminology.md for ambiguous concepts or relations",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-15",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "follow trigger, state transitions, and result, including relevant failure, retry, cancellation, and recovery",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-16",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "one authority per state set or an explicit coordination protocol",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-17",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "research uncertainty that could change the design using references/research.md; preserve valid existing choices",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-18",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "label doubles with their simulated guarantees, limits, and replacement conditions",
+      "reason": "Plus never rule on operational integration."
+    },
+    {
+      "id": "FS-19",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "keep requirements, invariants, assumptions, source inspection, executed tests, measurements, and proof distinct",
+      "reason": "Plus mark unexecuted checks."
+    },
+    {
+      "id": "FS-20",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "The registry is the one authoritative work registry in the subject project.",
+      "reason": "Plus registry writes."
+    },
+    {
+      "id": "FS-21",
+      "kind": "output",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "The delivered design-only report covers scope, linked design, ownership and contracts, research-backed choices, ordered increments, and blockers, and states what is ready versus conditional.",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-22",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "follow the guide and continue through the selected acceptance criteria; design readiness and a first working increment do not mean the milestone is complete.",
+      "reason": "Same, with a retry loop."
+    },
+    {
+      "id": "FS-23",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "explain excluding any material concern without adding unrelated scope.",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-24",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "match consumer assumptions to provider guarantees or explicit unresolved conditions",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-25",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "resolve consequential reuse before detailing custom internals",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-26",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "stop at adopted providers' public boundaries and allocate required fit gaps",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-27",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "screens, nouns, directories, and workflow steps do not dictate components",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-33",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "components do not dictate files, packages, services, processes, or teams.",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-28",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "split only where different decisions need hiding, authority changes hands, protection or lifecycle differs, or coupling prevents a coherent increment",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-29",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "resolve shared interface work before claiming independence",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-30",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "freeze requirements before exploring architecture",
+      "reason": "Never rule, plus iterate instruction in context."
+    },
+    {
+      "id": "FS-31",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "judge whether the next increment is design-ready: outcome, contracts, prerequisites, and checks usable and consequential decisions resolved.",
+      "reason": "Same."
+    },
+    {
+      "id": "FS-32",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "separate prototype appearance and interaction requirements from simulated behavior",
+      "reason": "Same."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Ask the user whether to deliver design only or implement when ambiguous, and require confirmation (source says planning is the default)",
+      "quote": "ask user to decide whether to deliver design only or implement",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Ask the user to grant permission for deployment, publication, installation or delegation",
+      "quote": "ask user to grant permission for that action",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Write the design to the registry, and write implementation work to the subject",
+      "quote": "write #implementation work with subject",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Ordering constraint: inspect before write to the registry, and implementation before acceptance",
+      "quote": "exec#inspect before write#registry",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Blocker stop rule: return the design as the report when a failure persists with the same evidence",
+      "quote": "if the failure persists with the same evidence:",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Classification requires exactly one label per item",
+      "quote": "exactly one of required now",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0582
+}

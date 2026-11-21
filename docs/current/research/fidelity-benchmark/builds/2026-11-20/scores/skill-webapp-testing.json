@@ -1,0 +1,167 @@
+{
+  "source": "webapp-testing",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-20/skill/webapp-testing-sonnet/files/webapp-testing-logic/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "published",
+  "preservation": {
+    "total": 14,
+    "preserved": 13,
+    "weakened": 1,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 0.929
+  },
+  "introduction": {
+    "total": 5,
+    "widening": 1,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "WT-1",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Test and interact with local web applications using native Python Playwright scripts.",
+      "reason": "Scripts are generated and written as Playwright scripts in all branches."
+    },
+    {
+      "id": "WT-2",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "exec with_server help before exec with_server run",
+      "reason": "Contract orders help before run, and the logic runs help and verifies it was read."
+    },
+    {
+      "id": "WT-3",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "`scripts/with_server.py` is a black box: call it, never read its source unless running it showed a customized solution is absolutely necessary.",
+      "reason": "Same prohibition with same exception."
+    },
+    {
+      "id": "WT-4",
+      "kind": "obligation",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "`scripts/with_server.py` is a black box: call it, never read its source",
+      "reason": "Black-box use is stated only for with_server. No step requires considering a bundled script before writing custom code. In the static and running-server branches the agent writes custom scripts without that consideration."
+    },
+    {
+      "id": "WT-5",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read target html from target as html\n      otherwise:\n        apply dynamic marking with request as request\n        return to start",
+      "reason": "Static HTML is read directly. If reading fails or the selectors are incomplete, the app is treated as dynamic."
+    },
+    {
+      "id": "WT-6",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "if the server is not already running:\n      exec with_server help from launcher as usage",
+      "reason": "The dynamic branch with no running server runs the helper after --help."
+    },
+    {
+      "id": "WT-7",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify #idle the recon waited for networkidle before inspecting the DOM from recon",
+      "reason": "The dynamic recon branch enforces the networkidle wait. The script rules also require it for dynamic apps, and the static branch is exempt."
+    },
+    {
+      "id": "WT-8",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify #idle before generate action selectors",
+      "reason": "Recon is run first, selectors are generated from the recon, then the action script is written and run."
+    },
+    {
+      "id": "WT-9",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "the script contains only Playwright logic (servers are managed by the helper)",
+      "reason": "Required by the script rules, which are applied and verified."
+    },
+    {
+      "id": "WT-10",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "launches chromium with `headless=True`",
+      "reason": "Part of the script rules, which are verified."
+    },
+    {
+      "id": "WT-11",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "always closes the browser when done",
+      "reason": "Part of the script rules."
+    },
+    {
+      "id": "WT-12",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "uses `sync_playwright()`",
+      "reason": "Part of the script rules."
+    },
+    {
+      "id": "WT-13",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "uses descriptive selectors (`text=`, `role=`, CSS, IDs)",
+      "reason": "Part of the script rules."
+    },
+    {
+      "id": "WT-14",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "adds appropriate waits (`page.wait_for_selector()` or `page.wait_for_timeout()`)",
+      "reason": "Part of the script rules."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Abort with a user message if no request is given",
+      "quote": "abort with \"Say which local web app to test and what to check.\"",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Abort if the help output cannot be run or read",
+      "quote": "abort with \"with_server.py --help could not be run; its source stays unread until the script has been tried.\"",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Writes script files to disk and executes them",
+      "quote": "write script with script_file",
+      "widens": true,
+      "quote_found": true
+    },
+    {
+      "behavior": "The recon script is restricted to screenshot, content and button listing, and performs no other actions",
+      "quote": "It performs no other actions.",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Recon writes a screenshot to /tmp/inspect.png",
+      "quote": "page.screenshot(path='/tmp/inspect.png', full_page=True)",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0364
+}

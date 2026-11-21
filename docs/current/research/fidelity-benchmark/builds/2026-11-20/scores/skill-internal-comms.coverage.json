@@ -1,0 +1,79 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-20/skill/internal-comms-sonnet/files/internal-comms-logic/SKILL.md": {
+    "items": [
+      {
+        "line": 12,
+        "kind": "order rule",
+        "text": "verify the guideline file was loaded before generate communication",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 17,
+        "kind": "gate",
+        "text": "require request exists",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 49,
+        "kind": "gate",
+        "text": "verify the guideline file was loaded and is not empty from guideline",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 2,
+      "instructed": 1,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "IC-1",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 22), not a checked element"
+      },
+      {
+        "id": "IC-2",
+        "kind": "ordering",
+        "tier": "recorded",
+        "why": "order rule line 12: earlier step leaves evidence; `ledger check` detects a violation after the run; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "IC-3",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 45), not a checked element"
+      },
+      {
+        "id": "IC-4",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 62), not a checked element"
+      },
+      {
+        "id": "IC-5",
+        "kind": "exception",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "IC-6",
+        "kind": "authority",
+        "tier": "instructed",
+        "why": "prose (line 3), not a checked element"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 1,
+      "instructed": 4,
+      "unverifiable": 0,
+      "ambiguous": 0,
+      "null": 1
+    }
+  }
+}

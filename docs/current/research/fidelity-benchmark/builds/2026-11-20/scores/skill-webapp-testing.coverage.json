@@ -1,0 +1,253 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-20/skill/webapp-testing-sonnet/files/webapp-testing-logic/SKILL.md": {
+    "items": [
+      {
+        "line": 12,
+        "kind": "order rule",
+        "text": "exec with_server help before exec with_server run",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 13,
+        "kind": "order rule",
+        "text": "verify #idle before generate action selectors",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 18,
+        "kind": "gate",
+        "text": "require request exists",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 29,
+        "kind": "gate",
+        "text": "verify #static the selectors are complete enough to script from selectors",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 35,
+        "kind": "gate",
+        "text": "verify #rules the script follows every script rule from script",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 39,
+        "kind": "write",
+        "text": "write script with script_file",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 40,
+        "kind": "command",
+        "text": "exec automation run from launcher as result",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 43,
+        "kind": "command",
+        "text": "exec with_server help from launcher as usage",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 44,
+        "kind": "gate",
+        "text": "verify #usage the help output was read from usage",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 49,
+        "kind": "gate",
+        "text": "verify #rules_helper the script follows every script rule from script",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 53,
+        "kind": "write",
+        "text": "write script with script_file",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 54,
+        "kind": "command",
+        "text": "exec with_server run from launcher as result",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 58,
+        "kind": "gate",
+        "text": "verify #rules_recon the recon script follows every script rule from recon_script",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 62,
+        "kind": "write",
+        "text": "write recon_script with script_file",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 63,
+        "kind": "command",
+        "text": "exec recon run from launcher as recon",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 64,
+        "kind": "gate",
+        "text": "verify #idle the recon waited for networkidle before inspecting the DOM from recon",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 67,
+        "kind": "write",
+        "text": "write recon_script with script_file",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 68,
+        "kind": "command",
+        "text": "exec recon run from launcher as recon",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 73,
+        "kind": "gate",
+        "text": "verify #rules_action the script follows every script rule from script",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 77,
+        "kind": "write",
+        "text": "write script with script_file",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 78,
+        "kind": "command",
+        "text": "exec automation run from launcher as result",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 10,
+      "instructed": 11,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "WT-1",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 3), not a checked element"
+      },
+      {
+        "id": "WT-2",
+        "kind": "ordering",
+        "tier": "recorded",
+        "why": "order rule line 12: earlier step leaves evidence; `ledger check` detects a violation after the run; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-3",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 94), not a checked element"
+      },
+      {
+        "id": "WT-4",
+        "kind": "obligation",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "WT-5",
+        "kind": "exception",
+        "tier": "instructed",
+        "why": "prose (line 24), not a checked element"
+      },
+      {
+        "id": "WT-6",
+        "kind": "exception",
+        "tier": "recorded",
+        "why": "command line 43: a command result backs it; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-7",
+        "kind": "ordering",
+        "tier": "recorded",
+        "why": "gate line 64: a command result backs it; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-8",
+        "kind": "ordering",
+        "tier": "recorded",
+        "why": "order rule line 13: earlier step leaves evidence; `ledger check` detects a violation after the run; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-9",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 98), not a checked element"
+      },
+      {
+        "id": "WT-10",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 98), not a checked element"
+      },
+      {
+        "id": "WT-11",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 98), not a checked element"
+      },
+      {
+        "id": "WT-12",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 98), not a checked element"
+      },
+      {
+        "id": "WT-13",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 98), not a checked element"
+      },
+      {
+        "id": "WT-14",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 98), not a checked element"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 4,
+      "instructed": 9,
+      "unverifiable": 0,
+      "ambiguous": 0,
+      "null": 1
+    }
+  }
+}

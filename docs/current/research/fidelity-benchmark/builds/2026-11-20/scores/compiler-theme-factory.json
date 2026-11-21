@@ -1,0 +1,147 @@
+{
+  "source": "theme-factory",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-20/compiler/theme-factory-failed/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "refused (diagnostic)",
+  "preservation": {
+    "total": 13,
+    "preserved": 13,
+    "weakened": 0,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 1.0
+  },
+  "introduction": {
+    "total": 3,
+    "widening": 2,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "TF-1",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify#showcase before ask user to choose which theme to apply",
+      "reason": "Showcase is shown and verified before asking for a choice."
+    },
+    {
+      "id": "TF-2",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "never:\n  modify theme-showcase.pdf",
+      "reason": "Explicit never-modify rule, plus step meaning says view only."
+    },
+    {
+      "id": "TF-3",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "ask user to choose which theme to apply\n  require confirmation",
+      "reason": "Logic sequence is show, ask, confirm, then apply; order constraints enforce it."
+    },
+    {
+      "id": "TF-4",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "ask user to choose which theme to apply before write#themed",
+      "reason": "Confirmation is required before applying and writing the themed artifact."
+    },
+    {
+      "id": "TF-5",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read the chosen theme file from themes as theme",
+      "reason": "Theme file is read before apply, and verified."
+    },
+    {
+      "id": "TF-6",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "apply the specified colors and fonts consistently throughout the deck or artifact",
+      "reason": "Stated in theme application step."
+    },
+    {
+      "id": "TF-7",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "ensure proper contrast and readability of the themed artifact",
+      "reason": "Listed in the always block."
+    },
+    {
+      "id": "TF-8",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "maintain the theme's visual identity across all slides",
+      "reason": "Listed in the always block."
+    },
+    {
+      "id": "TF-9",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "if none of the existing themes work for the artifact:\n    generate custom theme from description as theme",
+      "reason": "Custom theme is generated when no preset fits."
+    },
+    {
+      "id": "TF-10",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Use any basic description provided to choose appropriate colors and fonts.",
+      "reason": "Present in the custom theme step meaning."
+    },
+    {
+      "id": "TF-11",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Give it a descriptive name, like the presets, that reflects what the font/color combination represents.",
+      "reason": "Naming requirement is present."
+    },
+    {
+      "id": "TF-12",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "ask user to review and verify the custom theme before write#customthemed",
+      "reason": "The logic shows the theme, asks for review, and requires confirmation before applying and writing."
+    },
+    {
+      "id": "TF-13",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "1. **Ocean Depths** - Professional and calming maritime theme",
+      "reason": "All ten themes are listed."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Runs a check command on the showcase display, and re-shows the showcase if the check fails.",
+      "quote": "exec readonly showcase display check from checks as showcasecheck",
+      "widens": true,
+      "quote_found": true
+    },
+    {
+      "behavior": "Runs a check on the theme file read and, if it can't be confirmed, skips applying and returns a gap note.",
+      "quote": "verify #themefile the chosen theme file was read from themes from themecheck",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Writes the themed artifact out (a file write effect) in both the preset and custom paths.",
+      "quote": "write #themed themed_artifact with artifact",
+      "widens": true,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0316
+}

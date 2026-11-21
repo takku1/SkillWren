@@ -1,0 +1,97 @@
+{
+  "source": "internal-comms",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-20/compiler/internal-comms-failed/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "refused (diagnostic)",
+  "preservation": {
+    "total": 6,
+    "preserved": 5,
+    "weakened": 1,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 0.833
+  },
+  "introduction": {
+    "total": 4,
+    "widening": 0,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "IC-1",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "apply identify communication type with request as comm_type",
+      "reason": "Type identified from the request first."
+    },
+    {
+      "id": "IC-2",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read examples/3p-updates.md as guideline",
+      "reason": "Each branch reads the guideline and verifies load before the draft step, enforced by the order contract."
+    },
+    {
+      "id": "IC-3",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read examples/general-comms.md as guideline",
+      "reason": "3P, newsletter and FAQ route to their own files. The else branch falls back to general-comms."
+    },
+    {
+      "id": "IC-4",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "following the loaded guideline file's specific instructions for formatting, tone, and content gathering",
+      "reason": "The draft step requires following the loaded file."
+    },
+    {
+      "id": "IC-5",
+      "kind": "exception",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "ask user to clarify the desired communication format",
+      "reason": "Clarification is asked only when the type matches neither a known guideline nor general comms. General is the catch-all, so it rarely fires. Unclear formats after routing, including the general fallback, do not trigger a question."
+    },
+    {
+      "id": "IC-6",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "This skill applies whenever asked to write internal communications in the company's preferred formats: status reports, leadership updates, 3P updates, company newsletters, FAQs, incident reports",
+      "reason": "Scope listed in Context and the description."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Refusing to draft and returning a gap record if the user does not confirm clarification",
+      "quote": "apply gap record with request as gap\n        return gap as communication",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Extra load-check verification that the guideline file is non-empty, with failure stopping the draft",
+      "quote": "confirm `examples/3p-updates.md` was read and is non-empty",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Explicit exclusion of external or customer-facing writing",
+      "quote": "Not for external or customer-facing writing.",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Requires reading the guideline file fully and deferring to it over default style",
+      "quote": "read the file fully before drafting and defer to it over any default style",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0256
+}

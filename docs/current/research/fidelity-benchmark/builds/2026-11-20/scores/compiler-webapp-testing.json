@@ -1,0 +1,161 @@
+{
+  "source": "webapp-testing",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-20/compiler/webapp-testing-failed/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "refused (diagnostic)",
+  "preservation": {
+    "total": 14,
+    "preserved": 11,
+    "weakened": 3,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 0.786
+  },
+  "introduction": {
+    "total": 4,
+    "widening": 0,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "WT-1",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "write native Python Playwright scripts for testing local web applications",
+      "reason": "Stated as an always rule."
+    },
+    {
+      "id": "WT-2",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify#help before exec#servers",
+      "reason": "The --help run comes before using with_server.py. The always rule also says to start with --help."
+    },
+    {
+      "id": "WT-3",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read a bundled script's source unless running it with --help was tried and a customized solution is absolutely necessary",
+      "reason": "Same prohibition with the same condition. The source read is gated on this condition in the flow."
+    },
+    {
+      "id": "WT-4",
+      "kind": "obligation",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "run bundled scripts directly as black boxes, starting with --help",
+      "reason": "Black-box use is required. The built skill does not say to consider a bundled script before writing custom code. Only with_server.py is used in the flow, and only when the server is not running."
+    },
+    {
+      "id": "WT-5",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify #html-complete html is complete enough to identify selectors from html\n      otherwise:\n        return to dynamic",
+      "reason": "Static HTML is read directly. A read failure or incomplete HTML falls back to the dynamic path."
+    },
+    {
+      "id": "WT-6",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "exec #servers with_server.py with one --server and --port pair per server, then the automation script from with_server as result",
+      "reason": "When the server is not running, the --help run comes first and with_server.py then manages the servers."
+    },
+    {
+      "id": "WT-7",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "inspect the DOM before waiting for networkidle on dynamic apps",
+      "reason": "The prohibition is scoped to dynamic apps. The static path has no wait, as the source allows."
+    },
+    {
+      "id": "WT-8",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "write#inspect before apply identify selectors",
+      "reason": "The order is inspect, then identify selectors, then act. This is enforced for the running-server path."
+    },
+    {
+      "id": "WT-9",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "keep the automation script to Playwright logic only when with_server.py manages the servers",
+      "reason": "Same rule as the source."
+    },
+    {
+      "id": "WT-10",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "launch chromium headless with sync_playwright and p.chromium.launch(headless=True)",
+      "reason": "Headless launch is required."
+    },
+    {
+      "id": "WT-11",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "close the browser when automation is done",
+      "reason": "Stated as an always rule."
+    },
+    {
+      "id": "WT-12",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "launch chromium headless with sync_playwright and p.chromium.launch(headless=True)",
+      "reason": "The always rule requires sync_playwright."
+    },
+    {
+      "id": "WT-13",
+      "kind": "obligation",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "Use descriptive selectors (`text=`, `role=`, CSS selectors, or IDs). Add appropriate waits with `page.wait_for_selector()` or `page.wait_for_timeout()`. Use judgment on both.",
+      "reason": "This sits in a Taste section, and 'Use judgment on both' turns the source's best-practice obligation into a soft preference. It is not in the contract."
+    },
+    {
+      "id": "WT-14",
+      "kind": "obligation",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "Add appropriate waits with `page.wait_for_selector()` or `page.wait_for_timeout()`. Use judgment on both.",
+      "reason": "Same as WT-13: the rule is softened to discretionary taste."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Writes a screenshot to a fixed path as a mandatory step before inspecting the DOM. The source offered 'screenshot or inspect DOM' as alternatives.",
+      "quote": "write #inspect full-page screenshot of page with inspect_png",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "If the source is unavailable after being judged necessary, the agent records a gap and continues with what --help showed.",
+      "quote": "apply record missing source as a gap with help as help",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Requires the --help output to be read and verified before proceeding.",
+      "quote": "verify #help usage was read from the help output from help",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Requires the static HTML to be verified as complete before the static script is written.",
+      "quote": "verify #html-complete html is complete enough to identify selectors from html",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.039
+}

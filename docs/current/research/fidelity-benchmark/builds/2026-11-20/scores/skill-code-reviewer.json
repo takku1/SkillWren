@@ -1,0 +1,219 @@
+{
+  "source": "code-reviewer",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-20/skill/code-reviewer-sonnet/files/code-reviewer-logic/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "published",
+  "preservation": {
+    "total": 22,
+    "preserved": 22,
+    "weakened": 0,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 1.0
+  },
+  "introduction": {
+    "total": 3,
+    "widening": 0,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "CR-1",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify #intent the intent is one sentence before generate structure findings",
+      "reason": "Intent verified before structure, details, tests."
+    },
+    {
+      "id": "CR-2",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "ask user for the author's clarification of the PR intent as clarification",
+      "reason": "Failed verification asks for clarification then retries before continuing."
+    },
+    {
+      "id": "CR-3",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read PR description and changed code from target as change",
+      "reason": "Reads description; intent must state the problem being solved."
+    },
+    {
+      "id": "CR-4",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "**structure questions**: ask whether this follows existing codebase patterns and whether new abstractions are justified.",
+      "reason": "Same checks."
+    },
+    {
+      "id": "CR-5",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "check code quality, security and performance. Ask about N+1 queries",
+      "reason": "Covers quality, security, performance, N+1, secrets, injection, and verifies all checked."
+    },
+    {
+      "id": "CR-6",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Baseline is OWASP Top 10.",
+      "reason": "Stated in detail checks."
+    },
+    {
+      "id": "CR-7",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "ask whether edge cases are covered and whether tests assert behavior, not implementation.",
+      "reason": "Same."
+    },
+    {
+      "id": "CR-8",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify #tests tests were reviewed as thoroughly as code from tests",
+      "reason": "Verified with retry."
+    },
+    {
+      "id": "CR-9",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Critical issues are noted immediately, not held to the end.",
+      "reason": "Plus show details if critical."
+    },
+    {
+      "id": "CR-10",
+      "kind": "exception",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "acknowledge the author's stated reasoning before suggesting any alternative.",
+      "reason": "Conditional on author comments, as in source."
+    },
+    {
+      "id": "CR-11",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "drop style nitpicks and never block on style or personal preferences when a linter or formatter is configured.",
+      "reason": "Same condition."
+    },
+    {
+      "id": "CR-13",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "never block on personal preferences",
+      "reason": "In report rules."
+    },
+    {
+      "id": "CR-14",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "never be condescending or rude",
+      "reason": "In report rules and verified."
+    },
+    {
+      "id": "CR-15",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "never demand perfection",
+      "reason": "In report rules."
+    },
+    {
+      "id": "CR-16",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "nothing reviewed without understanding the why from report",
+      "reason": "Verified at report stage, plus intent verification of the problem."
+    },
+    {
+      "id": "CR-17",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "be specific and actionable",
+      "reason": "Report rule."
+    },
+    {
+      "id": "CR-18",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "include code examples in suggestions",
+      "reason": "Report rule."
+    },
+    {
+      "id": "CR-19",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "praise good patterns specifically",
+      "reason": "Plus Positive feedback section."
+    },
+    {
+      "id": "CR-20",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "prioritize critical to minor",
+      "reason": "Report rule and ordered sections."
+    },
+    {
+      "id": "CR-21",
+      "kind": "output",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Sections in order: Summary (one-sentence intent recap plus overall assessment), Critical issues",
+      "reason": "All seven sections listed."
+    },
+    {
+      "id": "CR-22",
+      "kind": "output",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Verdict (Approve / Request Changes / Comment)",
+      "reason": "Same options."
+    },
+    {
+      "id": "CR-23",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Read-only: this skill reads, searches and reports; it never edits the code under review.",
+      "reason": "Edit prohibition present, and allowed-tools retained; commands not explicitly forbidden but tool list excludes them."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Reads linter and formatter configuration from target",
+      "quote": "read linter and formatter configuration from target",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Aborts if no target is named",
+      "quote": "abort with \"Name the pull request, diff or files to review.\"",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Conditionally reads spec compliance guidance",
+      "quote": "if the review covers implementations or spec verification:",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0408
+}

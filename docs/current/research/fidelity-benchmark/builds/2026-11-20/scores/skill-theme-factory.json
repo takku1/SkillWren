@@ -1,0 +1,165 @@
+{
+  "source": "theme-factory",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-20/skill/theme-factory-sonnet/files/theme-factory-logic/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "published",
+  "preservation": {
+    "total": 13,
+    "preserved": 12,
+    "weakened": 1,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 0.923
+  },
+  "introduction": {
+    "total": 6,
+    "widening": 1,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "TF-1",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "show showcase before ask user for the theme choice",
+      "reason": "Contract and logic show the showcase before asking for the choice."
+    },
+    {
+      "id": "TF-2",
+      "kind": "prohibition",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "displayed for viewing only; never modified.",
+      "reason": "Step meaning prohibits modifying the showcase."
+    },
+    {
+      "id": "TF-3",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "ask user to confirm the theme before apply theme to artifact",
+      "reason": "Logic order: show showcase, ask choice, confirm, apply. Nothing is skipped."
+    },
+    {
+      "id": "TF-4",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "require user confirms the theme\n    otherwise:\n      return to choosing",
+      "reason": "Apply happens only after the user confirms; otherwise it loops back."
+    },
+    {
+      "id": "TF-5",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read theme file from themes as theme",
+      "reason": "The preset theme file is read before it is confirmed and applied."
+    },
+    {
+      "id": "TF-6",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "apply the theme's colors and fonts consistently throughout the artifact.",
+      "reason": "Same obligation."
+    },
+    {
+      "id": "TF-7",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify the styled artifact has proper contrast and readability and keeps the theme's visual identity on every slide from styled",
+      "reason": "Verification step with a fix and retry."
+    },
+    {
+      "id": "TF-8",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "keeps the theme's visual identity on every slide",
+      "reason": "Verified for every slide."
+    },
+    {
+      "id": "TF-9",
+      "kind": "exception",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "ask user for the theme choice (a preset name, or custom)",
+      "reason": "Custom is a user choice, not triggered when no preset fits. The result is similar but the trigger is the user's choice."
+    },
+    {
+      "id": "TF-10",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "chosen from the user's description.",
+      "reason": "The description is used to choose colors and fonts."
+    },
+    {
+      "id": "TF-11",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "give the theme a descriptive name like the presets, reflecting what its font/color combination represents.",
+      "reason": "Same obligation."
+    },
+    {
+      "id": "TF-12",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "show theme\n  ask user to confirm the theme",
+      "reason": "The custom theme flows into the confirming step, which shows it for review before applying."
+    },
+    {
+      "id": "TF-13",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Ocean Depths, Sunset Boulevard, Forest Canopy, Modern Minimalist, Golden Hour, Arctic Frost, Desert Rose, Tech Innovation, Botanical Garden, Midnight Galaxy.",
+      "reason": "All ten are listed."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Writes the styled result back to the artifact file, which is a new effect.",
+      "quote": "write styled with artifact",
+      "widens": true,
+      "quote_found": true
+    },
+    {
+      "behavior": "Aborts if no artifact exists and demands the user name one.",
+      "quote": "abort with \"Name the slide deck or artifact to style.\"",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Aborts if the showcase or theme file is missing.",
+      "quote": "abort with \"theme-showcase.pdf is missing; cannot show the themes.\"",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Asks the user for a description of the look wanted for a custom theme.",
+      "quote": "ask user for a basic description of the look wanted as description",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "For a custom theme, applies naming inside the choice branch.",
+      "quote": "apply custom theme naming with theme as theme",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Re-asks if the choice is not one of the ten presets.",
+      "quote": "require the choice names one of the 10 preset themes",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0313
+}

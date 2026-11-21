@@ -1,0 +1,97 @@
+{
+  "source": "internal-comms",
+  "built": "docs/current/research/fidelity-benchmark/builds/2026-11-20/skill/internal-comms-sonnet/files/internal-comms-logic/SKILL.md",
+  "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+  "judge": "model (sonnet)",
+  "publication": "published",
+  "preservation": {
+    "total": 6,
+    "preserved": 5,
+    "weakened": 1,
+    "missing": 0,
+    "unverified": 0,
+    "rate": 0.833
+  },
+  "introduction": {
+    "total": 4,
+    "widening": 0,
+    "unquoted": 0
+  },
+  "requirements": [
+    {
+      "id": "IC-1",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "generate request classification from request as comm_type",
+      "reason": "The built skill classifies the request type first."
+    },
+    {
+      "id": "IC-2",
+      "kind": "ordering",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "verify the guideline file was loaded before generate communication",
+      "reason": "The contract orders guideline loading before generation, and the logic reads the file before generating."
+    },
+    {
+      "id": "IC-3",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "read general guideline from examples as guideline",
+      "reason": "Each of the three types routes to its own file, and the else branch falls back to general-comms. The built skill's description covers other communication types too."
+    },
+    {
+      "id": "IC-4",
+      "kind": "obligation",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "**guideline instructions**: follow the loaded guideline file for formatting, tone and content gathering.",
+      "reason": "The logic applies the guideline instructions after generating the communication."
+    },
+    {
+      "id": "IC-5",
+      "kind": "exception",
+      "verdict": "weakened",
+      "judge_verdict": "weakened",
+      "quote": "if comm_type is too unclear to classify at all:",
+      "reason": "The built skill asks for clarification only when the type cannot be classified at all, and that check happens before routing. Anything unclear goes to the general fallback with no question. The source asks when the format doesn't match any guideline."
+    },
+    {
+      "id": "IC-6",
+      "kind": "authority",
+      "verdict": "preserved",
+      "judge_verdict": "preserved",
+      "quote": "Write internal communications in the company's preferred formats - 3P updates (Progress, Plans, Problems), company newsletters, FAQ answers, status reports, leadership updates, project updates and incident reports.",
+      "reason": "The description lists the same scope of internal communications."
+    }
+  ],
+  "introduced": [
+    {
+      "behavior": "Aborts when no request is given, instead of asking for one.",
+      "quote": "abort with \"Say which internal communication to write.\"",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Aborts if any guideline file is missing, or if the loaded guideline is empty.",
+      "quote": "abort with \"No guideline loaded; cannot write the communication.\"",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Shows the classification to the user before continuing.",
+      "quote": "show comm_type",
+      "widens": false,
+      "quote_found": true
+    },
+    {
+      "behavior": "Loops back to classify again after the user gives clarification.",
+      "quote": "return to classifying",
+      "widens": false,
+      "quote_found": true
+    }
+  ],
+  "cost_usd": 0.0223
+}

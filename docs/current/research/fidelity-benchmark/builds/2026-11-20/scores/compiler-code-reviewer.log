@@ -1,0 +1,18 @@
+{
+ "source": "code-reviewer",
+ "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+ "preservation": {
+  "total": 22,
+  "preserved": 20,
+  "weakened": 2,
+  "missing": 0,
+  "unverified": 0,
+  "rate": 0.909
+ },
+ "introduction": {
+  "total": 3,
+  "widening": 0,
+  "unquoted": 0
+ },
+ "cost_usd": 0.0455
+}

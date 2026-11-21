@@ -1,0 +1,197 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-20/compiler/webapp-testing-failed/SKILL.md": {
+    "items": [
+      {
+        "line": 23,
+        "kind": "order rule",
+        "text": "verify#help before exec#servers",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 24,
+        "kind": "order rule",
+        "text": "apply navigate and wait for networkidle before write#inspect",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 25,
+        "kind": "order rule",
+        "text": "write#inspect before apply identify selectors",
+        "tier": "recorded",
+        "why": "earlier step leaves effect; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 26,
+        "kind": "order rule",
+        "text": "apply identify selectors before exec#actions",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 35,
+        "kind": "gate",
+        "text": "verify #html-complete html is complete enough to identify selectors from html",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 40,
+        "kind": "write",
+        "text": "write #script-static script with automation_script",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 45,
+        "kind": "write",
+        "text": "write #inspect full-page screenshot of page with inspect_png",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 49,
+        "kind": "write",
+        "text": "write #script-recon script with automation_script",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 50,
+        "kind": "command",
+        "text": "exec #actions run automation script from automation_script as result",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 53,
+        "kind": "command",
+        "text": "exec #help-run python scripts/with_server.py --help from with_server as help",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 54,
+        "kind": "gate",
+        "text": "verify #help usage was read from the help output from help",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 61,
+        "kind": "write",
+        "text": "write #script-dynamic script with automation_script",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      },
+      {
+        "line": 62,
+        "kind": "command",
+        "text": "exec #servers with_server.py with one --server and --port pair per server, then the automation script from with_server as result",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 7,
+      "instructed": 6,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "WT-1",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 12), not a checked element"
+      },
+      {
+        "id": "WT-2",
+        "kind": "ordering",
+        "tier": "recorded",
+        "why": "order rule line 23: earlier step leaves evidence; `ledger check` detects a violation after the run; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-3",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 18), not a checked element"
+      },
+      {
+        "id": "WT-4",
+        "kind": "obligation",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "WT-5",
+        "kind": "exception",
+        "tier": "recorded",
+        "why": "gate line 35: a command result backs it; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-6",
+        "kind": "exception",
+        "tier": "recorded",
+        "why": "command line 62: a command result backs it; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-7",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 19), not a checked element"
+      },
+      {
+        "id": "WT-8",
+        "kind": "ordering",
+        "tier": "recorded",
+        "why": "order rule line 25: earlier step leaves effect; `ledger check` detects a violation after the run; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "WT-9",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 14), not a checked element"
+      },
+      {
+        "id": "WT-10",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 15), not a checked element"
+      },
+      {
+        "id": "WT-11",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 16), not a checked element"
+      },
+      {
+        "id": "WT-12",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 15), not a checked element"
+      },
+      {
+        "id": "WT-13",
+        "kind": "obligation",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "WT-14",
+        "kind": "obligation",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 4,
+      "instructed": 7,
+      "unverifiable": 0,
+      "ambiguous": 0,
+      "null": 3
+    }
+  }
+}

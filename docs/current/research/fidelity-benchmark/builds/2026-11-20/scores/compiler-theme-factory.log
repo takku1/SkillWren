@@ -1,0 +1,18 @@
+{
+ "source": "theme-factory",
+ "basis": "frozen (AI-reviewed baseline), reviewed by ChatGPT (GPT-6, AI reviewer), as stated in its review relayed by the repository owner on 2026-11-20",
+ "preservation": {
+  "total": 13,
+  "preserved": 13,
+  "weakened": 0,
+  "missing": 0,
+  "unverified": 0,
+  "rate": 1.0
+ },
+ "introduction": {
+  "total": 3,
+  "widening": 2,
+  "unquoted": 0
+ },
+ "cost_usd": 0.0316
+}

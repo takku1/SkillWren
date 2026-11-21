@@ -1,0 +1,149 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-20/compiler/internal-comms-failed/SKILL.md": {
+    "items": [
+      {
+        "line": 14,
+        "kind": "order rule",
+        "text": "verify#loaded3p before apply#draft3p",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 15,
+        "kind": "order rule",
+        "text": "verify#loadednews before apply#draftnews",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 16,
+        "kind": "order rule",
+        "text": "verify#loadedfaq before apply#draftfaq",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 17,
+        "kind": "order rule",
+        "text": "verify#loadedgen before apply#draftgen",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 26,
+        "kind": "gate",
+        "text": "require confirmation",
+        "tier": "recorded",
+        "why": "a user decision backs it"
+      },
+      {
+        "line": 37,
+        "kind": "command",
+        "text": "exec 3P guideline load check from checks as loaded3p",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 38,
+        "kind": "gate",
+        "text": "verify #loaded3p 3P guideline is loaded from loaded3p",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 49,
+        "kind": "command",
+        "text": "exec newsletter guideline load check from checks as loadednews",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 50,
+        "kind": "gate",
+        "text": "verify #loadednews newsletter guideline is loaded from loadednews",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 61,
+        "kind": "command",
+        "text": "exec FAQ guideline load check from checks as loadedfaq",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 62,
+        "kind": "gate",
+        "text": "verify #loadedfaq FAQ guideline is loaded from loadedfaq",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 72,
+        "kind": "command",
+        "text": "exec general guideline load check from checks as loadedgen",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 73,
+        "kind": "gate",
+        "text": "verify #loadedgen general guideline is loaded from loadedgen",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 13,
+      "instructed": 0,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "IC-1",
+        "kind": "obligation",
+        "tier": "ambiguous",
+        "why": "quote occurs more than once"
+      },
+      {
+        "id": "IC-2",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 33), not a checked element"
+      },
+      {
+        "id": "IC-3",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 68), not a checked element"
+      },
+      {
+        "id": "IC-4",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 86), not a checked element"
+      },
+      {
+        "id": "IC-5",
+        "kind": "exception",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "IC-6",
+        "kind": "authority",
+        "tier": "instructed",
+        "why": "prose (line 90), not a checked element"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 0,
+      "instructed": 4,
+      "unverifiable": 0,
+      "ambiguous": 1,
+      "null": 1
+    }
+  }
+}

@@ -1,0 +1,301 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-20/compiler/code-reviewer-failed/SKILL.md": {
+    "items": [
+      {
+        "line": 22,
+        "kind": "order rule",
+        "text": "apply context before apply structure review",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 23,
+        "kind": "order rule",
+        "text": "apply structure review before apply details review",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 24,
+        "kind": "order rule",
+        "text": "apply details review before apply tests review",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 25,
+        "kind": "order rule",
+        "text": "apply tests review before apply feedback",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 26,
+        "kind": "order rule",
+        "text": "verify#intent before apply structure review",
+        "tier": "recorded",
+        "why": "earlier step leaves evidence; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 32,
+        "kind": "command",
+        "text": "exec readonly pr context check from checks as context_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 33,
+        "kind": "gate",
+        "text": "verify #context understanding of the PR problem is recorded from context_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 36,
+        "kind": "command",
+        "text": "exec readonly pr context check from checks as context_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 39,
+        "kind": "command",
+        "text": "exec readonly intent check from checks as intent_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 40,
+        "kind": "gate",
+        "text": "verify #intent intent summary is one sentence from intent_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 43,
+        "kind": "gate",
+        "text": "require confirmation",
+        "tier": "recorded",
+        "why": "a user decision backs it"
+      },
+      {
+        "line": 46,
+        "kind": "command",
+        "text": "exec readonly intent check from checks as intent_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 50,
+        "kind": "command",
+        "text": "exec readonly security baseline check from checks as owasp_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 51,
+        "kind": "gate",
+        "text": "verify #owasp details review checked security against the OWASP Top 10 baseline from owasp_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 54,
+        "kind": "command",
+        "text": "exec readonly security baseline check from checks as owasp_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 63,
+        "kind": "command",
+        "text": "exec readonly report shape check from checks as shape_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 64,
+        "kind": "gate",
+        "text": "verify #shape report has the seven sections in the Output Template order from shape_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 67,
+        "kind": "command",
+        "text": "exec readonly report shape check from checks as shape_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 69,
+        "kind": "command",
+        "text": "exec readonly verdict check from checks as verdict_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 70,
+        "kind": "gate",
+        "text": "verify #verdict report verdict is exactly one of Approve, Request Changes, or Comment from verdict_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      },
+      {
+        "line": 73,
+        "kind": "command",
+        "text": "exec readonly verdict check from checks as verdict_check",
+        "tier": "recorded",
+        "why": "a command result backs it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 17,
+      "instructed": 4,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "CR-1",
+        "kind": "ordering",
+        "tier": "recorded",
+        "why": "order rule line 26: earlier step leaves evidence; `ledger check` detects a violation after the run; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "CR-2",
+        "kind": "exception",
+        "tier": "instructed",
+        "why": "prose (line 42), not a checked element"
+      },
+      {
+        "id": "CR-3",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 84), not a checked element"
+      },
+      {
+        "id": "CR-4",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 86), not a checked element"
+      },
+      {
+        "id": "CR-5",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 87), not a checked element"
+      },
+      {
+        "id": "CR-6",
+        "kind": "obligation",
+        "tier": "recorded",
+        "why": "gate line 51: a command result backs it; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "CR-7",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 90), not a checked element"
+      },
+      {
+        "id": "CR-8",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 12), not a checked element"
+      },
+      {
+        "id": "CR-9",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 56), not a checked element"
+      },
+      {
+        "id": "CR-10",
+        "kind": "exception",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "CR-11",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 14), not a checked element"
+      },
+      {
+        "id": "CR-13",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 15), not a checked element"
+      },
+      {
+        "id": "CR-14",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 17), not a checked element"
+      },
+      {
+        "id": "CR-15",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 16), not a checked element"
+      },
+      {
+        "id": "CR-16",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 18), not a checked element"
+      },
+      {
+        "id": "CR-17",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 92), not a checked element"
+      },
+      {
+        "id": "CR-18",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 92), not a checked element"
+      },
+      {
+        "id": "CR-19",
+        "kind": "obligation",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "CR-20",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 92), not a checked element"
+      },
+      {
+        "id": "CR-21",
+        "kind": "output",
+        "tier": "recorded",
+        "why": "gate line 64: a command result backs it; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "CR-22",
+        "kind": "output",
+        "tier": "recorded",
+        "why": "gate line 70: a command result backs it; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "CR-23",
+        "kind": "authority",
+        "tier": "instructed",
+        "why": "prose (line 78), not a checked element"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 4,
+      "instructed": 16,
+      "unverifiable": 0,
+      "ambiguous": 0,
+      "null": 2
+    }
+  }
+}

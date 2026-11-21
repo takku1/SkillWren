@@ -1,0 +1,149 @@
+{
+  "docs/current/research/fidelity-benchmark/builds/2026-11-20/skill/theme-factory-sonnet/files/theme-factory-logic/SKILL.md": {
+    "items": [
+      {
+        "line": 12,
+        "kind": "order rule",
+        "text": "show showcase before ask user for the theme choice",
+        "tier": "instructed",
+        "why": "earlier step is the model's own judgment (W15)"
+      },
+      {
+        "line": 13,
+        "kind": "order rule",
+        "text": "ask user to confirm the theme before apply theme to artifact",
+        "tier": "recorded",
+        "why": "earlier step leaves user; `ledger check` detects a violation after the run"
+      },
+      {
+        "line": 18,
+        "kind": "gate",
+        "text": "require artifact exists",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 35,
+        "kind": "gate",
+        "text": "require the choice names one of the 10 preset themes",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 45,
+        "kind": "gate",
+        "text": "require user confirms the theme",
+        "tier": "recorded",
+        "why": "a user decision backs it"
+      },
+      {
+        "line": 50,
+        "kind": "gate",
+        "text": "verify the styled artifact has proper contrast and readability and keeps the theme's visual identity on every slide from styled",
+        "tier": "instructed",
+        "why": "the model's own judgment"
+      },
+      {
+        "line": 54,
+        "kind": "write",
+        "text": "write styled with artifact",
+        "tier": "instructed",
+        "why": "not mediated: nothing outside the model blocks or records it"
+      }
+    ],
+    "counts": {
+      "enforced": 0,
+      "recorded": 2,
+      "instructed": 5,
+      "unverifiable": 0
+    },
+    "requirements": [
+      {
+        "id": "TF-1",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "order rule line 12: earlier step is the model's own judgment (W15); tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "TF-2",
+        "kind": "prohibition",
+        "tier": "instructed",
+        "why": "prose (line 60), not a checked element"
+      },
+      {
+        "id": "TF-3",
+        "kind": "ordering",
+        "tier": "recorded",
+        "why": "order rule line 13: earlier step leaves user; `ledger check` detects a violation after the run; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "TF-4",
+        "kind": "authority",
+        "tier": "recorded",
+        "why": "gate line 45: a user decision backs it; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "TF-5",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 38), not a checked element"
+      },
+      {
+        "id": "TF-6",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 64), not a checked element"
+      },
+      {
+        "id": "TF-7",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "gate line 50: the model's own judgment; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "TF-8",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "gate line 50: the model's own judgment; tier of the element, not proof it enforces the whole requirement"
+      },
+      {
+        "id": "TF-9",
+        "kind": "exception",
+        "tier": null,
+        "why": "not preserved (weakened)"
+      },
+      {
+        "id": "TF-10",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 62), not a checked element"
+      },
+      {
+        "id": "TF-11",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 63), not a checked element"
+      },
+      {
+        "id": "TF-12",
+        "kind": "ordering",
+        "tier": "instructed",
+        "why": "prose (line 43), not a checked element"
+      },
+      {
+        "id": "TF-13",
+        "kind": "obligation",
+        "tier": "instructed",
+        "why": "prose (line 61), not a checked element"
+      }
+    ],
+    "requirement_counts": {
+      "enforced": 0,
+      "recorded": 2,
+      "instructed": 10,
+      "unverifiable": 0,
+      "ambiguous": 0,
+      "null": 1
+    }
+  }
+}
