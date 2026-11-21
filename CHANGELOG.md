@@ -1,6 +1,23 @@
 # Changelog
 
-## Unreleased
+## 0.13.3 (2026-11-20)
+
+- `compile` (inventory I13 and reverse traceability): a literal anchor that
+  matches a command and its re-runs inside the `otherwise:` repair of the
+  gate that checks the command's result (`exec x as r` / `verify ... from
+  r` / `otherwise: exec x as r; retry`) names that one step, so scaffolding
+  and requirement landings cover every copy. The copies run in sequence on
+  the failure path; they are one step re-run, not two. Two identical
+  statements on the same normal path, or a copy in a repair whose gate
+  checks another result, stay ambiguous. Found by fidelity round 1, where
+  the retry idiom made three correct scaffolding anchors fail "exactly one"
+  in the `code-reviewer` compile. Four regression tests, three mutants. The
+  I7 evidence rule is unchanged.
+- The code mutation sweep runs the unmutated baseline first and refuses to
+  report kills when it fails: adding the compiler tests showed two tests
+  failing in the sweep's copied tree (missing research files), which would
+  have counted every mutant as killed. The tree now includes those files;
+  45/45 killed against a passing baseline.
 
 - Process exception, recorded: commit `1146e4c` (fidelity round 1 scores,
   research data only) was pushed directly to `main`, bypassing the 14

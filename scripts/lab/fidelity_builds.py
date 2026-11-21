@@ -88,6 +88,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("out")
     parser.add_argument("--model", default="sonnet")
+    parser.add_argument("--paths", nargs="+", choices=["compiler", "skill"], default=["compiler", "skill"],
+                        help="which build paths to run (round 2 reruns only the compiler)")
     args = parser.parse_args(argv)
     out = Path(args.out)
     if out.exists() and any(out.iterdir()):
@@ -107,12 +109,13 @@ def main(argv=None):
         "skill": {"plugin_skill_sha256": sha(ROOT / "plugin" / "skillwren" / "SKILL.md"),
                   "harness_sha256": sha(Path(__file__).parent / "skill_build_live.py"),
                   "turns": [skill_prompt("<source>"), skill_build_live.CONFIRM]},
+        "paths": args.paths,
         "rules": "one build per source and path; failures kept; no repair, rerun or scoring",
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     with ThreadPoolExecutor(max_workers=5) as pool:
-        jobs = [pool.submit(compile_one, s, out, args.model) for s in SOURCES]
-        jobs += [pool.submit(skill_one, s, out, args.model) for s in SOURCES]
+        jobs = [pool.submit(compile_one, s, out, args.model) for s in SOURCES] if "compiler" in args.paths else []
+        jobs += [pool.submit(skill_one, s, out, args.model) for s in SOURCES] if "skill" in args.paths else []
         results = []
         for job in jobs:
             try:

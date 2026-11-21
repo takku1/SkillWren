@@ -177,12 +177,17 @@ def candidate_files(path):
 
 
 class Statement:
-    """One logic statement of a candidate, as the landing checks see it."""
-    __slots__ = ("file", "line", "text", "kind", "verb", "cls")
+    """One logic statement of a candidate, as the landing checks see it.
 
-    def __init__(self, file, line, text, kind, verb, cls):
+    `rerun_of` is the line of a gate when this statement re-runs a command inside
+    that gate's `otherwise:` repair to refresh the evidence the gate checks (the
+    retry idiom: `exec x as r` / `verify ... from r` / `otherwise: exec x as r; retry`)."""
+    __slots__ = ("file", "line", "text", "kind", "verb", "cls", "rerun_of")
+
+    def __init__(self, file, line, text, kind, verb, cls, rerun_of=None):
         self.file, self.line, self.text = file, line, text
         self.kind, self.verb, self.cls = kind, verb, cls
+        self.rerun_of = rerun_of
 
     @property
     def key(self):
@@ -249,11 +254,22 @@ class Candidate:
                         continue
                     cls = classes.get(id(node), "branch" if node.kind == "branch" else "self")
                     self.statements.append(Statement(name, node.line, node.text, node.kind,
-                                                     node.data, cls))
+                                                     node.data, cls, _rerun_gate(node)))
             if doc.contract is not None:
                 for rule in (*doc.contract.order, *doc.contract.exclusions):
                     self.rules.append((name, rule.line, rule.text))
         self.flat = _norm(self.text)
+
+    def step(self, hits):
+        """The statements one anchor may name as a single step: one statement, or one
+        statement plus copies of it that only re-run it inside the repair of a gate
+        checking its result. Copies on the same normal path stay ambiguous ([])."""
+        if len(hits) == 1:
+            return hits
+        if len(hits) < 2 or len({(h.file, _norm(h.text)) for h in hits}) != 1:
+            return []
+        originals = [h for h in hits if h.rerun_of is None]
+        return hits if len(originals) == 1 else []
 
     def resolve(self, anchor):
         """Statements an anchor names: a line reference (`L42`, `flows/x.md#L42`)
@@ -275,6 +291,24 @@ class Candidate:
             hits = self.resolve(anchor)
             return hits[0].text if hits else anchor
         return anchor
+
+
+AS_BINDING = re.compile(r"\sas\s+([A-Za-z_][\w-]*)\s*$")
+
+
+def _rerun_gate(node):
+    """Gate line when `node` is a command re-run inside the `otherwise:` repair of a gate
+    that cites the command's result (`verify ... from <binding>`); else None."""
+    from .validator.evidence import VERIFY_FROM_RE
+    if node.kind != "action" or node.data != "exec":
+        return None
+    bound = AS_BINDING.search(node.text)
+    repair = node.parent
+    gate = repair.parent if repair is not None and repair.kind == "otherwise" else None
+    if not bound or gate is None or gate.kind != "gate":
+        return None
+    cited = VERIFY_FROM_RE.search(" " + gate.text)
+    return gate.line if cited and cited.group(1) == bound.group(1) else None
 
 
 def _matches(anchor, text):
@@ -326,7 +360,9 @@ def check_reverse(inventory, candidate):
 
     A statement is justified when a requirement's anchor names it alone (a
     line reference, or a literal matching exactly one statement): an
-    ambiguous literal such as `retry` justifies nothing. Declared
+    ambiguous literal such as `retry` justifies nothing. A literal matching a
+    command and its re-runs inside the repair of the gate that checks its
+    result names that one step (`Candidate.step`). Declared
     `scaffolding` entries ({"anchor", "reason"}) cover compiler plumbing,
     and only for commands and branches; they are reported, never silent."""
     findings = []
@@ -336,9 +372,8 @@ def check_reverse(inventory, candidate):
         for anchor in item.get("lands") or []:
             if not isinstance(anchor, str):
                 continue
-            hits = candidate.resolve(anchor)
-            if len(hits) == 1:
-                justified.setdefault(hits[0].key, set()).add(ident)
+            for hit in candidate.step(candidate.resolve(anchor)):
+                justified.setdefault(hit.key, set()).add(ident)
     scaffold = {}
     entries = inventory.get("scaffolding", [])
     if not isinstance(entries, list):
@@ -347,11 +382,14 @@ def check_reverse(inventory, candidate):
         anchor = entry.get("anchor") if isinstance(entry, dict) else None
         reason = entry.get("reason") if isinstance(entry, dict) else None
         hits = candidate.resolve(anchor) if isinstance(anchor, str) and anchor.strip() else []
-        if len(hits) != 1 or not isinstance(reason, str) or not reason.strip():
+        group = candidate.step(hits)
+        if not group or not isinstance(reason, str) or not reason.strip():
             findings.append(_finding("I13", "scaffolding entry must name exactly one statement "
-                                            f"and give a reason: {entry!r}"))
+                                            "(or one command and its re-runs in the repair of the "
+                                            f"gate checking it) and give a reason: {entry!r}"))
             continue
-        scaffold[hits[0].key] = reason
+        for hit in group:
+            scaffold[hit.key] = reason
     for statement in candidate.statements:
         category = behaviour(statement)
         if category is None:

@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = ["test_field_2026_11_19.py", "test_guard_workflow.py", "test_mutations.py",
          "mutation_catalog.py", "test_guard_skill_load.py", "test_coverage.py",
-    "test_fidelity_tools.py"]
+    "test_fidelity_tools.py", "test_nl_compile.py"]
 
 # name -> (file, old, new). Each `old` must occur exactly once.
 MUTANTS = {
@@ -123,6 +123,16 @@ MUTANTS = {
                                           "        if at < 0:"),
     "fidelity-report-skips-adjudication": ("scripts/lab/fidelity_report.py",
                                            '        if mark not in ("x", "!"):', "        if False:"),
+    # Compiler I13: a command and its re-runs in the repair of the gate checking it are one step
+    "i13-any-duplicates-accepted": ("src/skillwren/inventory.py",
+                                    "        return hits if len(originals) == 1 else []",
+                                    "        return hits"),
+    "i13-rerun-ignores-citation": ("src/skillwren/inventory.py",
+                                   "    return gate.line if cited and cited.group(1) == bound.group(1) else None",
+                                   "    return gate.line"),
+    "i13-rerun-not-recognized": ("src/skillwren/inventory.py",
+                                 "        group = candidate.step(hits)",
+                                 "        group = hits if len(hits) == 1 else []"),
     # Finding 5, ledger
     "ledger-exclusions-ignored": ("src/skillwren/ledger.py",
                                   "    excluded = any(r[\"violations\"] for r in report[\"exclusions\"])",
@@ -159,25 +169,28 @@ MUTANTS = {
 def run(name, rel, old, new):
     with tempfile.TemporaryDirectory(prefix="skillwren-field-mutant-") as directory:
         root = Path(directory)
-        for folder in ("src", "examples", "docs/current/research/lifecycle", "scripts/lab"):
+        for folder in ("src", "examples", "docs/current/research/lifecycle", "scripts/lab",
+                       "docs/current/research/nl-compiler"):
             shutil.copytree(ROOT / folder, root / folder,
                             ignore=shutil.ignore_patterns("__pycache__", "*.egg-info"))
         shutil.copytree(ROOT / "tests/fixtures", root / "tests/fixtures")
         for test in TESTS:
             shutil.copy2(ROOT / "tests" / test, root / "tests" / test)
-        path = root / rel
-        source = path.read_text(encoding="utf-8")
-        if source.count(old) != 1:
-            raise ValueError(f"mutation location drift: {name}")
-        text = source.replace(old, new, 1)
-        if "re.f" in new and "\nimport re\n" not in text:
-            text = "import re\n" + text
-        path.write_text(text, encoding="utf-8")
+        if rel is not None:  # rel None: the unmutated baseline
+            path = root / rel
+            source = path.read_text(encoding="utf-8")
+            if source.count(old) != 1:
+                raise ValueError(f"mutation location drift: {name}")
+            text = source.replace(old, new, 1)
+            if "re.f" in new and "\nimport re\n" not in text:
+                text = "import re\n" + text
+            path.write_text(text, encoding="utf-8")
         # unittest, not pytest: CI installs nothing beyond the standard library.
         try:
             proc = subprocess.run([sys.executable, "-m", "unittest", "-q", "test_field_2026_11_19",
                                    "test_guard_workflow", "test_mutations",
-                                   "test_guard_skill_load", "test_coverage", "test_fidelity_tools"],
+                                   "test_guard_skill_load", "test_coverage", "test_fidelity_tools",
+                                   "test_nl_compile"],
                                   cwd=root / "tests", capture_output=True, text=True, timeout=300,
                                   stdin=subprocess.DEVNULL,
                                   env={**os.environ, "PYTHONPATH": str(root / "src")})
@@ -189,10 +202,17 @@ def run(name, rel, old, new):
         broken = any(word in out for word in ("SyntaxError", "ImportError",
                                               "ModuleNotFoundError"))
         killed = proc.returncode != 0 and "FAILED (" in out and not broken
-        return {"mutant": name, "killed": killed, "tail": out.strip().splitlines()[-1:]}
+        return {"mutant": name, "killed": killed, "passed": proc.returncode == 0,
+                "tail": out.strip().splitlines()[-1:]}
 
 
 def main():
+    # A kill only means something if the unmutated tree passes in the same environment:
+    # a baseline failure (a missing fixture, say) would make every mutant look killed.
+    baseline = run("baseline", None, None, None)
+    if not baseline["passed"]:
+        print(f"baseline FAILS in the sweep environment ({baseline['tail']}); no kill is meaningful")
+        return 2
     results = [run(name, *spec) for name, spec in MUTANTS.items()]
     for r in results:
         print(f"{r['mutant']:36} {'killed' if r['killed'] else 'SURVIVED'}  {r['tail'][0] if r['tail'] else ''}")

@@ -7,7 +7,7 @@ fragments embed `logic` blocks in ordinary Markdown next to a SKILL.md that
 keeps only the host fields.
 """
 
-__version__ = "0.13.2"
+__version__ = "0.13.3"
 
 from .validator import validate_file, validate_files, validate_fragment
 

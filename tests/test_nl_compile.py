@@ -234,6 +234,46 @@ class LandingTests(unittest.TestCase):
         literal = inv.resolved(body, inv.Candidate(path))
         self.assertEqual(literal["requirements"][2]["lands"], ["retry", "retry"])
 
+    # ---- I13 and re-runs (fidelity round 1: the retry idiom repeats the exec in its repair)
+    RERUN = GOOD_SKILL.replace('      abort with "Unverified config."',
+                               "      exec config check from checks as result\n      retry")
+
+    def scaffold_exec(self, text):
+        # The retry is landed on a requirement so only the command's coverage is under test.
+        lands = dict(LANDS, R2=["verify #check candidate has debug off from result"],
+                     R3=["retry"] if "retry" in text else [])
+        return self.landed(text, lands, scaffolding=[
+            {"anchor": "exec config check from checks as result", "reason": "evidence for verify #check"}])
+
+    def test_scaffolding_names_a_command_and_its_rerun_as_one_step(self):
+        findings, _, _ = self.scaffold_exec(self.RERUN)
+        rules = [f["rule"] for f in findings]
+        self.assertNotIn("I13", rules)
+        # Both copies are covered: reported twice as scaffolding, never untraced.
+        self.assertEqual([r for r in rules if r in ("I9", "I10")], ["I10", "I10"])
+
+    def test_two_identical_commands_on_the_normal_path_stay_ambiguous(self):
+        text = GOOD_SKILL.replace("  exec config check from checks as result\n",
+                                  "  exec config check from checks as result\n"
+                                  "  exec config check from checks as result\n")
+        findings, _, _ = self.scaffold_exec(text)
+        self.assertIn("I13", [f["rule"] for f in findings])
+
+    def test_a_copy_in_a_repair_that_checks_another_result_is_not_a_rerun(self):
+        text = GOOD_SKILL.replace("verify #check candidate has debug off from result",
+                                  "verify #check candidate has debug off from other") \
+            .replace('      abort with "Unverified config."',
+                     "      exec config check from checks as result\n      retry")
+        findings, _, _ = self.scaffold_exec(text)
+        self.assertIn("I13", [f["rule"] for f in findings])
+
+    def test_requirement_landing_on_a_rerun_command_justifies_both_copies(self):
+        lands = dict(LANDS, R2=["exec config check from checks as result",
+                                "verify #check candidate has debug off from result"], R3=["retry"])
+        findings, _, _ = self.landed(self.RERUN, lands)
+        untraced = [f for f in findings if f["rule"] == "I9" and "exec config check" in f["message"]]
+        self.assertEqual(untraced, [])
+
     def test_ask_justified_only_by_a_non_decision_warns(self):
         text = GOOD_SKILL.replace("  write #config candidate with target",
                                   "  ask user to approve the config write\n"
